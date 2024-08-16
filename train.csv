@@ -1,0 +1,511 @@
+,instruction,subtasks,task_type
+0,put the plant near the furnace.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"")",relatively_action_sequence
+1,place the shrub next to the stove.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"")",relatively_action_sequence
+2,position the greenery close to the heater.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"")",relatively_action_sequence
+3,arrange the bush adjacent to the oven.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"")",relatively_action_sequence
+4,place the stone close to the torch.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+5,put the rock next to the lamp.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+6,position the boulder near the light.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+7,set the pebble beside the lantern.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+8,arrange the mineral adjacent to the beacon.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+9,locate the cobblestone near the flashlight.,"was_item_placed_near_another(game_data, ""stone"", ""torch"")",relatively_action_sequence
+10,put the table beside the plant.,"was_item_placed_near_another(game_data, ""table"", ""plant"")",relatively_action_sequence
+11,place the desk next to the shrub.,"was_item_placed_near_another(game_data, ""table"", ""plant"")",relatively_action_sequence
+12,position the counter near the greenery.,"was_item_placed_near_another(game_data, ""table"", ""plant"")",relatively_action_sequence
+13,set the bench beside the flower.,"was_item_placed_near_another(game_data, ""table"", ""plant"")",relatively_action_sequence
+14,locate the dining table near the vegetation.,"was_item_placed_near_another(game_data, ""table"", ""plant"")",relatively_action_sequence
+15,arrange the furnace near the stone.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+16,place the stove next to the rock.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+17,set the heater beside the boulder.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+18,position the kiln near the pebble.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+19,put the oven close to the mineral.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+20,locate the fireplace adjacent to the cobblestone.,"was_item_placed_near_another(game_data, ""furnace"", ""stone"")",relatively_action_sequence
+21,get the pickaxe after you have gathered the timber.,"was_item_collected_after_another(gt, ""wood"", ""pickaxe"")",relatively_action_sequence
+22,retrieve the pickaxe once you have collected the lumber.,"was_item_collected_after_another(gt, ""wood"", ""pickaxe"")",relatively_action_sequence
+23,collect the pickaxe following the collection of wooden logs.,"was_item_collected_after_another(gt, ""wood"", ""pickaxe"")",relatively_action_sequence
+24,acquire the pickaxe after securing the wooden material.,"was_item_collected_after_another(gt, ""wood"", ""pickaxe"")",relatively_action_sequence
+25,gather the iron after you have obtained the coal.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+26,collect the iron once you have retrieved the coal.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+27,get the iron after you have gathered the charcoal.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+28,pick up the iron after you have secured the coal.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+29,acquire the iron following the collection of carbon.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+30,obtain the iron after you have gotten the coal.,"was_item_collected_after_another(gt, ""coal"", ""iron"")",relatively_action_sequence
+31,obtain the sword after collecting the armor.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+32,collect the sword once you have gathered the armor.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+33,get the sword after you have secured the protective gear.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+34,retrieve the sword after you have obtained the armor.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+35,pick up the sword following the collection of body armor.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+36,acquire the sword after you have collected the defensive equipment.,"was_item_collected_after_another(gt, ""armor"", ""sword"")",relatively_action_sequence
+37,secure the potion after gathering the iron.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+38,collect the potion once you have obtained the iron.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+39,get the potion after you have gathered the metal.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+40,retrieve the potion after you have secured the iron.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+41,pick up the potion following the collection of iron ore.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+42,acquire the potion after you have gotten the iron.,"was_item_collected_after_another(gt, ""iron"", ""potion"")",relatively_action_sequence
+43,retrieve the coal after you have collected the wood.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+44,get the coal after you have gathered the timber.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+45,collect the coal once you have obtained the wood.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+46,pick up the coal after you have secured the wooden logs.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+47,acquire the coal following the collection of lumber.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+48,obtain the coal after you have gathered the wooden material.,"was_item_collected_after_another(gt, ""wood"", ""coal"")",relatively_action_sequence
+49,place the torch inside a furnace boundary.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"")",building
+50,put the lantern within an oven enclosure.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"")",building
+51,arrange the torch within the limits of the furnace wall.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"")",building
+52,locate the torch within the kiln boundary.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"")",building
+53,set the bush inside a counter perimeter.,"is_item_in_closed_contour(gd, ""plant"", ""table"")",building
+54,arrange the plant within the limits of the table wall.,"is_item_in_closed_contour(gd, ""plant"", ""table"")",building
+55,locate the plant within the desk boundary.,"is_item_in_closed_contour(gd, ""plant"", ""table"")",building
+56,set the rock inside a light perimeter.,"is_item_in_closed_contour(gd, ""stone"", ""torch"")",building
+57,arrange the stone within the limits of the torch wall.,"is_item_in_closed_contour(gd, ""stone"", ""torch"")",building
+58,position the pebble inside the torch outline.,"is_item_in_closed_contour(gd, ""stone"", ""torch"")",building
+59,locate the stone within the lantern boundary.,"is_item_in_closed_contour(gd, ""stone"", ""torch"")",building
+60,put the kiln within a flower enclosure.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"")",building
+61,set the oven inside a shrub perimeter.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"")",building
+62,arrange the furnace within the limits of the plant wall.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"")",building
+63,position the stove inside the plant outline.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"")",building
+64,locate the furnace within the bush boundary.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"")",building
+65,"collect the wood after you have collected the stone, then place the torch near the table.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",relatively_action_sequence
+66,"gather the stone first, then collect the wood, and finally position the torch beside the table.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",relatively_action_sequence
+67,"first obtain the stone, then retrieve the wood, and after that, place the torch close to the table.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",relatively_action_sequence
+68,"pick up the stone before gathering the wood, and afterward, set the torch next to the table.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",relatively_action_sequence
+69,"get the stone, then the wood, and lastly place the torch adjacent to the table.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",relatively_action_sequence
+70,"collect the coal after you have gathered the wood, then put the plant near the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+71,"first, gather the wood, then collect the coal, and finally place the plant beside the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+72,"retrieve the wood before securing the coal, and afterward, position the plant next to the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+73,"pick up the wood, then the coal, and lastly, set the plant close to the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+74,"collect the wood, followed by the coal, and finish by arranging the plant near the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+75,"gather the wood, then the coal, and finally locate the plant adjacent to the furnace.","was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",relatively_action_sequence
+76,"obtain the sword after collecting the iron, then place the stone close to the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+77,"gather the iron first, then collect the sword, and afterward, position the stone near the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+78,"first secure the iron, then retrieve the sword, and finish by placing the stone beside the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+79,"pick up the iron before gathering the sword, and then set the stone close to the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+80,"collect the iron, followed by the sword, and finally arrange the stone near the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+81,"get the iron, then the sword, and lastly locate the stone adjacent to the torch.","was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",relatively_action_sequence
+82,"secure the potion after collecting the coal, then place the table beside the plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",relatively_action_sequence
+83,"first collect the coal, then gather the potion, and finish by placing the table next to the plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",relatively_action_sequence
+84,"pick up the coal, then the potion, and lastly, set the table beside the plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",relatively_action_sequence
+85,"collect the coal, followed by the potion, and finish by arranging the table near the plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",relatively_action_sequence
+86,"gather the coal, then the potion, and finally locate the table adjacent to the plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",relatively_action_sequence
+87,"collect the armor after obtaining the wood, then arrange the furnace near the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+88,"gather the wood first, then collect the armor, and afterward, position the furnace near the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+89,"first secure the wood, then retrieve the armor, and finish by placing the furnace beside the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+90,"pick up the wood before gathering the armor, and then set the furnace close to the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+91,"collect the wood, followed by the armor, and finally arrange the furnace near the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+92,"get the wood, then the armor, and lastly locate the furnace adjacent to the stone.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"")",relatively_action_sequence
+93,place the pickaxe inside the table boundary after collecting the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+94,position the pickaxe within the table's enclosure after gathering the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+95,place the pickaxe in the table boundary once you have collected the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+96,set the pickaxe inside the table perimeter after securing the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+97,arrange the pickaxe inside the table outline after obtaining the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+98,put the pickaxe in the table boundary after retrieving the wood.,"was_item_collected_after_another(gd, ""wood"", ""pickaxe"") and is_item_in_closed_contour(gd, ""pickaxe"", ""table"")",combo
+99,place the torch inside the furnace boundary after collecting the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+100,put the torch within the furnace's enclosure after collecting the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+101,set the torch inside the furnace boundary once you have secured the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+102,position the torch within the furnace perimeter after picking up the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+103,arrange the torch inside the furnace outline after obtaining the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+104,locate the torch in the furnace boundary after you have collected the table.,"was_item_collected_after_another(gd, ""table"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+105,collect the iron after placing the torch inside the stone boundary.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+106,retrieve the iron after positioning the torch within the stone's boundary.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+107,get the iron once the torch is placed inside the stone perimeter.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+108,pick up the iron following the placement of the torch in the stone enclosure.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+109,acquire the iron after arranging the torch inside the stone boundary.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+110,collect the iron after setting the torch within the limits of the stone wall.,"was_item_collected_after_another(gd, ""torch"", ""stone"") and is_item_in_closed_contour(gd, ""stone"", ""iron"")",combo
+111,place the plant inside the table boundary after gathering the coal.,"was_item_collected_after_another(gd, ""coal"", ""plant"") and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+112,position the plant within the table's enclosure after collecting the coal.,"was_item_collected_after_another(gd, ""coal"", ""plant"") and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+113,set the plant in the table perimeter once you've gathered the coal.,"was_item_collected_after_another(gd, ""coal"", ""plant"") and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+114,arrange the plant within the limits of the table wall following the collection of coal.,"was_item_collected_after_another(gd, ""coal"", ""plant"") and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+115,place the plant inside the table boundary after retrieving the coal.,"was_item_collected_after_another(gd, ""coal"", ""plant"") and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+116,collect the potion after placing the stone inside the torch boundary.,"was_item_collected_after_another(gd, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""potion"")",combo
+117,retrieve the potion after positioning the stone within the torch's boundary.,"was_item_collected_after_another(gd, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""potion"")",combo
+118,get the potion once the stone is placed inside the torch perimeter.,"was_item_collected_after_another(gd, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""potion"")",combo
+119,pick up the potion following the placement of the stone in the torch enclosure.,"was_item_collected_after_another(gd, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""potion"")",combo
+120,acquire the potion after arranging the stone inside the torch boundary.,"was_item_collected_after_another(gd, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""potion"")",combo
+121,move around the map and ensure that you have visited all the water sources.,is_player_within_all_water_sources(game_data),cardinal_direction
+122,explore the map and check that you've been to every water location.,is_player_within_all_water_sources(game_data),cardinal_direction
+123,traverse the game area and confirm that you've reached all water bodies.,is_player_within_all_water_sources(game_data),cardinal_direction
+124,roam the entire area and verify that you've come across all water features.,is_player_within_all_water_sources(game_data),cardinal_direction
+125,survey the map and ascertain that you've encountered every water source.,is_player_within_all_water_sources(game_data),cardinal_direction
+126,head north on the map and check that you've been to all water bodies in that region.,is_player_within_north_water_sources(game_data),cardinal_direction
+127,navigate to the upper part of the map and confirm you’ve visited each water source in the north.,is_player_within_north_water_sources(game_data),cardinal_direction
+128,move to the top of the map and verify that you've encountered all water features in the north.,is_player_within_north_water_sources(game_data),cardinal_direction
+129,proceed to the northern section and make certain you've covered every water source in that area.,is_player_within_north_water_sources(game_data),cardinal_direction
+130,go to the southern part of the map and ensure that you've visited all the water sources there.,is_player_within_south_water_sources(game_data),cardinal_direction
+131,travel to the lower part of the map and confirm you've visited all water sources in the south.,is_player_within_south_water_sources(game_data),cardinal_direction
+132,head to the southern region and make sure you’ve explored each water spot there.,is_player_within_south_water_sources(game_data),cardinal_direction
+133,proceed to the southern section of the map and ensure you've encountered all water sources.,is_player_within_south_water_sources(game_data),cardinal_direction
+134,move through all the water areas on the map.,is_player_within_all_water_sources(game_data),cardinal_direction
+135,walk over every water source on the map.,is_player_within_all_water_sources(game_data),cardinal_direction
+136,ensure you have visited each body of water.,is_player_within_all_water_sources(game_data),cardinal_direction
+137,make sure to traverse all water bodies across the map.,is_player_within_all_water_sources(game_data),cardinal_direction
+138,cross every aquatic zone to confirm your presence there.,is_player_within_all_water_sources(game_data),cardinal_direction
+139,verify that you've passed through each wetland region available on the map.,is_player_within_all_water_sources(game_data),cardinal_direction
+140,visit all water sources and make sure there's a crafting table nearby.,"is_player_within_all_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+141,go to each water source and verify the presence of a crafting station.,"is_player_within_all_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+142,visit every aquatic zone and confirm there's a crafting bench adjacent to it.,"is_player_within_all_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+143,"explore all water regions, ensuring a crafting apparatus is nearby.","is_player_within_all_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+144,traverse each water area and ensure a crafting device is placed near each.,"is_player_within_all_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+145,ensure you have walked across all water sources with a furnace nearby.,"is_player_within_all_water_sources(game_data, required_object='furnace')",cardinal_direction
+146,"visit all water sources, ensuring a kiln is nearby.","is_player_within_all_water_sources(game_data, required_object='furnace')",cardinal_direction
+147,check each water body and make sure there's an oven close by.,"is_player_within_all_water_sources(game_data, required_object='furnace')",cardinal_direction
+148,go over every water area and verify that a heater is placed nearby.,"is_player_within_all_water_sources(game_data, required_object='furnace')",cardinal_direction
+149,ensure each wetland has been visited and that a forge is located near it.,"is_player_within_all_water_sources(game_data, required_object='furnace')",cardinal_direction
+150,"make sure all water sources have been visited, and an enchantment table is nearby.","is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+151,visit every water source ensuring there's an enchantment altar close by.,"is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+152,ensure each water body has an enchantment pedestal next to it and is visited.,"is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+153,check that all water regions are traversed with a magic table present nearby.,"is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+154,walk across every wetland cluster and make sure a spellbinding desk is near.,"is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+155,move through all the southern water areas on the map.,is_player_within_south_water_sources(game_data),cardinal_direction
+156,walk over every water source in the southern part of the map.,is_player_within_south_water_sources(game_data),cardinal_direction
+157,ensure you have visited each body of water in the south.,is_player_within_south_water_sources(game_data),cardinal_direction
+158,make sure to traverse all water bodies located in the southern region.,is_player_within_south_water_sources(game_data),cardinal_direction
+159,cross every southern aquatic zone to confirm your presence there.,is_player_within_south_water_sources(game_data),cardinal_direction
+160,visit all southern water sources and make sure there's a crafting table nearby.,"is_player_within_south_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+161,"check all southern water bodies, ensuring a workbench is present close by.","is_player_within_south_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+162,go to each southern water source and verify the presence of a crafting station.,"is_player_within_south_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+163,visit every southern aquatic zone and confirm there's a crafting bench adjacent to it.,"is_player_within_south_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+164,"explore all southern water regions, ensuring a crafting apparatus is nearby.","is_player_within_south_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+165,ensure you have walked across all southern water sources with a furnace nearby.,"is_player_within_south_water_sources(game_data, required_object='furnace')",cardinal_direction
+166,"visit all southern water sources, ensuring a kiln is nearby.","is_player_within_south_water_sources(game_data, required_object='furnace')",cardinal_direction
+167,check each southern water body and make sure there's an oven close by.,"is_player_within_south_water_sources(game_data, required_object='furnace')",cardinal_direction
+168,make sure to cross all southern aquatic zones with a smelter adjacent to them.,"is_player_within_south_water_sources(game_data, required_object='furnace')",cardinal_direction
+169,ensure each southern wetland has been visited and that a forge is located near it.,"is_player_within_south_water_sources(game_data, required_object='furnace')",cardinal_direction
+170,"make sure all southern water sources have been visited, and an enchantment table is nearby.","is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+171,visit every southern water source ensuring there's an enchantment altar close by.,"is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+172,ensure each southern water body has an enchantment pedestal next to it and is visited.,"is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+173,check that all southern water regions are traversed with a magic table present nearby.,"is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+174,"go through each southern aquatic zone, confirming an arcane station is adjacent.","is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+175,walk across every southern wetland cluster and make sure a spellbinding desk is near.,"is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+176,move through all the northern water areas on the map.,is_player_within_north_water_sources(game_data),cardinal_direction
+177,walk over every water source in the northern part of the map.,is_player_within_north_water_sources(game_data),cardinal_direction
+178,ensure you have visited each body of water in the north.,is_player_within_north_water_sources(game_data),cardinal_direction
+179,make sure to traverse all water bodies located in the northern region.,is_player_within_north_water_sources(game_data),cardinal_direction
+180,verify that you've passed through each wetland region in the northern area of the map.,is_player_within_north_water_sources(game_data),cardinal_direction
+181,visit all northern water sources and make sure there's a crafting table nearby.,"is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+182,"check all northern water bodies, ensuring a workbench is present close by.","is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+183,go to each northern water source and verify the presence of a crafting station.,"is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+184,visit every northern aquatic zone and confirm there's a crafting bench adjacent to it.,"is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+185,"explore all northern water regions, ensuring a crafting apparatus is nearby.","is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+186,traverse each northern water area and ensure a crafting device is placed near each.,"is_player_within_north_water_sources(game_data, required_object='crafting_table')",cardinal_direction
+187,ensure you have walked across all northern water sources with a furnace nearby.,"is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+188,"visit all northern water sources, ensuring a kiln is nearby.","is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+189,check each northern water body and make sure there's an oven close by.,"is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+190,go over every northern water area and verify that a heater is placed nearby.,"is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+191,make sure to cross all northern aquatic zones with a smelter adjacent to them.,"is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+192,ensure each northern wetland has been visited and that a forge is located near it.,"is_player_within_north_water_sources(game_data, required_object='furnace')",cardinal_direction
+193,"make sure all northern water sources have been visited, and an enchantment table is nearby.","is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+194,visit every northern water source ensuring there's an enchantment altar close by.,"is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+195,ensure each northern water body has an enchantment pedestal next to it and is visited.,"is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+196,check that all northern water regions are traversed with a magic table present nearby.,"is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+197,"go through each northern aquatic zone, confirming an arcane station is adjacent.","is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+198,walk across every northern wetland cluster and make sure a spellbinding desk is near.,"is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire')",cardinal_direction
+199,place the crafting table near the tree.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0]",cardinal_direction
+200,put the crafting bench close to the oak.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0]",cardinal_direction
+201,position the crafting station adjacent to the woodland tree.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0]",cardinal_direction
+202,arrange the crafting equipment within a block of the timber.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0]",cardinal_direction
+203,deploy the crafting apparatus next to the sapling.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0]",cardinal_direction
+204,place the furnace north of the water.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+205,put the furnace to the north of the stream.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+206,position the furnace on the northern side of the water source.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+207,set up the furnace to the north of the pond.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+208,arrange the furnace within a block north of the river.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+209,deploy the furnace to the northern edge of the lake.,"is_object_near_target(game_data, 'furnace', 'water')[1]",cardinal_direction
+210,place the stone east of the iron.,"is_object_near_target(game_data, 'stone', 'iron')[3]",cardinal_direction
+211,position the stone on the eastern side of the ferrous metal.,"is_object_near_target(game_data, 'stone', 'iron')[3]",cardinal_direction
+212,set the stone in proximity to the east of the iron vein.,"is_object_near_target(game_data, 'stone', 'iron')[3]",cardinal_direction
+213,arrange the stone within a block east of the iron deposit.,"is_object_near_target(game_data, 'stone', 'iron')[3]",cardinal_direction
+214,deploy the stone on the eastern edge of the iron reserve.,"is_object_near_target(game_data, 'stone', 'iron')[3]",cardinal_direction
+215,place the fountain west of the diamond.,"is_object_near_target(game_data, 'fountain', 'diamond')[4]",cardinal_direction
+216,put the fountain to the west of the gem.,"is_object_near_target(game_data, 'fountain', 'diamond')[4]",cardinal_direction
+217,position the fountain on the western side of the diamond block.,"is_object_near_target(game_data, 'fountain', 'diamond')[4]",cardinal_direction
+218,set the fountain in proximity to the west of the precious stone.,"is_object_near_target(game_data, 'fountain', 'diamond')[4]",cardinal_direction
+219,arrange the fountain within a block west of the diamond jewel.,"is_object_near_target(game_data, 'fountain', 'diamond')[4]",cardinal_direction
+220,put the crafting table near the ruby.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+221,place the crafting table close to the red gem.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+222,position the crafting station adjacent to the ruby stone.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+223,set up the crafting bench in proximity to the crimson jewel.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+224,arrange the crafting unit within a block of the ruby gem.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+225,deploy the crafting apparatus beside the ruby.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0]",cardinal_direction
+226,place the enchantment table near the lava.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+227,put the enchantment table close to the magma.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+228,position the enchanting station adjacent to the molten rock.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+229,set up the enchantment table in proximity to the lava flow.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+230,arrange the enchanting unit within a block of the volcanic liquid.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+231,deploy the enchanting apparatus beside the molten lava.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0]",cardinal_direction
+232,put the furnace near the wall.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+233,place the furnace close to the barrier.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+234,position the furnace adjacent to the partition.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+235,set the furnace in proximity to the dividing wall.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+236,arrange the furnace within a block of the barricade.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+237,deploy the furnace next to the stone wall.,"is_object_near_target(game_data, 'furnace', 'wall')[0]",cardinal_direction
+238,place the chest near the path.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+239,put the chest close to the trail.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+240,position the chest adjacent to the walkway.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+241,set the chest in proximity to the path road.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+242,arrange the chest within a block of the footpath.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+243,deploy the chest next to the pathway.,"is_object_near_target(game_data, 'chest', 'path')[0]",cardinal_direction
+244,place the stone near the grass.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+245,put the stone close to the turf.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+246,position the stone adjacent to the lawn.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+247,set the stone in proximity to the grass patch.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+248,arrange the stone within a block of the green grass.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+249,deploy the stone next to the grassy field.,"is_object_near_target(game_data, 'stone', 'grass')[0]",cardinal_direction
+250,"place the crafting table in the center with furnaces on the left, right, above, and below.","is_cross_formed(game_data, 'crafting_table')",building
+251,"position the crafting table at the center, surrounded by furnaces on all four sides.","is_cross_formed(game_data, 'crafting_table')",building
+252,"put a crafting table in the middle, and place furnaces to its left, right, top, and bottom.","is_cross_formed(game_data, 'crafting_table')",building
+253,"set the crafting table centrally, and arrange furnaces around it in a cross formation.","is_cross_formed(game_data, 'crafting_table')",building
+254,"arrange the crafting table in the center, ensuring furnaces are on every adjacent side.","is_cross_formed(game_data, 'crafting_table')",building
+255,"place a chest in the center, with fountains on its four adjacent sides.","is_cross_formed(game_data, 'chest')",building
+256,position the chest in the middle and place fountains around it on all sides.,"is_cross_formed(game_data, 'chest')",building
+257,"put a chest in the center, and place fountains above, below, to the left, and to the right of it.","is_cross_formed(game_data, 'chest')",building
+258,"set a chest at the core, surrounded by fountains in a cross-like layout.","is_cross_formed(game_data, 'chest')",building
+259,arrange the chest in the center and place fountains at every adjoining position.,"is_cross_formed(game_data, 'chest')",building
+260,place the chest in the middle with fountains aligned in a cross shape around it.,"is_cross_formed(game_data, 'chest')",building
+261,position the ice enchantment table in the center with crafting tables on all four sides.,"is_cross_formed(game_data, 'enchantment_table_ice')",building
+262,"set the ice enchantment table at the center, surrounded by crafting tables.","is_cross_formed(game_data, 'enchantment_table_ice')",building
+263,place the ice enchantment table in the middle and surround it with crafting tables.,"is_cross_formed(game_data, 'enchantment_table_ice')",building
+264,"put the ice enchantment table at the center and place crafting tables on the left, right, above, and below.","is_cross_formed(game_data, 'enchantment_table_ice')",building
+265,arrange the ice enchantment table centrally with crafting tables on each adjacent side.,"is_cross_formed(game_data, 'enchantment_table_ice')",building
+266,"position the ice enchantment table in the center, flanked by crafting tables in a cross formation.","is_cross_formed(game_data, 'enchantment_table_ice')",building
+267,place the fire enchantment table in the center and surround it with chests.,"is_cross_formed(game_data, 'enchantment_table_fire')",building
+268,"position the fire enchantment table centrally, with chests on every side.","is_cross_formed(game_data, 'enchantment_table_fire')",building
+269,put the fire enchantment table in the center and arrange chests around it.,"is_cross_formed(game_data, 'enchantment_table_fire')",building
+270,"set the fire enchantment table in the middle and place chests to its left, right, above, and below.","is_cross_formed(game_data, 'enchantment_table_fire')",building
+271,arrange the fire enchantment table at the center with chests surrounding it.,"is_cross_formed(game_data, 'enchantment_table_fire')",building
+272,"place the fire enchantment table centrally, ensuring chests are on all four sides.","is_cross_formed(game_data, 'enchantment_table_fire')",building
+273,"set a plant in the middle, surrounded by crafting tables on each adjacent side.","is_cross_formed(game_data, 'plant')",building
+274,position the plant centrally and place crafting tables around it.,"is_cross_formed(game_data, 'plant')",building
+275,"put the plant in the middle with crafting tables on its left, right, top, and bottom.","is_cross_formed(game_data, 'plant')",building
+276,arrange the plant at the center with crafting tables forming a cross around it.,"is_cross_formed(game_data, 'plant')",building
+277,align three crafting tables in a straight horizontal line.,"is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",building
+278,place three crafting tables in a single horizontal row.,"is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",building
+279,"set up three crafting tables in a horizontal line, each one next to the other.","is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",building
+280,create a straight horizontal sequence of three crafting tables.,"is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",building
+281,position three crafting tables to form a continuous horizontal line.,"is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",building
+282,arrange four furnaces in a single vertical column.,"is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",building
+283,set up four furnaces in a straight vertical line.,"is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",building
+284,"create a vertical alignment of four furnaces, stacking them in a column.","is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",building
+285,form a vertical line by placing four furnaces one above the other.,"is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",building
+286,"arrange five chests in a diagonal line, from top-left to bottom-right.","is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+287,position five chests diagonally from the top-left corner to the bottom-right.,"is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+288,create a diagonal line of five chests starting from the top-left.,"is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+289,set up five chests in a diagonal pattern from the top-left to the bottom-right.,"is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+290,"form a diagonal sequence with five chests, extending from the upper left to the lower right.","is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+291,"align five chests in a diagonal line, running from the top-left to the bottom-right.","is_line_formed(game_data, 'chest', 5, check_diagonal=true)",building
+292,"place six fountains in a continuous line, either horizontally or vertically.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+293,"arrange six fountains in a straight line, either in a row or a column.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+294,"form a line of six fountains, oriented either horizontally or vertically.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+295,"position six fountains in a single straight line, regardless of direction.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+296,"set up a straight line of six fountains, aligned either horizontally or vertically.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+297,"create a continuous sequence of six fountains, in either a horizontal or vertical direction.","is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",building
+298,set up seven plants in a continuous diagonal line.,"is_line_formed(game_data, 'plant', 7, check_diagonal=true)",building
+299,"create a diagonal pattern with seven plants, ensuring they form a straight line.","is_line_formed(game_data, 'plant', 7, check_diagonal=true)",building
+300,"arrange seven plants in a diagonal sequence, each one connected to the next.","is_line_formed(game_data, 'plant', 7, check_diagonal=true)",building
+301,"position seven plants in a straight diagonal line, making sure they are aligned.","is_line_formed(game_data, 'plant', 7, check_diagonal=true)",building
+302,arrange four crafting tables into a compact square shape.,"is_square_formed(game_data, 'crafting_table', 2)",building
+303,organize the crafting tables into a tight square formation.,"is_square_formed(game_data, 'crafting_table', 2)",building
+304,create a square by positioning four crafting tables next to each other.,"is_square_formed(game_data, 'crafting_table', 2)",building
+305,form a neat square using four crafting tables arranged side by side.,"is_square_formed(game_data, 'crafting_table', 2)",building
+306,"create a square grid using nine furnaces, ensuring each furnace connects to its neighbor.","is_square_formed(game_data, 'furnace', 3)",building
+307,set up a 3x3 square by placing nine furnaces in a grid.,"is_square_formed(game_data, 'furnace', 3)",building
+308,arrange the furnaces into a connected square formation with three on each side.,"is_square_formed(game_data, 'furnace', 3)",building
+309,form a square pattern by placing nine furnaces so that each connects to another.,"is_square_formed(game_data, 'furnace', 3)",building
+310,"design a square-shaped grid with nine furnaces, ensuring they're all adjacent.","is_square_formed(game_data, 'furnace', 3)",building
+311,"organize sixteen chests into four rows and four columns, forming a square.","is_square_formed(game_data, 'chest', 4)",building
+312,place sixteen chests in a 4x4 square arrangement.,"is_square_formed(game_data, 'chest', 4)",building
+313,form a larger square by arranging sixteen chests into four lines of four.,"is_square_formed(game_data, 'chest', 4)",building
+314,"construct a square grid using sixteen chests, with four in each row and column.","is_square_formed(game_data, 'chest', 4)",building
+315,design a square formation by setting up sixteen chests in a grid pattern.,"is_square_formed(game_data, 'chest', 4)",building
+316,use twenty-five fountains to create a large square pattern.,"is_square_formed(game_data, 'fountain', 5)",building
+317,create a sizable square by placing twenty-five fountains in a grid formation.,"is_square_formed(game_data, 'fountain', 5)",building
+318,"design a large square layout with twenty-five fountains, connecting them in a 5x5 pattern.","is_square_formed(game_data, 'fountain', 5)",building
+319,"arrange thirty-six plants to form a square pattern, with each plant aligned with its neighbors.","is_square_formed(game_data, 'plant', 6)",building
+320,"create a square using thirty-six plants, organized into a structured grid.","is_square_formed(game_data, 'plant', 6)",building
+321,"design a balanced square layout with thirty-six plants, ensuring equal spacing.","is_square_formed(game_data, 'plant', 6)",building
+322,form a large square by positioning thirty-six plants into six rows and six columns.,"is_square_formed(game_data, 'plant', 6)",building
+323,Place a torch to increase the player's health.,check_lambda,relatively_action_sequence
+324,Put a lantern to boost the player's vitality.,check_lambda,relatively_action_sequence
+325,Set a light source to improve the player's health.,check_lambda,relatively_action_sequence
+326,Position an illuminator to enhance the player's well-being.,check_lambda,relatively_action_sequence
+327,Install a beacon to raise the player's life points.,check_lambda,relatively_action_sequence
+328,Place a flame holder so that the player's health increases.,check_lambda,relatively_action_sequence
+329,Place a table to increase the player's experience points.,check_lambda,relatively_action_sequence
+330,Set up a desk to gain player XP.,check_lambda,relatively_action_sequence
+331,Put down a workbench to raise player experience.,check_lambda,relatively_action_sequence
+332,Install a dining table to boost player experience points.,check_lambda,relatively_action_sequence
+333,Position a furniture piece to enhance player XP.,check_lambda,relatively_action_sequence
+334,Place a tabletop so that the player's experience increases.,check_lambda,relatively_action_sequence
+335,Place a furnace to boost player energy.,check_lambda,relatively_action_sequence
+336,Set up a kiln to increase player stamina.,check_lambda,relatively_action_sequence
+337,Put down a heater to enhance player vigor.,check_lambda,relatively_action_sequence
+338,Install a forge to improve player energy levels.,check_lambda,relatively_action_sequence
+339,Position an oven to raise the player's endurance.,check_lambda,relatively_action_sequence
+340,Place a smelter so that the player's energy boosts.,check_lambda,relatively_action_sequence
+341,Place a plant to increase the player's mana.,check_lambda,relatively_action_sequence
+342,Set up a shrub to boost player magic.,check_lambda,relatively_action_sequence
+343,Put down a flower to enhance player's spell power.,check_lambda,relatively_action_sequence
+344,Install a greenery to improve player mana.,check_lambda,relatively_action_sequence
+345,Position a botanical item to raise the player's magical energy.,check_lambda,relatively_action_sequence
+346,Place foliage so that the player's mana increases.,check_lambda,relatively_action_sequence
+347,Place a stone to increase the player's strength.,check_lambda,relatively_action_sequence
+348,Set up a rock to boost player power.,check_lambda,relatively_action_sequence
+349,Put down a boulder to enhance player's muscle strength.,check_lambda,relatively_action_sequence
+350,Install a pebble to improve player might.,check_lambda,relatively_action_sequence
+351,Position a mineral to raise the player's physical power.,check_lambda,relatively_action_sequence
+352,Place a gravel piece so that the player's strength increases.,check_lambda,relatively_action_sequence
+353,Place a torch inside a stone boundary to increase the player's health.,check_lambda,combo
+354,Set a lantern within a rock enclosure to boost the player's vitality.,check_lambda,combo
+355,Install a light source inside a stone perimeter to enhance the player's well-being.,check_lambda,combo
+356,Position an illuminator within the stone boundary to raise the player's life points.,check_lambda,combo
+357,Place a beacon inside the rocky contour to increase the player's health.,check_lambda,combo
+358,Place a table inside a furnace boundary to increase the player's experience points.,check_lambda,combo
+359,Set up a desk within an oven enclosure to gain player XP.,check_lambda,combo
+360,Position a workbench inside a kiln perimeter to enhance player experience.,check_lambda,combo
+361,Place a dining table within the furnace boundary to boost player XP.,check_lambda,combo
+362,Locate a tabletop within the limits of the furnace to increase player experience.,check_lambda,combo
+363,Place a furnace inside a plant boundary to boost the player's energy.,check_lambda,combo
+364,Set up a kiln within a shrub enclosure to increase player stamina.,check_lambda,combo
+365,Position a heater inside a flower perimeter to enhance player vigor.,check_lambda,combo
+366,Place a forge within the limits of the plant boundary to improve player energy.,check_lambda,combo
+367,Locate a furnace within the plant's outline to raise the player's endurance.,check_lambda,combo
+368,Place a plant inside a table boundary to increase the player's mana.,check_lambda,combo
+369,Set up a shrub within a desk enclosure to boost player magic.,check_lambda,combo
+370,Position a flower inside a counter perimeter to enhance player's spell power.,check_lambda,combo
+371,Place a greenery within the table boundary to improve player mana.,check_lambda,combo
+372,Locate foliage within the limits of the table to increase player's mana.,check_lambda,combo
+373,Place a stone inside a torch boundary to increase the player's strength.,check_lambda,combo
+374,Set up a rock within a lantern enclosure to boost player power.,check_lambda,combo
+375,Position a boulder inside a light perimeter to enhance player's muscle strength.,check_lambda,combo
+376,Place a pebble within the torch boundary to improve player might.,check_lambda,combo
+377,Locate a gravel piece within the limits of the torch to increase player's strength.,check_lambda,combo
+378,"Place a sturdy stone near the soft grass, and then set four strong chests in the shape of a square. Mind you, the chests should be arranged with care, for such placements often hold significance in the greater schemes of things.","is_object_near_target(game_data, 'stone', 'grass')[0] and is_square_formed(game_data, 'chest', 4)",combo
+379,"Craft a cross with mystic altars close to the flickering flames, and set a forge by the whispering waters. Each element must be placed with purpose, for the balance of magic and the natural world is not to be taken lightly.","is_cross_formed(game_data, 'enchantment_table_fire') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+380,"Place the artisan's bench in the northern reaches, close to the life-giving waters. Such placement will ensure your creations draw strength from the flow of the natural world, a wise choice indeed.","is_player_within_north_water_sources(game_data, required_object='crafting_table') and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+381,"Set the artisan’s table beside a crimson gem and a tall tree, for the union of earth's bounty and nature’s wisdom shall lend great power to your handiwork.","is_object_near_target(game_data, 'crafting_table', 'ruby')[0] and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+382,"Set the forge beside solid rock, and let that rock rest near the green grass. In this harmony of earth and life, your works shall find the strength of stone and the renewal of the land.","was_item_placed_near_another(game_data, ""furnace"", ""stone"") and is_object_near_target(game_data, 'stone', 'grass')[0]",combo
+383,"Arrange the living greens into the shape of a cross, and within the bounds of a well-placed forge, encircle a single flame. Thus, the light shall be guarded by the strength of fire and the life it sustains.","is_cross_formed(game_data, 'plant') and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+384,"Set the mystic altar close to the fiery depths of lava, where ancient powers stir. In the northern reaches, by the soothing waters, place the artisan's bench, for there the balance of heat and cool shall empower your craft.","is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0] and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+385,"Craft a cross with arcane altars near the dancing flames, and align four forges in a steadfast row. In such a pattern, the forces of fire and magic shall intertwine, forging a path of power and purpose.","is_cross_formed(game_data, 'enchantment_table_fire') and is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",combo
+386,"First, gather the darkened stones of coal before seeking the strength of iron. Once this is done, align three artisan’s benches in a straight path, for in their order lies the key to unlocking greater creations.","was_item_collected_after_another(gt, ""coal"", ""iron"") and is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",combo
+387,"Seek out the sturdy stone before gathering the timber’s strength. Once these are in hand, place a guiding torch near the craftsman’s table, and ensure all is set near the southern waters, where the flow of the earth's life shall bless your endeavors.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"") and is_player_within_south_water_sources(game_data)",combo
+388,"Harvest the blackened coal before seeking the elixir’s brew. Then, place the craftsman’s table beside a living green, where the essence of nature shall mingle with your work.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"") and was_item_placed_near_another(game_data, ""table"", ""plant"")",combo
+389,"Encircle the forge with a barrier of living greens, for in their embrace, the fire's might shall be tempered. Once this is done, don your armor first, before seeking the blade, for protection must precede the strike in any wise endeavor.","is_item_in_closed_contour(gd, ""furnace"", ""plant"") and was_item_collected_after_another(gt, ""armor"", ""sword"")",combo
+390,"Seek out the iron’s strength before pursuing the brew of potions. Once the metal is yours, align six fountains in a straight course, where the flowing waters shall stand as a testament to your craft.","was_item_collected_after_another(gt, ""iron"", ""potion"") and is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",combo
+391,"Set the forge in the northern lands, near the life-giving waters, ensuring it remains close to their gentle flow. In such a place, the forge shall draw strength from the cool embrace of the northern streams.","is_player_within_north_water_sources(game_data, required_object='furnace') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+392,"Arrange six living greens in the shape of a square, their unity forming a natural boundary. Seek the dark coal first, and only then pursue the elusive potion. When this is done, place the craftsman’s table beside one of the plants, where nature’s touch shall guide your hand.","is_square_formed(game_data, 'plant', 6) and was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",combo
+393,"Shape a square with three sturdy forges, their warmth creating a stronghold of fire. First, gather the wood from the earth, and only then seek the coal, for the order of these tasks is key to harnessing their full power.","is_square_formed(game_data, 'furnace', 3) and was_item_collected_after_another(gt, ""wood"", ""coal"")",combo
+394,"Let the adventurer find themselves within the northern waters' embrace, where the chill of the streams runs deep. First, gather the wood, then seek the coal that lies hidden in the earth. Once these are secured, place a living green beside the forge, where the warmth of the fire shall meet the life of the plant.","is_player_within_north_water_sources(game_data) and was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",combo
+395,"Seek out the iron only after you've mined the dark coal from the depths. Then, place the chest close to the path, where it may guard the way with its treasures safely kept.","was_item_collected_after_another(gt, ""coal"", ""iron"") and is_object_near_target(game_data, 'chest', 'path')[0]",combo
+396,"Arrange seven living greens in a diagonal line, their alignment guided by the natural order. See to it that the adventurer stands within the southern waters, accompanied by an arcane altar and the flickering flame, where the elements of magic and fire shall converge in harmony.","is_line_formed(game_data, 'plant', 7, check_diagonal=true) and is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",combo
+397,"Hearken to my words, for a journey lies ahead. First, seek out the dark stone, the iron’s companion, and bring it forth from the earth. Once your hands are heavy with coal, set your eyes upon the iron veins and extract their wealth. But do not rest yet, for the wood of the forests must also be claimed, and only after these tasks are done should you return to the furnace. There, place the green life of the earth beside the blazing forge, and the work shall be complete.","was_item_collected_after_another(gt, ""coal"", ""iron"") and was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",combo
+398,"Heed my counsel, for the craft is delicate. Enclose the fiery hearth within the embrace of the green vine, ensuring its protection. Once this is done, venture forth to the depths and claim the iron’s strength. Only then, when the metal is yours, may you seek the elixir, the potion of power, which shall be yours as a reward for your toil.","is_item_in_closed_contour(gd, ""furnace"", ""plant"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+399,"Attend to my words, for they carry wisdom. Arrange the runic pedestal in the shape of a cross, aligning its power with the forces unseen. Then, take care to encircle the living green, the plant of the earth, within the sturdy embrace of a table. Thus, the magic shall flow true, and the balance shall be maintained.","is_object_near_target(game_data, 'furnace', 'wall')[0] and is_item_in_closed_contour(gd, ""furnace"", ""plant"")",combo
+400,"Mark my words, for the task is before you. First, arm yourself with the protection of armor, gathering it as a shield against the trials to come. Once clad in this defense, seek out the blade, the sword of steel, to complete your armament. Then, guide the traveler, the one who ventures forth, to the waters of the south. There, ensure their presence is firm by placing the forge, the furnace of fire, beside them. In this way, strength and safety shall be yours.","is_cross_formed(game_data, 'enchantment_table_ice') and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+401,"Attend to my counsel, for it will light your way. Ensure that the fiery forge, the furnace of power, rests close to the water’s edge, where it may draw strength from the cooling depths. And see to it that the traveler, the one who walks the path, is surrounded by all the waters that flow from every direction. Thus shall the elements be in harmony, and the journey be blessed by the currents of the world.","was_item_collected_after_another(gt, ""coal"", ""iron"") and was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",combo
+402,"Heed these words, for they carry the wisdom of the ages. Place the guiding torch close to the steadfast stone, where its light may shine upon the path ahead. Then, see to it that the traveler, the one who seeks the way, finds themselves within the waters of the south, near the mystical flames of the enchanted table. In this place of power, both light and magic shall be their allies on the journey that lies before them.","is_object_near_target(game_data, 'stone', 'iron')[3] and is_player_within_all_water_sources(game_data, required_object='crafting_table')",combo
+403,"Hear my words, for they will guide you true. Place the flowing fountain near the gleaming diamond, where its waters may reflect the gem’s brilliance. And see to it that the traveler, the one who ventures forth, is enveloped by all the waters that surround, touched by every source that flows. Thus, the elements shall be in harmony, and the journey shall be blessed by the forces of both water and light.","was_item_collected_after_another(gt, ""armor"", ""sword"") and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+404,"Listen well, for this task requires precision. Arrange the treasure chests in a formation of four by four, creating a square of safekeeping where valuables may rest secure. Once this is done, place the workbench, the table of craft, near the living green, the plant that thrives by its side. Thus shall your goods be well-guarded, and the tools of creation be close at hand, as you prepare for the journey ahead.",is_player_within_north_water_sources(game_data) and is_player_within_all_water_sources(game_data),combo
+405,"Heed my counsel, for it will guide your steps with care. After gathering the iron’s strength from the depths, see to it that the traveler, the one who quests, finds themselves within the northern waters, where the currents flow cold and true. Once this is done, set the guiding torch beside the steadfast stone, where its light may cast away the shadows. Thus shall the journey be marked by the blessings of both iron and water, with light to illuminate the way forward.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and is_object_near_target(game_data, 'chest', 'path')[0]",combo
+406,"Listen closely, for this task must be done with care. Set the workbench, the table of craft, near the living green, the plant that flourishes with life’s essence. Then, with precision, arrange the crafting tables in a formation of two by two, creating a square of skill and creation. Thus shall your tools be ready, and the harmony of nature and craft shall guide your journey.","is_item_in_closed_contour(gd, ""torch"", ""furnace"") and is_cross_formed(game_data, 'crafting_table')",combo
+407,"Place the guiding flame within the encircling bounds of the furnace, ensuring its warmth is harnessed. Then, gather the iron’s strength from the earth before seeking the elixir, the potion of mystical power.","was_item_collected_after_another(gt, ""wood"", ""coal"") and is_cross_formed(game_data, 'crafting_table')",combo
+408,"Ensure that the traveler, the one who ventures forth, finds themselves embraced by both the northern waters and all the surrounding sources. Let the waters flow around them, providing their needed sustenance.","is_player_within_all_water_sources(game_data) and is_player_within_all_water_sources(game_data, required_object='furnace')",combo
+409,"First, seek out and gather the timber, the wood of the ancient forests. With this collected, acquire the armor, a shield of protection. Afterward, claim the dark stone, the coal, and finally position the workbench, the crafting table, beside the flourishing green, the plant.","is_player_within_all_water_sources(game_data, required_object='furnace') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+410,"After claiming the iron’s strength from the depths, ensure the traveler, the one who quests, stands amidst the northern waters, where the cold currents flow. Then, place the guiding torch beside the steadfast stone, allowing its light to lead the way.","was_item_placed_near_another(game_data, ""stone"", ""torch"") and is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",combo
+411,"Position the steadfast stone near the iron’s might, and ensure that the traveler, the one who ventures forth, is surrounded by all the waters, placing the crafting table where they can reach all sources.","is_object_near_target(game_data, 'fountain', 'diamond')[4] and is_player_within_all_water_sources(game_data)",combo
+412,"Form the sacred cross with the enchanted pedestal and encircle the living green, the plant, with the crafting tables, ensuring its protection and balance.","is_item_in_closed_contour(gd, ""torch"", ""furnace"") and is_player_within_all_water_sources(game_data, required_object='crafting_table')",combo
+413,"Gather the sword, the blade of valor, after securing the armor’s protection. Ensure the traveler, the one who seeks, is within the embrace of all surrounding waters by placing the forge, the furnace of fire.","is_player_within_north_water_sources(game_data) and was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",combo
+414,"Place the fiery forge near the stone wall, ensuring it is surrounded by the living green, the plant, which provides its natural embrace and protection.","is_square_formed(game_data, 'chest', 4) and was_item_placed_near_another(game_data, ""table"", ""plant"")",combo
+415,"Ensure that the forge, the fiery furnace, is positioned close to the waters, and that the traveler, the one who walks the path, is surrounded by all the water sources that flow nearby.","is_item_in_closed_contour(gd, ""torch"", ""furnace"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+416,"Set the workbench, the crafting table of skill, near the living green, the plant that thrives. Then, arrange the crafting tables in a precise formation of two by two, creating a square of creation and craft.","was_item_placed_near_another(game_data, ""table"", ""plant"") and is_square_formed(game_data, 'crafting_table', 2)",combo
+417,"Place the forge of fire near the sturdy wall, and see to it that the wanderer lingers close to the southern springs, where the warmth of the forge may reach them.","is_object_near_target(game_data, 'furnace', 'wall')[0] and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+418,"First, gather the kindling of the forest before seeking the shield of steel. Set the forge of fire near the ancient stone, and only then, seek the iron ore before crafting the elixir of life.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+419,"Set the fire-forge beside the sturdy wall, and be certain that the adventurer remains near the northern springs, close to the table of creation.","is_object_near_target(game_data, 'furnace', 'wall')[0] and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+420,"Position the table of craftsmanship near the green growth, and arrange a diagonal line with seven of these living herbs.","was_item_placed_near_another(game_data, ""table"", ""plant"") and is_line_formed(game_data, 'plant', 7, check_diagonal=true)",combo
+421,"Craft a 4x4 square with sturdy treasure-keepers, and see to it that the traveler lingers near the northern springs, close by the forge of flames.","is_square_formed(game_data, 'chest', 4) and is_player_within_north_water_sources(game_data, required_object='furnace')",combo
+422,"See to it that the adventurer is embraced by all the waters, and place the table of creation close to the southern springs.","is_player_within_all_water_sources(game_data) and is_player_within_south_water_sources(game_data, required_object='crafting_table')",combo
+423,"Gather the black stones of fire first, then seek the precious iron. Ensure that the traveler remains by the northern springs as they proceed.","was_item_collected_after_another(gt, ""coal"", ""iron"") and is_player_within_north_water_sources(game_data)",combo
+424,"Shape a cross with the sturdy treasure-keepers, and see that the table of craftsmanship is placed near a towering tree.","is_cross_formed(game_data, 'chest') and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+425,"Ensure the ancient stone rests close to the precious iron, and see that the wanderer remains surrounded by the waters, close to the forge of flames.","is_object_near_target(game_data, 'stone', 'iron')[3] and is_player_within_all_water_sources(game_data, required_object='furnace')",combo
+426,"Arrange a diagonal line with the sturdy treasure-keepers, and see that the adventurer stays within the southern springs, close to the forge of flames.","is_line_formed(game_data, 'chest', 5, check_diagonal=true) and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+427,"Position the table of creation beside the ancient stone, and ensure the wanderer is surrounded by the waters from all sides.","is_player_within_all_water_sources(game_data, required_object='crafting_table') and is_object_near_target(game_data, 'stone', 'grass')[0]",combo
+428,"See that the ancient stone lies close to the verdant grass, gather the forest's wood after securing the stone, and place a guiding torch beside the table of craftsmanship.","is_object_near_target(game_data, 'stone', 'grass')[0] and was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",combo
+429,See to it that the adventurer is enveloped by the waters surrounding the forge of flames and remains within the northern springs as well.,"is_player_within_all_water_sources(game_data, required_object='furnace') and is_player_within_north_water_sources(game_data)",combo
+430,"Place the ancient stone beside the guiding torch, and see to it that the torch is enclosed within a secure boundary alongside the forge of flames.","was_item_placed_near_another(game_data, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+431,"Position the green herb beside the forge of flames, and see that the adventurer dwells within the southern springs.","was_item_placed_near_another(game_data, ""plant"", ""furnace"") and is_player_within_south_water_sources(game_data)",combo
+432,"See that the sturdy treasure-keeper is placed near the path, and ensure that the wanderer is embraced by all the waters surrounding them.","is_object_near_target(game_data, 'chest', 'path')[0] and is_player_within_all_water_sources(game_data)",combo
+433,"Craft a grand square with six green herbs, and within its bounds, fashion a smaller square using three forges of flame.","is_square_formed(game_data, 'plant', 6) and is_square_formed(game_data, 'furnace', 3)",combo
+434,"See to it that the adventurer is surrounded by the waters on all sides, and place the table of craftsmanship beside a towering tree.","is_player_within_all_water_sources(game_data, required_object='crafting_table') and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+435,"Guide the wanderer to be encircled by the waters, and ensure that the blade of steel is claimed only after the armor of protection has been secured.","is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire') and was_item_collected_after_another(gt, ""armor"", ""sword"")",combo
+436,"Set the table of craftsmanship beside a mighty tree, and arrange the tables of enchantment in the shape of a cross.","is_object_near_target(game_data, 'crafting_table', 'tree')[0] and is_cross_formed(game_data, 'enchantment_table_ice')",combo
+437,"Set the table of craftsmanship beside a mighty tree, and arrange the tables of enchantment in the shape of a cross.","is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire') and is_player_within_all_water_sources(game_data)",combo
+438,Position a stone close to grass and then arrange four chests in a square formation.,"is_object_near_target(game_data, 'stone', 'grass')[0] and is_square_formed(game_data, 'chest', 4)",combo
+439,"Form a cross using enchantment tables near fire, and place a furnace near water.","is_cross_formed(game_data, 'enchantment_table_fire') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+440,Position a crafting table in the northern region near water sources.,"is_player_within_north_water_sources(game_data, required_object='crafting_table') and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+441,Position a crafting table near both a ruby and a tree.,"is_object_near_target(game_data, 'crafting_table', 'ruby')[0] and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+442,"Place a furnace near stone, and position the stone close to grass.","was_item_placed_near_another(game_data, ""furnace"", ""stone"") and is_object_near_target(game_data, 'stone', 'grass')[0]",combo
+443,Form a cross with plants and enclose a torch within a boundary created by a furnace.,"is_cross_formed(game_data, 'plant') and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+444,Place an enchantment table near lava and position a crafting table in the northern region near water sources.,"is_object_near_target(game_data, 'enchantment_table_fire', 'lava')[0] and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+445,Form a cross with enchantment tables near fire and arrange four furnaces in a straight line.,"is_cross_formed(game_data, 'enchantment_table_fire') and is_line_formed(game_data, 'furnace', 4, check_diagonal=false)",combo
+446,"Collect coal before obtaining iron, and then arrange three crafting tables in a straight line.","was_item_collected_after_another(gt, ""coal"", ""iron"") and is_line_formed(game_data, 'crafting_table', 3, check_diagonal=false)",combo
+447,"Collect stone before obtaining wood, then place a torch near a table and position everything near southern water sources.","was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"") and is_player_within_south_water_sources(game_data)",combo
+448,"Collect coal before obtaining a potion, and place a table near a plant.","was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"") and was_item_placed_near_another(game_data, ""table"", ""plant"")",combo
+449,"Enclose a furnace within a boundary created by plants, then collect armor before obtaining a sword.","is_item_in_closed_contour(gd, ""furnace"", ""plant"") and was_item_collected_after_another(gt, ""armor"", ""sword"")",combo
+450,"Collect iron before obtaining a potion, then arrange six fountains in a straight line.","was_item_collected_after_another(gt, ""iron"", ""potion"") and is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",combo
+451,Place a furnace in the northern region near water and position the furnace close to water.,"is_player_within_north_water_sources(game_data, required_object='furnace') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+452,"Form a square using six plants, collect a potion after obtaining coal, and position the table near the plant.","is_square_formed(game_data, 'plant', 6) and was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",combo
+453,Form a square with three furnaces and collect coal after gathering wood.,"is_square_formed(game_data, 'furnace', 3) and was_item_collected_after_another(gt, ""wood"", ""coal"")",combo
+454,"Ensure the player is within northern water sources, collect coal after gathering wood, and place the plant near the furnace.","is_player_within_north_water_sources(game_data) and was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",combo
+455,"Collect iron after gathering coal, and position the chest near the path.","was_item_collected_after_another(gt, ""coal"", ""iron"") and is_object_near_target(game_data, 'chest', 'path')[0]",combo
+456,Form a diagonal line with seven plants and ensure the player is within southern water sources with an enchantment table and fire.,"is_line_formed(game_data, 'plant', 7, check_diagonal=true) and is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",combo
+457,"Collect iron after gathering coal, then gather coal after collecting wood, and place the plant near the furnace.","was_item_collected_after_another(gt, ""coal"", ""iron"") and was_item_collected_after_another(gd, ""wood"", ""coal"") and was_item_placed_near_another(gd, ""plant"", ""furnace"")",combo
+458,"Ensure the furnace is enclosed by a plant, and collect a potion after gathering iron.","is_item_in_closed_contour(gd, ""furnace"", ""plant"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+459,Position the furnace near the wall and ensure it is enclosed by a plant.,"is_object_near_target(game_data, 'furnace', 'wall')[0] and is_item_in_closed_contour(gd, ""furnace"", ""plant"")",combo
+460,Form a cross with the enchantment table and ensure the plant is enclosed by a table.,"is_cross_formed(game_data, 'enchantment_table_ice') and is_item_in_closed_contour(gd, ""plant"", ""table"")",combo
+461,"Collect iron after gathering coal, then gather a potion after collecting coal, and position the table near the plant.","was_item_collected_after_another(gt, ""coal"", ""iron"") and was_item_collected_after_another(gd, ""coal"", ""potion"") and was_item_placed_near_another(gd, ""table"", ""plant"")",combo
+462,"Position the stone near the iron, and ensure the player is within all water sources by placing a crafting table.","is_object_near_target(game_data, 'stone', 'iron')[3] and is_player_within_all_water_sources(game_data, required_object='crafting_table')",combo
+463,"Collect a sword after gathering armor, and ensure the player is within southern water sources with a furnace.","was_item_collected_after_another(gt, ""armor"", ""sword"") and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+464,Ensure the player is within both northern and all water sources.,is_player_within_north_water_sources(game_data) and is_player_within_all_water_sources(game_data),combo
+465,"Collect armor after gathering wood, place the furnace near the stone, and position the chest near the path.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and is_object_near_target(game_data, 'chest', 'path')[0]",combo
+466,Place the torch inside the furnace's closed contour and create a cross formation using crafting tables.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"") and is_cross_formed(game_data, 'crafting_table')",combo
+467,"Gather the wood before collecting the coal, then arrange the crafting tables in a cross formation.","was_item_collected_after_another(gt, ""wood"", ""coal"") and is_cross_formed(game_data, 'crafting_table')",combo
+468,"Ensure the player is within all water sources, including being near a furnace.","is_player_within_all_water_sources(game_data) and is_player_within_all_water_sources(game_data, required_object='furnace')",combo
+469,Make sure the furnace is near water and the player is within all water sources.,"is_player_within_all_water_sources(game_data, required_object='furnace') and is_object_near_target(game_data, 'furnace', 'water')[1]",combo
+470,Place the torch near the stone and ensure the player is within the southern water sources near the enchanted table fire.,"was_item_placed_near_another(game_data, ""stone"", ""torch"") and is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",combo
+471,Position the fountain near the diamond and ensure the player is within all water sources.,"is_object_near_target(game_data, 'fountain', 'diamond')[4] and is_player_within_all_water_sources(game_data)",combo
+472,Place the torch inside the furnace's contour and ensure the player is within all water sources near the crafting table.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"") and is_player_within_all_water_sources(game_data, required_object='crafting_table')",combo
+473,"Ensure the player is within the northern water sources after collecting the iron, then place the torch near the stone.","is_player_within_north_water_sources(game_data) and was_item_collected_after_another(gd, ""iron"", ""sword"") and was_item_placed_near_another(gd, ""stone"", ""torch"")",combo
+474,Arrange chests in a 4x4 square and place the table near the plant.,"is_square_formed(game_data, 'chest', 4) and was_item_placed_near_another(game_data, ""table"", ""plant"")",combo
+475,Place the torch inside the furnace's contour and collect the iron before the potion.,"is_item_in_closed_contour(gd, ""torch"", ""furnace"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+476,Place the table near the plant and arrange the crafting tables in a 2x2 square.,"was_item_placed_near_another(game_data, ""table"", ""plant"") and is_square_formed(game_data, 'crafting_table', 2)",combo
+477,Place the furnace near the wall and ensure the player is within the southern water sources near the furnace.,"is_object_near_target(game_data, 'furnace', 'wall')[0] and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+478,"Collect the wood before the armor, place the furnace near the stone, and then collect the iron before the potion.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and was_item_collected_after_another(gt, ""iron"", ""potion"")",combo
+479,Place the furnace near the wall and ensure the player is within the northern water sources near the crafting table.,"is_object_near_target(game_data, 'furnace', 'wall')[0] and is_player_within_north_water_sources(game_data, required_object='crafting_table')",combo
+480,Place the table near the plant and form a diagonal line with seven plants.,"was_item_placed_near_another(game_data, ""table"", ""plant"") and is_line_formed(game_data, 'plant', 7, check_diagonal=true)",combo
+481,Form a 4x4 square with chests and ensure the player is within the northern water sources near the furnace.,"is_square_formed(game_data, 'chest', 4) and is_player_within_north_water_sources(game_data, required_object='furnace')",combo
+482,Ensure the player is within all water sources and place a crafting table near the southern water sources.,"is_player_within_all_water_sources(game_data) and is_player_within_south_water_sources(game_data, required_object='crafting_table')",combo
+483,Collect the iron after gathering coal and ensure the player is within the northern water sources.,"was_item_collected_after_another(gt, ""coal"", ""iron"") and is_player_within_north_water_sources(game_data)",combo
+484,Form a cross with chests and ensure the crafting table is near a tree.,"is_cross_formed(game_data, 'chest') and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+485,Ensure the stone is near the iron and that the player is within all water sources near the furnace.,"is_object_near_target(game_data, 'stone', 'iron')[3] and is_player_within_all_water_sources(game_data, required_object='furnace')",combo
+486,Form a diagonal line of chests and ensure the player is within the southern water sources near the furnace.,"is_line_formed(game_data, 'chest', 5, check_diagonal=true) and is_player_within_south_water_sources(game_data, required_object='furnace')",combo
+487,Place a crafting table near the stone and ensure the player is within all water sources.,"is_player_within_all_water_sources(game_data, required_object='crafting_table') and is_object_near_target(game_data, 'stone', 'grass')[0]",combo
+488,"Ensure the stone is near the grass, collect wood after stone, and place a torch near the table.","is_object_near_target(game_data, 'stone', 'grass')[0] and was_item_collected_after_another(gd, ""stone"", ""wood"") and was_item_placed_near_another(gd, ""torch"", ""table"")",combo
+489,Ensure the player is within all water sources near the furnace and also within the northern water sources.,"is_player_within_all_water_sources(game_data, required_object='furnace') and is_player_within_north_water_sources(game_data)",combo
+490,Place a stone near the torch and ensure the torch is within a closed contour with the furnace.,"was_item_placed_near_another(game_data, ""stone"", ""torch"") and is_item_in_closed_contour(gd, ""torch"", ""furnace"")",combo
+491,Place the plant near the furnace and ensure the player is within the southern water sources.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"") and is_player_within_south_water_sources(game_data)",combo
+492,Ensure the chest is near the path and that the player is within all water sources.,"is_object_near_target(game_data, 'chest', 'path')[0] and is_player_within_all_water_sources(game_data)",combo
+493,Create a large square pattern with six plants and a smaller square pattern with three furnaces inside it.,"is_square_formed(game_data, 'plant', 6) and is_square_formed(game_data, 'furnace', 3)",combo
+494,Ensure the player is within all water sources and place a crafting table near a tree.,"is_player_within_all_water_sources(game_data, required_object='crafting_table') and is_object_near_target(game_data, 'crafting_table', 'tree')[0]",combo
+495,"Position the player within all water sources, ensuring the sword is collected after the armor.","is_player_within_all_water_sources(game_data, required_object='enchantment_table_fire') and was_item_collected_after_another(gt, ""armor"", ""sword"")",combo
+496,Place a crafting table near a tree and arrange enchantment tables in a cross formation.,"is_object_near_target(game_data, 'crafting_table', 'tree')[0] and is_cross_formed(game_data, 'enchantment_table_ice')",combo
+497,Ensure the player is within the northern water sources as well as all water sources.,"is_player_within_north_water_sources(game_data, required_object='enchantment_table_fire') and is_player_within_all_water_sources(game_data)",combo
+498,Collect the armor before the sword and arrange crafting tables in a 2x2 square formation.,"was_item_collected_after_another(gt, ""armor"", ""sword"") and is_square_formed(game_data, 'crafting_table', 2)",combo
+499,Collect coal before iron and arrange six fountains in a straight line.,"was_item_collected_after_another(gt, ""coal"", ""iron"") and is_line_formed(game_data, 'fountain', 6, check_diagonal=false)",combo
+500,Position the player within the northern water sources and arrange seven plants in a diagonal line.,"is_player_within_north_water_sources(game_data, required_object='furnace') and is_line_formed(game_data, 'plant', 7, check_diagonal=true)",combo
+501,Ensure the player is within all water sources and arrange five chests in a diagonal line.,"is_player_within_all_water_sources(game_data, required_object='furnace') and is_line_formed(game_data, 'chest', 5, check_diagonal=true)",combo
+502,Place a plant near a furnace and collect wood before the pickaxe.,"was_item_placed_near_another(game_data, ""plant"", ""furnace"") and was_item_collected_after_another(gt, ""wood"", ""pickaxe"")",combo
+503,Arrange enchantment tables in a cross formation and place the player within the southern water sources.,"is_cross_formed(game_data, 'enchantment_table_fire') and is_player_within_south_water_sources(game_data, required_object='enchantment_table_fire')",combo
+504,"Collect wood before armor, place a furnace near stone, and arrange chests in a cross formation.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and is_cross_formed(game_data, 'chest')",combo
+505,Place a plant inside a closed contour with a table and arrange chests in a cross formation.,"is_item_in_closed_contour(gd, ""plant"", ""table"") and is_cross_formed(game_data, 'chest')",combo
+506,Place a furnace inside a closed contour with a plant and ensure the player is within all water sources.,"is_item_in_closed_contour(gd, ""furnace"", ""plant"") and is_player_within_all_water_sources(game_data)",combo
+507,Position a table near a plant and arrange chests in a cross formation.,"was_item_placed_near_another(game_data, ""table"", ""plant"") and is_cross_formed(game_data, 'chest')",combo
+508,"Collect wood before armor, place a furnace near stone, and gather coal before iron.","was_item_collected_after_another(gd, ""wood"", ""armor"") and was_item_placed_near_another(gd, ""furnace"", ""stone"") and was_item_collected_after_another(gt, ""coal"", ""iron"")",combo
+509,Place a stone near grass and ensure the player is within the southern water sources near a crafting table.,"is_object_near_target(game_data, 'stone', 'grass')[0] and is_player_within_south_water_sources(game_data, required_object='crafting_table')",combo
