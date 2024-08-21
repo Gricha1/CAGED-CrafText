@@ -15,7 +15,7 @@ CrafText is an extension of the Craftex environment (https://github.com/MichaelT
 
 The code for verifying played scenarios can be found at the following repository link:
 
-[link/to/code/scenarious.py](link/to/code/scenarious.py)
+https://github.com/ZoyaV/CrafText/blob/main/checkers/scenarius.py
 
 A scenario consists of instructions provided by Player 1 to Player 2. Player 2 follows these instructions, which are then validated by a corresponding function. For the `scenario.py` function, please provide realistic examples of instructions that Player 1 might give, along with 5 paraphrases for each.
 
