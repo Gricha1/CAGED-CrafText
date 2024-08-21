@@ -7,8 +7,8 @@ CrafText is an extension of the Craftex environment (https://github.com/MichaelT
 
 ### Instruction and Checker Generation Pipeline
 
-1. Define the scenario.
-2. Use the standard checker functions and scenario format to write the code for verifying the scenario.
+1. Come up with the scenario.
+2. Use the standard checker functions and scenario format to write the code for verifying the scenario. Look at the examples (https://github.com/ZoyaV/CrafText/blob/main/checkers/scenarius.py)
 3. Use the Instruction Generation Prompt and AskTheCode(ChatGPT4o) to create examples of scenario instructions.
 
 ### Instruction Generation Prompt
