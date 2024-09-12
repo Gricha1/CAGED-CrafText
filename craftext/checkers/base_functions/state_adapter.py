@@ -131,7 +131,7 @@ class PlayerState:
 
 
 class GameData:
-    def __init__(self, states, actions):
-        self.states = [PlayerState.from_state(state, action) for state,action in zip(states, actions)]
+    def __init__(self, state, action):
+        self.states = [PlayerState.from_state(state, action)]
         
     
