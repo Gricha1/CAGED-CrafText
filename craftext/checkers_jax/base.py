@@ -15,20 +15,22 @@ def was_item_collected_after_another(game_data, first_item: str, second_item: st
     """
 
     def extract_item_collected(inventory, item_name):
+        print("Inventory: ", inventory)
         item_quantity = getattr(inventory, item_name, None)
+        print("Item item_quantity: ", item_quantity)
         return jnp.any(item_quantity > 0) if item_quantity is not None else False
 
     # Vectorized check across all game states
     first_item_collected = jnp.array([extract_item_collected(state.inventory, "wood") for state in game_data.states])
     second_item_collected = jnp.array([extract_item_collected(state.inventory, "stone") for state in game_data.states])
 
-    # Find the first occurrence (index) where each item was collected
+    # # Find the first occurrence (index) where each item was collected
     first_item_idx = jnp.argmax(first_item_collected)
     second_item_idx = jnp.argmax(second_item_collected)
 
-    # Ensure both items are found
+    # # Ensure both items are found
     first_item_found = jnp.any(first_item_collected)
     second_item_found = jnp.any(second_item_collected)
 
     # Return True if both items were found and second item was collected after first item
-    return jnp.logical_and(first_item_found, jnp.logical_and(second_item_found, second_item_idx > first_item_idx))
+    return jnp.logical_and(first_item_found, jnp.logical_and(second_item_found, second_item_idx >= first_item_idx))
