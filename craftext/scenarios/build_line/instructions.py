@@ -1,4 +1,27 @@
-from craftext.checkers.scenarios_building import is_line_formed
+from craftext.checkers_jax.building import is_line_formed
+
+
+test = {'test_line_1': {
+        'instruction': "Make a line of 3 blocks using table.",
+        'items_name': ["stone"],
+        'instruction_paraphrases': ["Make a line of 3 blocks using table."],
+        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 3, check_diagonal=False)
+    },
+    'test_line_2': {
+        'instruction': "Make a diagonal line of 3 blocks using table.",
+        'items_name': ["stone"],
+        'instruction_paraphrases': ["Make a diagonal line of 3 blocks using table."],
+        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 3, check_diagonal=True)
+    }, 
+
+    ### DO NOT WORK
+    'test_line_3': {
+        'instruction': "Make a line of 3 blocks using stone.",
+        'items_name': ["stone"],
+        'instruction_paraphrases': ["Make a line of 3 blocks using stone."],
+        'check_lambda': lambda game_data: is_line_formed(game_data, "STONE", 3, check_diagonal=False)
+    }}
+
 
 instructions = {
     "57": {
