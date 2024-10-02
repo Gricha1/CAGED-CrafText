@@ -45,3 +45,28 @@ instructions = {
 ```
 
 Replace `instruction_id` with a unique identifier for each instruction, and complete the `check_lambda` to demonstrate how you would verify the given instruction using the function.
+
+
+### Setup Dataset for Training
+
+You can select a subset of the CrafText dataset to use during training by specifying different scenario configurations. The available options include `build`, `base`, `sequential`, `combo`, and `SMALL`. Additionally, you can specify which part of the dataset to use, such as `instructions` or `small`, where `small` refers to a subset containing simpler instructions. You can also choose between using pure instructions or instructions with paraphrases.
+
+To configure your dataset, set the `CRAFTEXT_SETTINGS` environment variable. The format is:
+
+```
+<scenario> && <instruction_type> && <subset>
+```
+
+Where:
+- `<scenario>`: The scenario you want to use (e.g., `build_line`, `collect_items`).
+- `<instruction_type>`: Choose either `pure_instruction` or `instruction_with_paraphrases`.
+- `<subset>`: Choose from `small_train` for a simpler instruction set, or other custom subsets.
+
+**Examples:**
+```bash
+export CRAFTEXT_SETTINGS="build_line&&pure_instruction&&small_train"
+export CRAFTEXT_SETTINGS="build_line&&instruction_with_paraphrases&&small_train"
+export CRAFTEXT_SETTINGS="collect_items&&instruction_with_paraphrases&&other"
+```
+
+This allows flexible control over which dataset scenarios and instruction types are used during training.
