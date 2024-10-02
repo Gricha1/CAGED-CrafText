@@ -1,11 +1,11 @@
-from craftext.checkers_jax.building import is_line_formed
+from craftext.checkers_jax.building import is_line_formed, is_square_formed
 
 
 test = {'test_line_1': {
-        'instruction': "Make a line of 3 blocks using table.",
-        'items_name': ["stone"],
-        'instruction_paraphrases': ["Make a line of 3 blocks using table."],
-        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 3, check_diagonal=False)
+        'instruction': "Make a line of 2 blocks using table.",
+        'items_name': ["table"],
+        'instruction_paraphrases': ["Make a line of 2 blocks using table."],
+        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 2, check_diagonal=False)
     },
     'test_line_2': {
         'instruction': "Make a diagonal line of 3 blocks using table.",
