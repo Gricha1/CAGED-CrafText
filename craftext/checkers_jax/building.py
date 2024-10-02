@@ -1,4 +1,5 @@
 import jax
+from jax import jit
 import jax.numpy as jnp
 from jax import lax
 from typing import List
@@ -93,12 +94,12 @@ def scan_square_function(carry, x):
     return carry, is_square
 
 
-def is_square_formed(game_data, block_name: str, size: int = 2, radius: int = 5) -> bool:
+def is_square_formed(game_data,  ix:int, block_name: str, size: int = 2, radius: int = 5) -> bool:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
     # Получаем индекс блока по имени
-    stone_index = blocks_list.index(block_name)
+    stone_index = block_name #blocks_list.index(block_name)
 
     # Получаем карту
     game_map = game_data.states[0].map.game_map[0]
@@ -157,25 +158,83 @@ def scan_line_function(carry, x):
     return carry, is_line
 
 
-def is_line_formed(game_data, block_name: str, size: int = 2, check_diagonal:bool = False, radius: int = 5) -> bool:
+# def is_line_formed(game_data, block_name: str, size: int = 2, check_diagonal: bool = False, radius: int = 5) -> jnp.ndarray:
+#     """
+#     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиций игроков на всех картах.
+#     """
+#     # Получаем индекс блока по имени
+#     stone_index = blocks_list.index(block_name)
+
+#     # Получаем карты
+#     binary_maps = game_data.states[0].map.game_map  # Допустим, это тензор num_maps x height x width
+#     binary_maps = (binary_maps == stone_index).astype(jnp.int32)
+
+#     # Получаем позиции игроков
+#     player_positions = game_data.states[0].variables.player_position  # Это вектор (num_maps x 2), где каждая позиция (x, y)
+    
+#     if player_positions is None or binary_maps is None:
+#         return jnp.array([])  # Возвращаем пустой массив, если данных нет
+
+#     # Функция для проверки линии для одного игрока на одной карте
+#     def check_for_player(binary_map, player_position):
+#         x, y = player_position
+
+#         # Определяем размеры области вокруг игрока
+#         region_size = 2 * radius + 1
+
+#         # Используем lax.dynamic_slice для извлечения области карты вокруг игрока
+#         region = lax.dynamic_slice(
+#             binary_map,
+#             start_indices=(x - radius, y - radius),
+#             slice_sizes=(region_size, region_size)
+#         )
+
+#         # Создаем список индексов для обхода области
+#         indices = jnp.arange(region_size * region_size)
+
+#         # Передаем регион и индекс камня в качестве переносимых данных
+#         carry = (region, stone_index, region_size, size, check_diagonal)
+
+#         # Используем lax.scan для проверки всех возможных квадратов в пределах области
+#         _, squares = lax.scan(scan_line_function, carry, indices)
+        
+#         # Возвращаем вектор проверок для одного игрока
+#         return jnp.any(squares)
+
+#     # Используем vmap для применения check_for_player ко всем картам и игрокам одновременно
+#     results = jax.vmap(check_for_player)(binary_maps, player_positions)
+    
+#     # Возвращаем результат для всех карт
+#     return results  # Это будет массив результатов для всех карт и игроков
+
+@jit
+def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diagonal:bool = False, radius: int = 5) -> bool:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
     # Получаем индекс блока по имени
-    stone_index = blocks_list.index(block_name)
+   # print("GD:")
+    #jax.debug.print(str(game_data.states[0].variables.player_position))
+    
+    stone_index = block_name #blocks_list.index(block_name)
 
+
+    
     # Получаем карту
     game_map = game_data.states[0].map.game_map[0]
     binary_map = (game_map == stone_index).astype(jnp.int32)
     if game_map is None:
         return False
 
+  #  print(game_data.states[0].variables.player_position.shape)
+  #  exit()
     # Получаем позицию игрока
     player_position = game_data.states[0].variables.player_position
     if player_position is None:
         return False
-
+    
     x, y = player_position
+
 
     # Определяем размеры области вокруг игрока
     region_size = 2 * radius + 1
@@ -195,6 +254,6 @@ def is_line_formed(game_data, block_name: str, size: int = 2, check_diagonal:boo
     
     # Используем lax.scan для проверки всех возможных квадратов в пределах области
     _, squares = lax.scan(scan_line_function, carry, indices)
-    
+    #print(squares)
     # Проверяем, найден ли хотя бы один квадрат
     return jnp.any(squares)
