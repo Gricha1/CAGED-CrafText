@@ -2,8 +2,9 @@ from dataclasses import dataclass, field
 from typing import List, Tuple, Optional, Union
 import numpy as np
 import jax.numpy as jnp
+from flax import struct
 
-@dataclass
+@struct.dataclass
 class PlayerVariables:
     player_position: Optional[jnp.ndarray] = None
     player_level: Optional[int] = None
@@ -33,11 +34,11 @@ class PlayerVariables:
     state_rng: Optional[jnp.ndarray] = None
     timestep: Optional[int] = None
 
-@dataclass
+@struct.dataclass
 class PlayerAchievements:
     achievements: Optional[List[str]] = None
 
-@dataclass
+@struct.dataclass
 class PlayerInventory:
     wood: Optional[jnp.ndarray] = None
     stone: Optional[jnp.ndarray] = None
@@ -48,7 +49,7 @@ class PlayerInventory:
     armour: Optional[jnp.ndarray] = None
     potions: Optional[jnp.ndarray] = None
 
-@dataclass
+@struct.dataclass
 class GameMap:
     game_map: Optional[jnp.ndarray] = None
 
@@ -62,7 +63,7 @@ class GameMap:
         unique_object_indices = [blocks_list.index(item) for item in unique_objects]
         return unique_object_indices
 
-@dataclass
+@struct.dataclass
 class PlayerState:
     variables: PlayerVariables
     achievements: Optional[PlayerAchievements] = None
@@ -129,9 +130,14 @@ class PlayerState:
             action=action
         )
 
-
+@struct.dataclass
 class GameData:
-    def __init__(self, state, action):
-        self.states = [PlayerState.from_state(state, action)]
-        
+    states: list
+
+    @classmethod
+    def from_state(cls, state, action):
+        # Создаем экземпляр PlayerState с помощью вашей логики
+        player_state = PlayerState.from_state(state, action)
+        # Возвращаем новый экземпляр GameData с инициализированным списком состояний
+        return cls(states=[player_state])
     
