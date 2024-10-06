@@ -15,6 +15,10 @@ blocks_list = [
     "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
     "GRAVE3", "NECROMANCER_VULNERABLE"
 ]
+import jax
+import jax.numpy as jnp
+from jax import lax
+
 def place_object_relevant_to(game_data, object_name, target_object_name, side, distance):
     """
     Check if the object is placed at a specific side (right, left, top, or bottom) and distance from the target_object_name
@@ -40,7 +44,7 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
     x, y = player_position
 
     # Фиксированный радиус
-    radius = 15
+    radius = 5
 
     # Определяем размеры области вокруг игрока
     region_size = 2 * radius + 1
@@ -52,31 +56,37 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
         slice_sizes=(region_size, region_size)
     )
 
+
     # Размер квадрата, добавляем +2 для проверки краёв
-    square_size = distance + 2
+    square_size = distance*2 + 3
 
     def check_square(i, j):
-        # Извлекаем текущий квадрат с помощью lax.dynamic_slice
+    # Извлекаем текущий квадрат с помощью lax.dynamic_slice
         square = lax.dynamic_slice(
             region,
             start_indices=(i, j),
             slice_sizes=(square_size, square_size)
         )
 
-        def check_side():
-            return lax.switch(side,
-                [
-                    lambda: (j + square_size - 1 < region.shape[1]) & (square[:, -1] == object_name).any(),  # Right
-                    lambda: (j < region.shape[1]) & (square[:, 0] == object_name).any(),  # Left
-                    lambda: (i < region.shape[0]) & (square[0, :] == object_name).any(),  # Top
-                    lambda: (i + square_size - 1 < region.shape[0]) & (square[-1, :] == object_name).any()  # Bottom
-                ]
-            )
-        return check_side()
+        # Находится ли target в центре?
+        target_mask = square[round(square_size / 2), round(square_size / 2)] == target_object_name
+
+        # Маска для object_name (в зависимости от стороны на расстоянии distance)
+        object_mask = lax.switch(side,
+            [
+                lambda: square[round(square_size / 2), distance] == object_name,  # Справа
+                lambda: square[round(square_size / 2), 0] == object_name,  # Слева
+                lambda: square[distance, round(square_size / 2)] == object_name,  # Сверху
+                lambda: square[0, round(square_size / 2)] == object_name  # Снизу
+            ]
+        )
+
+        # Проверка, что и target, и объект находятся на своих местах
+        return target_mask & object_mask    
 
     # Проходим по квадратикам вокруг игрока
-    result = jnp.any(jax.vmap(lambda i, j: check_square(i, j))(jnp.arange(0, region.shape[0] - square_size + 1, square_size),
-                                                                jnp.arange(0, region.shape[1] - square_size + 1, square_size)))
+    result = jnp.any(jax.vmap(lambda i, j: check_square(i, j))(jnp.arange(0, region.shape[0] - square_size + 1),
+                                                                jnp.arange(0, region.shape[1] - square_size + 1)))
 
     return result
 
