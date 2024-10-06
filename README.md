@@ -72,6 +72,8 @@ export CRAFTEXT_SETTINGS="collect_items&&instruction_with_paraphrases&&other"
 This allows flexible control over which dataset scenarios and instruction types are used during training.
 
 
-### Examples
+### Baseline
 
-![Place Crafting Table Near Tree](./imgs/place_crafting_table_near_tree.gif) ![Place Crafting Table Near Water](./imgs/place_crafting_table_near_water.gif)
+#### PPO Job Examples
+
+![Place Crafting Table Near Tree](./imgs/tree.gif) ![Place Crafting Table Near Water](./imgs/water.gif)
