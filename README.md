@@ -76,4 +76,8 @@ This allows flexible control over which dataset scenarios and instruction types 
 
 #### PPO Job Examples
 
-![Place Crafting Table Near Tree](./imgs/tree.gif) ![Place Crafting Table Near Water](./imgs/water.gif)
+<div style="background-color: black; padding: 10px; text-align: center;">
+  <img src="./imgs/tree.gif" width="300" style="margin: 10px;" />
+  <img src="./imgs/water.gif" width="300" style="margin: 10px;" />
+</div>
+
