@@ -74,4 +74,4 @@ This allows flexible control over which dataset scenarios and instruction types 
 
 ### Examples
 
-![Place Crafting Table Near Tree](.imgs/place_crafting_table_near_tree.gif) ![Place Crafting Table Near Water](.imgs/place_crafting_table_near_water.gif)
+![Place Crafting Table Near Tree](./imgs/place_crafting_table_near_tree.gif) ![Place Crafting Table Near Water](./imgs/place_crafting_table_near_water.gif)
