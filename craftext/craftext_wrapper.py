@@ -20,7 +20,7 @@ from transformers import FlaxBertModel, BertTokenizer
 import distrax
 
 # Local project imports
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
 from craftext.scenarios_loader import load_scenarios, parse_craftext_settings
 
 from transformers import AutoTokenizer, AutoModel
@@ -47,13 +47,6 @@ class ScenarioDataJAX:
 
 def create_game_data_for_all(state_vec, action_vec):
     return jax.vmap(GameData.from_state)(state_vec, action_vec)
-
-
-@struct.dataclass
-class TestTextEnvState:
-    env_state: Any
-    instruction: Optional[jnp.ndarray] 
-    idx: int
     
 @struct.dataclass
 class TextEnvState:
@@ -61,11 +54,15 @@ class TextEnvState:
     timestep: int
     instruction: Optional[jnp.ndarray] 
     idx: int
-   
+
+def get_configs_path():
+    module_path = craftext.__spec__.submodule_search_locations[0]
+    return os.path.join(module_path, 'configs')
+
 class InstructionWrapper(Wrapper):
     model_name: str = "distilbert-base-uncased"
 
-    def __init__(self, env, num_envs):
+    def __init__(self, env):
         super().__init__(env)
         self.tokenizer = self._initialize_tokenizer()
         self.model = self._initialize_model()
@@ -77,17 +74,8 @@ class InstructionWrapper(Wrapper):
         self.scenario_data_jax = self._prepare_jax_scenarios()
 
         self.env = env
-        self.num_envs = num_envs
         
         print("Init Instruction Wrapper")
-
-    def init_instructions_ix(self,rng_key):
-        def select_instruction_ix(rng, n_instructions):
-            return jax.random.randint(rng, shape=(), minval=0, maxval=n_instructions)
-
-        instructions_vmap = jax.vmap(select_instruction_ix, (0, None))
-        rngs = jax.random.split(rng_key,  self.num_envs)
-        return instructions_vmap(rngs, len(self.all_scenario))
 
     def _initialize_model(self):
         return AutoModel.from_pretrained(self.model_name, cache_dir=".")
@@ -163,24 +151,10 @@ class InstructionWrapper(Wrapper):
             return lax.switch(i, checkers_list, x, y)
         vmap_checkers = vmap(apply_checker, in_axes=(None, None, None))
         return vmap_checkers
-
-
-    def inf_reset(self, _rng, env_params):
-        """
-        Used for inference in view_ppo_agent
-        """
-        obs, state = self.env.reset(_rng, env_params)
-        instructions_indices = self.init_instructions_ix(_rng)
-        instructions_emb = self.scenario_data_jax.embeddings_list[instructions_indices]
-        state = TestTextEnvState(env_state = state, 
-                             instruction = instructions_emb,
-                             idx = instructions_indices)
-        return obs, state
         
 
     def reset(self, _rng, env_params):
         obs, state = self.env.reset(_rng, env_params)
-        instructions_indices = self.init_instructions_ix(_rng)
         idx = jax.random.randint(_rng, shape=(), minval=0, maxval=len(self.scenario_data_jax.embeddings_list))
         instructions_emb = self.scenario_data_jax.embeddings_list[idx]
         
@@ -190,24 +164,6 @@ class InstructionWrapper(Wrapper):
                               idx=idx )
         
         return obs, state
-
-    def inf_step(self, _rng, env_state, action, env_params):
-        """
-        Used for inference in view_ppo_agent 
-        """
-        instructions_emb = env_state.instruction
-        instructions_indices = env_state.idx 
-        
-        obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
-        game_data_vector = GameData.from_state(state, action)
-        
-        instruction_done = self.scenario_data.checkers_list[0]( game_data_vector, 0)
-        done = instruction_done | done
-        state = TestTextEnvState(env_state = state, 
-                            instruction = instructions_emb,
-                            idx = instructions_indices)
-        
-        return obs, state, reward, done, info
         
     def step(self, _rng, env_state, action, env_params):
 
@@ -217,7 +173,7 @@ class InstructionWrapper(Wrapper):
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         
 
-        game_data_vector = GameData.from_state(state, action)
+        game_data_vector = GameDataClassic.from_state(state, action)
 
         instruction_done = lax.switch(idx,  self.scenario_data.checkers_list, game_data_vector, idx) 
         reward /= 50  

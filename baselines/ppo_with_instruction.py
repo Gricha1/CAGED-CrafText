@@ -65,7 +65,7 @@ def make_train(config):
         env_name, not config["USE_OPTIMISTIC_RESETS"]
     )
     env_params = env.default_params
-    env = InstructionWrapper(env, num_envs=config["NUM_ENVS"])
+    env = InstructionWrapper(env)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -700,11 +700,11 @@ def run_ppo(config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
+    parser.add_argument("--env_name", type=str, default="Craftax-Classic-Pixels-v1-Text")
     parser.add_argument(
         "--num_envs",
         type=int,
-        default=256,#1024,
+        default=1024,#1024,
     )
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=160000000
