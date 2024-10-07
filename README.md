@@ -70,6 +70,26 @@ export CRAFTEXT_SETTINGS="collect_items&&instruction_with_paraphrases&&other"
 
 This allows flexible control over which dataset scenarios and instruction types are used during training.
 
+## Existed Scenarios 
+
+| Name                                       | Class Name   | Supports JAX      |
+|--------------------------------------------|--------------|-------------------|
+| build_line                                 | build        | ✅                 |
+| squere                                     | build        | ✅                 |
+| is_item_in_closed_contour                  | build        | ❌                 |
+| cross                                      | build        | ✅                 |
+| did_placing_item_increase_variable         | base         | ❌                 |
+| was_item_after_increase                    | combo        | ❌                 |
+| nerar_increase                             | combo        | ❌                 |
+| item_after_another_contour                 | combo        | ❌                 |
+| coutour_placing_item_increase_var          | combo        | ❌                 |
+| after_another_near_objects                 | combo        | ❌                 |
+| was_item_placed_near_another               | localization | ❌                 |
+| place                                      | localization | ✅                 |
+| water_sources                              | localization | ❌                 |
+| old_place_near_game_block                  | localization | ❌                 |
+| was_item_collected_after_another_object    | conditional  | ❌                 |
+
 
 ## Dataset Generation Details
 ### Instruction and Checker Generation Pipeline
