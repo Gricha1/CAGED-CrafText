@@ -55,21 +55,18 @@ class TextEnvState:
     instruction: Optional[jnp.ndarray] 
     idx: int
 
-def get_configs_path():
-    module_path = craftext.__spec__.submodule_search_locations[0]
-    return os.path.join(module_path, 'configs')
 
 class InstructionWrapper(Wrapper):
     model_name: str = "distilbert-base-uncased"
 
-    def __init__(self, env):
+    def __init__(self, env, dataset_configuration=None):
         super().__init__(env)
         self.tokenizer = self._initialize_tokenizer()
         self.model = self._initialize_model()
         self.instruction_str = "None"
         self.encoded_instruction =  self._get_embeddings(self.instruction_str) #jnp.array([[0]])
         
-        self.all_scenario = self._load_scenarios()
+        self.all_scenario = self._load_scenarios(dataset_configuration)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self._prepare_jax_scenarios()
 
@@ -94,8 +91,8 @@ class InstructionWrapper(Wrapper):
     def _encode_instruction(self, instruction):
         return self.tokenizer(instruction, padding=True, truncation=True, return_tensors='np')['input_ids']
 
-    def _load_scenarios(self):
-        return load_scenarios()
+    def _load_scenarios(self, config_name):
+        return load_scenarios(config_name)
 
     def _prepare_scenarios(self):
         """Prepares the scenarios data and tokenizes the instructions."""
