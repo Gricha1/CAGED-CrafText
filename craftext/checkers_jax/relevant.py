@@ -35,7 +35,10 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
     Returns:
     - bool: True if the object is placed at the specified side and distance relative to the target object, otherwise False.
     """
-    game_map = game_data.states[0].map.game_map[0]
+    # for original Craftax we need to define the map we want to use during traning
+    # so, for Craftax-Classic we need to use just game_map
+    # for Craftax game_map[0] where 0 is the first level of map
+    game_map = game_data.states[0].map.game_map 
     player_position = game_data.states[0].variables.player_position
 
     if player_position is None:
