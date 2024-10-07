@@ -1,30 +1,67 @@
 from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.scenarios.constants import BlockType
 
-
-test = {'test_line_1': {
+easy = {
+    'line_easy_1': {
         'instruction': "Make a line of 2 blocks using table.",
-        'items_name': ["table"],
-        'instruction_paraphrases': ["Make a line of 2 blocks using table."],
-        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 2, check_diagonal=False)
+        'instruction_paraphrases': [
+            "Construct a row of 2 pieces with the crafting station.",
+            "Place 2 units in a straight row using the workbench.",
+            "Use the crafting table to form a row of 2 items.",
+            "Arrange a sequence of 2 blocks with the crafting platform.",
+            "Create a straight formation of 2 blocks with the crafting table."
+        ],
+        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
     },
-    'test_line_2': {
+    'line_easy_2': {
         'instruction': "Make a diagonal line of 3 blocks using table.",
-        'items_name': ["stone"],
-        'instruction_paraphrases': ["Make a diagonal line of 3 blocks using table."],
-        'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 3, check_diagonal=True)
-    }, 
+        'instruction_paraphrases': [
+            "Construct a slanted row of 3 items with the crafting station.",
+            "Place 3 blocks in a diagonal sequence using the workbench.",
+            "Use the crafting platform to arrange a diagonal row of 3 pieces.",
+            "Arrange a sloped line of 3 units using the crafting bench.",
+            "Create a diagonal sequence of 3 items with the crafting table."
+        ],
+        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)
+    },
+    'line_easy_3': {
+        'instruction': "Make a diagonal line of 2 blocks using stone.",
+        'instruction_paraphrases': [
+            "Construct a slanted row of 2 stones.",
+            "Place 2 stone blocks in a diagonal sequence.",
+            "Use stones to arrange a diagonal line of 2 pieces.",
+            "Arrange a sloped row of 2 stone units.",
+            "Create a diagonal sequence of 2 stone blocks."
+        ],
+        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.STONE, 2, check_diagonal=True)
+    },
+    'line_easy_4': {
+        'instruction': "Make a line of 2 blocks using furnace.",
+        'instruction_paraphrases': [
+            "Construct a straight row of 2 units with the furnace.",
+            "Place 2 blocks in a line using the heating station.",
+            "Use the furnace to form a sequence of 2 items.",
+            "Arrange a straight line of 2 pieces with the smelter.",
+            "Create a row of 2 blocks using the furnace."
+        ],
+        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.FURNACE, 2, check_diagonal=False)
+    },
+    'line_easy_5': {
+        'instruction': "Make a horizontal line of 4 blocks using stone.",
+        'instruction_paraphrases': [
+            "Construct a straight line of 4 stone blocks.",
+            "Place 4 stone units in a horizontal row.",
+            "Use stones to form a line of 4 blocks in a straight path.",
+            "Arrange 4 stones in a straight sequence.",
+            "Create a horizontal formation of 4 stone blocks."
+        ],
+        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.STONE, 4, check_diagonal=False)
+    }
+}
 
-    ### DO NOT WORK
-    'test_line_3': {
-        'instruction': "Make a line of 3 blocks using stone.",
-        'items_name': ["stone"],
-        'instruction_paraphrases': ["Make a line of 3 blocks using stone."],
-        'check_lambda': lambda game_data: is_line_formed(game_data, "STONE", 3, check_diagonal=False)
-    }}
 
-
-instructions = {
-    "57": {
+medium = {
+    "line_medium_1": {
         'instruction': "Align three crafting tables in a straight horizontal line.",
         'instruction_paraphrases': [
             "Place three crafting tables in a single horizontal row.",
@@ -35,7 +72,7 @@ instructions = {
         ],
         'check_lambda': lambda game_data: is_line_formed(game_data, "CRAFTING_TABLE", 3, check_diagonal=False)
     },
-    "58": {
+    "line_medium_2": {
         'instruction': "Position four furnaces in a vertical line.",
         'instruction_paraphrases': [
             "Arrange four furnaces in a single vertical column.",
@@ -46,7 +83,7 @@ instructions = {
         ],
         'check_lambda': lambda game_data: is_line_formed(game_data, "FURNACE", 4, check_diagonal=False)
     },
-    "59": {
+    "line_medium_3": {
         'instruction': "Arrange five chests in a diagonal line, from top-left to bottom-right.",
         'instruction_paraphrases': [
             "Position five chests diagonally from the top-left corner to the bottom-right.",
@@ -57,7 +94,7 @@ instructions = {
         ],
         'check_lambda': lambda game_data: is_line_formed(game_data, "CHEST", 5, check_diagonal=True)
     },
-    "60": {
+    "line_medium_4": {
         'instruction': "Place six fountains in a continuous line, either horizontally or vertically.",
         'instruction_paraphrases': [
             "Arrange six fountains in a straight line, either in a row or a column.",
@@ -68,7 +105,7 @@ instructions = {
         ],
         'check_lambda': lambda game_data: is_line_formed(game_data, "FOUNTAIN", 6, check_diagonal=False)
     },
-    "61": {
+    "line_medium_5": {
         'instruction': "Design a line of seven plants, ensuring they connect diagonally.",
         'instruction_paraphrases': [
             "Align seven plants in a diagonal line, making sure each plant is connected.",

@@ -1,6 +1,78 @@
-from craftext.checkers.scenarios_building import is_cross_formed
+from craftext.checkers.scenarios_building import is_square_formed
+from craftext.scenarios.constants import BlockType
 
-instructions = {
+easy = {
+    "squere_easy_1": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.CRAFTING_TABLE, 2),
+        'instruction': "Build a 2x2 square of crafting tables.",
+        'instruction_paraphrases': [
+            "Form a crafting station by placing tables in a square, 2 blocks on each side.",
+            "Create a small crafting grid where each side of the square is made of 2 tables.",
+            "Construct a 2-block by 2-block crafting area using tables.",
+            "Arrange crafting tables to form a box-shaped structure with equal sides.",
+            "Set up a compact 2x2 crafting workspace, with each corner marked by a table."
+        ]
+    },
+    "squere_easy_2": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.STONE, 2),
+        'instruction': "Build a 2x2 square of stone blocks.",
+        'instruction_paraphrases': [
+            "Form a sturdy stone square, 2 blocks long on each side.",
+            "Construct a small plaza of stones, arranged in a 2 by 2 block formation.",
+            "Lay out stone blocks to create a strong 2x2 enclosed area.",
+            "Place stones to build a firm square structure, with 2 blocks making up each side.",
+            "Create a 2x2 stone foundation, ensuring that each corner of the square is defined."
+        ]
+    },
+    "squere_easy_3": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.PLANT, 2),
+        'instruction': "Build a 2x2 square of plants.",
+        'instruction_paraphrases': [
+            "Arrange plants in a compact 2x2 green patch.",
+            "Create a small garden area by positioning plants in a 2x2 layout.",
+            "Plant greenery in a neat square shape, with each side consisting of 2 plants.",
+            "Set up a green zone by placing plants in a square pattern, 2 on each side.",
+            "Form a mini garden where plants are arranged in a 2x2 grid formation."
+        ]
+    },
+    "squere_easy_4": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.STONE, 3),
+        'instruction': "Build a 3x3 square of stone blocks.",
+        'instruction_paraphrases': [
+            "Create a solid 3x3 stone block structure, with 3 blocks on each side.",
+            "Form a large square area using stones, arranged in a 3x3 pattern.",
+            "Lay out stones in a square formation, ensuring 3 blocks per side.",
+            "Build a wide stone platform, with each side of the square made up of 3 blocks.",
+            "Position 9 stone blocks in a 3x3 layout to create a sturdy foundation."
+        ]
+    },
+    "squere_easy_5": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.PLANT, 3),
+        'instruction': "Build a 3x3 square of plants.",
+        'instruction_paraphrases': [
+            "Set up a garden bed by arranging plants in a 3x3 square.",
+            "Create a plant grid where each side of the square consists of 3 plants.",
+            "Form a large green area using plants, laid out in a 3 by 3 structure.",
+            "Build a lush square garden by placing plants in a neat 3x3 grid.",
+            "Arrange plants in a symmetrical 3x3 pattern, creating a balanced green patch."
+        ]
+    }, 
+     "squere_easy_4": {
+        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.FURNACE, 2),
+        'instruction': "Build a 2x2 square of furnaces.",
+        'instruction_paraphrases': [
+            "Construct a 2x2 square using furnaces.",
+            "Place two rows of furnaces, one following the other, each consisting of 2 furnaces.",
+            "Arrange two lines of furnaces, back to back, with 2 furnaces per row.",
+            "Form a furnace square with a side of 2, ensuring a compact arrangement.",
+            "Set up a 2x2 square using 4 furnaces to create a heating zone."
+        ]
+    },
+}
+
+        
+        
+medium = {
     "52": {
         'instruction': "Arrange four crafting tables into a compact square shape.",
         'instruction_paraphrases': [

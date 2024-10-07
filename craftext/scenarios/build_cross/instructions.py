@@ -1,6 +1,7 @@
 from craftext.checkers.scenarios_building import is_cross_formed
 
-instructions = {
+
+medium = {
     "62": {
         'instruction': "Place the crafting table in the center with furnaces on the left, right, above, and below.",
         'instruction_paraphrases': [
