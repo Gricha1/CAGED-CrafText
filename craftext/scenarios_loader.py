@@ -1,14 +1,16 @@
 import os
 import importlib
-import random
-import importlib.util
+import yaml
 import craftext
+
+def get_configs_path():
+    module_path = craftext.__spec__.submodule_search_locations[0]
+    return os.path.join(module_path, 'configs')
 
 def get_default_scenario_path():
     """Gets the default absolute path to the scenarios directory based on module installation."""
     module_path = craftext.__spec__.submodule_search_locations[0]
     return os.path.join(module_path, 'scenarios')
-
 
 def parse_craftext_settings():
     """Parses the CRAFTEXT_SETTINGS environment variable and returns the mode, instruction type, and data key."""
@@ -21,14 +23,23 @@ def parse_craftext_settings():
         data_key = 'instructions'
     return mode, instruction_type, data_key
 
-def load_scenarios():
-    mode, instruction_type, data_key = parse_craftext_settings()
-    return load_scenarios_by_mode(mode, data_key)
-    
+def load_config_or_env(config_path=None):
+    """Loads the configuration from a YAML file if provided, otherwise from environment variables."""
+    if config_path and os.path.exists(config_path):
+        with open(config_path, 'r') as file:
+            config = yaml.safe_load(file)
+            print("---- USE CONFIG CRAFTEXT ----")
+        mode = config.get('dataset_key', 'default_mode')
+        instruction_type = 'instruction' if not config.get('use_parafrases', False) else 'instruction_paraphrases'
+        data_key = config.get('subset_key', 'instructions')
+    else:
+        mode, instruction_type, data_key = parse_craftext_settings()
+    return mode, instruction_type, data_key
+
 def load_scenarios_by_mode(mode, data_key):
     """Loads scenarios based on the mode and the data key (e.g., instructions, small_train, other)."""
     scenarios = {}
-    scenarios_dir = get_default_scenario_path() #os.getenv("CRAFTEXT_SCENARIO_PATH", get_default_scenario_path())
+    scenarios_dir = get_default_scenario_path()
     
     if scenarios_dir is None:
         raise ValueError("Scenario path could not be determined. Please set the CRAFTEXT_SCENARIO_PATH environment variable.")
@@ -39,26 +50,15 @@ def load_scenarios_by_mode(mode, data_key):
             scenario_module = importlib.import_module(scenario_module_name)
             if hasattr(scenario_module, data_key):
                 scenarios.update(getattr(scenario_module, data_key))
-    
+    print(scenarios)
     return scenarios
 
-def sample_instruction(scenarios, instruction_type):
-    """Samples an instruction depending on the instruction type."""
-    random_scenario_key = random.choice(list(scenarios.keys()))
-    random_scenario = scenarios[random_scenario_key]
-    
-    if instruction_type == 'pure_instruction':
-        instruction = random_scenario['instruction']
+def load_scenarios(config_name=None):
+    config_path = get_configs_path()
+    if config_name:
+            config_name = str(os.path.join(config_path, config_name))+".yaml"
+            print(config_name)
     else:
-        instructions = [random_scenario['instruction']] + random_scenario.get('instruction_paraphrases', [])
-        instruction = random.choice(instructions)
-    
-    return instruction, random_scenario['check_lambda']
-
-def get_random_instruction_and_checker():
-    """Fetches a random instruction and its corresponding check function."""
-    mode, instruction_type, data_key = parse_craftext_settings()
-    all_scenarios = load_scenarios_by_mode(mode, data_key)
-    random_instruction, check_lambda = sample_instruction(all_scenarios, instruction_type)
-    
-    return random_instruction, check_lambda
+            config_name = None
+    mode, instruction_type, data_key = load_config_or_env(config_name)
+    return load_scenarios_by_mode(mode, data_key)
