@@ -99,10 +99,11 @@ def is_square_formed(game_data,  ix:int, block_name: str, size: int = 2, radius:
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
     # Получаем индекс блока по имени
-    stone_index = block_name #blocks_list.index(block_name)
+    stone_index = block_name.value
 
     # Получаем карту
-    game_map = game_data.states[0].map.game_map[0]
+    game_map = game_data.states[0].map.game_map
+    
     if game_map is None:
         return False
 
@@ -212,22 +213,15 @@ def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diag
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
-    # Получаем индекс блока по имени
-   # print("GD:")
-    #jax.debug.print(str(game_data.states[0].variables.player_position))
     
     stone_index = block_name #blocks_list.index(block_name)
-
-
-    
     # Получаем карту
-    game_map = game_data.states[0].map.game_map[0]
+    game_map =  game_data.states[0].map.game_map
+    
     binary_map = (game_map == stone_index).astype(jnp.int32)
     if game_map is None:
         return False
 
-  #  print(game_data.states[0].variables.player_position.shape)
-  #  exit()
     # Получаем позицию игрока
     player_position = game_data.states[0].variables.player_position
     if player_position is None:

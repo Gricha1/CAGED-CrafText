@@ -119,7 +119,8 @@ class PlayerState:
         )
 
         game_map = GameMap(
-            game_map=jnp.array(state.map) if hasattr(state, 'map') else None
+            game_map=jnp.array(state.map[0]) if hasattr(state, 'map') else None
+            
         )
 
         return cls(
@@ -137,6 +138,7 @@ class GameData:
     @classmethod
     def from_state(cls, state, action):
         # Создаем экземпляр PlayerState с помощью вашей логики
+        
         player_state = PlayerState.from_state(state, action)
         # Возвращаем новый экземпляр GameData с инициализированным списком состояний
         return cls(states=[player_state])

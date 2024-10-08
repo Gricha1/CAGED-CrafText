@@ -19,6 +19,8 @@ import jax
 import jax.numpy as jnp
 from jax import lax
 
+
+
 def place_object_relevant_to(game_data, object_name, target_object_name, side, distance):
     """
     Check if the object is placed at a specific side (right, left, top, or bottom) and distance from the target_object_name
@@ -35,14 +37,9 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
     Returns:
     - bool: True if the object is placed at the specified side and distance relative to the target object, otherwise False.
     """
-    # for original Craftax we need to define the map we want to use during traning
-    # so, for Craftax-Classic we need to use just game_map
-    # for Craftax game_map[0] where 0 is the first level of map
-    game_map = game_data.states[0].map.game_map 
-    player_position = game_data.states[0].variables.player_position
+    game_map = game_data.states[0].map.game_map
 
-    if player_position is None:
-        return False
+    player_position = game_data.states[0].variables.player_position
 
     x, y = player_position
 
@@ -59,9 +56,10 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
         slice_sizes=(region_size, region_size)
     )
 
+    print(region)
 
     # Размер квадрата, добавляем +2 для проверки краёв
-    square_size = distance*2 + 3
+    square_size = distance*2 + 1
 
     def check_square(i, j):
     # Извлекаем текущий квадрат с помощью lax.dynamic_slice
@@ -71,25 +69,32 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
             slice_sizes=(square_size, square_size)
         )
 
+       
+        center = distance #jnp.round(square_size / 2).astype(int)
         # Находится ли target в центре?
-        target_mask = square[round(square_size / 2), round(square_size / 2)] == target_object_name
-
+        target_mask = square[center, center] == target_object_name.value
+#         print(target_mask)
+#         print(target_object_name.)
+       
+        
         # Маска для object_name (в зависимости от стороны на расстоянии distance)
         object_mask = lax.switch(side,
             [
-                lambda: square[round(square_size / 2), distance] == object_name,  # Справа
-                lambda: square[round(square_size / 2), 0] == object_name,  # Слева
-                lambda: square[distance, round(square_size / 2)] == object_name,  # Сверху
-                lambda: square[0, round(square_size / 2)] == object_name  # Снизу
+                lambda: square[center, -1] == object_name.value,  # Справа
+                lambda: square[center, 0] == object_name.value,  # Слева
+                lambda: square[-1, center] == object_name.value,  # Сверху
+                lambda: square[0, center] == object_name.value  # Снизу
             ]
         )
-
         # Проверка, что и target, и объект находятся на своих местах
-        return target_mask & object_mask    
+        # return jnp.any(target_mask & object_mask)
+        return target_mask & object_mask
 
-    # Проходим по квадратикам вокруг игрока
-    result = jnp.any(jax.vmap(lambda i, j: check_square(i, j))(jnp.arange(0, region.shape[0] - square_size + 1),
-                                                                jnp.arange(0, region.shape[1] - square_size + 1)))
+    result = jnp.any(jax.vmap(lambda i: jax.vmap(
+                    lambda j: check_square(i, j)
+                )(jnp.arange(0, region.shape[1] - square_size + 1))
+            )(jnp.arange(0, region.shape[0] - square_size + 1))
+        )
 
     return result
 
