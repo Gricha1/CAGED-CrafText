@@ -32,9 +32,17 @@ def load_config_or_env(config_path=None):
         mode = config.get('dataset_key', 'default_mode')
         instruction_type = 'instruction' if not config.get('use_parafrases', False) else 'instruction_paraphrases'
         data_key = config.get('subset_key', 'instructions')
+        enviroment_name = config.get('base_environment', 'Craftax-Pixels-v1-Text')
+        if enviroment_name == 'Craftax-Pixels-v1-Text':
+            environment_key = 1
+            print("ENVIRONMENT KEY 1 - Craftax-Pixels-v1-Text")
+        elif enviroment_name == 'Craftax-Classic-Pixels-v1-Text':
+            print("ENVIRONMENT KEY 1 - Craftax-Classic-Pixels-v1-Text")
+            environment_key = 0
     else:
         mode, instruction_type, data_key = parse_craftext_settings()
-    return mode, instruction_type, data_key
+        environment_key = 0
+    return mode, instruction_type, data_key, environment_key
 
 def load_scenarios_by_mode(mode, data_key):
     """Loads scenarios based on the mode and the data key (e.g., instructions, small_train, other)."""
@@ -60,5 +68,5 @@ def load_scenarios(config_name=None):
             print(config_name)
     else:
             config_name = None
-    mode, instruction_type, data_key = load_config_or_env(config_name)
-    return load_scenarios_by_mode(mode, data_key)
+    mode, instruction_type, data_key, environment_key = load_config_or_env(config_name)
+    return load_scenarios_by_mode(mode, data_key), environment_key

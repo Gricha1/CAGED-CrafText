@@ -699,13 +699,14 @@ def run_ppo(config):
 
 
 if __name__ == "__main__":
+    #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env_name", type=str, default="Craftax-Classic-Pixels-v1-Text")
+    parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument(
         "--num_envs",
         type=int,
-        default=1024,#1024,
+        default=256,#1024,
     )
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=500000000
