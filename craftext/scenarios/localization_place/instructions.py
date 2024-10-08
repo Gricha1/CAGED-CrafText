@@ -1,6 +1,36 @@
 from craftext.checkers_jax.relevant import place_object_relevant_to
 from craftext.scenarios.constants import BlockType
 
+
+one = {"one_1": {
+        'instruction': "Put a crafting table 1 step above the tree.",
+        'instruction_paraphrases': [
+            "Place a crafting table one tile above the tree.",
+            "Position a crafting table exactly one block up from the tree.",
+            "Set up a crafting table one unit away from the tree, above it.",
+            "Arrange a crafting table one step above the tree.",
+            "Put a crafting table one tile away from the tree, on top."
+        ],
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
+        ),
+        'complexity': "easy-pease"
+    },
+       "one_2": {
+        'instruction': "Put a crafting table 1 step above the tree.",
+        'instruction_paraphrases': [
+            "Place a crafting table one tile above the tree.",
+            "Position a crafting table exactly one block up from the tree.",
+            "Set up a crafting table one unit away from the tree, above it.",
+            "Arrange a crafting table one step above the tree.",
+            "Put a crafting table one tile away from the tree, on top."
+        ],
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
+        ),
+        'complexity': "easy-pease"
+    },
+      }
 easy = {
     "place_easy_1": {
         'instruction': "Place a crafting table next to the water, 1 step away to the right.",
@@ -12,7 +42,7 @@ easy = {
             "Position a crafting table just one tile away from the water, on the right."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-            game_data, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1
+            game_data,ix, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1
         ),
         'complexity': "easy-pease"
     },
@@ -27,7 +57,7 @@ easy = {
             "Position a furnace two tiles away from the stone, downwards."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-            game_data, BlockType.FURNACE, BlockType.STONE, 3, 2
+            game_data, ix, BlockType.FURNACE, BlockType.STONE, 3, 2
         ),
         'complexity': "easy-pease"
     },
@@ -42,55 +72,55 @@ easy = {
             "Put a crafting table one tile away from the tree, on top."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-            game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
+            game_data,ix, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
         ),
         'complexity': "easy-pease"
     },
 
-#     "place_easy_4": {
-#         'instruction': "Place a furnace 3 steps to the left of the path.",
-#         'instruction_paraphrases': [
-#             "Set a furnace three tiles left of the path.",
-#             "Place a furnace exactly three spaces to the left of the path.",
-#             "Position a furnace block three units to the left of the path.",
-#             "Arrange a furnace three steps left of the path.",
-#             "Put a furnace block three tiles away from the path, on the left."
-#         ],
-#         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-#             game_data, BlockType.FURNACE, BlockType.PATH, 1, 3
-#         ),
-#         'complexity': "easy"
-#     },
+    "place_easy_4": {
+        'instruction': "Place a furnace 3 steps to the left of the path.",
+        'instruction_paraphrases': [
+            "Set a furnace three tiles left of the path.",
+            "Place a furnace exactly three spaces to the left of the path.",
+            "Position a furnace block three units to the left of the path.",
+            "Arrange a furnace three steps left of the path.",
+            "Put a furnace block three tiles away from the path, on the left."
+        ],
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data, ix, BlockType.FURNACE, BlockType.PATH, 1, 3
+        ),
+        'complexity': "easy"
+    },
 
-#     "place_easy_5": {
-#         'instruction': "Place a crafting table 2 steps above the coal block.",
-#         'instruction_paraphrases': [
-#             "Put a crafting table two tiles above the coal block.",
-#             "Position a crafting table exactly two spaces above the coal.",
-#             "Set a crafting table two units away from the coal, upwards.",
-#             "Arrange a crafting table two steps north of the coal block.",
-#             "Place a crafting table two tiles away from the coal, above it."
-#         ],
-#         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-#             game_data, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 2
-#         ),
-#         'complexity': "medium"
-#     },
+    "place_easy_5": {
+        'instruction': "Place a crafting table 2 steps above the coal block.",
+        'instruction_paraphrases': [
+            "Put a crafting table two tiles above the coal block.",
+            "Position a crafting table exactly two spaces above the coal.",
+            "Set a crafting table two units away from the coal, upwards.",
+            "Arrange a crafting table two steps north of the coal block.",
+            "Place a crafting table two tiles away from the coal, above it."
+        ],
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data,ix, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 2
+        ),
+        'complexity': "medium"
+    },
 
-#     "place_easy_6": {
-#         'instruction': "Put a furnace 1 step to the right of the iron block.",
-#         'instruction_paraphrases': [
-#             "Place a furnace one tile to the right of the iron block.",
-#             "Position a furnace exactly one space right of the iron block.",
-#             "Set a furnace one unit away from the iron, on its right.",
-#             "Arrange a furnace one step to the right of the iron block.",
-#             "Put a furnace block one tile away from the iron block, to the right."
-#         ],
-#         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-#             game_data, BlockType.FURNACE, BlockType.IRON, 0, 1
-#         ),
-#         'complexity': "medium"
-#     }
+    "place_easy_6": {
+        'instruction': "Put a furnace 1 step to the right of the iron block.",
+        'instruction_paraphrases': [
+            "Place a furnace one tile to the right of the iron block.",
+            "Position a furnace exactly one space right of the iron block.",
+            "Set a furnace one unit away from the iron, on its right.",
+            "Arrange a furnace one step to the right of the iron block.",
+            "Put a furnace block one tile away from the iron block, to the right."
+        ],
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data,ix, BlockType.FURNACE, BlockType.IRON, 0, 1
+        ),
+        'complexity': "medium"
+    }
 }
 
 medium = {
@@ -103,8 +133,8 @@ medium = {
             "Place a crafting table to the right of the plant, 2 units away.",
             "Arrange a crafting table two steps to the right of the plant."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.CRAFTING_TABLE, BlockType.PLANT, 0, 2
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data, ix, BlockType.CRAFTING_TABLE, BlockType.PLANT, 0, 2
         ),
         'complexity': "easy-pease"
     },
@@ -118,8 +148,8 @@ medium = {
             "Put a plant block one tile away from the crafting table, below it.",
             "Arrange a plant block right under the crafting table, 1 step away."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.PLANT, BlockType.CRAFTING_TABLE, 3, 1
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data,ix, BlockType.PLANT, BlockType.CRAFTING_TABLE, 3, 1
         ),
         'complexity': "easy-pease"
     },
@@ -133,8 +163,8 @@ medium = {
             "Place a furnace to the left of the stone block, 3 tiles away.",
             "Arrange a furnace three steps to the left of the stone."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.FURNACE, BlockType.STONE, 1, 3
+        'check_lambda': lambda game_data, ix,: place_object_relevant_to(
+            game_data,ix, BlockType.FURNACE, BlockType.STONE, 1, 3
         ),
         'complexity': "easy"
     },
@@ -148,8 +178,8 @@ medium = {
             "Place a stone block two steps to the right of the furnace.",
             "Arrange a stone block two tiles away from the furnace on its right."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.STONE, BlockType.FURNACE, 0, 2
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data,ix, BlockType.STONE, BlockType.FURNACE, 0, 2
         ),
         'complexity': "easy"
     },
@@ -163,8 +193,8 @@ medium = {
             "Arrange a chest four tiles north of the fountain.",
             "Place a chest block four steps up from the fountain."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.CHEST, BlockType.FOUNTAIN, 2, 4
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data, ix, BlockType.CHEST, BlockType.FOUNTAIN, 2, 4
         ),
         'complexity': "hard"
     },
@@ -178,8 +208,8 @@ medium = {
             "Place an enchantment table (fire) five steps to the right of the plant.",
             "Arrange an enchantment table (fire) five tiles away from the plant on its right."
         ],
-        'check_lambda': lambda game_data: place_object_relevant_to(
-            game_data, BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.PLANT, 0, 5
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(
+            game_data,ix, BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.PLANT, 0, 5
         ),
         'complexity': "hard"
     }
