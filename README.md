@@ -38,37 +38,74 @@ CrafText is an extension of the Craftex environment (https://github.com/MichaelT
    python ppo_with_instruction.py
    ```
 
-3. You can configure the settings for the CrafText dataset (i.e., which instructions to use for training) by setting the `--craftext_settings`. 
+3. You can configure the settings for the CrafText dataset (i.e., which instructions to use for training) by setting the `--craftext_settings` flag. You can specify your own configuration or choose one from the `./craftext/configs` directory. 
 
-    ```bash
-       python ppo_with_instruction.py --craftext_settings collect_items&&instruction_with_paraphrases&&other
-    ```
+   ```bash
+   python ppo_with_instruction.py --craftext_settings simple_build
+   ```
 
-You can specify your own configuration or choose one from the `./craftext/configs` directory. 
+4. **Important**: Make sure to specify the same environment for training that is defined in your dataset configuration. For example, if your configuration file specifies `base_environment: Craftax-Classic-Pixels-v1-Text`, you need to include the `--env_name` argument when running the script to match the environment:
 
-### CrafText dataset configuration file
+   ```bash
+   python ppo_with_instruction.py --craftext_settings simple_build --env_name "Craftax-Classic-Pixels-v1-Text"
+   ```
 
-You can select a subset of the CrafText dataset to use during training by specifying different scenario configurations. The available options include `build`, `base`, `sequential`, `combo`, and `SMALL`. Additionally, you can specify which part of the dataset to use, such as `instructions` or `small`, where `small` refers to a subset containing simpler instructions. You can also choose between using pure instructions or instructions with paraphrases.
+This ensures that the correct environment is used during training, matching the one defined in your dataset configuration.
 
-To configure your dataset, set the `CRAFTEXT_SETTINGS` environment variable. The format is:
+
+
+## CrafText dataset configuration file
+
+You can configure a subset of the CrafText dataset for training by specifying different scenario settings. Examples of predefined configurations can be found in the `craftext/configs` folder. To create your own custom configuration, you need to define 4 fields in a YAML file:
+
+- `dataset_key`: Specifies the scenario name. This can be the full name of a specific scenario, such as `build_square`, which will load all tasks involving square structures. Alternatively, you can use broader names like `build` to load all tasks where the agent is required to build something.
+- `subset_key`: Defines the complexity of the instructions. Available options include:
+  - `ONE`: Simple one-step tasks.
+  - `EASY`: Relatively simple instructions.
+  - `MEDIUM`: Tasks with moderate complexity.
+  
+  Choose the appropriate subset based on the training difficulty you want.
+  
+- `base_environment`: The environment to use during training. For example:
+  - `Craftax-Classic-Pixels-v1-Text` – this defines the classic Craftax environment with pixel-based visuals and text instructions.
+  
+  Ensure that this matches the environment your task is designed for.
+  
+- `use_paraphrases`: A boolean field (`True` or `False`). Set this to `True` if you want to include paraphrased instructions in your training process, or `False` if you prefer using only the original instructions.
+
+#### Example YAML configuration:
+```yaml
+dataset_key: build_square
+subset_key: EASY
+base_environment: Craftax-Classic-Pixels-v1-Text
+use_paraphrases: True
+```
+
+### Alternative Configuration Using Environment Variables
+
+Instead of specifying the configuration in a YAML file, you can use the `CRAFTEXT_SETTINGS` environment variable for simpler setups. The format for this variable is as follows:
 
 ```
 <scenario> && <instruction_type> && <subset>
 ```
 
 Where:
-- `<scenario>`: The scenario you want to use (e.g., `build_line`, `collect_items`).
-- `<instruction_type>`: Choose either `pure_instruction` or `instruction_with_paraphrases`.
-- `<subset>`: Choose from `small_train` for a simpler instruction set, or other custom subsets.
+- `<scenario>`: The specific scenario or task type to use (e.g., `build_line`, `collect_items`).
+- `<instruction_type>`: Choose between `pure_instruction` for the original set of instructions or `instruction_with_paraphrases` for instructions with variations.
+- `<subset>`: Select the subset to train on, such as `small_train` for simpler instructions, or another custom subset.
 
-**Examples:**
+#### Example usage:
 ```bash
 export CRAFTEXT_SETTINGS="build_line&&pure_instruction&&small_train"
-export CRAFTEXT_SETTINGS="build_line&&instruction_with_paraphrases&&small_train"
-export CRAFTEXT_SETTINGS="collect_items&&instruction_with_paraphrases&&other"
+export CRAFTEXT_SETTINGS="build_square&&instruction_with_paraphrases&&medium"
 ```
 
-This allows flexible control over which dataset scenarios and instruction types are used during training.
+In these examples:
+- The first setting configures training to use tasks related to building lines with original instructions from the `small_train` subset.
+- The second setting loads square building tasks, using paraphrased instructions from the `medium` subset.
+
+This method provides flexible control over the dataset, allowing you to adjust scenarios, instruction types, and subsets on the fly without needing to modify YAML files.
+
 
 ## Existed Scenarios 
 
