@@ -20,6 +20,7 @@ from transformers import FlaxBertModel, BertTokenizer
 import distrax
 
 # Local project imports
+from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
 from craftext.scenarios_loader import load_scenarios, parse_craftext_settings
 
@@ -38,6 +39,7 @@ class ScenarioData:
     indices_list: list
     encoded_instructions_list: list
     embeddings_list: list
+    
 
 @dataclass
 class ScenarioDataJAX:
@@ -54,6 +56,10 @@ class TextEnvState:
     timestep: int
     instruction: Optional[jnp.ndarray] 
     idx: int
+    success_rate: float
+    total_success_rate: float
+    environment_key: int
+    
 
 
 class InstructionWrapper(Wrapper):
@@ -66,11 +72,18 @@ class InstructionWrapper(Wrapper):
         self.instruction_str = "None"
         self.encoded_instruction =  self._get_embeddings(self.instruction_str) #jnp.array([[0]])
         
-        self.all_scenario = self._load_scenarios(dataset_configuration)
+        self.all_scenario, self.environment_key = self._load_scenarios(dataset_configuration)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self._prepare_jax_scenarios()
+        
+        if self.environment_key == 1:
+            self.StateStructure = GameData
+        else: 
+            self.StateStructure = GameDataClassic
 
         self.env = env
+        print(" ----------------------- ")
+        print(self.environment_key)
         
         print("Init Instruction Wrapper")
 
@@ -158,21 +171,25 @@ class InstructionWrapper(Wrapper):
         state = TextEnvState( env_state = state, 
                               timestep = state.timestep,
                               instruction = instructions_emb,
-                              idx=idx )
+                              idx=idx,
+                              environment_key = self.environment_key,
+                              success_rate = 0.,
+                              total_success_rate = 0.)
         
+
         return obs, state
         
     def step(self, _rng, env_state, action, env_params):
-
         idx = env_state.idx
         instructions_emb = env_state.instruction
+        environment_key = env_state.environment_key
         
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         
+        
+        game_data_vector = self.StateStructure.from_state(state, action)
 
-        game_data_vector = GameDataClassic.from_state(state, action)
-
-        instruction_done = lax.switch(idx,  self.scenario_data.checkers_list, game_data_vector, idx) 
+        instruction_done = lax.switch(idx,  self.scenario_data.checkers_list, game_data_vector, self.environment_key) 
         reward /= 50  
         def update_reward(instruction_done_elem, reward_elem):
             return jax.lax.cond(instruction_done_elem, 
@@ -183,11 +200,19 @@ class InstructionWrapper(Wrapper):
         reward = update_reward(instruction_done, reward)
         done = instruction_done | done
         
-        state = TextEnvState(env_state = state, 
-                             timestep = state.timestep,
-                             instruction = instructions_emb,
-                              idx = idx)
+        instruction_done_float = jnp.float32(instruction_done)
+        new_episode_sr = env_state.success_rate + instruction_done_float
         
+        state = TextEnvState(
+            env_state=state, 
+            timestep=state.timestep,
+            instruction=instructions_emb,
+            idx=idx,
+            environment_key=environment_key,
+            success_rate=new_episode_sr * (1 - done),  # исправлено "success_rate"
+            total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done  # исправлено "new_episode_sr"
+        )
+        info["SR"] = state.total_success_rate
         return obs, state, reward, done, info
 
 

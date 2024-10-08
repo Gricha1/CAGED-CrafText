@@ -12,6 +12,7 @@ def create_log_dict(info, config):
     to_log = {
         "episode_return": info["returned_episode_returns"],
         "episode_length": info["returned_episode_lengths"],
+         "SR": info["SR"],
     }   
 
     sum_achievements = 0
@@ -62,6 +63,7 @@ def batch_log(update_step, log, config):
                     "e_mean",
                     "e_std",
                     "rnd_loss",
+                    "SR",
                 ]:
                     agg_logs[key] = np.mean(agg)
                 else:
