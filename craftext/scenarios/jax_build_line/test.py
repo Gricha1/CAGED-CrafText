@@ -11,7 +11,7 @@ easy_test_parafrased = {
             "Form a sequence of 2 items with the crafting platform.",
             "Set up a line of 2 pieces using the crafting table."
         ],
-        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
     },
     'line_easy_2': {
         'instruction': "Make a diagonal line of 3 blocks using table.",
@@ -22,7 +22,7 @@ easy_test_parafrased = {
             "Form a slanted row of 3 items with the crafting table.",
             "Arrange 3 blocks in a diagonal line using the crafting table."
         ],
-        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)
     },
     'line_easy_4': {
         'instruction': "Make a line of 2 blocks using furnace.",
@@ -33,7 +33,7 @@ easy_test_parafrased = {
             "Place 2 items in a sequence with the furnace.",
             "Form a straight row of 2 blocks using the heating station."
         ],
-        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.FURNACE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix,BlockType.FURNACE, 2, check_diagonal=False)
     }
 }
 
@@ -47,7 +47,7 @@ easy_test_other_paramets = {
             "Create a vertical line of 4 stone blocks.",
             "Arrange 4 stone pieces in a vertical formation."
         ],
-        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.STONE, 4, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix,BlockType.STONE, 4, check_diagonal=False)
     },
     'line_medium_2': {
         'instruction': "Make a square of 4 blocks using crafting table.",
@@ -58,7 +58,7 @@ easy_test_other_paramets = {
             "Place 4 items in a square shape with the crafting table.",
             "Set up a square of 4 blocks using the crafting platform."
         ],
-        'check_lambda': lambda game_data: is_square_formed(game_data, BlockType.CRAFTING_TABLE, 4)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 4)
     },
     'line_medium_3': {
         'instruction': "Make a horizontal line of 5 blocks using furnace.",
@@ -69,7 +69,7 @@ easy_test_other_paramets = {
             "Form a sequence of 5 items horizontally using the smelter.",
             "Set up a straight row of 5 blocks with the furnace."
         ],
-        'check_lambda': lambda game_data: is_line_formed(game_data, BlockType.FURNACE, 5, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FURNACE, 5, check_diagonal=False)
     }
 }
 

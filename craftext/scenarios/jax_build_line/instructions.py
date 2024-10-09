@@ -1,6 +1,32 @@
 from craftext.checkers_jax.building import is_line_formed, is_square_formed
 from craftext.scenarios.constants import BlockType
 
+one = {
+    'line_one_1': {
+        'instruction': "Make a line of 2 blocks using table.",
+        'instruction_paraphrases': [
+            "Construct a row of 2 pieces with the crafting station.",
+            "Place 2 units in a straight row using the workbench.",
+            "Use the crafting table to form a row of 2 items.",
+            "Arrange a sequence of 2 blocks with the crafting platform.",
+            "Create a straight formation of 2 blocks with the crafting table."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+    },
+    
+    'line_one_2': {
+        'instruction': "Make a line of 2 blocks using table.",
+        'instruction_paraphrases': [
+            "Construct a row of 2 pieces with the crafting station.",
+            "Place 2 units in a straight row using the workbench.",
+            "Use the crafting table to form a row of 2 items.",
+            "Arrange a sequence of 2 blocks with the crafting platform.",
+            "Create a straight formation of 2 blocks with the crafting table."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+    },
+}
+    
 easy = {
     'line_easy_1': {
         'instruction': "Make a line of 2 blocks using table.",
