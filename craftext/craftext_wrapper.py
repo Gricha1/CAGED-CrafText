@@ -22,12 +22,13 @@ import distrax
 # Local project imports
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.scenarios_loader import load_scenarios, parse_craftext_settings
+from craftext.scenarios_loader import load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
 
 from transformers import AutoTokenizer, AutoModel
 
 from flax import struct
 from sentence_transformers import SentenceTransformer
+import yaml
 
 import os
 os.environ['HF_HOME'] = "."
@@ -72,21 +73,33 @@ class InstructionWrapper(Wrapper):
         self.instruction_str = "None"
         self.encoded_instruction =  self._get_embeddings(self.instruction_str) #jnp.array([[0]])
         
+        _, instruction_type, _, _, _ = self._load_config(dataset_configuration)
+        use_parafrases = instruction_type == 'instruction_paraphrases'
         self.all_scenario, self.environment_key = self._load_scenarios(dataset_configuration)
-        self.scenario_data = self._prepare_scenarios()
+        self.scenario_data = self._prepare_scenarios(use_parafrases)
         self.scenario_data_jax = self._prepare_jax_scenarios()
         
         if self.environment_key == 1:
             self.StateStructure = GameData
         else: 
             self.StateStructure = GameDataClassic
+            print("Use Classsic State adapter")
 
         self.env = env
         print(" ----------------------- ")
         print(self.environment_key)
         
         print("Init Instruction Wrapper")
-
+    
+    
+    def _load_config(self, config_name):
+        if config_name is None:
+            return None
+        config_path = get_configs_path()
+        config_name = str(os.path.join(config_path, config_name))+".yaml"
+        config = load_config_or_env(config_name)
+        return config
+    
     def _initialize_model(self):
         return AutoModel.from_pretrained(self.model_name, cache_dir=".")
 
@@ -107,7 +120,7 @@ class InstructionWrapper(Wrapper):
     def _load_scenarios(self, config_name):
         return load_scenarios(config_name)
 
-    def _prepare_scenarios(self):
+    def _prepare_scenarios(self, use_parafrases):
         """Prepares the scenarios data and tokenizes the instructions."""
         instructions_list = []
         checkers_list = []
@@ -115,15 +128,22 @@ class InstructionWrapper(Wrapper):
         encoded_instructions_list = []
         embeddings_list = []
 
-        mode, instruction_type, _ = parse_craftext_settings()
+        #mode, instruction_type, _ = parse_craftext_settings()
 
         for idx, (key, scenario) in enumerate(self.all_scenario.items()):
-            instructions = [scenario['instruction']]
-            checkers = [scenario['check_lambda']]
+            if 'instruction' in list(scenario.keys()):
+                instructions = [scenario['instruction']]
+                checkers = [scenario['check_lambda']]
+            else:
+                instructions = []
+                checkers = []
 
-            if instruction_type == 'instruction_with_paraphrases' and 'instruction_paraphrases' in scenario:
+            if use_parafrases and 'instruction_paraphrases' in scenario:
                 instructions += scenario['instruction_paraphrases']
                 checkers += [scenario['check_lambda']] * len(scenario['instruction_paraphrases'])
+                print("YEP!")
+                print("YEP!")
+                print("YEP!")
 
             for instruction, checker in zip(instructions, checkers):
                 encoded_instruction = self._encode_instruction(instruction)
