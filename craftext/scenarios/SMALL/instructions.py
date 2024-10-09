@@ -1,6 +1,16 @@
 from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.scenarios.build_line import instructions as build_line_instructions
+from craftext.scenarios.build_squere import instructions as build_squere_instructions
+from craftext.scenarios.localization_place import instructions as localization_place_instructions
 
-simple = {
+# Merging 'easy' dictionaries
+easy = {**build_line_instructions.easy, **build_squere_instructions.easy, **localization_place_instructions.easy}
+
+# Merging 'medium' dictionaries
+medium = {**build_line_instructions.medium, **build_squere_instructions.medium, **localization_place_instructions.medium}
+
+
+medium_ = {
     'make_line_2': {
         'instruction': "Make a line of two blocks using table.",
         'items_name': ["table"],
@@ -25,11 +35,23 @@ simple = {
         ],
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, 15, 2)
     },
+    'small_train_line_6': {
+        'instruction': "Arrange four stones into a compact square shape.",
+        'instruction_paraphrases': [
+            "Arrange four stones to form a square shape.",
+            "Group the stones into a tight square configuration of 4 blocks.",
+            "Position 2x2 pebbles to create a square structure.",
+            "Use four stones to shape a tidy square by placing them adjacent to one another.",
+            "Set up a square pattern by organizing four rocks symmetrically."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, 4, 2)
+    },
+    
     'small_train_line_4': {
         'instruction': "Arrange nine stones into a compact square shape of 9 blocks.",
         'instruction_paraphrases': [
             "Arrange nine stones to form a square shape.",
-            "Group the stones into a tight, square configuration of 18/2 blocks.",
+            "Group the stones into a tight square configuration of 18/2 blocks.",
             "Position 3x3 pebbles to create a square structure.",
             "Use nine stones to shape a tidy square by placing them adjacent to one another.",
             "Set up a square pattern by organizing nine rocks symmetrically."
@@ -51,7 +73,7 @@ simple = {
 }
 
 
-hard = {
+hard_ = {
     'small_train_line_1': {
         'instruction': "Make a line of five blocks using table.",
         'items_name': ["table"],
