@@ -6,7 +6,7 @@ CrafText is an extension of the Craftex environment (https://github.com/MichaelT
 - A set of scenario completion checks: Code corresponding to a specific scenario that takes the agent's state as input and returns a boolean value indicating whether the agent has successfully achieved the goal.
 
 
-![Place Crafting Table Near Tree](./imgs/tree_cropp.gif) ![Place Crafting Table Near Water](./imgs/water_cropp.gif)
+![Place Crafting Table Near Tree](./imgs/tree_cropp.gif) ![Place Crafting Table Near Water](./imgs/water_cropp.gif) ![Make Squere of Stone](./imgs/stone.gif)
 
 
 ## Installation 
@@ -51,7 +51,6 @@ CrafText is an extension of the Craftex environment (https://github.com/MichaelT
    ```
 
 This ensures that the correct environment is used during training, matching the one defined in your dataset configuration.
-
 
 
 ## CrafText dataset configuration file
