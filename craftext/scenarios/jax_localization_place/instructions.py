@@ -194,7 +194,7 @@ medium = {
             "Place a chest block four steps up from the fountain."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
-            game_data, ix, BlockType.CHEST, BlockType.FOUNTAIN, 2, 4
+            game_data, BlockType.CHEST, BlockType.FOUNTAIN, 2, 4
         ),
         'complexity': "hard"
     },
