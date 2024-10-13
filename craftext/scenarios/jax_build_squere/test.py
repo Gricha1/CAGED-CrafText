@@ -45,7 +45,7 @@ easy_test_parafrased = {
     }
 }
 
-
+# TODO: check complexity
 easy_test_other_paramets = {
     "squere_other_1": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3),
@@ -89,5 +89,123 @@ easy_test_other_paramets = {
             "Create a plant square, placing 2 plants on each side.",
             "Arrange 4 plants in a tight 2x2 grid to form a small garden patch."
         ]
+    }
+}
+
+
+medium_test_parafrased = {
+    "52": {
+        'instruction': "Arrange four crafting tables into a compact square shape.",
+        'instruction_paraphrases': [
+            "Place four workbenches in the form of a small square.",
+            "Organize the crafting stations into a tight square formation.",
+            "Create a square by positioning four crafting benches next to each other.",
+            "Form a neat square using four workbenches arranged side by side.",
+            "Establish a square layout by placing four crafting stations in a symmetrical pattern."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix,BlockType.CRAFTING_TABLE, 2)
+    },
+    "53": {
+        'instruction': "Create a square grid using nine furnaces, ensuring each furnace connects to its neighbor.",
+        'instruction_paraphrases': [
+            "Set up a 3x3 square by placing nine stoves in a grid.",
+            "Arrange the kilns into a connected square formation with three on each side.",
+            "Construct a square grid using nine ovens, aligned in three rows and three columns.",
+            "Form a square pattern by placing nine furnaces so that each connects to another.",
+            "Design a square-shaped grid with nine kilns, ensuring they're all adjacent."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.FURNACE, 3)
+    },
+    "54": {
+        'instruction': "Organize sixteen chests into four rows and four columns, forming a square.",
+        'instruction_paraphrases': [
+            "Place sixteen storage boxes in a 4x4 square arrangement.",
+            "Form a larger square by arranging sixteen trunks into four lines of four.",
+            "Create a square pattern with sixteen containers, positioning them in rows and columns.",
+            "Construct a square grid using sixteen storage units, with four in each row and column.",
+            "Design a square formation by setting up sixteen trunks in a grid pattern."
+        ],
+        'check_lambda':  lambda game_data, ix: is_square_formed(game_data,ix, BlockType.CHEST, 4)
+    },
+    "55": {
+        'instruction': "Use twenty-five fountains to create a large square pattern.",
+        'instruction_paraphrases': [
+            "Arrange twenty-five water features into a big square.",
+            "Construct a spacious square grid with twenty-five water sources, ensuring they're evenly spaced.",
+            "Form a square shape using twenty-five fountains, organized into five rows and five columns.",
+            "Create a sizable square by placing twenty-five water features in a grid formation.",
+            "Design a large square layout with twenty-five water sources, connecting them in a 5x5 pattern."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.FOUNTAIN, 5)
+    },
+    "56": {
+        'instruction': "Establish a pattern where thirty-six plants form a balanced square.",
+        'instruction_paraphrases': [
+            "Place thirty-six trees in a symmetrical square formation.",
+            "Arrange thirty-six bushes to form a square pattern, with each plant aligned with its neighbors.",
+            "Create a square using thirty-six vegetation units, organized into a structured grid.",
+            "Design a balanced square layout with thirty-six plants, ensuring equal spacing.",
+            "Form a large square by positioning thirty-six bushes into six rows and six columns."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.PLANT, 6)
+    }
+}
+
+
+medium_test_other_paramets = {
+    "52": {
+        'instruction': "Arrange four crafting tables into a compact square shape.",
+        'instruction_paraphrases': [
+            "Place four workbenches in the form of a small square.",
+            "Organize the crafting stations into a tight square formation.",
+            "Create a square by positioning four crafting benches next to each other.",
+            "Form a neat square using four workbenches arranged side by side.",
+            "Establish a square layout by placing four crafting stations in a symmetrical pattern."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.FOUNTAIN, 2)  # Changed block to Fountain
+    },
+    "53": {
+        'instruction': "Create a square grid using nine furnaces, ensuring each furnace connects to its neighbor.",
+        'instruction_paraphrases': [
+            "Set up a 3x3 square by placing nine stoves in a grid.",
+            "Arrange the kilns into a connected square formation with three on each side.",
+            "Construct a square grid using nine ovens, aligned in three rows and three columns.",
+            "Form a square pattern by placing nine furnaces so that each connects to another.",
+            "Design a square-shaped grid with nine kilns, ensuring they're all adjacent."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.ENCHANTMENT_TABLE_FIRE, 3)  # Changed block to Enchantment Table (Fire)
+    },
+    "54": {
+        'instruction': "Organize sixteen chests into four rows and four columns, forming a square.",
+        'instruction_paraphrases': [
+            "Place sixteen storage boxes in a 4x4 square arrangement.",
+            "Form a larger square by arranging sixteen trunks into four lines of four.",
+            "Create a square pattern with sixteen containers, positioning them in rows and columns.",
+            "Construct a square grid using sixteen storage units, with four in each row and column.",
+            "Design a square formation by setting up sixteen trunks in a grid pattern."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.FOUNTAIN, 4)  # Changed block to Fountain
+    },
+    "55": {
+        'instruction': "Use twenty-five fountains to create a large square pattern.",
+        'instruction_paraphrases': [
+            "Arrange twenty-five water features into a big square.",
+            "Construct a spacious square grid with twenty-five water sources, ensuring they're evenly spaced.",
+            "Form a square shape using twenty-five fountains, organized into five rows and five columns.",
+            "Create a sizable square by placing twenty-five water features in a grid formation.",
+            "Design a large square layout with twenty-five water sources, connecting them in a 5x5 pattern."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.ENCHANTMENT_TABLE_ICE, 5)  # Changed block to Enchantment Table (Ice)
+    },
+    "56": {
+        'instruction': "Establish a pattern where thirty-six plants form a balanced square.",
+        'instruction_paraphrases': [
+            "Place thirty-six trees in a symmetrical square formation.",
+            "Arrange thirty-six bushes to form a square pattern, with each plant aligned with its neighbors.",
+            "Create a square using thirty-six vegetation units, organized into a structured grid.",
+            "Design a balanced square layout with thirty-six plants, ensuring equal spacing.",
+            "Form a large square by positioning thirty-six bushes into six rows and six columns."
+        ],
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.CHEST, 6)  # Changed block to Chest
     }
 }

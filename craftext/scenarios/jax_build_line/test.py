@@ -73,3 +73,122 @@ easy_test_other_paramets = {
     }
 }
 
+
+
+# TODO: check complexity
+medium_test_parafrased = {
+    "line_medium_1": {
+        'instruction': "Align three crafting tables in a straight horizontal line.",
+        'instruction_paraphrases': [
+            "Place three workbenches in a single horizontal row.",
+            "Arrange three crafting stations side by side in a straight line.",
+            "Set up three crafting benches in a horizontal line, each one next to the other.",
+            "Create a straight horizontal sequence of three workbenches.",
+            "Position three crafting stations to form a continuous horizontal line."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=False)
+    },
+    "line_medium_2": {
+        'instruction': "Position four furnaces in a vertical line.",
+        'instruction_paraphrases': [
+            "Arrange four stoves in a single vertical column.",
+            "Place four kilns one on top of the other in a vertical line.",
+            "Set up four ovens in a straight vertical line.",
+            "Create a vertical alignment of four stoves, stacking them in a column.",
+            "Form a vertical line by placing four kilns one above the other."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FURNACE, 4, check_diagonal=False)
+    },
+    "line_medium_3": {
+        'instruction': "Arrange five chests in a diagonal line, from top-left to bottom-right.",
+        'instruction_paraphrases': [
+            "Position five storage boxes diagonally from the top-left corner to the bottom-right.",
+            "Create a diagonal line of five trunks starting from the top-left.",
+            "Set up five containers in a diagonal pattern from the top-left to the bottom-right.",
+            "Form a diagonal sequence with five storage units, extending from the upper left to the lower right.",
+            "Align five trunks in a diagonal line, running from the top-left to the bottom-right."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CHEST, 5, check_diagonal=True)
+    },
+    "line_medium_4": {
+        'instruction': "Place six fountains in a continuous line, either horizontally or vertically.",
+        'instruction_paraphrases': [
+            "Arrange six water features in a straight line, either in a row or a column.",
+            "Form a line of six water sources, oriented either horizontally or vertically.",
+            "Position six fountains in a single straight line, regardless of direction.",
+            "Set up a straight line of six water features, aligned either horizontally or vertically.",
+            "Create a continuous sequence of six fountains, in either a horizontal or vertical direction."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FOUNTAIN, 6, check_diagonal=False)
+    },
+    "line_medium_5": {
+        'instruction': "Design a line of seven plants, ensuring they connect diagonally.",
+        'instruction_paraphrases': [
+            "Align seven bushes in a diagonal line, making sure each one is connected.",
+            "Set up seven trees in a continuous diagonal line.",
+            "Create a diagonal pattern with seven vegetation units, ensuring they form a straight line.",
+            "Arrange seven plants in a diagonal sequence, each one connected to the next.",
+            "Position seven bushes in a straight diagonal line, making sure they are aligned."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.PLANT, 7, check_diagonal=True)
+    }
+}
+
+
+medium_test_other_paramets = {
+    "line_medium_1": {
+        'instruction': "Align three crafting tables in a straight horizontal line.",
+        'instruction_paraphrases': [
+            "Place three workbenches in a single horizontal row.",
+            "Arrange three crafting stations side by side in a straight line.",
+            "Set up three crafting benches in a horizontal line, each one next to the other.",
+            "Create a straight horizontal sequence of three workbenches.",
+            "Position three crafting stations to form a continuous horizontal line."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FOUNTAIN, 3, check_diagonal=False)  # Changed to Fountain
+    },
+    "line_medium_2": {
+        'instruction': "Position four furnaces in a vertical line.",
+        'instruction_paraphrases': [
+            "Arrange four stoves in a single vertical column.",
+            "Place four kilns one on top of the other in a vertical line.",
+            "Set up four ovens in a straight vertical line.",
+            "Create a vertical alignment of four stoves, stacking them in a column.",
+            "Form a vertical line by placing four kilns one above the other."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.ENCHANTMENT_TABLE_FIRE, 4, check_diagonal=False)  # Changed to Enchantment Table (Fire)
+    },
+    "line_medium_3": {
+        'instruction': "Arrange five chests in a diagonal line, from top-left to bottom-right.",
+        'instruction_paraphrases': [
+            "Position five storage boxes diagonally from the top-left corner to the bottom-right.",
+            "Create a diagonal line of five trunks starting from the top-left.",
+            "Set up five containers in a diagonal pattern from the top-left to the bottom-right.",
+            "Form a diagonal sequence with five storage units, extending from the upper left to the lower right.",
+            "Align five trunks in a diagonal line, running from the top-left to the bottom-right."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FOUNTAIN, 5, check_diagonal=True)  # Changed to Fountain
+    },
+    "line_medium_4": {
+        'instruction': "Place six fountains in a continuous line, either horizontally or vertically.",
+        'instruction_paraphrases': [
+            "Arrange six water features in a straight line, either in a row or a column.",
+            "Form a line of six water sources, oriented either horizontally or vertically.",
+            "Position six fountains in a single straight line, regardless of direction.",
+            "Set up a straight line of six water features, aligned either horizontally or vertically.",
+            "Create a continuous sequence of six fountains, in either a horizontal or vertical direction."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CHEST, 6, check_diagonal=False)  # Changed to Chest
+    },
+    "line_medium_5": {
+        'instruction': "Design a line of seven plants, ensuring they connect diagonally.",
+        'instruction_paraphrases': [
+            "Align seven bushes in a diagonal line, making sure each one is connected.",
+            "Set up seven trees in a continuous diagonal line.",
+            "Create a diagonal pattern with seven vegetation units, ensuring they form a straight line.",
+            "Arrange seven plants in a diagonal sequence, each one connected to the next.",
+            "Position seven bushes in a straight diagonal line, making sure they are aligned."
+        ],
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.ENCHANTMENT_TABLE_ICE, 7, check_diagonal=True)  # Changed to Enchantment Table (Ice)
+    }
+}
