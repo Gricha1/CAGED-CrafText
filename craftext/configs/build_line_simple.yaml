@@ -1,6 +1,5 @@
-dataset_key: SMALL
+dataset_key: build_line
 subset_key: easy
 base_environment: Craftax-Classic-Pixels-v1-Text
 use_parafrases: True
-test: False
 
