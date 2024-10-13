@@ -1,13 +1,16 @@
 from craftext.checkers_jax.building import is_line_formed, is_square_formed
-from craftext.scenarios.build_line import instructions as build_line_instructions
-from craftext.scenarios.build_squere import instructions as build_squere_instructions
-from craftext.scenarios.localization_place import instructions as localization_place_instructions
-
+from craftext.scenarios.jax_build_line import instructions as build_line_instructions
+from craftext.scenarios.jax_build_squere import instructions as build_squere_instructions
+from craftext.scenarios.jax_localization_place import instructions as localization_place_instructions
+from craftext.scenarios.jax_conditional_placing import instructions as conditional_place_instructions
 # Merging 'easy' dictionaries
-easy = {**build_line_instructions.easy, **build_squere_instructions.easy, **localization_place_instructions.easy}
+easy = {**build_line_instructions.easy, 
+        **build_squere_instructions.easy,
+        **localization_place_instructions.easy,
+        **conditional_place_instructions.easy}
 
 # Merging 'medium' dictionaries
-medium = {**build_line_instructions.medium, **build_squere_instructions.medium, **localization_place_instructions.medium}
+medium = {**build_line_instructions.medium, **build_squere_instructions.medium, **localization_place_instructions.medium, **conditional_place_instructions.medium}
 
 
 medium_ = {
