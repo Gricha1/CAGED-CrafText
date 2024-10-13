@@ -109,7 +109,8 @@ class GameDataClassic:
     states: list
 
     @classmethod
-    def from_state(cls, state, action):
-        player_state = PlayerState.from_state(state, action)
-        return cls(states=[player_state])
+    def from_state(cls, previos_state, current_state, action):
+        player_state_current = PlayerState.from_state(current_state, action)
+        player_state_previos = PlayerState.from_state(previos_state, action)
+        return cls(states=[player_state_current, player_state_previos])
     

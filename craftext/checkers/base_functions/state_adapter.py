@@ -136,10 +136,8 @@ class GameData:
     states: list
 
     @classmethod
-    def from_state(cls, state, action):
-        # Создаем экземпляр PlayerState с помощью вашей логики
-        
-        player_state = PlayerState.from_state(state, action)
-        # Возвращаем новый экземпляр GameData с инициализированным списком состояний
-        return cls(states=[player_state])
+    def from_state(cls, previos_state, current_state, action):
+        player_state_current = PlayerState.from_state(current_state, action)
+        player_state_previos = PlayerState.from_state(previos_state, action)
+        return cls(states=[player_state_current, player_state_previos])
     

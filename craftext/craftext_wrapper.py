@@ -84,7 +84,7 @@ class InstructionWrapper(Wrapper):
         else: 
             self.StateStructure = GameDataClassic
             print("Use Classsic State adapter")
-
+        self.steps = 0
         self.env = env
         print(" ----------------------- ")
         print(self.environment_key)
@@ -206,8 +206,8 @@ class InstructionWrapper(Wrapper):
         
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         
-        
-        game_data_vector = self.StateStructure.from_state(state, action)
+        previos_state, current_state = env_state.env_state, state
+        game_data_vector = self.StateStructure.from_state(previos_state, current_state, action)
 
         instruction_done = lax.switch(idx,  self.scenario_data.checkers_list, game_data_vector, self.environment_key) 
         reward /= 50  
@@ -230,9 +230,11 @@ class InstructionWrapper(Wrapper):
             idx=idx,
             environment_key=environment_key,
             success_rate=new_episode_sr * (1 - done),  # исправлено "success_rate"
-            total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done  # исправлено "new_episode_sr"
+            total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done  # исправлено 
         )
         info["SR"] = state.total_success_rate
+        self.steps += 1
+        info["steps"] = self.steps
         return obs, state, reward, done, info
 
 
