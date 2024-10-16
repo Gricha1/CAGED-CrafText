@@ -49,51 +49,50 @@ easy_test_parafrased = {
 }
 
 # TODO: need to check how many synonyms are used
-
 easy_test_other_paramets = {
     'simple_conditional_placing_001': {
-        'instruction': "Place a crafting table after collecting 3 pieces of wood",
+        'instruction': "Collect 1 piece of wood and place 2 plant blocks.",
         'instruction_paraphrases': [
-            "After gathering three logs, set down a workbench",
-            "Collect three wooden blocks and position a crafting station",
-            "Once you've gathered 3 logs, install a tool table",
-            "Accumulate three wooden units and put a worktable at the spot",
-            "Gather three logs and place a crafting surface on the terrain"
+            "Gather one log and position two plant blocks on the ground.",
+            "After collecting one wood piece, set down two plant blocks.",
+            "Collect a wooden block and place two plants on the terrain.",
+            "Once you've gathered a piece of timber, put two plant blocks.",
+            "Collect one unit of wood and install two plant blocks."
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 1, 1)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.PLANT, 1, 2)
     },
     'simple_conditional_placing_002': {
-        'instruction': "Collect 2 saplings and place a plant",
+        'instruction': "Collect 2 saplings and place 2 furnace blocks.",
         'instruction_paraphrases': [
-            "Gather two seedlings and plant a shrub",
-            "Collect two saplings and position some greenery",
-            "Once you've gathered two small plants, set up a tree",
-            "Accumulate two young plants and place a bush on the terrain",
-            "Gather two saplings and install vegetation at the designated location"
+            "Gather two saplings and set two furnaces on the ground.",
+            "After collecting two saplings, position two furnace blocks.",
+            "Collect a pair of saplings and place two furnaces on the terrain.",
+            "Once you've gathered two saplings, set down two furnace blocks.",
+            "Collect two saplings and install two furnaces."
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.PLANT, 2, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 2, 2)
     },
     'simple_conditional_placing_003': {
-        'instruction': "Place two furnaces after collecting 4 pieces of wood",
+        'instruction': "Collect 1 wood pickaxe and place 2 crafting tables.",
         'instruction_paraphrases': [
-            "After gathering four logs, place two kilns",
-            "Collect four wooden blocks and position two heaters on the ground",
-            "Once you've gathered four logs, set down two ovens",
-            "Accumulate four wooden units and put two stoves on the terrain",
-            "Gather four logs and install two smelters at the designated spot"
+            "Gather one wooden pickaxe and position two crafting tables.",
+            "After collecting one wood pickaxe, set two crafting tables.",
+            "Collect one wooden pickaxe and place two crafting tables on the terrain.",
+            "Once you've gathered one wood pickaxe, put down two crafting tables.",
+            "Accumulate one wooden pickaxe and install two crafting tables."
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 4, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD_PICKAXE, BlockType.CRAFTING_TABLE, 1, 2)
     },
     'simple_conditional_placing_004': {
-        'instruction': "Collect 3 pieces of wood and place two crafting tables",
+        'instruction': "Collect 3 pieces of iron and place 2 crafting tables.",
         'instruction_paraphrases': [
-            "After gathering three logs, set down two workbenches",
-            "Collect three wooden blocks and position two crafting stations",
-            "Once you've gathered three logs, set up two tool tables",
-            "Accumulate three wooden units and place two worktables on the ground",
-            "Gather three logs and install two crafting surfaces at the spot"
+            "Gather three iron pieces and set two crafting tables.",
+            "After collecting three pieces of iron, position two crafting tables.",
+            "Collect three iron units and place two crafting tables on the terrain.",
+            "Once you've gathered three iron pieces, put down two crafting tables.",
+            "Accumulate three iron blocks and install two crafting tables."
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 3, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 3, 2)
     }
 }
 
