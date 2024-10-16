@@ -106,7 +106,7 @@ In these examples:
 This method provides flexible control over the dataset, allowing you to adjust scenarios, instruction types, and subsets on the fly without needing to modify YAML files.
 
 
-## Existed Scenarios 
+<!-- ## Existed Scenarios 
 
 | Name                                       | Class Name   | Supports JAX      |
 |--------------------------------------------|--------------|-------------------|
@@ -124,7 +124,7 @@ This method provides flexible control over the dataset, allowing you to adjust s
 | place                                      | localization | ✅                 |
 | water_sources                              | localization | ❌                 |
 | old_place_near_game_block                  | localization | ❌                 |
-| was_item_collected_after_another_object    | conditional  | ❌                 |
+| was_item_collected_after_another_object    | conditional  | ❌                 | -->
 
 
 ## Dataset Generation Details
