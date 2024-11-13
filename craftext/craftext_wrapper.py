@@ -22,12 +22,12 @@ from craftext.craftext_encoder import EncodeModel, EncodeForm
 from craftext.craftext_scenarious import CrafTextScenarios, ScenarioDataJAX
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.scenarios_loader import (
-    load_scenarios,
-    parse_craftext_settings,
-    load_config_or_env,
-    get_configs_path,
-)
+# from craftext.scenarios_loader import (
+#     load_scenarios,
+#     parse_craftext_settings,
+#     load_config_or_env,
+#     get_configs_path,
+# )
 
 @struct.dataclass
 class TextEnvState:

@@ -5,7 +5,7 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 from craftext.craftext_encoder import EncodeModel, EncodeForm
-from craftext.scenarios_loader import load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
+from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
 
 from dataclasses import dataclass
 from jax import lax
@@ -30,10 +30,11 @@ class CrafTextScenarios:
         Initializes the CrafTextScenarios with an EncodeModel and scenario configuration.
         """
         self.encode_model = encode_model
-        self.config = self._load_config(config_name)
-        _, self.instruction_type, _, _, _ =  self.config
-
-        self.all_scenario, self.environment_key = self._load_scenarios(config_name)
+        self.config = ScenariosConfigLoader().load_config(config_name)
+       # self.config = self._load_config(config_name)
+        self.use_parafrases =  self.config.use_parafrases
+        self.environment_key = int("Classic" not in self.config.base_environment)
+        self.all_scenario = self._load_scenarios(self.config)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self.scenarios_to_jax()
     
@@ -44,22 +45,22 @@ class CrafTextScenarios:
         """
         return self.encode_model.encode("None")
 
-    def _load_config(self, config_name):
-        """
-        Loads configuration settings for scenarios, based on a YAML config or an environment variable.
-        """
-        if config_name is None:
-            return None
-        config_path = get_configs_path()
-        config_name = str(os.path.join(config_path, config_name)) + ".yaml"
-        config = load_config_or_env(config_name)
-        return config
+    # def _load_config(self, config_name):
+    #     """
+    #     Loads configuration settings for scenarios, based on a YAML config or an environment variable.
+    #     """
+    #     if config_name is None:
+    #         return None
+    #     config_path = get_configs_path()
+    #     config_name = str(os.path.join(config_path, config_name)) + ".yaml"
+    #     config = load_config_or_env(config_name)
+    #     return config
     
-    def _load_scenarios(self, config_name):
+    def _load_scenarios(self, config):
         """
         Loads scenarios from a specified configuration file.
         """
-        return load_scenarios(config_name)
+        return load_scenarios(config)
 
     def get_scenarios(self):
         """
@@ -74,12 +75,11 @@ class CrafTextScenarios:
         instructions_list, checkers_list, indices_list = [], [], []
         encoded_instructions_list, embeddings_list = [], []
 
-        use_paraphrases = 'instruction_paraphrases' ==  self.instruction_type
         for idx, (key, scenario) in enumerate(self.all_scenario.items()):
             instructions = [scenario.get('instruction')]
             checkers = [scenario.get('check_lambda')]
 
-            if use_paraphrases and 'instruction_paraphrases' in scenario:
+            if self.use_parafrases and 'instruction_paraphrases' in scenario:
                 instructions += scenario['instruction_paraphrases']
                 checkers += [scenario['check_lambda']] * len(scenario['instruction_paraphrases'])
 
