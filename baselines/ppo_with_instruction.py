@@ -20,6 +20,7 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 
+
 from logz.batch_logging import batch_log, create_log_dict
 from models.actor_critic import (
     ActorCritic,
@@ -51,14 +52,13 @@ class Transition(NamedTuple):
     instruction: jnp.ndarray
 
 
-def make_train(config):
+def make_train(config, network_params):
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
     config["MINIBATCH_SIZE"] = (
         config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
     )
-
     # If add CrafText extantion
     env_name = config["ENV_NAME"].replace("-Text", "")
     env = make_craftax_env_from_name(
@@ -73,7 +73,7 @@ def make_train(config):
             reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
         )
    
-   
+        
     
     
     # else:
@@ -102,7 +102,7 @@ def make_train(config):
 
         rng, _rng = jax.random.split(rng)
         init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
-        network_params = network.init(_rng, init_x, env.encoded_instruction)
+        network_params_alt = network.init(_rng, init_x, env.encoded_instruction)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
@@ -113,11 +113,59 @@ def make_train(config):
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
                 optax.adam(config["LR"], eps=1e-5),
             )
-        train_state = TrainState.create(
-            apply_fn=network.apply,
-            params=network_params,
-            tx=tx,
-        )
+
+        if network_params is None:
+            train_state = TrainState.create(
+                apply_fn=network.apply,
+                params=network_params_alt,
+                tx=tx,
+            )
+        else:
+            train_state = TrainState.create(
+                apply_fn=network.apply,
+                params=network_params,
+                tx=tx,
+            )
+
+        
+
+        # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
+        # if config.get("PATH_TO_CHECKPOINT"):
+        #     print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
+        #     # Prepare checkpoint manager
+        #     orbax_checkpointer = PyTreeCheckpointer()
+        #     checkpoint_manager = CheckpointManager(
+        #         config["PATH_TO_CHECKPOINT"],
+        #         orbax_checkpointer,
+        #         CheckpointManagerOptions(max_to_keep=1, create=False),
+        #     )
+        #     # Restore parameters from checkpoint
+        #     # train_state = TrainState.create(
+        #     #     apply_fn=network.apply,
+        #     #     params=network_params,
+        #     #     tx=tx,  # Optimizer will be set later
+        #     # )
+        #    # train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
+        #     with jax.disable_jit():
+        #         train_state_dict = checkpoint_manager.restore(int(config["TOTAL_TIMESTEPS"]))
+        #     network_params = train_state['params']  #train_state.params
+        #     print("Weights successfully loaded from checkpoint.")
+        # else:
+        #     print("No checkpoint specified, using default initialization.")
+
+        # Set up the optimizer
+        # if config["ANNEAL_LR"]:
+        #     tx = optax.chain(
+        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
+        #         optax.adam(learning_rate=linear_schedule, eps=1e-5),
+        #     )
+        # else:
+        #     tx = optax.chain(
+        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
+        #         optax.adam(config["LR"], eps=1e-5),
+            # )
+        # MAKE TRAIN STATE
+        
 
         # Exploration state
         ex_state = {
@@ -650,10 +698,14 @@ def make_train(config):
 
     return train
 
-
+    
 def run_ppo(config):
+    # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
-
+    base_checkpoint_path = os.path.abspath("./wandb/run-20241119_124727-pa1tyfiy/files/checkpoint_restart_1")
+    config["PATH_TO_CHECKPOINT"] = 'None'# base_checkpoint_path  # Initialize with no checkpoint
+    base_timestamps = config['TOTAL_TIMESTEPS']
+    # Initialize WandB if enabled
     if config["USE_WANDB"]:
         wandb.init(
             project=config["WANDB_PROJECT"],
@@ -665,37 +717,81 @@ def run_ppo(config):
             + "M",
         )
 
+    # Initialize random keys
     rng = jax.random.PRNGKey(config["SEED"])
-    rngs = jax.random.split(rng, config["NUM_REPEATS"])
 
-    train_jit = jax.jit(make_train(config))
-    train_vmap = jax.vmap(train_jit)
+    # Define the number of restarts
+    num_restarts = 5  # Hyperparameter for the number of restarts
+    for restart in range(num_restarts):
+        print(f"Starting training iteration {restart + 1}/{num_restarts}")
 
-    t0 = time.time()
-    out = train_vmap(rngs)
-    t1 = time.time()
-    print("Time to run experiment", t1 - t0)
-    print("SPS: ", config["TOTAL_TIMESTEPS"] / (t1 - t0))
-
-    if config["USE_WANDB"]:
-
-        def _save_network(rs_index, dir_name):
-            train_states = out["runner_state"][rs_index]
-            train_state = jax.tree.map(lambda x: x[0], train_states)
+        # Reload weights from the checkpoint
+        if os.path.exists(config["PATH_TO_CHECKPOINT"]):
+            print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
             orbax_checkpointer = PyTreeCheckpointer()
-            options = CheckpointManagerOptions(max_to_keep=1, create=True)
-            path = os.path.join(wandb.run.dir, dir_name)
-            checkpoint_manager = CheckpointManager(path, orbax_checkpointer, options)
-            print(f"saved runner state to {path}")
-            save_args = orbax_utils.save_args_from_target(train_state)
-            checkpoint_manager.save(
-                config["TOTAL_TIMESTEPS"],
-                train_state,
-                save_kwargs={"save_args": save_args},
+            checkpoint_manager = CheckpointManager(
+                config["PATH_TO_CHECKPOINT"],
+                orbax_checkpointer,
+                CheckpointManagerOptions(max_to_keep=1, create=False),
             )
+            with jax.disable_jit():
+                if restart == 0:
+                    train_state = checkpoint_manager.restore(60000)
+                    network_params = train_state['runner_state'][0]["params"]
+                else:
+                    train_state = checkpoint_manager.restore(int(config['TOTAL_TIMESTEPS']))
+                    network_params = train_state['runner_state'][0]["params"]
+                    #print(train_state.keys())
+          #  network_params = train_state["params"]
+            print("Weights successfully loaded from checkpoint.")
+        else:
+            print("No valid checkpoint found, using default initialization.")
+           # exit()
+            network_params = None  # Initialize or handle default weights
+        config['TOTAL_TIMESTEPS'] = base_timestamps * (restart + 1)
 
-        if True: #config["SAVE_POLICY"]:
-            _save_network(0, "policies")
+        # Split RNG for this training iteration
+        rng, current_rng = jax.random.split(rng)
+
+        # Prepare the training function
+        train_jit = jax.jit(make_train(config, network_params))
+
+        # Run the training
+        t0 = time.time()
+        train_state = train_jit(current_rng)
+        t1 = time.time()
+
+        # Print performance metrics
+        print(f"Iteration {restart + 1} completed.")
+        print("Time to run experiment:", t1 - t0)
+        print("SPS:", config["TOTAL_TIMESTEPS"] / (t1 - t0))
+        
+        time.sleep(20)
+        # Save checkpoint after this iteration
+        checkpoint_dir = f"checkpoint_restart_{restart + 1}"
+        checkpoint_path = os.path.join(
+            wandb.run.dir if config["USE_WANDB"] else ".", checkpoint_dir
+        )
+
+        orbax_checkpointer = PyTreeCheckpointer()
+        options = CheckpointManagerOptions(max_to_keep=1, create=True)
+        checkpoint_manager = CheckpointManager(checkpoint_path, orbax_checkpointer, options)
+
+        # Save the current train state
+        save_args = orbax_utils.save_args_from_target(train_state)
+        checkpoint_manager.save(
+            config["TOTAL_TIMESTEPS"],
+            train_state,
+            save_kwargs={"save_args": save_args},
+        )
+        print(f"Saved checkpoint to {checkpoint_path}")
+
+        # Update PATH_TO_CHECKPOINT for the next iteration
+        config["PATH_TO_CHECKPOINT"] = checkpoint_path
+
+    print("All training iterations completed.")
+
+
 
 
 if __name__ == "__main__":
@@ -709,7 +805,7 @@ if __name__ == "__main__":
         default=256,#1024,
     )
     parser.add_argument(
-        "--total_timesteps", type=lambda x: int(float(x)), default=500000000
+        "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
     )  # Allow scientific notation
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
