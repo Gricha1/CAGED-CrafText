@@ -1,48 +1,149 @@
-# craftext_encode_model.py
-
 import os
 from enum import Enum
+from abc import ABC, abstractmethod
 from transformers import AutoModel, AutoTokenizer
 import torch
 
 os.environ['HF_HOME'] = "."
-    
+
+
 class EncodeForm(Enum):
-    EMBEDDING = "embedding"
     TOKEN = "token"
+    EMBED_CONCAT_ALL = "embed_concat_all"  # Конкатенация всех векторов токенов
+    EMBED_CONCAT_NO_STOPWORDS = "embed_concat_no_stopwords"  # Конкатенация всех векторов без предлогов
+    EMBED_CLS_FOR_SPLITS = "embed_cls_for_splits"  # CLS-векторы для разбиения на части
+    EMBEDDING = "default"
 
-class EncodeModel:
-    def __init__(self, model_name="distilbert-base-uncased", form_to_use=EncodeForm.EMBEDDING):
+class EncodeModel(ABC):
+    def __init__(self, form_to_use=EncodeForm.EMBEDDING):
         """
-        Initialize the EncodeModel with the specified model name and encoding form.
+        Abstract base class for encoding models.
         """
-        self.model_name = model_name
         self.form_to_use = form_to_use
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=".")
-        self.model = AutoModel.from_pretrained(model_name, cache_dir=".")
 
+    @abstractmethod
     def encode(self, instruction):
         """
-        Encodes instructions based on form_to_use. Returns either tokens or embeddings.
+        Abstract method to encode an instruction.
+        Must be implemented in a concrete class.
+        """
+        pass
+
+    @abstractmethod
+    def get_embeddings(self, instruction):
+        """
+        Abstract method to get embeddings.
+        Must be implemented in a concrete class.
+        """
+        pass
+
+    @abstractmethod
+    def get_tokens(self, instruction):
+        """
+        Abstract method to get tokens.
+        Must be implemented in a concrete class.
+        """
+        pass
+
+from transformers import AutoTokenizer, AutoModel
+import torch
+from enum import Enum
+import numpy as np
+
+
+
+class DistilBertEncode:
+    def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL):
+        """
+        Unified implementation of DistilBERT encoder with multiple embedding options.
+        """
+        self.form_to_use = form_to_use
+        model_name = "distilbert-base-uncased"
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=".")
+        self.model = AutoModel.from_pretrained(model_name, cache_dir=".")
+        self.stopwords = {"a", "an", "the", "in", "on", "at", "by", "to", "for", "of", "with", "and", "or", "but", "so"}  # Пример списка предлогов
+
+    def encode(self, instruction, n_splits=1):
+        """
+        Encodes the instruction based on the selected form_to_use.
+        :param instruction: Text instruction.
+        :param n_splits: Number of splits (used in EMBED_CLS_FOR_SPLITS mode).
         """
         if self.form_to_use == EncodeForm.TOKEN:
             return self.get_tokens(instruction)
-        elif self.form_to_use == EncodeForm.EMBEDDING:
-            return self.get_embeddings(instruction)
+        elif self.form_to_use == EncodeForm.EMBED_CONCAT_ALL:
+            return self.get_concatenated_embeddings(instruction)
+        elif self.form_to_use == EncodeForm.EMBED_CONCAT_NO_STOPWORDS:
+            return self.get_concatenated_embeddings_no_stopwords(instruction)
+        elif self.form_to_use == EncodeForm.EMBED_CLS_FOR_SPLITS:
+            return self.get_cls_embeddings_for_splits(instruction, n_splits)
+        else:
+            
+            return self.get_cls_embeddings_for_splits(instruction, n_splits)
         
-    def get_embeddings(self, instruction):
+            #raise ValueError(f"Unsupported form: {self.form_to_use}")
+
+    def get_concatenated_embeddings(self, instruction):
         """
-        Generates embeddings for the given instruction.
+        Generates a single embedding by concatenating embeddings of all tokens.
         """
-        inputs = self.tokenizer(instruction, padding=True, truncation=True, return_tensors='pt')
+        inputs = self.tokenizer(instruction, return_tensors='pt', truncation=True, padding=True)
         with torch.no_grad():
             outputs = self.model(**inputs)
-        # Extract the CLS token embedding
-        cls_embedding = outputs.last_hidden_state[:, 0, :]
-        return cls_embedding.numpy()
+        token_embeddings = outputs.last_hidden_state
+        return token_embeddings.view(-1).numpy()
+
+    def get_concatenated_embeddings_no_stopwords(self, instruction):
+        """
+        Generates a single embedding by concatenating embeddings of all tokens excluding stopwords.
+        """
+        tokens = self.tokenizer.tokenize(instruction)
+        filtered_tokens = [t for t in tokens if t.lower() not in self.stopwords]
+        inputs = self.tokenizer(filtered_tokens, return_tensors='pt', is_split_into_words=True)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+        token_embeddings = outputs.last_hidden_state
+        return token_embeddings.view(-1).numpy()
+
+    def get_cls_embeddings_for_splits(self, instructions, n_splits):
+        batch_embeddings = []
+
+        for instruction in instructions:
+            # 1. Разделяем инструкцию на N частей
+            if instruction is None:
+                instruction = 'None'
+            words = instruction.split()
+            split_size = max(1, len(words) // n_splits)
+            splits = [' '.join(words[i:i + split_size]) for i in range(0, len(words), split_size)]
+
+            # Если частей меньше, чем n_splits, дополняем пустыми строками
+            while len(splits) < n_splits:
+                splits.append("")
+            splits = splits[:n_splits]
+            # 2. Токенизируем сразу все части
+            inputs = self.tokenizer(
+                splits, 
+                return_tensors='pt', 
+                truncation=True, 
+                padding=True, 
+                max_length=50
+            )
+
+            # 3. Обрабатываем все части батчем
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+
+            # 4. Извлекаем CLS-векторы для всех частей
+            cls_embeddings = outputs.last_hidden_state[:, 0, :]  # CLS токен каждой части
+            concatenated_embedding = cls_embeddings.reshape(-1)  # Конкатенируем по оси эмбеддингов
+            batch_embeddings.append(concatenated_embedding.cpu().numpy())  # Добавляем в батч
+
+        return np.array(batch_embeddings)
+
+
 
     def get_tokens(self, instruction):
         """
         Generates tokens for the given instruction.
         """
-        return self.tokenizer(instruction, padding=True, truncation=True, return_tensors='np')['input_ids']
+        return self.tokenizer(instruction, max_length=30, truncation=True, padding="max_length", return_tensors='np')['input_ids']
