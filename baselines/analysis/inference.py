@@ -6,6 +6,8 @@ import jax.numpy as jnp
 import numpy as np
 import optax
 import yaml
+import pandas as pd
+
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
@@ -22,128 +24,154 @@ sys.path.append(".")
 from wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
-    BatchEnvWrapper,
-)
+    BatchEnvWrapper)
 
-def main(args):
 
-    path_parts = os.path.normpath(args.path).split(os.sep)
-    last_folder = path_parts[-2]  # Пред-последняя папка
-    result_file = os.path.join(args.path, f"{last_folder}_checkpoint_results.txt")
+class ResultManager:
+    def __init__(self, experiment_name, craftext_settings):
+        self.experiment_name = experiment_name
+        self.craftext_settings = craftext_settings
+        self.instructions = None
+        self.functions = None
+        self.success_rates = None
 
-    if not os.path.exists(result_file):
-        open(result_file, 'w').close() 
+    def update_results(self, instructions, functions, success_rates):
+        self.instructions = instructions
+        self.functions = functions
+        self.success_rates = success_rates
+
+    def save_to_csv(self, output_path):
+        print(f"Results saved to {output_path}")
+        if self.instructions is None or self.functions is None or self.success_rates is None:
+            raise ValueError("Results are not initialized.")
         
-    with open(os.path.join(args.path, "config.yaml")) as f:
-        raw_config = yaml.load(f, Loader=yaml.Loader)
+        dataset = pd.DataFrame({
+            'instructions': self.instructions,
+            'functions': self.functions,
+            'sr': self.success_rates
+        })
+        dataset.to_csv(output_path, index=False)
 
-        config = {}
-        for key, value in raw_config.items():
-            if isinstance(value, dict) and "value" in value:
-                config[key] = value["value"]
 
-    config["NUM_ENVS"] = args.num_envs
-    config["RATIO"] = args.ratio
 
-    orbax_checkpointer = PyTreeCheckpointer()
-    options = CheckpointManagerOptions(max_to_keep=1, create=True)
-    checkpoint_manager = CheckpointManager(
-        os.path.abspath(os.path.join(args.path, "policies")), orbax_checkpointer, options
-    )
+class Experiment:
+    def __init__(self, args):
+        self.args = args
+        self.config = self._load_config()
+        self.checkpoint_manager = self._initialize_checkpoint_manager()
+        self.env, self.network = self._initialize_environment_and_network()
+        self.train_state = self._initialize_train_state()
+        self.result_manager = ResultManager(args.experiment_name, args.craftext_settings)
 
-    is_classic = False
-    config_name = config["ENV_NAME"]
+    def _load_config(self):
+        config_path = os.path.join(self.args.path, "config.yaml")
+        with open(config_path) as f:
+            raw_config = yaml.load(f, Loader=yaml.Loader)
 
-    add_text_emb = "-Text" in config_name
-    config["ENV_NAME"] = config_name.replace("-Text", "")
-    
-    env = make_craftax_env_from_name(config["ENV_NAME"],  False)
-    actions_count = 17 if "Classic" in config["ENV_NAME"] else 43
-    if "Pixels" in config["ENV_NAME"]:
-            network = ActorCriticConvWithBERT(actions_count, config["LAYER_SIZE"])
-    else:
-            network = ActorCritic(actions_count, config["LAYER_SIZE"])
-                                    
+        config = {key: value["value"] if isinstance(value, dict) and "value" in value else value
+                  for key, value in raw_config.items()}
+        config["NUM_ENVS"] = self.args.num_envs
+        config["RATIO"] = self.args.ratio
+        return config
 
-    env = InstructionWrapper(env, args.craftext_settings)
-    env = OptimisticResetVecEnvWrapper(env, config["NUM_ENVS"], min(config["RATIO"],config["NUM_ENVS"]))
-    env_params = env.default_params
+    def _initialize_checkpoint_manager(self):
+        orbax_checkpointer = PyTreeCheckpointer()
+        options = CheckpointManagerOptions(max_to_keep=1, create=True)
+        checkpoint_path = os.path.abspath(os.path.join(self.args.path, "checkpoint_restart_5"))
+        return CheckpointManager(checkpoint_path, orbax_checkpointer, options)
 
-    init_x = jnp.zeros((config["NUM_ENVS"], *env.observation_space(env_params).shape))
+    def _initialize_environment_and_network(self):
+        is_classic = "-Text" not in self.config["ENV_NAME"]
+        env_name = self.config["ENV_NAME"].replace("-Text", "")
+        self.config["ENV_NAME"] = env_name
 
-    rng = jax.random.PRNGKey(np.random.randint(2**31))
-    rng, _rng, __rng = jax.random.split(rng, 3)
+        env = make_craftax_env_from_name(env_name, False)
+        actions_count = 17 if "Classic" in env_name else 43
+        network_class = ActorCriticConvWithBERT if "Pixels" in env_name else ActorCriticConv
+        network = network_class(actions_count, self.config["LAYER_SIZE"])
 
-    instructions = jnp.tile(env.encoded_instruction, (config["NUM_ENVS"], 1))
+        env = InstructionWrapper(env, self.args.craftext_settings)
+        env = OptimisticResetVecEnvWrapper(env, self.config["NUM_ENVS"], 
+                                           min(self.config["RATIO"], self.config["NUM_ENVS"]))
+        return env, network
 
-    network_params = network.init(_rng, init_x, instructions)
+    def _initialize_train_state(self):
+        init_x = jnp.zeros((self.config["NUM_ENVS"], *self.env.observation_space(self.env.default_params).shape))
+        rng = jax.random.PRNGKey(np.random.randint(2**31))
+        rng, _rng, __rng = jax.random.split(rng, 3)
 
-    tx = optax.chain(
-        optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        optax.adam(config["LR"], eps=1e-5),
-    )
-    train_state = TrainState.create(
-        apply_fn=network.apply,
-        params=network_params,
-        tx=tx,
-    )
+        instructions = jnp.tile(self.env.encoded_instruction, (self.config["NUM_ENVS"], 1))
+        network_params = self.network.init(_rng, init_x, instructions)
 
-    train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
+        tx = optax.chain(
+            optax.clip_by_global_norm(self.config["MAX_GRAD_NORM"]),
+            optax.adam(self.config["LR"], eps=1e-5),
+        )
+        train_state = TrainState.create(
+            apply_fn=self.network.apply,
+            params=network_params,
+            tx=tx,
+        )
+        return self.checkpoint_manager.restore(5*int(self.config["TOTAL_TIMESTEPS"]))
 
-    obs, env_state = env.reset(_rng, env_params)
-    done = False
-    import time
-    steps = 0
-    step_fn = jax.jit(env.step)
-    success_rate = jnp.zeros(config["NUM_ENVS"])
-    total_success_rate = jnp.zeros(config["NUM_ENVS"])
-    count_total_success_rate=jnp.zeros(config["NUM_ENVS"])
-    done_count = jnp.zeros(config["NUM_ENVS"])
-    while steps < 10000:
-        pi, value = network.apply(train_state['params'], obs, env_state.instruction)
-        action = pi.sample(seed=_rng)#[0]
-        
-        action = jax.device_put(action, device=jax.devices('gpu')[0])
+    def run(self):
+        rng = jax.random.PRNGKey(np.random.randint(2**31))
+        obs, env_state = self.env.reset(rng, self.env.default_params)
 
-        if action is not None:
-            rng, _rng = jax.random.split(rng)
-            obs, env_state, reward, done, info = step_fn(
-                _rng, env_state, action, env_params
-            )
-            steps += 1
-        
-        instruction_done_float = info['SR']
-        new_episode_sr = success_rate + instruction_done_float
-        success_rate = new_episode_sr * (1 - done)
-        total_success_rate=total_success_rate * (1 - done) + new_episode_sr * done 
-        count_total_success_rate += new_episode_sr * done 
-        done_count += jnp.float32(done)
-    
+        steps = 0
+        step_fn = jax.jit(self.env.step)
+        total_success_rate = np.zeros(self.config["NUM_ENVS"])
+        done_count = np.zeros(self.config["NUM_ENVS"])
+        prev_indx = np.zeros(self.config["NUM_ENVS"])
+        params = self.train_state['runner_state'][0]["params"]
 
-    result_str = f"{args.craftext_settings} {args.num_envs} {np.mean(count_total_success_rate/done_count)}{np.std(count_total_success_rate/done_count)}\n"
+        while steps < 5000:
+            pi, value = self.network.apply(params, obs, env_state.instruction)
+            action = pi.sample(seed=rng)
+            if action is not None:
+                rng, _rng = jax.random.split(rng)
+                obs, env_state, reward, done, info = step_fn(_rng, env_state, action, self.env.default_params)
+                steps += 1
 
-    with open(result_file, 'a') as f:
-        f.write(result_str)
-    
-   # print(np.mean(total_success_rate))
-    print(np.mean(count_total_success_rate/done_count))
-    print(np.std(count_total_success_rate/done_count))
+                instruction_done_float = info['SR']
+                indices = np.where(instruction_done_float > 0)
+                for inst in prev_indx[indices]:
+                    total_success_rate[inst] += 1
+
+                done_indices = np.where(done > 0)
+                for inst in prev_indx[done_indices]:
+                    done_count[inst] += 1
+
+                prev_indx = env_state.idx
+
+        success_rates = total_success_rate / done_count
+        self.result_manager.update_results(
+            self.env.scenario_handler.scenario_data.instructions_list,
+            self.env.scenario_handler.scenario_data.str_check_lambda_list,
+            success_rates[:len(self.env.scenario_handler.scenario_data.instructions_list)]
+        )
+        os.makedirs("results", exist_ok=True)
+        self.result_manager.save_to_csv(f"results/{self.args.experiment_name}_{self.args.craftext_settings}.csv")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", type=str)
+    parser.add_argument("--path", default=None, type=str)
+    parser.add_argument("--experiment_name", default=None, type=str)
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--num_envs", type=int, default=1, help="Number of environments")
     parser.add_argument("--ratio", type=int, default=16)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
+    if args.path is None:
+        args.path = f"./wandb/{args.experiment_name}/files/"
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
+    experiment = Experiment(args)
     if args.debug:
         with jax.disable_jit():
-            main(args)
+            experiment.run()
     else:
-        main(args)
+        experiment.run()
