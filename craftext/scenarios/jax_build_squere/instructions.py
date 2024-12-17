@@ -5,6 +5,7 @@ from craftext.scenarios.constants import BlockType
 one = {
     "squere_one": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 2)",
         'instruction': "Build a 2x2 square of stone blocks.",
         'instruction_paraphrases': [
             "Form a sturdy stone square, 2 blocks long on each side.",
@@ -16,6 +17,7 @@ one = {
     }, 
     "squere_one_1": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.STONE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 2)",
         'instruction': "Build a 2x2 square of stone blocks.",
         'instruction_paraphrases': [
             "Form a sturdy stone square, 2 blocks long on each side.",
@@ -26,11 +28,10 @@ one = {
         ]
     }
 }
-
-
 easy = {
     "squere_easy_1": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2)",
         'instruction': "Build a 2x2 square of crafting tables.",
         'instruction_paraphrases': [
             "Form a crafting station by placing tables in a square, 2 blocks on each side.",
@@ -41,7 +42,8 @@ easy = {
         ]
     },
     "squere_easy_2": {
-        'check_lambda':  lambda game_data, ix: is_square_formed(game_data,ix,BlockType.STONE, 2),
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 2)",
         'instruction': "Build a 2x2 square of stone blocks.",
         'instruction_paraphrases': [
             "Form a sturdy stone square, 2 blocks long on each side.",
@@ -52,7 +54,8 @@ easy = {
         ]
     },
     "squere_easy_3": {
-        'check_lambda':  lambda game_data, ix: is_square_formed(game_data,ix, BlockType.PLANT, 2),
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.PLANT, 2)",
         'instruction': "Build a 2x2 square of plants.",
         'instruction_paraphrases': [
             "Arrange plants in a compact 2x2 green patch.",
@@ -63,7 +66,8 @@ easy = {
         ]
     },
     "squere_easy_4": {
-        'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.STONE, 3),
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 3),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 3)",
         'instruction': "Build a 3x3 square of stone blocks.",
         'instruction_paraphrases': [
             "Create a solid 3x3 stone block structure, with 3 blocks on each side.",
@@ -74,7 +78,8 @@ easy = {
         ]
     },
     "squere_easy_5": {
-        'check_lambda':  lambda game_data, ix: is_square_formed(game_data,ix,BlockType.PLANT, 3),
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 3),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.PLANT, 3)",
         'instruction': "Build a 3x3 square of plants.",
         'instruction_paraphrases': [
             "Set up a garden bed by arranging plants in a 3x3 square.",
@@ -83,9 +88,10 @@ easy = {
             "Build a lush square garden by placing plants in a neat 3x3 grid.",
             "Arrange plants in a symmetrical 3x3 pattern, creating a balanced green patch."
         ]
-    }, 
-     "squere_easy_4": {
-        'check_lambda':  lambda game_data, ix: is_square_formed(game_data,ix, BlockType.FURNACE, 2),
+    },
+    "squere_easy_6": {  # Updated name to avoid duplicate keys
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.FURNACE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.FURNACE, 2)",
         'instruction': "Build a 2x2 square of furnaces.",
         'instruction_paraphrases': [
             "Construct a 2x2 square using furnaces.",
@@ -94,7 +100,7 @@ easy = {
             "Form a furnace square with a side of 2, ensuring a compact arrangement.",
             "Set up a 2x2 square using 4 furnaces to create a heating zone."
         ]
-    },
+    }
 }
 
         

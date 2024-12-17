@@ -11,7 +11,8 @@ easy_test_parafrased = {
             "Accumulate three wooden units and put a stove on the ground",
             "Gather three pieces of timber and install a smelter at the designated spot"
         ],
-        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 3, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 3, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 3, 2)"
     },
     'simple_conditional_placing_002': {
         'instruction': "Collect 2 pieces of wood and place a crafting table",
@@ -22,7 +23,8 @@ easy_test_parafrased = {
             "Obtain two wooden units and place a worktable",
             "Amass two logs and arrange a crafting surface at the designated location"
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 2, 3)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 2, 3),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 2, 3)"
     },
     'simple_conditional_placing_003': {
         'instruction': "Place a plant after collecting 2 saplings",
@@ -33,7 +35,8 @@ easy_test_parafrased = {
             "Accumulate two young plants and put a bush on the terrain",
             "Gather two saplings and install vegetation at the specified spot"
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.PLANT, 2, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.PLANT, 2, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.SAPLING, BlockType.PLANT, 2, 2)"
     },
     'simple_conditional_placing_004': {
         'instruction': "Collect 1 piece of wood and place a furnace",
@@ -44,11 +47,14 @@ easy_test_parafrased = {
             "Accumulate one wooden unit and put a stove on the ground",
             "Collect one log and install a smelter at the designated location"
         ],
-        'check_lambda': lambda  gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 1, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 1, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 1, 2)"
     }
 }
 
+
 # TODO: need to check how many synonyms are used
+
 easy_test_other_paramets = {
     'simple_conditional_placing_001': {
         'instruction': "Collect 1 piece of wood and place 2 plant blocks.",
@@ -59,7 +65,8 @@ easy_test_other_paramets = {
             "Once you've gathered a piece of timber, put two plant blocks.",
             "Collect one unit of wood and install two plant blocks."
         ],
-        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.PLANT, 1, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.PLANT, 1, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.WOOD, BlockType.PLANT, 1, 2)"
     },
     'simple_conditional_placing_002': {
         'instruction': "Collect 2 saplings and place 2 furnace blocks.",
@@ -70,7 +77,8 @@ easy_test_other_paramets = {
             "Once you've gathered two saplings, set down two furnace blocks.",
             "Collect two saplings and install two furnaces."
         ],
-        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 2, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 2, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 2, 2)"
     },
     'simple_conditional_placing_003': {
         'instruction': "Collect 1 wood pickaxe and place 2 crafting tables.",
@@ -81,7 +89,8 @@ easy_test_other_paramets = {
             "Once you've gathered one wood pickaxe, put down two crafting tables.",
             "Accumulate one wooden pickaxe and install two crafting tables."
         ],
-        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD_PICKAXE, BlockType.CRAFTING_TABLE, 1, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD_PICKAXE, BlockType.CRAFTING_TABLE, 1, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.WOOD_PICKAXE, BlockType.CRAFTING_TABLE, 1, 2)"
     },
     'simple_conditional_placing_004': {
         'instruction': "Collect 3 pieces of iron and place 2 crafting tables.",
@@ -92,7 +101,8 @@ easy_test_other_paramets = {
             "Once you've gathered three iron pieces, put down two crafting tables.",
             "Accumulate three iron blocks and install two crafting tables."
         ],
-        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 3, 2)
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 3, 2),
+        'str_check_lambda': "conditional_placing(gd, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 3, 2)"
     }
 }
 

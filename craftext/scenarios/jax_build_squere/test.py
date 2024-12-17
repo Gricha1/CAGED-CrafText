@@ -4,6 +4,7 @@ from craftext.scenarios.constants import BlockType
 easy_test_parafrased = {
     "squere_parafrased_1": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2)",
         'instruction_paraphrases': [
             "Build a small crafting table structure in a 2x2 layout.",
             "Arrange four crafting tables into a square with 2 units per side.",
@@ -13,7 +14,8 @@ easy_test_parafrased = {
         ]
     },
     "squere_parafrased_2": {
-        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix,BlockType.STONE, 2),
+        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 2)",
         'instruction_paraphrases': [
             "Arrange stones to create a sturdy 2x2 formation.",
             "Build a small square of stones, with each side made of 2 blocks.",
@@ -22,9 +24,9 @@ easy_test_parafrased = {
             "Form a compact square of stones using 4 blocks."
         ]
     },
-
     "squere_parafrased_3": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 3),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.STONE, 3)",
         'instruction_paraphrases': [
             "Create a large stone square, 3 units long on each side.",
             "Form a strong 3x3 structure using stone blocks.",
@@ -35,6 +37,7 @@ easy_test_parafrased = {
     },
     "squere_parafrased_4": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 3),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.PLANT, 3)",
         'instruction_paraphrases': [
             "Arrange plants to create a 3x3 square garden area.",
             "Build a large green patch by placing plants in a 3 by 3 pattern.",
@@ -45,10 +48,12 @@ easy_test_parafrased = {
     }
 }
 
+
 # TODO: check complexity
 easy_test_other_paramets = {
     "squere_other_1": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3)",
         'instruction_paraphrases': [
             "Build a 3x3 square of crafting tables.",
             "Create a larger crafting area by arranging crafting tables in a 3x3 shape.",
@@ -57,9 +62,9 @@ easy_test_other_paramets = {
             "Construct a 3x3 square with crafting tables, expanding the crafting zone."
         ]
     },
-    
-        "squere_other_2": {
+    "squere_other_2": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.FURNACE, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.FURNACE, 2)",
         'instruction_paraphrases': [
             "Construct a furnace block by arranging 4 furnaces in a 2x2 shape.",
             "Build a small square using furnaces, with 2 units per side.",
@@ -68,9 +73,9 @@ easy_test_other_paramets = {
             "Form a square of furnaces, with each side consisting of 2 furnaces."
         ]
     },
-    
     "squere_other_3": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 4),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.PLANT, 4)",
         'instruction_paraphrases': [
             "Build a 4x4 green patch by arranging plants in a grid.",
             "Form a large 4 by 4 garden area using plants.",
@@ -79,9 +84,9 @@ easy_test_other_paramets = {
             "Set up a 4x4 square of plants to grow a bigger garden patch."
         ]
     },
-    
-        "squere_other_4": {
+    "squere_other_4": {
         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 2),
+        'str_check_lambda': "is_square_formed(game_data, ix, BlockType.PLANT, 2)",
         'instruction_paraphrases': [
             "Build a green zone by arranging plants in a 2x2 layout.",
             "Set up a square of plants, with each side measuring 2 units.",
@@ -91,6 +96,7 @@ easy_test_other_paramets = {
         ]
     }
 }
+
 
 
 medium_test_parafrased = {

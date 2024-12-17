@@ -11,7 +11,8 @@ one = {
             "Arrange a sequence of 2 blocks with the crafting platform.",
             "Create a straight formation of 2 blocks with the crafting table."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
+        'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
     },
     
     'line_one_2': {
@@ -23,10 +24,10 @@ one = {
             "Arrange a sequence of 2 blocks with the crafting platform.",
             "Create a straight formation of 2 blocks with the crafting table."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
+        'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
     },
 }
-    
 easy = {
     'line_easy_1': {
         'instruction': "Make a line of 2 blocks using table.",
@@ -37,7 +38,8 @@ easy = {
             "Arrange a sequence of 2 blocks with the crafting platform.",
             "Create a straight formation of 2 blocks with the crafting table."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
+        'str_check_lambda': "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
     },
     'line_easy_2': {
         'instruction': "Make a diagonal line of 3 blocks using table.",
@@ -48,7 +50,8 @@ easy = {
             "Arrange a sloped line of 3 units using the crafting bench.",
             "Create a diagonal sequence of 3 items with the crafting table."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True),
+        'str_check_lambda': "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)"
     },
     'line_easy_3': {
         'instruction': "Make a diagonal line of 2 blocks using stone.",
@@ -59,7 +62,8 @@ easy = {
             "Arrange a sloped row of 2 stone units.",
             "Create a diagonal sequence of 2 stone blocks."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.STONE, 2, check_diagonal=True)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.STONE, 2, check_diagonal=True),
+        'str_check_lambda': "is_line_formed(game_data, ix, BlockType.STONE, 2, check_diagonal=True)"
     },
     'line_easy_4': {
         'instruction': "Make a line of 2 blocks using furnace.",
@@ -70,7 +74,8 @@ easy = {
             "Arrange a straight line of 2 pieces with the smelter.",
             "Create a row of 2 blocks using the furnace."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.FURNACE, 2, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.FURNACE, 2, check_diagonal=False),
+        'str_check_lambda': "is_line_formed(game_data, ix, BlockType.FURNACE, 2, check_diagonal=False)"
     },
     'line_easy_5': {
         'instruction': "Make a horizontal line of 4 blocks using stone.",
@@ -81,7 +86,8 @@ easy = {
             "Arrange 4 stones in a straight sequence.",
             "Create a horizontal formation of 4 stone blocks."
         ],
-        'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix,BlockType.STONE, 4, check_diagonal=False)
+        'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.STONE, 4, check_diagonal=False),
+        'str_check_lambda': "is_line_formed(game_data, ix, BlockType.STONE, 4, check_diagonal=False)"
     }
 }
 

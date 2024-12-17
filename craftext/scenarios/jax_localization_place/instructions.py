@@ -44,6 +44,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1)",
         'complexity': "easy-pease"
     },
 
@@ -59,6 +60,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data,  BlockType.FURNACE, BlockType.STONE, 3, 2
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.STONE, 3, 2)",
         'complexity': "easy-pease"
     },
 
@@ -74,6 +76,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1)",
         'complexity': "easy-pease"
     },
 
@@ -89,6 +92,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.FURNACE, BlockType.PATH, 1, 3
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.PATH, 1, 3)",
         'complexity': "easy"
     },
 
@@ -104,6 +108,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 2
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 2)",
         'complexity': "medium"
     },
 
@@ -119,6 +124,7 @@ easy = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.FURNACE, BlockType.IRON, 0, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.IRON, 0, 1)",
         'complexity': "medium"
     }
 }

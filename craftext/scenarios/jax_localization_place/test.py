@@ -14,6 +14,7 @@ easy_test_parafrased = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.WATER, 0, 1)",
         'complexity': "easy-pease"
     },
 
@@ -29,6 +30,7 @@ easy_test_parafrased = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.FURNACE, BlockType.STONE, 3, 2
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.STONE, 3, 2)",
         'complexity': "easy-pease"
     },
 
@@ -44,9 +46,11 @@ easy_test_parafrased = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.TREE, 2, 1)",
         'complexity': "easy-pease"
     }
 }
+
 
 easy_test_other_paramets = {
     "place_easy_test_other_paramets_easy_4": {
@@ -61,6 +65,7 @@ easy_test_other_paramets = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.FURNACE, BlockType.WATER, 1, 1
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.WATER, 1, 1)",
         'complexity': "easy"
     },
 
@@ -76,6 +81,7 @@ easy_test_other_paramets = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 3
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.COAL, 2, 3)",
         'complexity': "medium"
     },
 
@@ -91,9 +97,11 @@ easy_test_other_paramets = {
         'check_lambda': lambda game_data, ix: place_object_relevant_to(
             game_data, BlockType.FURNACE, BlockType.TREE, 0, 2
         ),
+        'str_check_lambda': "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.TREE, 0, 2)",
         'complexity': "medium"
     }
 }
+
 
 
 medium_test_parafrased = {
