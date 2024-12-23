@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from deserialization import GameData, achievements_list
 from craftext.checkers.base_functions.base import did_player_go_north, did_player_go_south, did_player_go_east, did_player_go_west
 from math import sqrt
@@ -79,7 +79,7 @@ def is_object_near_target(game_data: GameData, placed_object_name: str, target_o
     return is_near, is_north, is_south, is_east, is_west
 
 
-def is_player_within_all_water_sources(game_data: GameData, required_object: str = None) -> bool:
+def is_player_within_all_water_sources(game_data: GameData, required_object: Optional[str] = None) -> bool:
     """
     Check if the player has been within the bounds of all water clusters across all game states.
     
@@ -115,7 +115,7 @@ def is_player_within_all_water_sources(game_data: GameData, required_object: str
     return False
 
 
-def is_player_within_north_water_sources(game_data: GameData, required_object: str = None) -> bool:
+def is_player_within_north_water_sources(game_data: GameData, required_object: Optional[str] = None) -> bool:
     """
     Check if the player has been within the bounds of all water clusters in the northern part of the map across all game states.
     
@@ -128,7 +128,7 @@ def is_player_within_north_water_sources(game_data: GameData, required_object: s
     - bool: True if the player has been within all northern water clusters at some point and the object is present, False otherwise.
     """
     water_clusters = find_clusters(game_data)
-    map_height = game_data.states[0].map.shape[0]
+    map_height = game_data.states[0].map.game_map.shape[0]
     mid_latitude = map_height // 2
 
     # Filter clusters to only those in the northern part of the map
@@ -158,7 +158,7 @@ def is_player_within_north_water_sources(game_data: GameData, required_object: s
     # If there are any remaining northern clusters, return False
     return False
 
-def is_player_within_south_water_sources(game_data: GameData, required_object: str = None) -> bool:
+def is_player_within_south_water_sources(game_data: GameData, required_object: Optional[str] = None) -> bool:
     """
     Check if the player has been within the bounds of all water clusters in the southern part of the map across all game states.
     
@@ -171,7 +171,7 @@ def is_player_within_south_water_sources(game_data: GameData, required_object: s
     - bool: True if the player has been within all southern water clusters at some point and the object is present, False otherwise.
     """
     water_clusters = find_clusters(game_data)
-    map_height = game_data.states[0].map.shape[0]
+    map_height = game_data.states[0].map.game_map.shape[0]
     mid_latitude = map_height // 2
 
     # Filter clusters to only those in the southern part of the map
