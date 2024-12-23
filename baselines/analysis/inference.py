@@ -7,6 +7,8 @@ import numpy as np
 import optax
 import yaml
 import pandas as pd
+import imageio
+import random
 
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
@@ -20,6 +22,7 @@ from actor_critic import (ActorCriticConv,
                           ActorCriticConvWithBERT)
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
+from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
 sys.path.append(".")
 from wrappers import (
     LogWrapper,
@@ -59,7 +62,7 @@ class Experiment:
         self.args = args
         self.config = self._load_config()
         self.checkpoint_manager = self._initialize_checkpoint_manager()
-        self.env, self.network = self._initialize_environment_and_network()
+        self.env, self.network = self._initialize_environment_and_network(view=args.view)
         self.train_state = self._initialize_train_state()
         self.result_manager = ResultManager(args.experiment_name, args.craftext_settings)
 
@@ -77,10 +80,10 @@ class Experiment:
     def _initialize_checkpoint_manager(self):
         orbax_checkpointer = PyTreeCheckpointer()
         options = CheckpointManagerOptions(max_to_keep=1, create=True)
-        checkpoint_path = os.path.abspath(os.path.join(self.args.path, "checkpoint_restart_5"))
+        checkpoint_path = os.path.abspath(os.path.join(self.args.path, "checkpoint_restart_1"))
         return CheckpointManager(checkpoint_path, orbax_checkpointer, options)
 
-    def _initialize_environment_and_network(self):
+    def _initialize_environment_and_network(self, view=False):
         is_classic = "-Text" not in self.config["ENV_NAME"]
         env_name = self.config["ENV_NAME"].replace("-Text", "")
         self.config["ENV_NAME"] = env_name
@@ -91,8 +94,9 @@ class Experiment:
         network = network_class(actions_count, self.config["LAYER_SIZE"])
 
         env = InstructionWrapper(env, self.args.craftext_settings)
-        env = OptimisticResetVecEnvWrapper(env, self.config["NUM_ENVS"], 
-                                           min(self.config["RATIO"], self.config["NUM_ENVS"]))
+        if not view:
+            env = OptimisticResetVecEnvWrapper(env, self.config["NUM_ENVS"], 
+                                            min(self.config["RATIO"], self.config["NUM_ENVS"]))
         return env, network
 
     def _initialize_train_state(self):
@@ -112,7 +116,46 @@ class Experiment:
             params=network_params,
             tx=tx,
         )
-        return self.checkpoint_manager.restore(5*int(self.config["TOTAL_TIMESTEPS"]))
+        return self.checkpoint_manager.restore(4*int(self.config["TOTAL_TIMESTEPS"]))
+    
+    def view(self):
+        rng = jax.random.PRNGKey(random.randint(0, 100))
+        obs, env_state = self.env.reset(rng, self.env.default_params)
+        step_fn = jax.jit(self.env.step)
+        done = False
+        renderer = CraftaxRenderer(self.env, self.env.default_params, pixel_render_size=1)
+        steps = 0
+        step_fn = jax.jit(self.env.step)
+        params = self.train_state['runner_state'][0]["params"]
+        observations = []
+        while not done and steps < 500:
+            obs = jnp.expand_dims(obs, axis=0)
+            instruction =self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
+            pi, value = self.network.apply(params, obs, env_state.instruction.reshape(1, -1))
+            action = pi.sample(seed=rng)[0]
+            
+            action = jax.device_put(action, device=jax.devices('gpu')[0])
+
+            if action is not None:
+               # rng, _rng = jax.random.split(rng)
+                obs, env_state, reward, done, info = step_fn(
+                    rng, env_state, action, self.env.default_params
+                )
+                steps += 1
+
+            image = renderer.render_to_image(env_state.env_state)
+            observations.append(image)
+        gif_name = "_".join(self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()].split()[:5])
+        ix = random.randint(0,200)
+        folder_name = "animation"
+
+        os.makedirs(folder_name, exist_ok=True)
+        with imageio.get_writer(f'animation/{ix}_{gif_name}.gif', mode='I', duration=0.1) as writer:
+            for i, image in enumerate(observations):
+                text = f"Step {i}, Instruction {self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]}"
+                image_with_text = add_text_to_image(image, text)
+                writer.append_data(image_with_text.astype(np.uint8))
+        print(f'Save with name animation/{ix}_{gif_name}.gif')
 
     def run(self):
         rng = jax.random.PRNGKey(np.random.randint(2**31))
@@ -159,6 +202,7 @@ if __name__ == "__main__":
     parser.add_argument("--path", default=None, type=str)
     parser.add_argument("--experiment_name", default=None, type=str)
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--view", type=bool, default=False)
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--num_envs", type=int, default=1, help="Number of environments")
     parser.add_argument("--ratio", type=int, default=16)
@@ -170,8 +214,11 @@ if __name__ == "__main__":
         raise ValueError(f"Unknown args {rest_args}")
 
     experiment = Experiment(args)
-    if args.debug:
-        with jax.disable_jit():
-            experiment.run()
+    if args.view:
+        experiment.view()
     else:
-        experiment.run()
+        if args.debug:
+            with jax.disable_jit():
+                experiment.run()
+        else:
+            experiment.run()
