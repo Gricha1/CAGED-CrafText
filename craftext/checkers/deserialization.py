@@ -77,7 +77,7 @@ class PlayerInventory:
 
 @dataclass
 class GameMap:
-    game_map: np.array
+    game_map: np.ndarray
 
     def look_around(self, position):
         r = 4
@@ -155,7 +155,7 @@ class GameData:
             inventory = PlayerInventory(**data['inventory'].get(str(key), {}))
             action = action_map.get(data['actions'].get(str(key), ''), 'unknown')
             game_map = GameMap(data['map'])
-            states.append(PlayerState(variables=variables, achievements=achievements, inventory=inventory, action=action, game_map = game_map))
+            states.append(PlayerState(variables=variables, achievements=achievements, inventory=inventory, action=action, map = game_map))
         return GameData(states=states)
 
 def validate_achievements(player_achievements: List[str]) -> bool:

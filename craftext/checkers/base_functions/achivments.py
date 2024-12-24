@@ -1,8 +1,7 @@
-from typing import List, Tuple
-from deserialization import GameData, achievements_list
-from math import sqrt
+from typing import Optional
+from deserialization import GameData
 
-def is_table_placed(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: int = None):
+def is_table_placed(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: Optional[int] = None):
     """
     Check if the table was placed in the game within specified state range.
 
@@ -25,7 +24,7 @@ def is_table_placed(game_data: GameData, verbose: bool = False, start_index: int
             return index if verbose else True
     return -1 if verbose else False
 
-def is_wood_pickaxe_made(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: int = None):
+def is_wood_pickaxe_made(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: Optional[int] = None):
     """
     Check if the wood pickaxe was made in the game within specified state range.
 
@@ -53,7 +52,7 @@ def is_wood_pickaxe_made(game_data: GameData, verbose: bool = False, start_index
 
     return -1 if verbose else False
 
-def is_stone_collected(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: int = None):
+def is_stone_collected(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: Optional[int] = None):
     """
     Check if the stone was collected in the game within specified state range.
 
@@ -81,7 +80,7 @@ def is_stone_collected(game_data: GameData, verbose: bool = False, start_index: 
 
     return -1 if verbose else False
 
-def is_stone_pickaxe_made(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: int = None):
+def is_stone_pickaxe_made(game_data: GameData, verbose: bool = False, start_index: int = 0, end_index: Optional[int] = None):
     """
     Check if the stone pickaxe was made in the game within specified state range.
 
