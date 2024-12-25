@@ -540,22 +540,22 @@ easy = {
         }
    , 
 
-    'INSTRUCTION_1': 
-    {
-        'instruction': "Collect some iron and diamond in this order",
-        'instruction_paraphrases': [
-            "You must gather up iron and diamonds.",
-            "Iron and diamond are your collection targets.",
-            "Your task is to accumulate iron in the game world, followed by diamond.",
-            "Initially, begin by obtaining iron from the environment and proceed by collecting some diamond thereafter.",
-            "The sequence of actions you're supposed to carry out involves initial procurement of iron, followed by the acquisition of diamond."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.COLLECT_IRON.value, Achievement.COLLECT_DIAMOND.value] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.COLLECT_DIAMOND.value] else 0 for a in range(Achievement.COLLECT_DIAMOND.value+1)]))"
-    }, 
+    # 'INSTRUCTION_1': 
+    # {
+    #     'instruction': "Collect some iron and diamond in this order",
+    #     'instruction_paraphrases': [
+    #         "You must gather up iron and diamonds.",
+    #         "Iron and diamond are your collection targets.",
+    #         "Your task is to accumulate iron in the game world, followed by diamond.",
+    #         "Initially, begin by obtaining iron from the environment and proceed by collecting some diamond thereafter.",
+    #         "The sequence of actions you're supposed to carry out involves initial procurement of iron, followed by the acquisition of diamond."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.COLLECT_IRON.value, Achievement.COLLECT_DIAMOND.value] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.COLLECT_DIAMOND.value] else 0 for a in range(Achievement.COLLECT_DIAMOND.value+1)]))"
+    # }, 
 
     'INSTRUCTION_2': \
     {
@@ -591,25 +591,25 @@ easy = {
         'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a == Achievement.EAT_PLANT.value else -1 if a == Achievement.EAT_COW.value else 0 for a in range(Achievement.EAT_PLANT.value+1)]))"
     }, 
 
-        'INSTRUCTION_5_1': 
-        {
-            'instruction': "Start by waking up, then gather some wood, and finally place a stone.",
-            'instruction_paraphrases': 
-            [
-                "First, wake up. Secondly, collect some timber and lastly, drop a rock.",
-                "Begin by rising from your slumber, then procure some logs and conclude by positioning a boulder.",
-                "Initiate your activities by awakening, followed by harvesting lumber, and end by depositing a stone.",
-                "Commence the sequence by stirring from your sleep, proceed to gather timber, and wrap up by placing a pebble.",
-                "Wake from your dreams as a start, proceed with wood accumulation and then cap it off with a stoney placement."
-            ],
-            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
-            [
-                1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0
-                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-            ])),
-            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
-        }
-   , 
+#         'INSTRUCTION_5_1': 
+#         {
+#             'instruction': "Start by waking up, then gather some wood, and finally place a stone.",
+#             'instruction_paraphrases': 
+#             [
+#                 "First, wake up. Secondly, collect some timber and lastly, drop a rock.",
+#                 "Begin by rising from your slumber, then procure some logs and conclude by positioning a boulder.",
+#                 "Initiate your activities by awakening, followed by harvesting lumber, and end by depositing a stone.",
+#                 "Commence the sequence by stirring from your sleep, proceed to gather timber, and wrap up by placing a pebble.",
+#                 "Wake from your dreams as a start, proceed with wood accumulation and then cap it off with a stoney placement."
+#             ],
+#             'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
+#             [
+#                 1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0
+#                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+#             ])),
+#             'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+#         }
+#    , 
 
         'INSTRUCTION_61': {
             'instruction': "Collect some wood, place a rock and make a stone pickaxe.",
@@ -692,22 +692,22 @@ easy = {
         }
    , 
 
-    'INSTRUCTION_10': \
-    {
-        'instruction': "Collect some wood and defeat a zombie.",
-        'instruction_paraphrases': [
-            "Please gather some timber and slay a monster of the undead.",
-            "Make it a point to amass logs and vanquish a zombie.",
-            "It's necessary to attain lumber and conquer a walking dead.",
-            "Your task involves procuring firewood and overwhelming a relentless corpse.",
-            "You're required to harvest some forest offshoots and neutralize a resurrected being."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.DEFEAT_ZOMBIE.value+1)]))"
-    }, 
+    # 'INSTRUCTION_10': \
+    # {
+    #     'instruction': "Collect some wood and defeat a zombie.",
+    #     'instruction_paraphrases': [
+    #         "Please gather some timber and slay a monster of the undead.",
+    #         "Make it a point to amass logs and vanquish a zombie.",
+    #         "It's necessary to attain lumber and conquer a walking dead.",
+    #         "Your task involves procuring firewood and overwhelming a relentless corpse.",
+    #         "You're required to harvest some forest offshoots and neutralize a resurrected being."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.DEFEAT_ZOMBIE.value+1)]))"
+    # }, 
 
     'INSTRUCTION_11': {
         'instruction': "You must wake up. Then, you need to defeat a zombie and lastly, fetch a drink for yourself.",
@@ -763,27 +763,27 @@ easy = {
         'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_SKELETON.value + 1)]))"
     }, 
 
-        'Collect_wood_and_stone': 
-        {
-            'instruction': "Collect both wood and stone",
-            'instruction_paraphrases': [
-                "Acquire timber and rock",
-                "Procure planks and pebbles",
-                "Get your hands on some wood and stone",
-                "You need to gather some wood and stones",
-                "You have to accumulate logs and rubble"
-            ],
-            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array
-            (
-                [
-                    1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value]
-                    else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-                ]
-            )),
-            'str_check_lambda': """lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in 
-            [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in 
-            range(Achievement.COLLECT_STONE.value+1)]))"""
-        }
+        # 'Collect_wood_and_stone': 
+        # {
+        #     'instruction': "Collect both wood and stone",
+        #     'instruction_paraphrases': [
+        #         "Acquire timber and rock",
+        #         "Procure planks and pebbles",
+        #         "Get your hands on some wood and stone",
+        #         "You need to gather some wood and stones",
+        #         "You have to accumulate logs and rubble"
+        #     ],
+        #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array
+        #     (
+        #         [
+        #             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value]
+        #             else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+        #         ]
+        #     )),
+        #     'str_check_lambda': """lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in 
+        #     [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in 
+        #     range(Achievement.COLLECT_STONE.value+1)]))"""
+        # }
    , 
 'INSTRUCTION_15_1': {
     'instruction': "Collect some stone, defeat a skeleton and gather coal",
@@ -887,21 +887,21 @@ easy = {
     'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
   }, 
 
-    'INSTRUCTION_21': {
-        'instruction': "Defeat a zombie and then consume a plant.",
-        'instruction_paraphrases': [
-            "Fight and kill a zombie, then eat a plant.",
-            "Bring down a zombie first and after that, ingest a vegetation.",
-            "Neutralize a ghoul in combat, subsequently, dine on a flora.",
-            "Engage and slay an undead creature, followed by the ingestion of botanical specimen.",
-            "Successfully execute a showdown with a member of the undead, post which, partake in the consumption of a plant-based diet."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
-    }, 
+    # 'INSTRUCTION_21': {
+    #     'instruction': "Defeat a zombie and then consume a plant.",
+    #     'instruction_paraphrases': [
+    #         "Fight and kill a zombie, then eat a plant.",
+    #         "Bring down a zombie first and after that, ingest a vegetation.",
+    #         "Neutralize a ghoul in combat, subsequently, dine on a flora.",
+    #         "Engage and slay an undead creature, followed by the ingestion of botanical specimen.",
+    #         "Successfully execute a showdown with a member of the undead, post which, partake in the consumption of a plant-based diet."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+    # }, 
 
     'COLLECT_WOOD_IRON': {
         'instruction': "You need to gather some wood and iron.",
@@ -919,24 +919,24 @@ easy = {
         'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_IRON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))'
     }, 
 
-    'INSTRUCTION_24_1': {
-        'instruction': "You need to eat a cow and collect some iron.",
-        'instruction_paraphrases': [
-            "Remember to consume beef and gather iron.",
-            "It's important to gather iron and make sure you eat a cow.",
-            "Don't forget to partake in some beef and to also collect iron.",
-            "Remember, it's crucial that you eat some beef and also pick up iron.",
-            "I need you to consume the meat of a cow and also accumulate some iron."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.EAT_COW.value, Achievement.COLLECT_IRON.value] else
-            0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda': "conditional_achivments(gd, jnp.array([\
-            1 if a in [Achievement.EAT_COW.value, Achievement.COLLECT_IRON.value] else\
-            0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)\
-        ]))"
-    }, 
+    # 'INSTRUCTION_24_1': {
+    #     'instruction': "You need to eat a cow and collect some iron.",
+    #     'instruction_paraphrases': [
+    #         "Remember to consume beef and gather iron.",
+    #         "It's important to gather iron and make sure you eat a cow.",
+    #         "Don't forget to partake in some beef and to also collect iron.",
+    #         "Remember, it's crucial that you eat some beef and also pick up iron.",
+    #         "I need you to consume the meat of a cow and also accumulate some iron."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.EAT_COW.value, Achievement.COLLECT_IRON.value] else
+    #         0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda': "conditional_achivments(gd, jnp.array([\
+    #         1 if a in [Achievement.EAT_COW.value, Achievement.COLLECT_IRON.value] else\
+    #         0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)\
+    #     ]))"
+    # }, 
 
     'INSTRUCTION_25_1': {
         'instruction': "Find a tree sapling and collect a piece of coal.",
@@ -956,55 +956,55 @@ easy = {
     , 
 
     
-    'INSTRUCTION_26': {
+    # 'INSTRUCTION_26': {
         
-        'instruction': "Gather coal, iron and eat a plant.",
+    #     'instruction': "Gather coal, iron and eat a plant.",
         
-        'instruction_paraphrases': [
+    #     'instruction_paraphrases': [
             
-            "Make sure to Eat a plant after you've collected some coal and iron.",
+    #         "Make sure to Eat a plant after you've collected some coal and iron.",
             
-            "You must obtain minerals such as coal and iron and then have a plant for lunch.",
+    #         "You must obtain minerals such as coal and iron and then have a plant for lunch.",
             
-            "Only after you've consumed a plant, start extracting coal and iron.",
+    #         "Only after you've consumed a plant, start extracting coal and iron.",
             
-            "Focus on munching on a plant and scavenging for iron and coal.",
+    #         "Focus on munching on a plant and scavenging for iron and coal.",
             
-            "Once you've enjoyed your plant meal, your tasks are to collect iron and coal."
+    #         "Once you've enjoyed your plant meal, your tasks are to collect iron and coal."
             
-        ],
+    #     ],
         
-        'check_lambda': (lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #     'check_lambda': (lambda gd, ix: conditional_achivments(gd, jnp.array([
             
-            1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0
+    #         1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0
             
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             
-        ]))),
+    #     ]))),
         
-        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+    #     'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         
-    }, 
+    # }, 
 
-    'INSTRUCTION_30': \
-        {
-        'instruction': "Make a stone pickaxe and set up a furnace please.",
-        'instruction_paraphrases': [
-            "Can you construct a stone pick and also place a furnace for me?",
-            "Do me a favor by building a stone tool for picking and installing a furnace.",
-            "I need you to fashion a pick made from stone and also position a furnace.",
-            "Kindly fabricate a stone implement for excavation and implement the installation of a furnace.", 
-            "If you could, dedicate your efforts towards the assembly of a granite digging apparatus and orchestrate the emplacement of a heating unit."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.PLACE_FURNACE.value] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda':"conditional_achivments(gd, jnp.array([ \
-            1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.PLACE_FURNACE.value] else 0 \
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1) \
-        ])))"        
-        },
+    # 'INSTRUCTION_30': \
+    #     {
+    #     'instruction': "Make a stone pickaxe and set up a furnace please.",
+    #     'instruction_paraphrases': [
+    #         "Can you construct a stone pick and also place a furnace for me?",
+    #         "Do me a favor by building a stone tool for picking and installing a furnace.",
+    #         "I need you to fashion a pick made from stone and also position a furnace.",
+    #         "Kindly fabricate a stone implement for excavation and implement the installation of a furnace.", 
+    #         "If you could, dedicate your efforts towards the assembly of a granite digging apparatus and orchestrate the emplacement of a heating unit."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.PLACE_FURNACE.value] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda':"conditional_achivments(gd, jnp.array([ \
+    #         1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.PLACE_FURNACE.value] else 0 \
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1) \
+    #     ])))"        
+    #     },
 
     'INSTRUCTION_31': {
         'instruction': "Collect a drink yet do not construct a stone sword.",
@@ -1023,21 +1023,21 @@ easy = {
         'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_DRINK.value else -1 if a == Achievement.MAKE_STONE_SWORD.value else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
     }, 
 
-    "EAT_AND_PICK": {
-        "instruction": "Consume a plant, then craft a stone pickaxe and consume another plant.",
-        "instruction_paraphrases": [
-            "Eat a vegetable, afterwards create a stone tool for digging and chomp down another vegetable.",
-            "Feast on some greens, next, fabricate a quarrying tool out of rock and feast on more greens.",
-            "Nourish yourself with a plant, then manufacture a stone tool meant for excavation and then nourish yourself with another plant.",
-            "Ingest a plant, after that forge a mining instrument from stone and ingest another plant.",
-            "Bite into a botanical creation, subsequently create a rock-based excavation implement and finish by taking another bite of the botanical bounty."
-        ],
-        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)]))"
-    }, 
+    # "EAT_AND_PICK": {
+    #     "instruction": "Consume a plant, then craft a stone pickaxe and consume another plant.",
+    #     "instruction_paraphrases": [
+    #         "Eat a vegetable, afterwards create a stone tool for digging and chomp down another vegetable.",
+    #         "Feast on some greens, next, fabricate a quarrying tool out of rock and feast on more greens.",
+    #         "Nourish yourself with a plant, then manufacture a stone tool meant for excavation and then nourish yourself with another plant.",
+    #         "Ingest a plant, after that forge a mining instrument from stone and ingest another plant.",
+    #         "Bite into a botanical creation, subsequently create a rock-based excavation implement and finish by taking another bite of the botanical bounty."
+    #     ],
+    #     "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)]))"
+    # }, 
 
     'INSTRUCTION_35': {
         'instruction': "Craft a wooden pickaxe but avoid planting anything",
@@ -1080,22 +1080,22 @@ easy = {
             "lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     },
 
-    'COLLECT_DRINK_AND_NOT_PLACE_TABLE': \
-        {
+    # 'COLLECT_DRINK_AND_NOT_PLACE_TABLE': \
+    #     {
             
-            'instruction': "Obtain a drink but do not place a table.",
-            'instruction_paraphrases': [
-                "From what's available, get a beverage, but don't set up the workbench.",
-                "Please collect a drinkable liquid, without proceeding to arrange the bench.",
-                "Grasp a liquid substance and make sure not to lay down the wooden workspace.",
-                "Ensure to procure an edible liquid, however, dispatching the furniture for work must not be performed.",
-                "Although nothing should prevent you from acquiring a consumable fluid, do bear in mind to abstain from installing the crafting platform."
-            ],
-            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
-                [1 if a == Achievement.COLLECT_DRINK.value else -1 if a == Achievement.PLACE_TABLE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]
-            )),
-            'str_check_lambda': """conditional_achivments(gd, jnp.array([1 if a==Achievement.COLLECT_DRINK.value else -1 if a==Achievement.PLACE_TABLE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"""
-        }, 
+    #         'instruction': "Obtain a drink but do not place a table.",
+    #         'instruction_paraphrases': [
+    #             "From what's available, get a beverage, but don't set up the workbench.",
+    #             "Please collect a drinkable liquid, without proceeding to arrange the bench.",
+    #             "Grasp a liquid substance and make sure not to lay down the wooden workspace.",
+    #             "Ensure to procure an edible liquid, however, dispatching the furniture for work must not be performed.",
+    #             "Although nothing should prevent you from acquiring a consumable fluid, do bear in mind to abstain from installing the crafting platform."
+    #         ],
+    #         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
+    #             [1 if a == Achievement.COLLECT_DRINK.value else -1 if a == Achievement.PLACE_TABLE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]
+    #         )),
+    #         'str_check_lambda': """conditional_achivments(gd, jnp.array([1 if a==Achievement.COLLECT_DRINK.value else -1 if a==Achievement.PLACE_TABLE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"""
+    #     }, 
 
     'INSTRUCTION_38 1': \
     {
@@ -1111,39 +1111,39 @@ easy = {
         'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
-    'INSTRUCTION_39_1': \
-    {
-        'instruction': "Defeat a zombie and place a table.",
-        'instruction_paraphrases': [
-            "Attempt to slay a zombie and after that, set a table.",
-            "Overcome a zombie challenge and thereafter, station a table.",
-            "Eliminate a threat from one of the zombies, then, install a workbench.",
-            "Conquer and take out a zombie, following that, position a counter.",
-            "Subjugate a zombie and as a subsequent task, situate a desk."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
-            [
-                1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0
-                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-            ])),
-        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0 for a in range(Achievement.PLACE_TABLE.value+1)]))"
-    }, 
+    # 'INSTRUCTION_39_1': \
+    # {
+    #     'instruction': "Defeat a zombie and place a table.",
+    #     'instruction_paraphrases': [
+    #         "Attempt to slay a zombie and after that, set a table.",
+    #         "Overcome a zombie challenge and thereafter, station a table.",
+    #         "Eliminate a threat from one of the zombies, then, install a workbench.",
+    #         "Conquer and take out a zombie, following that, position a counter.",
+    #         "Subjugate a zombie and as a subsequent task, situate a desk."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
+    #         [
+    #             1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0
+    #             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #         ])),
+    #     'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0 for a in range(Achievement.PLACE_TABLE.value+1)]))"
+    # }, 
 
-    'INSTRUCTION_40': {
-        'instruction': "Collect stones, place them and get a drink.",
-        'instruction_paraphrases': [
-            "Gather some rocks, arrange them and get yourself a beverage.",
-            "Procure pebbles, put them down and secure an elixir.",
-            "Amass stones, fix them in positions and fetch a drink.",
-            "Acquire boulders, set them up and score yourself a gulpable liquid.",
-            "Round up some rocks, plant them firmly and snag a sip."
-        ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.COLLECT_STONE.value, Achievement.PLACE_STONE.value, Achievement.COLLECT_DRINK.value ] else 0
-            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-        ])),
-        'str_check_lambda': "conditional_achivments(...)"
-    }, 
+    # 'INSTRUCTION_40': {
+    #     'instruction': "Collect stones, place them and get a drink.",
+    #     'instruction_paraphrases': [
+    #         "Gather some rocks, arrange them and get yourself a beverage.",
+    #         "Procure pebbles, put them down and secure an elixir.",
+    #         "Amass stones, fix them in positions and fetch a drink.",
+    #         "Acquire boulders, set them up and score yourself a gulpable liquid.",
+    #         "Round up some rocks, plant them firmly and snag a sip."
+    #     ],
+    #     'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+    #         1 if a in [Achievement.COLLECT_STONE.value, Achievement.PLACE_STONE.value, Achievement.COLLECT_DRINK.value ] else 0
+    #         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    #     ])),
+    #     'str_check_lambda': "conditional_achivments(...)"
+    # }, 
 
     'INSTRUCTION_41_1': 
     {
@@ -1253,39 +1253,39 @@ easy = {
         }
    , 
 
-        'INSTRUCTION_48_COLLECT_COAL': 
-            {
-                'instruction': "Collect some coal.",
-                'instruction_paraphrases': [
-                    "Please acquire some coal.",
-                    "Your task is to get some anthracite.",
-                    "Will you please gather some coals for me?",
-                    "It is necessary for you to procure some carbon.",
-                    "Can you kindly proceed with the collection of some charcoal?"
-                ],
-                'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-                    1 if a == Achievement.COLLECT_COAL.value else 0
-                    for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-                ])),
-                'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_COAL.value else 0 for a in range(Achievement.COLLECT_COAL.value+1)]))"
-            },
-            'INSTRUCTION_48_WAKE_UP': 
-            {
-                'instruction': "Please wake up.",
-                'instruction_paraphrases': [
-                    "Can you wake up?",
-                    "I'd like you to awaken.",
-                    "Would you kindly stir yourself?",
-                    "It's time for you to rise.",
-                    "It would be great if you could rouse yourself."
-                ],
-                'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-                    1 if a == Achievement.WAKE_UP.value else 0
-                    for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-                ])),
-                'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a == Achievement.WAKE_UP.value else 0 for a in range(Achievement.WAKE_UP.value+1)]))"
-            }
-   , 
+        # 'INSTRUCTION_48_COLLECT_COAL': 
+        #     {
+        #         'instruction': "Collect some coal.",
+        #         'instruction_paraphrases': [
+        #             "Please acquire some coal.",
+        #             "Your task is to get some anthracite.",
+        #             "Will you please gather some coals for me?",
+        #             "It is necessary for you to procure some carbon.",
+        #             "Can you kindly proceed with the collection of some charcoal?"
+        #         ],
+        #         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+        #             1 if a == Achievement.COLLECT_COAL.value else 0
+        #             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+        #         ])),
+        #         'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_COAL.value else 0 for a in range(Achievement.COLLECT_COAL.value+1)]))"
+        #     },
+#             'INSTRUCTION_48_WAKE_UP': 
+#             {
+#                 'instruction': "Please wake up.",
+#                 'instruction_paraphrases': [
+#                     "Can you wake up?",
+#                     "I'd like you to awaken.",
+#                     "Would you kindly stir yourself?",
+#                     "It's time for you to rise.",
+#                     "It would be great if you could rouse yourself."
+#                 ],
+#                 'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+#                     1 if a == Achievement.WAKE_UP.value else 0
+#                     for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+#                 ])),
+#                 'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a == Achievement.WAKE_UP.value else 0 for a in range(Achievement.WAKE_UP.value+1)]))"
+#             }
+#    , 
    
     'COLLECT_IRON_AND_NOT_PLACE_PLANT': 
         {
@@ -1309,3 +1309,12 @@ easy = {
     
 }
     
+
+if __name__ == "__main__":
+    import json
+    instructions = []
+    for key in easy.keys():
+        instructions.append(easy[key]['instruction'])
+        instructions += easy[key]['instruction_paraphrases']
+    with open("instructions_achivments_easy_train.json", "w", encoding="utf-8") as json_file:
+        json.dump(instructions, json_file, ensure_ascii=False, indent=4)
