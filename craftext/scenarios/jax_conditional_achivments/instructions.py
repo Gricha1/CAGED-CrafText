@@ -784,7 +784,7 @@ easy = {
         #     [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in 
         #     range(Achievement.COLLECT_STONE.value+1)]))"""
         # }
-   , 
+   
 'INSTRUCTION_15_1': {
     'instruction': "Collect some stone, defeat a skeleton and gather coal",
     'instruction_paraphrases': [
