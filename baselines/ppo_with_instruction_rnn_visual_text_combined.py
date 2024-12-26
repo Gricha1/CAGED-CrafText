@@ -31,6 +31,8 @@ from wrappers import (
 )
 from logz.batch_logging import create_log_dict, batch_log
 
+from craftext.craftext_scenarious import create_scenarios_with_dataset
+from craftext.craftext_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
 # Code adapted from the original implementation made by Chris Lu
@@ -182,7 +184,15 @@ def make_train(config):
         config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"]
     )
     env_params = env.default_params
-    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"])
+    
+    if config["USE_PLANS"]:
+        encoder = make_encoder(n_splits=5)
+        scenarious_loader = create_scenarios_with_dataset(True)
+        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], 
+                                 encode_model_class=encoder, 
+                                 scenario_handler_class=scenarious_loader)
+    else:
+        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"])
     # Wrap with some extra logging
     env = LogWrapper(env)
 
@@ -549,6 +559,7 @@ if __name__ == "__main__":
         type=int,
         default=16,
     )
+    parser.add_argument("--use_plans", type=bool, default=False)
     parser.add_argument("--total_timesteps", type=lambda x: int(float(x)), default=1e9)
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=64)
