@@ -47,3 +47,41 @@ python script.py --count_goals 5 \
 
 ## Environment Variables
 - `OPENAI_API_KEY`: Required for authenticating with the OpenAI API.
+
+## Output example
+```
+ \
+{
+    'INSTRUCTION': 
+    {
+        'instruction': "Collect five units of coal and then set down two crafting tables.",
+        'instruction_paraphrases': 
+        [
+            "Acquire five pieces of coal and place two workbenches.",
+            "Mine five chunks of coal and establish two construction platforms.",
+            "Grab five coal and deploy two building tables.",
+            "Obtain five nuggets of coal and lay down two fabrication tables.",
+            "Gather five lumps of coal and put two manufacturing counters."
+        ],
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.COAL.value, BlockType.CRAFTING_TABLE, 5, 2),
+        'check_lambda_str':"conditional_placing(gd, InventoryItems.COAL.value, BlockType.CRAFTING_TABLE, 5, 2)"
+    }
+}
+----
+ \
+    {'INSTRUCTION': \
+        {'instruction': "Gather 2 diamonds and lay down a stone block.",
+         'instruction_paraphrases': [
+             "Collect 2 diamond resources and place a rock blockade.",
+             "Obtain 2 precious gems and construct a stone partition.",
+             "Scavenge 2 pieces of diamond precious metal and build a cobble barricade.",
+             "Procure 2 shiny diamond deposits and erect a stone wall.",
+             "Secure 2 diamond stones and set down a block made of pebble."
+        ],
+        'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.DIAMOND.value, BlockType.STONE.value, 2, 1),
+        'check_lambda_str':"conditional_placing(gd, InventoryItems.DIAMOND.value, BlockType.STONE.value, 2, 1)"
+    }\
+\
+----
+```
+
