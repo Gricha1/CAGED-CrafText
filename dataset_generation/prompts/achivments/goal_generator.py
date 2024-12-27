@@ -103,7 +103,7 @@ def _generate_three_object_goal(selected_achievement, selected_object, with_excl
 # Goal Examples Generator
 # ---------------------------
 
-def generate_example_goals(num_goals: int = 100):
+def generate_example_goals(num_goals: int = 100, difficulty='EASY'):
     """
     Generate a list of unique example goals.
     """

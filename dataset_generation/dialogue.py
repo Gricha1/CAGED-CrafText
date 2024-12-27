@@ -12,10 +12,10 @@ def check_and_format(content):
     return content
 
 
-def main(count_goals, instructions_class, output_file):
+def main(count_goals, instructions_class, difficulty, output_file):
     """Generates instructions based on prompts."""
     instructions = []
-    prompts = generate_prompts(count_goals, instructions_class)
+    prompts = generate_prompts(count_goals, instructions_class, difficulty)
     
     for prompt in tqdm(prompts, desc='Generating Instructions'):
         response = openai.ChatCompletion.create(
@@ -31,10 +31,13 @@ def main(count_goals, instructions_class, output_file):
 
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser(description='Generate Instructions from Prompts')
     parser.add_argument('--count_goals', type=int, required=True, help='Number of goals to generate instructions for')
-    parser.add_argument('--instructions_class', type=str, required=True, help='Class of instructions to generate')
+    parser.add_argument('--instructions_class', type=str, required=True, help='Class of instructions to generate: achivments|building_line|building_squere|conditonal_placing|localization_placing')
     parser.add_argument('--output_file', type=str, required=True, help='Output file to save instructions')
+    parser.add_argument('--difficulty', type=str, default="EASY", help='EASY/MEDIUM/HARD')
+    
     
     args = parser.parse_args()
     
@@ -45,4 +48,4 @@ if __name__ == "__main__":
     
     openai.api_key = api_key.strip()
     
-    main(args.count_goals, args.instructions_class, args.output_file)
+    main(args.count_goals, args.instructions_class, args.difficulty, args.output_file)
