@@ -11,7 +11,7 @@ def generate_example_goals(num_goals: int, difficulty="EASY") -> list[str]:
     """
     place_objects = {
         'EASY': ['STONE', 'CRAFTING_TABLE', 'PLANT', 'FURNACE'],
-        'MEDIUM': ['STONE', 'CRAFTING_TABLE', 'PLANT', 'FURNACE', 'ENCHANTMENT_TABLE_FIRE', 'ENCHANTMENT_TABLE_ICE']
+        'MEDIUM': ['STONE', 'CRAFTING_TABLE', 'PLANT', 'FURNACE', 'ENCHANTMENT_TABLE_FIRE', 'ENCHANTMENT_TABLE_ICE', 'TORCH']
     }
     target_objects = {
         'EASY': ['GRASS', 'WATER', 'STONE', 'TREE', 'WOOD', 'PATH', 'COAL', 'IRON', 'DIAMOND', 'CRAFTING_TABLE', 'FURNACE', 'PLANT'],
@@ -21,7 +21,7 @@ def generate_example_goals(num_goals: int, difficulty="EASY") -> list[str]:
     distances = list(range(1, 6))
     
     combinations = set()
-    
+    make_synonims_to = []
     while len(combinations) < num_goals:
         object_name = random.choice(place_objects[difficulty])
         target_name = random.choice(target_objects[difficulty])
@@ -29,6 +29,13 @@ def generate_example_goals(num_goals: int, difficulty="EASY") -> list[str]:
         distance = random.choice(distances)
         
         goal = f"[{difficulty}] PLACE {object_name} {distance} BLOCKS TO THE {side} OF {target_name}"
+        if goal not in combinations:
+            synonyms_to = (
+                    f"WHEN GENERATING PARAPHRASES, USE VARIED SYNONYMS OR ALTERNATIVE EXPRESSIONS FOR THE WORDS '{object_name}' AND "
+                    f"'{target_name}'. ALSO, EXPLORE DIFFERENT WAYS TO EXPRESS THE 'DISTANCE' - '{distance}' AND THE 'SIDE' - '{side}', "
+                    f"USING NUMBERS (E.G., '7'), WORDS (E.G., 'SEVEN'), OR DESCRIPTIVE PHRASES (E.G., 'A SHORT DISTANCE TO THE LEFT')."
+                )
+            make_synonims_to.append(synonyms_to)
         combinations.add(goal)
     
-    return list(combinations)
+    return list(combinations), make_synonims_to

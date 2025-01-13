@@ -12,6 +12,23 @@ class InventoryItems(Enum):
     STONE_SWORD = 10
     IRON_SWORD = 11
  
+class MediumInventoryItems(Enum):
+    WOOD = 0
+    STONE = 1
+    COAL = 2
+    IRON = 3
+    DIAMOND = 4
+    SAPLING = 5
+    PICKAXE = 6
+    SWORD = 7
+    BOW = 8
+    ARROWS = 9
+    ARMOUR = 10
+    TORCHES = 11
+    RUBY = 12
+    SAPPHIRE = 13
+    POTIONS = 14
+    BOOKS = 15
 
 class BlockType(Enum):
     INVALID = 0

@@ -8,7 +8,7 @@ def load_resources(instructions_class):
     resource_paths = {
         "achivments": "prompts/achivments",
         "building_line": "prompts/building_line",
-        "building_squere": "prompts/building_squere",
+        "building_square": "prompts/building_square",
         "conditonal_placing": "prompts/conditonal_placing",
         "localization_placing":"prompts/localization_placing"
     }
@@ -40,13 +40,12 @@ def generate_prompts(count_goals, instructions_class, difficulty='EASY'):
     # Load resources
     generate_example_goals, code, example = load_resources(instructions_class)
     
-    # Generate goals
-    goals = generate_example_goals(num_goals=count_goals, difficulty=difficulty)
-    
+   # Generate goals
+    goals, synonyms = generate_example_goals(num_goals=count_goals, difficulty=difficulty)
+
     # Generate prompts
     prompts = [
-        generate_prompt(base_prompt, code=code, instruction=goal, example=example)
-        for goal in goals
+        generate_prompt(base_prompt, code=code, instruction=goal, example=example, synonym=synonym)
+        for goal, synonym in zip(goals, synonyms)
     ]
-    
     return prompts

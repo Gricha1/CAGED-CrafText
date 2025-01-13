@@ -25,20 +25,20 @@ For the provided function, please provide realistic instruction that player 1 mi
 Format your answer as a Python dictionary with the following structure:
 
 
-instruction = \
-    'INSTRUCTION': \
-        'instruction': "Example instruction here",
-        'instruction_paraphrases': [
+instruction ={{
+    "INSTRUCTION": {{
+        "instruction": "Example instruction here",
+        "instruction_paraphrases": [
             "Paraphrase 1 here",
             "Paraphrase 2 here",
             "Paraphrase 3 here",
             "Paraphrase 4 here",
             "Paraphrase 5 here"
         ],
-        'check_lambda': lambda ...:scenario_function(...): ...  # Example usage of the function,
-        'check_lambda_str':"scenario_function(...)" # String of scenario function
-    \
-\
+        "check_lambda": "lambda *args: scenario_function(*args)",
+        "str_check_lambda": "scenario_function(...)"
+    }}
+}}
 
-
+{synonym}
 Complete the check_lambda to demonstrate how you would verify the given instruction using the function.

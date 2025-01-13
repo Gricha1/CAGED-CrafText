@@ -109,15 +109,19 @@ def generate_example_goals(num_goals: int = 100, difficulty='EASY'):
     """
     independent_pairs = load_independent_pairs('prompts/achivments/independent_pairs.csv')
     example_goals = set()
-    
+    make_synonims_to = []
     while len(example_goals) < num_goals:
         goal = generate_goal(independent_pairs)
         goal_parts = goal.split(" AND ")
         random.shuffle(goal_parts)
         shuffled_goal = " AND ".join(goal_parts)
+        if shuffled_goal not in example_goals:
+            synonums_to=f"WHEN GENERATING PARAPHRASES, USE SYNONYMS OR ALTERNATIVE EXPRESSIONS \
+                        FOR THE TERM '{goal_parts}' TO MAKE THE TEXT MORE DIVERSE AND NATURAL."
+            make_synonims_to.append(synonums_to)
         example_goals.add(shuffled_goal)
     
-    return list(example_goals)
+    return list(example_goals), make_synonims_to
 
 # ---------------------------
 # Main Entry Point

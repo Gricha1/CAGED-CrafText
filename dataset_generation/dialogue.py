@@ -16,6 +16,7 @@ def main(count_goals, instructions_class, difficulty, output_file):
     """Generates instructions based on prompts."""
     instructions = []
     prompts = generate_prompts(count_goals, instructions_class, difficulty)
+   # print(prompts[0])
     
     for prompt in tqdm(prompts, desc='Generating Instructions'):
         response = openai.ChatCompletion.create(
