@@ -22,7 +22,7 @@ from orbax.checkpoint import (
 sys.path.append("./models")
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
-from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
+#from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
 from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 
 sys.path.append(".")
@@ -209,53 +209,53 @@ class Experiment:
         
         return train_state
 
-    def view(self):
-        """Визуализация работы сети с RNN."""
-        rng = jax.random.PRNGKey(random.randint(0, 100))
-        obs, env_state = self.env.reset(rng, self.env.default_params)
-        step_fn = jax.jit(self.env.step)
-        renderer = CraftaxRenderer(self.env, self.env.default_params, pixel_render_size=1)
-        params = self.train_state["runner_state"][0]["params"]
+    # def view(self):
+    #     """Визуализация работы сети с RNN."""
+    #     rng = jax.random.PRNGKey(random.randint(0, 100))
+    #     obs, env_state = self.env.reset(rng, self.env.default_params)
+    #     step_fn = jax.jit(self.env.step)
+    #     renderer = CraftaxRenderer(self.env, self.env.default_params, pixel_render_size=1)
+    #     params = self.train_state["runner_state"][0]["params"]
 
-        observations = []
-        steps = 0
-        done = jnp.zeros((1,), dtype=bool)  # Изначально нет завершённых эпизодов
-        hidden_state = ScannedRNN.initialize_carry(1, self.config.layer_size)  # Инициализация RNN
+    #     observations = []
+    #     steps = 0
+    #     done = jnp.zeros((1,), dtype=bool)  # Изначально нет завершённых эпизодов
+    #     hidden_state = ScannedRNN.initialize_carry(1, self.config.layer_size)  # Инициализация RNN
 
-        while not done.any() and steps < 500:
-            # Подготовка входа для RNN
-            obs = jnp.expand_dims(obs, axis=0)  # Добавляем batch измерение
-            done = jnp.expand_dims(done, axis=0)
-            rnn_input = (obs, done)
-           # print(done)
-            instruction =self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
-            # Пропуск через RNN
-            hidden_state, pi, _ = self.network.apply(params, hidden_state, rnn_input, instruction)
-            action = pi.sample(seed=rng)[0]
-            #rng, _rng = jax.random.split(rng)
-            # Шаг среды
-            obs, env_state, _, done, _ = step_fn(rng, env_state, action, self.env.default_params)
-            steps += 1
+    #     while not done.any() and steps < 500:
+    #         # Подготовка входа для RNN
+    #         obs = jnp.expand_dims(obs, axis=0)  # Добавляем batch измерение
+    #         done = jnp.expand_dims(done, axis=0)
+    #         rnn_input = (obs, done)
+    #        # print(done)
+    #         instruction =self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
+    #         # Пропуск через RNN
+    #         hidden_state, pi, _ = self.network.apply(params, hidden_state, rnn_input, instruction)
+    #         action = pi.sample(seed=rng)[0]
+    #         #rng, _rng = jax.random.split(rng)
+    #         # Шаг среды
+    #         obs, env_state, _, done, _ = step_fn(rng, env_state, action, self.env.default_params)
+    #         steps += 1
 
-            # Визуализация
-            instruction = self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
-            image = renderer.render_to_image(env_state.env_state)
-            text = f"Step {steps}, Instruction: {instruction}"
-            image_with_text = add_text_to_image(image, text)
-            observations.append(image_with_text)
+    #         # Визуализация
+    #         instruction = self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
+    #         image = renderer.render_to_image(env_state.env_state)
+    #         text = f"Step {steps}, Instruction: {instruction}"
+    #         image_with_text = add_text_to_image(image, text)
+    #         observations.append(image_with_text)
 
-        # Сохранение GIF
-        gif_name = "_".join(instruction.split()[:5])
-        folder_name = "animation"
-        os.makedirs(folder_name, exist_ok=True)
-        ix = random.randint(0, 200)
+    #     # Сохранение GIF
+    #     gif_name = "_".join(instruction.split()[:5])
+    #     folder_name = "animation"
+    #     os.makedirs(folder_name, exist_ok=True)
+    #     ix = random.randint(0, 200)
 
-        gif_path = f"{folder_name}/{ix}_{gif_name}.gif"
-        with imageio.get_writer(gif_path, mode="I", duration=0.1) as writer:
-            for image in observations:
-                writer.append_data(image.astype(np.uint8))
+    #     gif_path = f"{folder_name}/{ix}_{gif_name}.gif"
+    #     with imageio.get_writer(gif_path, mode="I", duration=0.1) as writer:
+    #         for image in observations:
+    #             writer.append_data(image.astype(np.uint8))
 
-        print(f"Saved animation: {gif_path}")
+    #     print(f"Saved animation: {gif_path}")
 
 
     def run(self):
