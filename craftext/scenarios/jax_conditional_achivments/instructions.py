@@ -337,8 +337,15 @@ easy = {
 
 
 from craftext.scenarios.parce_dataset import update_previous_dict
-easy = update_previous_dict(easy, "../craftext/scenarios/jax_conditional_achivments/instructions/train/easy", "achivments")
-    
+from craftext.scenarios.constants import base_path
+import os
+
+easy = update_previous_dict(
+    easy, 
+    os.path.join(base_path, "jax_conditional_achivments/instructions/train/easy"), 
+    "achivments"
+)
+
 
 if __name__ == "__main__":
     import json

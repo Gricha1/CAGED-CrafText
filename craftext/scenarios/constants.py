@@ -1,4 +1,9 @@
 from enum import Enum
+import os
+
+
+base_path = os.getenv("CRAFTEXT_SCENARIO_PATH", "../craftext/scenarios/")
+
 
 class MediumInventoryItems(Enum):
     WOOD = 0

@@ -31,6 +31,18 @@ easy = {}
 
 medium = {}
 
+from craftext.scenarios.constants import base_path
 from craftext.scenarios.parce_dataset import update_previous_dict
-easy = update_previous_dict(easy, "../craftext/scenarios/jax_conditional_placing/instructions/train/easy", "conditional_placing")
-medium = update_previous_dict(medium, "../craftext/scenarios/jax_conditional_placing/instructions/train/medium", "conditional_placing")
+import os
+
+easy = update_previous_dict(
+    easy, 
+    os.path.join(base_path, "jax_conditional_placing/instructions/train/easy"), 
+    "conditional_placing"
+)
+
+medium = update_previous_dict(
+    medium, 
+    os.path.join(base_path, "jax_conditional_placing/instructions/train/medium"), 
+    "conditional_placing"
+)

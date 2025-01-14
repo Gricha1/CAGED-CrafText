@@ -150,6 +150,17 @@ medium = {
     }
 }
 
+from craftext.scenarios.constants import base_path
+import os
 
-easy = update_previous_dict(easy, "../craftext/scenarios/jax_build_line/instructions/train/easy", "build_line")
-medium = update_previous_dict(medium, "../craftext/scenarios/jax_build_line/instructions/train/medium", "build_line")
+easy = update_previous_dict(
+    easy, 
+    os.path.join(base_path, "jax_build_line/instructions/train/easy"), 
+    "build_line"
+)
+
+medium = update_previous_dict(
+    medium, 
+    os.path.join(base_path, "jax_build_line/instructions/train/medium"), 
+    "build_line"
+)
