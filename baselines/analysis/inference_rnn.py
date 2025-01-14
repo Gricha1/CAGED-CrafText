@@ -275,7 +275,7 @@ class Experiment:
         done_count = np.zeros(self.config.num_envs)
         prev_indx = np.zeros(self.config.num_envs)
       #  params = self.train_state['runner_state'][0]["params"]
-        total_steps = 100
+        total_steps = 2000
         with tqdm(total=total_steps, desc="Simulation Steps") as pbar:
             while steps < total_steps:
                 # Prepare RNN input
