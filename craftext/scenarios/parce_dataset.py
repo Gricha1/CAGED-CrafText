@@ -2,13 +2,23 @@ import os
 import json
 import glob 
 
+# import dependents for correct instruction parsing from txt file
+import jax.numpy as jnp
+import time
+from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.checkers_jax.achivments import conditional_achivments
+from craftext.checkers_jax.conditional import conditional_placing
+from craftext.checkers_jax.relevant import place_object_relevant_to
+
+from craftext.scenarios.constants import Achievement,BlockType,InventoryItems, MediumInventoryItems
+
 def parse_instructions(file_name_txt):
     with open(file_name_txt, 'r') as file:
         content = file.read()
     # Split the content into separate dictionaries by '----'
     chunks = content.split('----')
     # Parse each chunk into a dictionary using eval
-    print(chunks[0])
+    #print(chunks[0])
     instructions_list = []
     for chunk in chunks:
         try:
@@ -16,8 +26,9 @@ def parse_instructions(file_name_txt):
                 c = eval(chunk.strip()) 
                 instructions_list.append(c)
         except Exception as e:
-            print(e)
-            print(chunk)
+            pass
+          #  print(e)
+            #print(chunk)
    # instructions_list = [eval(chunk.strip()) for chunk in chunks if chunk.strip()]
     return instructions_list
 
@@ -31,9 +42,20 @@ def parse_instructions_from_folder(folder_path):
 
 def update_previous_dict(previous_dict, folder_path, TASK_NAME='relevant_placement'):
     instructions_list = parse_instructions_from_folder(folder_path)
+    #print(folder_path)
+   # print(len(instructions_list))
+   # time.sleep(10)
     for i, parsed_dict in enumerate(instructions_list):
         if 'INSTRUCTION' in parsed_dict:
             previous_dict[f"{TASK_NAME}_INSTRUCTION_{i}"] = parsed_dict['INSTRUCTION']
+    
+        #time.sleep(2)
+       # print(parsed_dict['INSTRUCTION'])
+    #print("---"*0)
+    print()
+    print(len(previous_dict.keys()), folder_path)
+    print()
+    print("---"*30)
     return previous_dict
 
 

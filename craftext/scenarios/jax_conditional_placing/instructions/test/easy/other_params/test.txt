@@ -8,8 +8,8 @@
             "Acquire one charcoal block and position four flora.",
             "Secure a solitary chunk of anthracite and layout four green plants."
         ],
-        'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.COAL.value, BlockType.PLANT.value, 1, 4),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.COAL.value, BlockType.PLANT.value, 1, 4)"
+        'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.COAL, BlockType.PLANT, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.COAL, BlockType.PLANT, 1, 4)"
     }
 }
 ----
@@ -23,8 +23,8 @@
             "Procure three portions of timber and thereafter position a couple of rocks.",
             "Amass a total of three logs from the woods and correspondingly arrange exactly two stones."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.WOOD.value, BlockType.STONE.value, 3, 2),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.WOOD.value, BlockType.STONE.value, 3, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.WOOD, BlockType.STONE, 3, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.WOOD, BlockType.STONE, 3, 2)"
     }
 }
 ----
@@ -38,8 +38,8 @@
             "Procure four lumps of iron and erect three assembly tables",
             "Amass four chunks of iron and install three fabrication benches"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.IRON.value, BlockType.CRAFTING_TABLE.value, 4, 3),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.IRON.value, BlockType.CRAFTING_TABLE.value, 4, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 4, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 4, 3)"
     }
 }
 ----
@@ -53,8 +53,8 @@
             "Secure duo shine stones and estable one creation stand",
             "Procure two units of the hardest mineral and install a solitary production bench"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1)"
     }
 }
 ----
@@ -68,8 +68,8 @@
             "Procure the trio of precious stones and subsequently deposit a duo of vegetation in the area.",
             "After accumulating a trifecta of precious jewels, conspicuously plant a pair of greenery onto the landscape."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.PLANT.value, 3, 2),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.PLANT.value, 3, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 3, 2),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 3, 2)"
     }
 }
 ----
@@ -83,8 +83,8 @@
             "Procure a shoot and establish five crafting tables.",
             "Obtain a sapling and position five crafting tables."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.SAPLING.value, BlockType.CRAFTING_TABLE.value, 1, 5),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.SAPLING.value, BlockType.CRAFTING_TABLE.value, 1, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.SAPLING, BlockType.CRAFTING_TABLE, 1, 5),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.SAPLING, BlockType.CRAFTING_TABLE, 1, 5)"
     }
 }
 ----
@@ -98,8 +98,8 @@
             "Procure one iron unit and afterwards position four Stone entities.",
             "Furniture one Iron item and then subsequently deposit four Rocks."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.IRON.value, BlockType.STONE.value, 1, 4),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.IRON.value, BlockType.STONE.value, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.IRON, BlockType.STONE, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.IRON, BlockType.STONE, 1, 4)"
     }
 }
 ----
@@ -113,8 +113,8 @@
             "Earmark 4 iron nuggets for collection and station 5 charcoal grills.",
             "Secure a quartet of iron nodes and station 5 kilns."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.IRON, BlockType.FURNACE, 4, 5),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.IRON, BlockType.FURNACE, 4, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.IRON, BlockType.FURNACE, 4, 5),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.IRON, BlockType.FURNACE, 4, 5)"
     }
 }
 ----
@@ -128,8 +128,8 @@
             "Accumulate 5 quarry products and put in place 5 stoves.",
             "Procure 5 units of Stone resource and deploy 5 fireboxes."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.STONE.value, BlockType.FURNACE.value, 5, 5),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.STONE.value, BlockType.FURNACE.value, 5, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.STONE, BlockType.FURNACE, 5, 5),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.STONE, BlockType.FURNACE, 5, 5)"
     }
 }
 ----
@@ -143,8 +143,8 @@
             "Secure for yourself a duo of wood and succeed that action by situating a couple of stones.",
             "Accumulate two fragments of lumber, then arrange a set of two stones."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.WOOD.value, BlockType.STONE.value, 2, 2),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.WOOD.value, BlockType.STONE.value, 2, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.WOOD, BlockType.STONE, 2, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.WOOD, BlockType.STONE, 2, 2)"
     }
 }
 ----
@@ -158,8 +158,8 @@
             "Accumulate three individual sapling items and additionally position three fireboxes into the area",
             "From the surroundings, remove three saplings and later, lay down a trio of heating units"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 3, 3),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.SAPLING, BlockType.FURNACE, 3, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.SAPLING, BlockType.FURNACE, 3, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.SAPLING, BlockType.FURNACE, 3, 3)"
     }
 }
 ----
@@ -173,8 +173,8 @@
             "Amass a total of 4 coals and station a total of 4 stones.",
             "Assemble together 4 chunks of coal, then assort 4 pieces of stone."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.COAL.value, BlockType.STONE.value, 4, 4),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.COAL.value, BlockType.STONE.value, 4, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.COAL, BlockType.STONE, 4, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.COAL, BlockType.STONE, 4, 4)"
     }
 }
 ----
@@ -188,8 +188,8 @@
             "You have to pick up 4 planks of wood and put down 3 types of the furnace block.",
             "Amass a total of four bits of tree trunks and proceed to position three instances of the furnace structure."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.WOOD.value, BlockType.FURNACE.value, 4, 3),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.WOOD.value, BlockType.FURNACE.value, 4, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.WOOD, BlockType.FURNACE, 4, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.WOOD, BlockType.FURNACE, 4, 3)"
     }
 }
 ----
@@ -203,8 +203,8 @@
             "Secure a single iron and position four pieces of heating machinery.",
             "Gather one iron and install four heating apparatus."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.IRON, BlockType.FURNACE, 1, 4),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.IRON, BlockType.FURNACE, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.IRON, BlockType.FURNACE, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.IRON, BlockType.FURNACE, 1, 4)"
     }
 }
 ----
@@ -218,8 +218,8 @@
             "Acquire 3 chunks of lumber and position 5 crafting stations.",
             "Procure 3 sections of timber and situate 5 artisan tables."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.WOOD.value, BlockType.CRAFTING_TABLE.value, 3, 5),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.WOOD.value, BlockType.CRAFTING_TABLE.value, 3, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 3, 5),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.WOOD, BlockType.CRAFTING_TABLE, 3, 5)"
     }
 }
 ----
@@ -233,8 +233,8 @@
             "Accumulate two diamond pieces and then deposit quartet of rocks",
             "Accrue two units of diamond and following that, position four units of stone"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.STONE.value, 2, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.STONE.value, 2, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 2, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 2, 4)"
     }
 }
 ----
@@ -248,8 +248,8 @@
             "Amass a twosome of Stones and arrange quintet of them.",
             "Procure 2 Stones, following which exhibit an arrangement of 5 Stones."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.STONE.value, BlockType.STONE.value, 2, 5),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.STONE.value, BlockType.STONE.value, 2, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.STONE, BlockType.STONE, 2, 5),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.STONE, BlockType.STONE, 2, 5)"
     }
 }
 ----
@@ -263,8 +263,8 @@
             "Accumulate a set of three seedlings and establish a duo of stoves.",
             "Amass an amount of three tree saplings and fabricate two smelters."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.SAPLING.value, BlockType.FURNACE.value, 3, 2),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.SAPLING.value, BlockType.FURNACE.value, 3, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.SAPLING, BlockType.FURNACE, 3, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.SAPLING, BlockType.FURNACE, 3, 2)"
     }
 }
 ----
@@ -278,8 +278,8 @@
             "Your task is to get hold of a diamond and subsequently lay down three blocks of stone in this location.",
             "Procure one piece of diamond and then, arrange three pieces of stone on the landscape."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.DIAMOND.value, BlockType.STONE.value, 1, 3),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.DIAMOND.value, BlockType.STONE.value, 1, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 1, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 1, 3)"
     }
 }
 ----
@@ -293,8 +293,8 @@
             "Obtain one specimen of diamond and position on the earth four young trees.",
             "Secure a unit of diamond and establish four juvenile flora on the map."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gamedata, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4),
-        "str_check_lambda": "conditional_placing(gamedata, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4)"
     }
 }
 ----
@@ -308,8 +308,8 @@
             "Must extract quadruplet iron items from the environment and construct two craft stations",
             "Your mission is to procure a tetrad iron constituents and erect duo creation desks"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.IRON.value, BlockType.CRAFTING_TABLE.value, 4, 2),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.IRON.value, BlockType.CRAFTING_TABLE.value, 4, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 4, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.IRON, BlockType.CRAFTING_TABLE, 4, 2)"
     }
 }
 ----
@@ -323,8 +323,8 @@
             "Would you be so kind as to obtain a single coal and arrange four stones?",
             "I request that you procure one unit of coal and subsequently position four units of stone"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.COAL.value, BlockType.STONE.value, 1, 4),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.COAL.value, BlockType.STONE.value, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.COAL, BlockType.STONE, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.COAL, BlockType.STONE, 1, 4)"
     }
 }
 ----

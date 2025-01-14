@@ -38,8 +38,8 @@
             "Do assess if we have a square, each side 6 blocks long, made completely from furnace blocks.",
             "Inspect and confirm whether there is a square structure constituted of furnace blocks, six blocks long per side."
         ],
-         'check_lambda': lambda game_data, ix:is_square_formed(...),
-        "str_check_lambda": "is_square_formed(...)"
+         'check_lambda': lambda game_data, ix:is_square_formed(game_data, ix, BlockType.FURNACE, 6),
+        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.FURNACE, 6)"
     }
 }
 ----

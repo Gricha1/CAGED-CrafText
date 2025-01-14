@@ -337,7 +337,7 @@ easy = {
 
 
 from craftext.scenarios.parce_dataset import update_previous_dict
-easy = update_previous_dict(easy, "jax_conditional_achivments/instructions/train/easy", "achivments")
+easy = update_previous_dict(easy, "../craftext/scenarios/jax_conditional_achivments/instructions/train/easy", "achivments")
     
 
 if __name__ == "__main__":

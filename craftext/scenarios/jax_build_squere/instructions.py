@@ -33,5 +33,5 @@ easy = {}
         
 medium = {}
 
-easy = update_previous_dict(easy, "jax_build_squere/instructions/train/easy", "build_squere")
-medium = update_previous_dict(medium, "jax_build_squere/instructions/train/medium", "build_squere")
+easy = update_previous_dict(easy, "../craftext/scenarios/jax_build_squere/instructions/train/easy", "build_squere")
+medium = update_previous_dict(medium, "../craftext/scenarios/jax_build_squere/instructions/train/medium", "build_squere")

@@ -8,8 +8,8 @@
             "Focus on accumulating a triad of ruby stones for your inventory and follow through by situating three tables of fire magic.",
             "You are required to obtain an aggregate of three gleaming scarlet stones and then to position three Tables of Fiery Conjuring."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 3, 3),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 3, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.ENCHANTMENT_TABLE_FIRE, 3, 3),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.ENCHANTMENT_TABLE_FIRE, 3, 3)"
     }
 }
 ----
@@ -23,8 +23,8 @@
             "The game requires you to obtain exactly a couple of those sparkling rubies and to brighten up the landscape with two bright torches.",
             "Undertake a mission to secure two precious red gems and then illuminate the surroundings by strategically positioning two flaming torches."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY.value, MediumInventoryItems.TORCHES.value, 2, 2),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY.value, MediumInventoryItems.TORCHES.value, 2, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, MediumInventoryItems.TORCHES, 2, 2),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, MediumInventoryItems.TORCHES, 2, 2)"
     }
 }
 ----
@@ -38,8 +38,8 @@
             "Accumulate a count of five sapphires and arrange three icy magic tables.",
             "Pick up five sapphires off the ground and deposit three tables for ice enchantment."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE.value, BlockType.ENCHANTMENT_TABLE_ICE, 5, 3),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE.value, BlockType.ENCHANTMENT_TABLE_ICE, 5, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.ENCHANTMENT_TABLE_ICE, 5, 3),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.ENCHANTMENT_TABLE_ICE, 5, 3)"
     }
 }
 ----
@@ -53,8 +53,8 @@
             "Amass a trio of rubies and establish five crafting platforms.",
             "Secure a collection of three prized rubies and create a total of five crafting stations on the map."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.CRAFTING_TABLE, 3, 5),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.CRAFTING_TABLE, 3, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.CRAFTING_TABLE, 3, 5),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.CRAFTING_TABLE, 3, 5)"
     }
 }
 ----
@@ -68,8 +68,8 @@
             "I need you to acquire 4 units of the precious stone known as sapphire, afterwards organize 4 illuminating devices appropriately",
             "Engage in gathering 4 instances of the azure jewel, following this ensure to deploy 4 flame burning sticks effectively"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE, MediumInventoryItems.TORCHES, 4, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE, MediumInventoryItems.TORCHES, 4, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, MediumInventoryItems.TORCHES, 4, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, MediumInventoryItems.TORCHES, 4, 4)"
     }
 }
 ----
@@ -83,8 +83,8 @@
             "Procure three pieces of diamond and subsequently install four pieces of fire enchantment table",
             "Your task is to accumulate a collection of three diamonds and erect four burnished enchantment tables filled with fire magic"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 3, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 3, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.ENCHANTMENT_TABLE_FIRE, 3, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.ENCHANTMENT_TABLE_FIRE, 3, 4)"
     }
 }
 ----
@@ -98,8 +98,8 @@
             "Your mission is to obtain a set of five tree seedlings and locate an equivalent quantity of rocks in the virtual environment.",
             "Amass a total of five plant sprigs and succeeding that, deploy a similar count of mineral fragments, specifically stone, in the game field."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPLING.value, BlockType.STONE.value, 5, 5),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPLING.value, BlockType.STONE.value, 5, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.STONE, 5, 5),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.STONE, 5, 5)"
     }
 }
 ----
@@ -113,8 +113,8 @@
             "Amass three precious ruby stones and establish one vegetation",
             "Aggregate a triplet of the glistening ruby and institute a singular plant"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.PLANT.value, 3, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.PLANT.value, 3, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.PLANT, 3, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.PLANT, 3, 1)"
     }
 }
 ----
@@ -128,8 +128,8 @@
             "Retrieve two objects of metallic iron and station five enchantment apparatus aflame.",
             "Accumulate duo cybersecurity objects of iron and lodge a handful of five fire magic altars."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.IRON.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 2, 5),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.IRON.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 2, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.IRON, BlockType.ENCHANTMENT_TABLE_FIRE, 2, 5),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.IRON, BlockType.ENCHANTMENT_TABLE_FIRE, 2, 5)"
     }
 }
 ----
@@ -143,8 +143,8 @@
             "Procure three of the finest Sapphires and create three artistry platforms",
             "Get your hands on three blue gems commonly known as Sapphires and erect three craft stations"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 3, 3),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 3, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 3, 3),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 3, 3)"
     }
 }
 ----
@@ -158,8 +158,8 @@
             "Acquire a single blue gem and establish twice coal-burning stoves",
             "Procure one azure stone and arrange two Hearth"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE.value, BlockType.FURNACE.value, 1, 2),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE.value, BlockType.FURNACE.value, 1, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 2),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 2)"
     }
 }
 ----
@@ -173,8 +173,8 @@
             "Find a single precious stone of blue color and install one smelter.",
             "Can you mine one blue jewel and set down a single kiln?"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.FURNACE, 1, 1)"
     }
 }
 ----
@@ -188,8 +188,8 @@
             "Amass terna of seedlings and then locate quad of cryomagic platforms.",
             "Accumulate triple of young trees and then situate 4 ice enchantment surfaces."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(GameDataClassic, MediumInventoryItems.SAPLING.value, BlockType.ENCHANTMENT_TABLE_ICE.value, 3, 4),
-        "str_check_lambda": "conditional_placing(GameDataClassic, MediumInventoryItems.SAPLING.value, BlockType.ENCHANTMENT_TABLE_ICE.value, 3, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.ENCHANTMENT_TABLE_ICE, 3, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.ENCHANTMENT_TABLE_ICE, 3, 4)"
     }
 }
 ----
@@ -203,8 +203,8 @@
             "Secure a couple of tree offspring and position a handful of plant life.",
             "Capture two shrub sprouts and arrange a group of five fauna entities."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPLING, BlockType.PLANT, 2, 5),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPLING, BlockType.PLANT, 2, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.PLANT, 2, 5),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPLING, BlockType.PLANT, 2, 5)"
     }
 }
 ----
@@ -218,8 +218,8 @@
             "Your mission is to accumulate one piece of the precious blue gem known as Sapphire, then consecutively set up no less than four stations for Crafting your Artifacts.",
             "Your task, should you choose to accept it, involves the meticulous accumulation of a lone celestial stone known as Sapphire from your surroundings, paired with the strategically planned placement of quadruple Crafting Tables, cornerstones of civilization and invention, around the current territory."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 1, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.SAPPHIRE, BlockType.CRAFTING_TABLE, 1, 4)"
     }
 }
 ----
@@ -233,8 +233,8 @@
             "Make sure to obtain a trio of coals then situate an individual icy enchantment console.",
             "Your tasks are to amass three coal minerals and to locate one icy spelltable onto the map."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 3, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 3, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 3, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 3, 1)"
     }
 }
 ----
@@ -248,8 +248,8 @@
             "The objective is to increase your coal count in inventory to five and subsequently, establish an Enchantment Fire Table on the game map.",
             "Your prime directive is to accrue five lumps of coal by mining and subsequently integrate an Enchantment Fire Table into the gaming arena."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.COAL.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 5, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.COAL.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 5, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_FIRE, 5, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_FIRE, 5, 1)"
     }
 }
 ----
@@ -263,8 +263,8 @@
             "Amass a duet of COAL and situate two spellbinding frost tables within the gaming arena.",
             "Procure two units of COAL and establish two pieces of mystic ice platforms on the playing field."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, InventoryItems.COAL.value, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2),
-        "str_check_lambda": "conditional_placing(gd, InventoryItems.COAL.value, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2)"
     }
 }
 ----
@@ -278,8 +278,8 @@
             "Reap 2 rubies and subsequently position 4 torches.",
             "Procure 2 rubies and, as a result, install 4 torches."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4)"
     }
 }
 ----
@@ -293,8 +293,8 @@
             "Procure a solitary crimson jewel and subsequently erect an igneous appliance.",
             "Secure an individual russet gemstone and later set up a warming mechanism."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.FURNACE.value, 1, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.FURNACE.value, 1, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.FURNACE, 1, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.FURNACE, 1, 1)"
     }
 }
 ----
@@ -308,8 +308,8 @@
             "Secure one unit of stone and establish three units of the same.",
             "Procure a solitary stone and subsequently install trio of stones."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.STONE.value, BlockType.STONE.value, 1, 3),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.STONE.value, BlockType.STONE.value, 1, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.STONE, BlockType.STONE, 1, 3),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.STONE, BlockType.STONE, 1, 3)"
     }
 }
 ----
@@ -323,8 +323,8 @@
             "Your goal is to accumulate four precious rubies and as a subsequent step, distribute five tables imbued with frost magic throughout our game world.",
             "Endeavour to acquire a quartet of radiant rubies, then following that task, diligently situate five tables enchanted by the power of ice magic within our digital landscape."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.ENCHANTMENT_TABLE_ICE.value, 4, 5),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY.value, BlockType.ENCHANTMENT_TABLE_ICE.value, 4, 5)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.ENCHANTMENT_TABLE_ICE, 4, 5),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.ENCHANTMENT_TABLE_ICE, 4, 5)"
     }
 }
 ----
@@ -338,8 +338,8 @@
             "Obtain four red gemstones and afterwards situate one furnace",
             "Secure a total of four rubies and subsequently install a lone furnace"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.FURNACE, 4, 1),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.RUBY, BlockType.FURNACE, 4, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.FURNACE, 4, 1),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.FURNACE, 4, 1)"
     }
 }
 ----
@@ -353,8 +353,8 @@
             "Amass a quintet of diamond gems and establish a duo of tables for fire enchantment.",
             "The mission entails the acquisition of five precious diamond rocks followed by the strategic placement of two tables for fire sorcery."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 5, 2),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.DIAMOND.value, BlockType.ENCHANTMENT_TABLE_FIRE.value, 5, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.ENCHANTMENT_TABLE_FIRE, 5, 2),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.ENCHANTMENT_TABLE_FIRE, 5, 2)"
     }
 }
 ----
@@ -368,8 +368,8 @@
             "You are required to procure quartet iron items and institute quartet sources of light, namely torches",
             "Your task involves the acquisition of four units of the metallic mineral known as iron as well as the arrangement of four light-emitting objects referred to as torches"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(gd, MediumInventoryItems.IRON, MediumInventoryItems.TORCHES, 4, 4),
-        "str_check_lambda": "conditional_placing(gd, MediumInventoryItems.IRON, MediumInventoryItems.TORCHES, 4, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.IRON, MediumInventoryItems.TORCHES, 4, 4),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.IRON, MediumInventoryItems.TORCHES, 4, 4)"
     }
 }
 ----

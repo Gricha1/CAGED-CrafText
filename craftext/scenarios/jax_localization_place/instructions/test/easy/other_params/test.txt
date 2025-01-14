@@ -203,8 +203,8 @@
             "Position the heater three spots upward from the diamond",
             "Establish the furnace exactly three units to the superior direction of the diamond."
         ],
-         'check_lambda': lambda game_data, ix: place_object_relevant_to(BlockType.FURNACE, BlockType.DIAMOND, 2, 3),
-        "str_check_lambda": "place_object_relevant_to(BlockType.FURNACE, BlockType.DIAMOND, 2, 3)"
+         'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.DIAMOND, 2, 3),
+        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.FURNACE, BlockType.DIAMOND, 2, 3)"
     }
 }
 ----
@@ -278,8 +278,8 @@
             "Locate the work stand accurately two blocks in the downward direction of the stone.",
             "Arrange your crafting desk two divisions under the geological rock."
         ],
-         'check_lambda': lambda game_data, ix: place_object_relevant_to(BlockType.CRAFTING_TABLE, BlockType.STONE, 3, 2),
-        "str_check_lambda": "place_object_relevant_to(BlockType.CRAFTING_TABLE, BlockType.STONE, 3, 2)"
+         'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.STONE, 3, 2),
+        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.STONE, 3, 2)"
     }
 }
 ----
