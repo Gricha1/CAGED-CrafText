@@ -35,130 +35,9 @@ from craftext.craftext_scenarious import create_scenarios_with_dataset
 from craftext.craftext_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
-# Code adapted from the original implementation made by Chris Lu
-# Original code located at https://github.com/luchris429/purejaxrl
 
-
-class ScannedRNN(nn.Module):
-    @functools.partial(
-        nn.scan,
-        variable_broadcast="params",
-        in_axes=0,
-        out_axes=0,
-        split_rngs={"params": False},
-    )
-    @nn.compact
-    def __call__(self, carry, x):
-        """Applies the module."""
-        rnn_state = carry
-        ins, resets = x
-        print(ins.shape)
-        print(resets.shape)
-        rnn_state = jnp.where(
-            resets[:, np.newaxis],
-            self.initialize_carry(ins.shape[0], ins.shape[1]),
-            rnn_state,
-        )
-        
-        print("!!!")
-        new_rnn_state, y = nn.GRUCell(features=ins.shape[1])(rnn_state, ins)
-        return new_rnn_state, y
-
-    @staticmethod
-    def initialize_carry(batch_size, hidden_size):
-        # Use a dummy key since the default state init fn is just zeros.
-        cell = nn.GRUCell(features=hidden_size)
-        return cell.initialize_carry(jax.random.PRNGKey(0), (batch_size, hidden_size))
-
-
-class ActorCriticTextVisualRNN(nn.Module):
-    action_dim: int
-    config: Dict
-
-    @nn.compact
-    def __call__(self, hidden, x, encoded_input):
-        obs, dones = x
-        print("obs.shape", obs.shape)
-        
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
-
-        obs_embedding = jnp.reshape(obs, (obs.shape[0], obs.shape[1], -1))
-        
-        # # #Encode the observation
-        obs_embedding = nn.Dense(
-            self.config["LAYER_SIZE"]//2,
-            kernel_init=orthogonal(np.sqrt(2)),
-            bias_init=constant(0.0),
-        )(obs_embedding)
-        obs_embedding = nn.relu(obs_embedding)
-
-
-        encoded_input = nn.Dense(
-            self.config["LAYER_SIZE"]//2,
-            kernel_init=orthogonal(np.sqrt(2)),
-            bias_init=constant(0.0),
-        )(encoded_input)
-        encoded_input = nn.relu(encoded_input)
-
-
-        print("obs_embedding.shape", obs_embedding.shape)
-        print("encoded_input.shape", encoded_input.shape)
-        
-        combined_embedding = jnp.concatenate([obs_embedding, encoded_input], axis=-1)
-        
-        print("combined_embedding.shape", combined_embedding.shape)
-        print("dones.shape", dones.shape)
-        # RNN input processing
-        
-        rnn_in = (combined_embedding, dones)
-        hidden, embedding = ScannedRNN()(hidden, rnn_in)
-
-        # Actor network
-        actor_mean = nn.Dense(
-            self.config["LAYER_SIZE"],
-            kernel_init=orthogonal(2),
-            bias_init=constant(0.0),
-        )(embedding)
-        actor_mean = nn.relu(actor_mean)
-        actor_mean = nn.Dense(
-            self.config["LAYER_SIZE"],
-            kernel_init=orthogonal(2),
-            bias_init=constant(0.0),
-        )(actor_mean)
-        actor_mean = nn.relu(actor_mean)
-        actor_mean = nn.Dense(
-            self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
-        )(actor_mean)
-
-        pi = distrax.Categorical(logits=actor_mean)
-
-        # Critic network
-        critic = nn.Dense(
-            self.config["LAYER_SIZE"],
-            kernel_init=orthogonal(2),
-            bias_init=constant(0.0),
-        )(embedding)
-        critic = nn.relu(critic)
-        critic = nn.Dense(
-            self.config["LAYER_SIZE"],
-            kernel_init=orthogonal(2),
-            bias_init=constant(0.0),
-        )(critic)
-        critic = nn.relu(critic)
-        critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
-            critic
-        )
-
-        return hidden, pi, jnp.squeeze(critic, axis=-1)
-
+from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
+from baselines.analysis.inference_rnn import Experiment, ExperimentArgs
 
 class Transition(NamedTuple):
     done: jnp.ndarray
@@ -171,7 +50,7 @@ class Transition(NamedTuple):
     instruction: jnp.ndarray
 
 
-def make_train(config):
+def make_train(config, network_params):
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
@@ -231,9 +110,10 @@ def make_train(config):
 
         
         encoded_input_expanded = jnp.expand_dims(env.encoded_instruction, axis=1)
+        print("encoded_input_expanded.shape", encoded_input_expanded.shape)
         encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config["NUM_ENVS"], 1))
 
-        network_params = network.init(_rng, init_hstate, init_x, encoded_input_tiled)
+        network_params_alt = network.init(_rng, init_hstate, init_x, encoded_input_tiled)
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
@@ -244,11 +124,19 @@ def make_train(config):
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
                 optax.adam(config["LR"], eps=1e-5),
             )
-        train_state = TrainState.create(
-            apply_fn=network.apply,
-            params=network_params,
-            tx=tx,
-        )
+            
+        if network_params is None:
+            train_state = TrainState.create(
+                apply_fn=network.apply,
+                params=network_params_alt,
+                tx=tx,
+            )
+        else:
+            train_state = TrainState.create(
+                apply_fn=network.apply,
+                params=network_params,
+                tx=tx,
+            )
 
         # INIT ENV
         rng, _rng = jax.random.split(rng)
@@ -503,9 +391,11 @@ def make_train(config):
     return train
 
 
+
 def run_ppo(config):
     config = {k.upper(): v for k, v in config.__dict__.items()}
-
+    config["PATH_TO_CHECKPOINT"] = 'None'
+    base_timestamps = config['TOTAL_TIMESTEPS']
     if config["USE_WANDB"]:
         wandb.init(
             project=config["WANDB_PROJECT"],
@@ -517,37 +407,102 @@ def run_ppo(config):
             + "M",
         )
 
-    rng = jax.random.PRNGKey(config["SEED"])
-    rngs = jax.random.split(rng, config["NUM_REPEATS"])
+    num_restarts = 5
+    for restart in range(num_restarts):
+        rng = jax.random.PRNGKey(config["SEED"])
+        print(f"Starting training iteration {restart + 1}/{num_restarts}")
 
-    train_jit = jax.jit(make_train(config))
-    train_vmap = jax.vmap(train_jit)
-
-    t0 = time.time()
-    out = train_vmap(rngs)
-    t1 = time.time()
-    print("Time to run experiment", t1 - t0)
-    print("SPS: ", config["TOTAL_TIMESTEPS"] / (t1 - t0))
-
-    if config["USE_WANDB"]:
-
-        def _save_network(rs_index, dir_name):
-            train_states = out["runner_state"][rs_index]
-            train_state = jax.tree.map(lambda x: x[0], train_states)
+        # Reload weights from the checkpoint
+        if os.path.exists(config["PATH_TO_CHECKPOINT"]):
+            print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
             orbax_checkpointer = PyTreeCheckpointer()
-            options = CheckpointManagerOptions(max_to_keep=1, create=True)
-            path = os.path.join(wandb.run.dir, dir_name)
-            checkpoint_manager = CheckpointManager(path, orbax_checkpointer, options)
-            print(f"saved runner state to {path}")
-            save_args = orbax_utils.save_args_from_target(train_state)
-            checkpoint_manager.save(
-                config["TOTAL_TIMESTEPS"],
-                train_state,
-                save_kwargs={"save_args": save_args},
+            checkpoint_manager = CheckpointManager(
+                config["PATH_TO_CHECKPOINT"],
+                orbax_checkpointer,
+                CheckpointManagerOptions(max_to_keep=1, create=False),
             )
+            with jax.disable_jit():
+                if restart == 0:
+                    train_state = checkpoint_manager.restore(60000)
+                    network_params = train_state['runner_state'][0]["params"]
+                else:
+                    train_state = checkpoint_manager.restore(int(config['TOTAL_TIMESTEPS']))
+                    network_params = train_state['runner_state'][0]["params"]
 
-        if config["SAVE_POLICY"]:
-            _save_network(0, "policies")
+            print("Weights successfully loaded from checkpoint.")
+        else:
+            print("No valid checkpoint found, using default initialization.")
+
+            network_params = None  # Initialize or handle default weights
+        config['TOTAL_TIMESTEPS'] = base_timestamps * (restart + 1)
+
+        # Split RNG for this training iteration
+        rng, current_rng = jax.random.split(rng)
+
+        # Prepare the training function
+        train_jit = jax.jit(make_train(config, network_params))
+
+        # Run the training
+        t0 = time.time()
+        train_state = train_jit(current_rng)
+        t1 = time.time()
+
+        # Print performance metrics
+        print(f"Iteration {restart + 1} completed.")
+        print("Time to run experiment:", t1 - t0)
+        print("SPS:", config["TOTAL_TIMESTEPS"] / (t1 - t0))
+        
+        time.sleep(20)
+        # Save checkpoint after this iteration
+        checkpoint_dir = f"checkpoint_restart_{restart + 1}"
+        checkpoint_path = os.path.join(
+            wandb.run.dir if config["USE_WANDB"] else ".", checkpoint_dir
+        )
+
+        orbax_checkpointer = PyTreeCheckpointer()
+        options = CheckpointManagerOptions(max_to_keep=1, create=True)
+        checkpoint_manager = CheckpointManager(checkpoint_path, orbax_checkpointer, options)
+
+        # Save the current train state
+        save_args = orbax_utils.save_args_from_target(train_state)
+        checkpoint_manager.save(
+            config["TOTAL_TIMESTEPS"],
+            train_state,
+            save_kwargs={"save_args": save_args},
+        )
+        print(f"Saved checkpoint to {checkpoint_path}")
+
+        # INFERENCE
+        common_args = {
+            "num_envs": 1024,
+            "experiment_name": wandb.run.dir,
+            "ratio": min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
+            "checkpoint_num": checkpoint_dir,
+            "env_name": config['ENV_NAME'],
+            "max_grad_norm": config['MAX_GRAD_NORM'],
+            "lr": config['LR'],
+            "layer_size": config['LAYER_SIZE'],
+            "total_timesteps": config['TOTAL_TIMESTEPS'],
+            "path": wandb.run.dir,
+            "view": False
+        }
+
+        # INFERENCE ON TRAIN
+        train_args = ExperimentArgs(**common_args, craftext_settings=config['CRAFTEXT_SETTINGS'])
+        train_experiment = Experiment(train_args)
+        inference, mean_by_tasks = train_experiment.run()
+        wandb.log({"train":mean_by_tasks})
+
+        # INFERENCE ON TEST
+        test_args = ExperimentArgs(**common_args, craftext_settings=config['CRAFTEXT_SETTINGS'] + "_test_other_params")
+        test_experiment = Experiment(test_args)
+        inference, mean_by_tasks = test_experiment.run()
+        wandb.log({"test":mean_by_tasks})
+        
+        # Update PATH_TO_CHECKPOINT for the next iteration
+        config["PATH_TO_CHECKPOINT"] = checkpoint_path
+
+    print("All training iterations completed.")
 
 
 if __name__ == "__main__":
@@ -560,7 +515,7 @@ if __name__ == "__main__":
         default=16,
     )
     parser.add_argument("--use_plans", type=bool, default=False)
-    parser.add_argument("--total_timesteps", type=lambda x: int(float(x)), default=1e9)
+    parser.add_argument("--total_timesteps", type=lambda x: int(float(x)), default=250000) #000)
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=64)
     parser.add_argument("--update_epochs", type=int, default=4)
@@ -585,7 +540,7 @@ if __name__ == "__main__":
         "--save_policy", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument("--num_repeats", type=int, default=1)
-    parser.add_argument("--layer_size", type=int, default=1536)
+    parser.add_argument("--layer_size", type=int, default=512)
     parser.add_argument("--wandb_project", type=str)
     parser.add_argument("--wandb_entity", type=str)
     parser.add_argument(
