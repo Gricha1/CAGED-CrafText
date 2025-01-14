@@ -26,7 +26,7 @@ from orbax.checkpoint import (
 )
 import orbax.checkpoint as ocp
 sys.path.append("./models")
-from actor_critic import (ActorCriticConv, 
+from baselines.models.actor_critic import (ActorCriticConv, 
                           ActorCriticConvWithIdxEmbedding,
                           ActorCriticConvWithBERT)
 import imageio
