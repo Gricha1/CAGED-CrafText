@@ -3,6 +3,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from transformers import AutoModel, AutoTokenizer
 import torch
+import numpy as np
 
 os.environ['HF_HOME'] = "."
 
@@ -45,10 +46,6 @@ class EncodeModel(ABC):
         """
         pass
 
-from transformers import AutoTokenizer, AutoModel
-import torch
-from enum import Enum
-import numpy as np
 
 
 

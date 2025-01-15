@@ -1,8 +1,13 @@
 import jax
-from jax import jit
-import jax.numpy as jnp
-from jax import lax
-from craftext.checkers_jax.squeres import check_square_2x2, check_square_3x3, check_square_4x4
+from jax import (
+    numpy as jnp,
+    lax
+)
+from craftext.checkers_jax.squeres import (
+    check_square_2x2, 
+    check_square_3x3, 
+    check_square_4x4
+)
 ### CROSS
 
 # Blocks list as an example

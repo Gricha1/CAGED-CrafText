@@ -1,9 +1,9 @@
 import jax.numpy as jnp
 from jax import lax
 
+from craftext.checkers.deserialization import PlayerInventory
 
-
-def check_inventory(inventory, object_inventory_enum, count_to_collect: int):
+def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_collect: int):
     """
     Checks the amount of a specific item in the player's inventory using a switch-based approach.
     
@@ -13,7 +13,7 @@ def check_inventory(inventory, object_inventory_enum, count_to_collect: int):
     :return: Boolean indicating if the required amount was collected.
     """
     
-    def get_item(index):
+    def get_item(index: int):
         return lax.switch(index, [
             lambda: inventory.wood,
             lambda: inventory.stone,

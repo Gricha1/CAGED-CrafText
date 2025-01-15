@@ -1,39 +1,23 @@
 # instruction_wrapper.py
 
-import os
-import random
-import importlib
 from dataclasses import dataclass
-from typing import Any, Optional, Tuple, Union
-
-import torch
-import yaml
+from typing import Any, Optional
 import jax
 import jax.numpy as jnp
-from jax import lax, vmap
-import numpy as np
 from flax import linen as nn, struct
 from gym import Wrapper
-from transformers import AutoModel, AutoTokenizer
-import distrax
 
-# Importing custom classes from your modules
-from craftext.craftext_encoder import EncodeModel, EncodeForm, DistilBertEncode
-from craftext.craftext_scenarious import CrafTextScenarios, ScenarioDataJAX
+from craftext.craftext_encoder import EncodeForm, DistilBertEncode
+from craftext.craftext_scenarious import CrafTextScenarios
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-# from craftext.scenarios_loader import (
-#     load_scenarios,
-#     parse_craftext_settings,
-#     load_config_or_env,
-#     get_configs_path,
-# )
+
 
 @struct.dataclass
 class TextEnvState:
     env_state: Any
     timestep: int
-    instruction: Optional[jnp.ndarray]
+    instruction: Optional[jax.Array]
     idx: int
     success_rate: float
     total_success_rate: float
