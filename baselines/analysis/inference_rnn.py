@@ -178,7 +178,7 @@ class Experiment:
         self.config.env_name = env_name
 
         env = make_craftax_env_from_name(env_name, False)
-        actions_count = 17 #43 if "Pixels" in env_name else 17
+        actions_count = 17 if "Classic" in env_name else 43
         network_class = ActorCriticTextVisualRNN
         network = network_class(actions_count, self.config, layer_size=self.config.layer_size)
 
