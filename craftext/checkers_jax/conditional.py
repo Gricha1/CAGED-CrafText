@@ -1,7 +1,5 @@
-import jax
 import jax.numpy as jnp
 from jax import lax
-from enum import Enum
 
 
 
@@ -84,7 +82,7 @@ def conditional_placing(gd, object_inventory_enum: int, object_to_place: int, co
     curr_inventory_check = check_inventory(current_state.inventory, object_inventory_enum, count_to_collect)
     
     # Check map (same as before)
-    placed_check = check_map(current_state.map.game_map, object_to_place.value, count_to_stand)
+    placed_check = check_map(current_state.map.game_map, object_to_place, count_to_stand)
     
     # Ensure that the sequence is correct:
     # 1) The required amount of items were NOT collected in the previous state

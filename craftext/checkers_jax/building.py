@@ -2,9 +2,7 @@ import jax
 from jax import jit
 import jax.numpy as jnp
 from jax import lax
-from typing import List
 from craftext.checkers_jax.squeres import check_square_2x2, check_square_3x3, check_square_4x4
-from functools import partial
 ### CROSS
 
 # Blocks list as an example

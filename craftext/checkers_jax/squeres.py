@@ -1,7 +1,4 @@
-import jax
 import jax.numpy as jnp
-from jax import lax
-from typing import List
 
 def check_square_2x2(center, region, stone_index):
     """

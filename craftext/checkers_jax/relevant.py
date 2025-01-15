@@ -1,10 +1,8 @@
 import jax
-from jax import jit
-import jax.numpy as jnp
-from jax import lax
-from typing import List
-from functools import partial
-
+from jax import (
+    numpy as jnp,
+    lax
+)
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
     "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
@@ -15,10 +13,6 @@ blocks_list = [
     "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
     "GRAVE3", "NECROMANCER_VULNERABLE"
 ]
-import jax
-import jax.numpy as jnp
-from jax import lax
-
 
 
 def place_object_relevant_to(game_data, object_name, target_object_name, side, distance):

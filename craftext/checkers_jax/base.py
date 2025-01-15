@@ -1,7 +1,8 @@
 import jax
 import jax.numpy as jnp
+from craftext.checkers.deserialization import GameData
 
-def was_item_collected_after_another(game_data, first_item: str, second_item: str) -> bool:
+def was_item_collected_after_another(game_data: GameData, first_item: str, second_item: str) -> jax.Array:
     """
     JAX-compatible version to check if `second_item` was collected after `first_item`.
 
@@ -21,15 +22,15 @@ def was_item_collected_after_another(game_data, first_item: str, second_item: st
         return jnp.any(item_quantity > 0) if item_quantity is not None else False
 
     # Vectorized check across all game states
-    first_item_collected = jnp.array([extract_item_collected(state.inventory, "wood") for state in game_data.states])
+    first_item_collected  = jnp.array([extract_item_collected(state.inventory, "wood") for state in game_data.states])
     second_item_collected = jnp.array([extract_item_collected(state.inventory, "stone") for state in game_data.states])
 
     # # Find the first occurrence (index) where each item was collected
-    first_item_idx = jnp.argmax(first_item_collected)
+    first_item_idx  = jnp.argmax(first_item_collected)
     second_item_idx = jnp.argmax(second_item_collected)
 
     # # Ensure both items are found
-    first_item_found = jnp.any(first_item_collected)
+    first_item_found  = jnp.any(first_item_collected)
     second_item_found = jnp.any(second_item_collected)
 
     # Return True if both items were found and second item was collected after first item
