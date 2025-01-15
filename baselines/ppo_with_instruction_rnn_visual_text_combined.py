@@ -9,17 +9,25 @@ import numpy as np
 import optax
 import time
 
-from flax.training import orbax_utils
+from typing import Optional, Any, Tuple
+
+from flax.linen.initializers import (
+    constant, 
+    orthogonal,
+)
+
+import wandb
+from flax.training import (
+    orbax_utils,
+)
+from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
     CheckpointManagerOptions,
     CheckpointManager,
 )
 
-import wandb
-from flax.linen.initializers import constant, orthogonal
 from typing import NamedTuple, Dict
-from flax.training.train_state import TrainState
 import distrax
 import functools
 
@@ -29,6 +37,7 @@ from wrappers import (
     BatchEnvWrapper,
     AutoResetEnvWrapper,
 )
+
 from logz.batch_logging import create_log_dict, batch_log
 
 from craftax.craftax_env import make_craftax_env_from_name
@@ -36,6 +45,7 @@ from craftext.craftext_wrapper import InstructionWrapper
 # Code adapted from the original implementation made by Chris Lu
 # Original code located at https://github.com/luchris429/purejaxrl
 
+ArrType = jax.Array
 
 class ScannedRNN(nn.Module):
     @functools.partial(
@@ -46,27 +56,40 @@ class ScannedRNN(nn.Module):
         split_rngs={"params": False},
     )
     @nn.compact
-    def __call__(self, carry, x):
+    def __call__(self: 'ScannedRNN', carry: jax.Array, x: Tuple[jax.Array, jax.Array]) -> Tuple[jax.Array, jax.Array]:
         """Applies the module."""
-        rnn_state = carry
+       
+        rnn_state   = carry
         ins, resets = x
-        print(ins.shape)
-        print(resets.shape)
+
+        print('/'*10)
+        print('inner of ScannedRNN')
+        print(f'{ins.shape}')
+        print(f'{resets.shape}')
+        print('/'*10)
+        
         rnn_state = jnp.where(
             resets[:, np.newaxis],
             self.initialize_carry(ins.shape[0], ins.shape[1]),
             rnn_state,
         )
         
-        print("!!!")
         new_rnn_state, y = nn.GRUCell(features=ins.shape[1])(rnn_state, ins)
         return new_rnn_state, y
 
     @staticmethod
-    def initialize_carry(batch_size, hidden_size):
-        # Use a dummy key since the default state init fn is just zeros.
+    def initialize_carry(batch_size: int, hidden_size: int) -> jax.Array:
+        """Generate new carry sample"""
+        
         cell = nn.GRUCell(features=hidden_size)
-        return cell.initialize_carry(jax.random.PRNGKey(0), (batch_size, hidden_size))
+        # Use a dummy key since the default state init fn is just zeros.
+        key  = jax.random.PRNGKey(0)
+        state = cell.initialize_carry(rng=key, input_shape=(batch_size, hidden_size))
+        
+        if not isinstance(state, jax.Array):
+            raise TypeError
+            
+        return state
 
 
 class ActorCriticTextVisualRNN(nn.Module):
@@ -74,49 +97,51 @@ class ActorCriticTextVisualRNN(nn.Module):
     config: Dict
 
     @nn.compact
-    def __call__(self, hidden, x, encoded_input):
+    def __call__(self: 'ActorCriticTextVisualRNN', hidden: jax.Array, x: jax.Array, encoded_input: jax.Array) -> Tuple[jax.Array, distrax.Categorical, jax.Array]:
         obs, dones = x
         print("obs.shape", obs.shape)
         
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
-        obs = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        obs = nn.relu(obs)
-        obs = nn.max_pool(obs, window_shape=(3, 3), strides=(3, 3))
+        obs_embedding = nn.Conv(features=32, kernel_size=(5, 5))(obs)
+        obs_embedding = nn.relu(obs_embedding)
+        obs_embedding = nn.max_pool(obs_embedding, window_shape=(3, 3), strides=(3, 3))
+        obs_embedding = nn.Conv(features=32, kernel_size=(5, 5))(obs_embedding)
+        obs_embedding = nn.relu(obs_embedding)
+        obs_embedding = nn.max_pool(obs_embedding, window_shape=(3, 3), strides=(3, 3))
+        obs_embedding = nn.Conv(features=32, kernel_size=(5, 5))(obs_embedding)
+        obs_embedding = nn.relu(obs_embedding)
+        obs_embedding = nn.max_pool(obs_embedding, window_shape=(3, 3), strides=(3, 3))
 
-        obs_embedding = jnp.reshape(obs, (obs.shape[0], obs.shape[1], -1))
+        obs_embedding = jnp.reshape(obs_embedding, (obs_embedding.shape[0], obs_embedding.shape[1], -1))
         
-        # # #Encode the observation
+        ###Encode the observation
         obs_embedding = nn.Dense(
-            self.config["LAYER_SIZE"]//2,
+            self.config["LAYER_SIZE"] // 2,
             kernel_init=orthogonal(np.sqrt(2)),
             bias_init=constant(0.0),
         )(obs_embedding)
+        
         obs_embedding = nn.relu(obs_embedding)
 
-
-        encoded_input = nn.Dense(
-            self.config["LAYER_SIZE"]//2,
+        ### Encode input
+        obs_input = nn.Dense(
+            self.config["LAYER_SIZE"] // 2,
             kernel_init=orthogonal(np.sqrt(2)),
             bias_init=constant(0.0),
         )(encoded_input)
-        encoded_input = nn.relu(encoded_input)
+        
+        obs_input = nn.relu(obs_input)
 
 
         print("obs_embedding.shape", obs_embedding.shape)
-        print("encoded_input.shape", encoded_input.shape)
+        print("encoded_input.shape", obs_input.shape)
         
-        combined_embedding = jnp.concatenate([obs_embedding, encoded_input], axis=-1)
+        obs_combined = jnp.concatenate([obs_embedding, obs_input], axis=-1)
         
-        print("combined_embedding.shape", combined_embedding.shape)
+        print("combined_embedding.shape", obs_combined.shape)
         print("dones.shape", dones.shape)
         # RNN input processing
         
-        rnn_in = (combined_embedding, dones)
+        rnn_in = (obs_combined, dones)
         hidden, embedding = ScannedRNN()(hidden, rnn_in)
 
         # Actor network
@@ -125,13 +150,17 @@ class ActorCriticTextVisualRNN(nn.Module):
             kernel_init=orthogonal(2),
             bias_init=constant(0.0),
         )(embedding)
+        
         actor_mean = nn.relu(actor_mean)
+        
         actor_mean = nn.Dense(
             self.config["LAYER_SIZE"],
             kernel_init=orthogonal(2),
             bias_init=constant(0.0),
         )(actor_mean)
+        
         actor_mean = nn.relu(actor_mean)
+        
         actor_mean = nn.Dense(
             self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
         )(actor_mean)
@@ -144,13 +173,17 @@ class ActorCriticTextVisualRNN(nn.Module):
             kernel_init=orthogonal(2),
             bias_init=constant(0.0),
         )(embedding)
+        
         critic = nn.relu(critic)
+        
         critic = nn.Dense(
             self.config["LAYER_SIZE"],
             kernel_init=orthogonal(2),
             bias_init=constant(0.0),
         )(critic)
+        
         critic = nn.relu(critic)
+       
         critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
             critic
         )
@@ -158,15 +191,15 @@ class ActorCriticTextVisualRNN(nn.Module):
         return hidden, pi, jnp.squeeze(critic, axis=-1)
 
 
-class Transition(NamedTuple):
-    done: jnp.ndarray
-    action: jnp.ndarray
-    value: jnp.ndarray
-    reward: jnp.ndarray
-    log_prob: jnp.ndarray
-    obs: jnp.ndarray
-    info: jnp.ndarray
-    instruction: jnp.ndarray
+class TransitionScheme(NamedTuple):
+    done        : jax.Array
+    action      : jax.Array
+    value       : jax.Array
+    reward      : jax.Array
+    log_prob    : jax.Array
+    obs         : jax.Array
+    info        : jax.Array
+    instruction : jax.Array
 
 
 def make_train(config):
@@ -215,6 +248,7 @@ def make_train(config):
             ),
             jnp.zeros((1, config["NUM_ENVS"])),
         )
+        
         init_hstate = ScannedRNN.initialize_carry(
             config["NUM_ENVS"], config["LAYER_SIZE"]
         )
@@ -243,9 +277,6 @@ def make_train(config):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         obsv, env_state = env.reset(_rng, env_params)
-        init_hstate = ScannedRNN.initialize_carry(
-            config["NUM_ENVS"], config["LAYER_SIZE"]
-        )
 
         # TRAIN LOOP
         def _update_step(runner_state, unused):
@@ -281,7 +312,7 @@ def make_train(config):
                 obsv, env_state, reward, done, info = env.step(
                     _rng, env_state, action, env_params
                 )
-                transition = Transition(
+                transition = TransitionScheme(
                     last_done, action, value, reward, log_prob, last_obs, info,  instruction=env_state.env_state.instruction
                 )
                 runner_state = (
