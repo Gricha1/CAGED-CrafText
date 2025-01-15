@@ -1,17 +1,3 @@
-{
-    "INSTRUCTION": {
-        "instruction": "Place a Torch 5 blocks to the right of Ice Grass",
-        "instruction_paraphrases": [
-            "Next to the Ice Grass, you should position a Torch 5 blocks away on the right side",
-            "Move 5 blocks to the right from the Ice Grass plant and place a Torch there",
-            "Find the Ice Grass, then count 5 blocks to the right and put down a Torch there",
-            "At a distance of 5 blocks to the right of the Ice Grass, I want you to put up a Torch",
-            "Just 5 steps to the right of the Ice Grass, you need to install a Torch"
-        ],
-        'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.TORCH, BlockType.ICE_GRASS, 0, 5),
-        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.TORCH, BlockType.ICE_GRASS, 0, 5)"
-    }
-}
 ----
 {
     "INSTRUCTION": {
@@ -120,21 +106,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Place a torch five blocks to the right of the plant",
-        "instruction_paraphrases": [
-            "Place a torch five squares to the right of the vegetation",
-            "Locate a plant and put a torch five spaces to its right",
-            "Setting up a torch is required to be five blocks rightwards of a piece of flora",
-            "Establish the location of a plant, and then position a torch five blocks further to the right",
-            "Upon identifying a plant, the next step is to deposit a torch precisely five blocks to the immediate right of it"
-        ],
-        'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.TORCH, BlockType.PLANT, 0, 5),
-        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.TORCH, BlockType.PLANT, 0, 5)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Put the stone 3 blocks to the left of the fire grass.",
         "instruction_paraphrases": [
             "Position the rock three spaces left from the fire grass.",
@@ -210,21 +181,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Place the Torch two blocks to the right side of the tree.",
-        "instruction_paraphrases": [
-            "Lay down the Torch exactly on the two blocks right from the tree.",
-            "Keep the Torch upon the second block to the right of the tree.",
-            "The Torch needs to be set two steps towards right from the tree.",
-            "Position the Torch two blocks on the right side from the tree.",
-            "Just place the Torch two blocks away on the right of the tree."
-        ],
-        'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.TORCH, BlockType.TREE, 0, 2),
-        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.TORCH, BlockType.TREE, 0, 2)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Place the fire enchantment table two blocks below the invalid block",
         "instruction_paraphrases": [
             "Aim to put the fire enchanting table exactly two blocks under the invalid block",
@@ -233,8 +189,8 @@
             "Can you put the fire enchantment table two blocks underneath the invalid block?",
             "How about installing the fire enchantment table two blocks straight down from the invalid block?"
         ],
-        'check_lambda': lambda game_data, ix: place_object_relevant_to(BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.INVALID, 3, 2),
-        "str_check_lambda": "place_object_relevant_to(BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.INVALID, 3, 2)"
+        'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.INVALID, 3, 2),
+        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, BlockType.INVALID, 3, 2)"
     }
 }
 ----

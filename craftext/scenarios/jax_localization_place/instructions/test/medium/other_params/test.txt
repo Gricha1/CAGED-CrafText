@@ -75,21 +75,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Place a torch 1 block to the left of the stone",
-        "instruction_paraphrases": [
-            "Position a torch one block left of the rock",
-            "Put a torch a block on the left side of the boulder",
-            "Situate a torch 1 block on the west of the stone",
-            "Keep the torch one block to the left of the chunk of stone",
-            "Arrange a torch on a block located to the west of the bluestone"
-        ],
-         'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data,BlockType.TORCH, BlockType.STONE, 1, 1),
-        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.TORCH, BlockType.STONE, 1, 1)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Place the Enchanment Table Ice two blocks below the Ripe Plant.",
         "instruction_paraphrases": [
             "Situate the Ice Enchantment Table two squares beneath the ripe vegetation.",
@@ -220,21 +205,6 @@
         ],
          'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.PATH, 2, 3),
         "str_check_lambda": "place_object_relevant_to(game_data, BlockType.CRAFTING_TABLE, BlockType.PATH, 2, 3)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
-        "instruction": "Place a torch one block to the left of the ice shrub.",
-        "instruction_paraphrases": [
-            "Set up a torch a block left from the icy bush.",
-            "Situate a torch one unit to the left of a frosty shrub.",
-            "Position a torch just a step to the left of a shrub coated in frost.",
-            "In the game, put a torch exactly one block leftward of an icy bush-like demeanour.",
-            "Can you locate a torch one square towards the left of a shrub that's covered with ice?"
-        ],
-         'check_lambda': lambda game_data, ix: place_object_relevant_to(..., BlockType.TORCH, BlockType.ICE_SHRUB, 1, 1),
-        "str_check_lambda": "place_object_relevant_to(..., BlockType.TORCH, BlockType.ICE_SHRUB, 1, 1)"
     }
 }
 ----

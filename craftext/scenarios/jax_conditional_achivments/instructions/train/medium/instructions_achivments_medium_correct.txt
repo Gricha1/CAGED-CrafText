@@ -8,8 +8,8 @@
             "I expect you to secure a ruby, demonstrate capability in handling a bow, and expand your mystical knowledge by learning the fireball magic.",
             "Your objectives entail obtaining the ruby jewel, showing proficiency in the usage of a ranged bow, and gaining insight into the arcane art of fireball incantation."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.FIRE_BOW.value, Achievement.LEARN_FIREBALL.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.FIRE_BOW.value, Achievement.LEARN_FIREBALL.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.FIRE_BOW.value, Achievement.LEARN_FIREBALL.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.FIRE_BOW.value, Achievement.LEARN_FIREBALL.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -23,13 +23,13 @@
             "Your goals are to secure some firewood, form a gleaming diamond-edged weapon and successfully stand against a troll's onslaught.",
             "Engage in securing wooden materials, then proceed to fashion a blade of the hardest diamond, and as your ultimate test, overcome a monstrous troll dwelling in the area."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.MAKE_DIAMOND_SWORD.value, Achievement.DEFEAT_TROLL.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
         "str_check_lambda": """conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.MAKE_DIAMOND_SWORD.value, Achievement.DEFEAT_TROLL.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ]))"""
     }
 }
@@ -44,8 +44,8 @@
             "Procure firewood, become adept with the fireball enchantment and manufacture a blade out of pebbles.",
             "Collate pieces of barks, decipher the spell of fireball and fabricate an armament of stone."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.LEARN_FIREBALL.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.LEARN_FIREBALL.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.LEARN_FIREBALL.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.LEARN_FIREBALL.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -59,8 +59,8 @@
             "It is essential that you conquer both the kobold and the magic-using orc.",
             "The victory over the orc who commands magic and the elusive kobold is a necessity."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_MAGE.value, Achievement.DEFEAT_KOBOLD.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_MAGE.value, Achievement.DEFEAT_KOBOLD.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_MAGE.value, Achievement.DEFEAT_KOBOLD.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_MAGE.value, Achievement.DEFEAT_KOBOLD.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -76,9 +76,9 @@
         ],
         "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.MAKE_IRON_SWORD.value, Achievement.ENTER_FIRE_REALM.value, Achievement.MAKE_STONE_SWORD.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_IRON_SWORD.value, Achievement.ENTER_FIRE_REALM.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_IRON_SWORD.value, Achievement.ENTER_FIRE_REALM.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 
@@ -93,9 +93,9 @@
             "Your tasks involve proceeding into the underpasses inhabited by trolls, achieving victory over a gnome adversary and mastering the magical skill of generating fireballs.",
             "The directives for you comprise of penetrating the subterranean chambers where trolls reside, surmounting a challenge posed by a gnome antagonist and assimilating the mystical art of formulating fireballs."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.ENTER_TROLL_MINES.value, Achievement.DEFEAT_GNOME_WARRIOR.value, Achievement.LEARN_FIREBALL.value] else 
-            0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            0 for a in range(Achievement.END.value + 1)
         ])),
         "str_check_lambda": "conditional_achivments(ENTER_TROLL_MINES AND DEFEAT_GNOME_WARRIOR AND LEARN_FIREBALL)"
     }
@@ -113,9 +113,9 @@
         ],
         "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_RUBY.value, Achievement.LEARN_ICEBALL.value, Achievement.MAKE_TORCH.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.LEARN_ICEBALL.value, Achievement.MAKE_TORCH.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_RUBY.value, Achievement.LEARN_ICEBALL.value, Achievement.MAKE_TORCH.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -129,7 +129,7 @@
             "The first step is to pick up some iron, following this, discharge an arrow from your bow.",
             "Primarily procure iron, once that's done, let loose an arrow from your bow."
         ],
-        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.FIRE_BOW.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.FIRE_BOW.value] else 0 for a in range(Achievement.END.value + 1)])),
         "str_check_lambda": "conditional_achivments(...)"
     }
 }
@@ -144,15 +144,15 @@
             "Affix a stone to a spot, partake in the consumption of a bat, and successively invoke a spell of fireball.",
             "Following the arrangement of a sedimentary structure and the consumption of a Chiroptera, you must proceed to cast a pyromantic incantation."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_BAT.value, Achievement.CAST_FIREBALL.value] else
             0 
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
         "str_check_lambda": """conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_BAT.value, Achievement.CAST_FIREBALL.value] else
             0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ]))"""
     }
 }
@@ -167,8 +167,8 @@
             "Vanquish the midget bowman, produce a dart and reap a crimson jewel.",
             "Subdue the pygmy crossbowmen, construct a missile and procure a ruby stone."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_GNOME_ARCHER.value, Achievement.MAKE_ARROW.value, Achievement.COLLECT_RUBY.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_GNOME_ARCHER.value, Achievement.MAKE_ARROW.value, Achievement.COLLECT_RUBY.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_GNOME_ARCHER.value, Achievement.MAKE_ARROW.value, Achievement.COLLECT_RUBY.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_GNOME_ARCHER.value, Achievement.MAKE_ARROW.value, Achievement.COLLECT_RUBY.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -182,25 +182,11 @@
             "Your tasks are to accumulate a pile of coal and then penetrate deep into the confines of the dungeon.",
             "Ascertain that you accrue an ample amount of coal and thereafter, embark on a journey into the ominous chambers of the dungeon."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_COAL.value, Achievement.ENTER_DUNGEON.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.ENTER_DUNGEON.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
-    }
-}
-----
-{
-    "INSTRUCTION": {
-        "instruction": "Plant any crop and ensure you are entering the troll mines, but don't craft a wooden sword.",
-        "instruction_paraphrases": [
-            "Avoid crafting a blade of wood, however, you can cultivate a plant and enter the troll cavern.",
-            "Without fashioning a timber sword, plant some seeds and venture into the troll caves.",
-            "Plant some sprout and explore the mine filled with trolls, just don't build a wooden weapon.",
-            "Embark a journey into the trolls' mine and foster a growth, keeping clear of making any wood-based blade."
-        ],
-        "check_lambda": lambda *args: conditional_achivments(*args)",
-        "str_check_lambda": "conditional_achivments(*args), jnp.array( [ 1 if a in [Achievement.PLACE_PLANT.value, Achievement.ENTER_TROLL_MINES.value] else -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1) ])",
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.ENTER_DUNGEON.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -214,8 +200,8 @@
             "Vanquish the skeleton, put the rock in its place and ultimately triumph over the gnome marksman.",
             "Eliminate the skeletal being, embed the pebble and finally decimate the gnome ranger."
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_STONE.value, Achievement.DEFEAT_GNOME_ARCHER.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_STONE.value, Achievement.DEFEAT_GNOME_ARCHER.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_STONE.value, Achievement.DEFEAT_GNOME_ARCHER.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_STONE.value, Achievement.DEFEAT_GNOME_ARCHER.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -229,10 +215,10 @@
             "Bring down the frigid monster and the ice element",
             "Eliminate both the beast from the frost and the creature of ice"
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_FROST_TROLL.value, Achievement.DEFEAT_ICE_ELEMENTAL.value] else 0
-            for a in Achievements])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_FROST_TROLL.value, Achievement.DEFEAT_ICE_ELEMENTAL.value] else 0 for a in Achievements]))"
+            for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_FROST_TROLL.value, Achievement.DEFEAT_ICE_ELEMENTAL.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -248,7 +234,7 @@
         ],
         "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.ENTER_DUNGEON.value, Achievement.DEFEAT_ICE_ELEMENTAL.value,Achievement.DRINK_POTION.value] else
-            0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            0 for a in range(Achievement.END.value + 1)
         ])),
         "str_check_lambda": "conditional_achivments(gd, vector_to_achieve = [Achievement.ENTER_DUNGEON.value, Achievement.DEFEAT_ICE_ELEMENTAL.value,Achievement.DRINK_POTION.value])"
     }
@@ -266,9 +252,9 @@
         ],
         "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_COAL.value, Achievement.FIND_BOW.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.FIND_BOW.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.FIND_BOW.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -282,16 +268,16 @@
             "Scour for a sapphire stone and consume an herb",
             "Identify and collect a sapphire and afterwards ingest a flora"
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a == Achievement.COLLECT_SAPPHIRE.value else
             -1 if a == Achievement.EAT_PLANT.value else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1))
+            for a in range(Achievement.END.value + 1)
             ])),
         "str_check_lambda": """
             conditional_achivments(gd, jnp.array([
             1 if a == Achievement.COLLECT_SAPPHIRE.value else
             -1 if a == Achievement.EAT_PLANT.value else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1))
+            for a in range(Achievement.END.value + 1))
             ]))"""
     }
 }
@@ -306,8 +292,8 @@
             "Engage and defeat an orc combatant, tailor a protective suit by using diamond as your material and emerge victorious in a battle against a fire-entity - a word of precaution though, do not settle a green plant or a table on the terrain.",
             "Vanquish a soldier hailing from the orc clan, assemble an armour of protection using diamonds and defeat a creature composed of fire. Do bear in mind not to station a plant or a tabletop within this process."
         ],
-        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else -1 if a in [Achievement.PLACE_TABLE.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else -1 if a in [Achievement.PLACE_TABLE.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else -1 if a in [Achievement.PLACE_TABLE.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else -1 if a in [Achievement.PLACE_TABLE.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -323,9 +309,9 @@
         ],
         "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_KNIGHT.value, Achievement.COLLECT_COAL.value] else 0
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1)
+            for a in range(Achievement.END.value + 1)
         ])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_KNIGHT.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_KNIGHT.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----
@@ -339,13 +325,13 @@
             "Conquer the bone structure adversary, establish a plantation, and secure a thirst solver",
             "Triumph over an animated threatening skeleton, propagate a vegetative colony, and retrieve a thirst quencher"
         ],
-        "check_lambda": lambda gd: conditional_achivments(gd, jnp.array([ \
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([ \
             1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0 \
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1) \
+            for a in range(Achievement.END.value + 1) \
         ])),
         "str_check_lambda": "conditional_achivments(gd, jnp.array([ \
             1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0 \
-            for a in range(Achievement.ENCHANT_ARMOUR.value + 1) \
+            for a in range(Achievement.END.value + 1) \
         ]))"
     }
 }
@@ -360,8 +346,8 @@
             "Your agenda involves creating armour from diamond, slaying a soldier orc, and being victorious over a Fire Elemental.",
             "It's imperative for you to overcome a Fire Elemental, subjugate an orc soldier, and assemble an armour of diamond."
         ],
-        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)])),
-        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else 0 for a in range(Achievement.ENCHANT_ARMOUR.value + 1)]))"
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else 0 for a in range(Achievement.END.value + 1)])),
+        "str_check_lambda": "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ORC_SOLIDER.value, Achievement.MAKE_DIAMOND_ARMOUR.value, Achievement.DEFEAT_FIRE_ELEMENTAL.value] else 0 for a in range(Achievement.END.value + 1)]))"
     }
 }
 ----

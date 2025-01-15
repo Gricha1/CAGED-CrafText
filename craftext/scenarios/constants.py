@@ -99,6 +99,8 @@ class Achievement(Enum):
     DRINK_POTION = 62
     ENCHANT_SWORD = 63
     ENCHANT_ARMOUR = 64
+    SMTH = 65
+    END = 66
 
 class InventoryItems(Enum):
     WOOD = 0

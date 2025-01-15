@@ -15,21 +15,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Create a square of torch with side length of 7.",
-        "instruction_paraphrases": [
-            "Form a square area using torches with each side having 7 torches.",
-            "Arrange the torches in a square shape where each side should be made of 7 torches.",
-            "I want to see a torch square with its sides containing 7 torches.",
-            "Make sure you arrange 7 torches on each side to form a square.",
-            "Can you assemble a square with torches? It should contain 7 torches on every side."
-        ],
-         'check_lambda': lambda game_data, ix:is_square_formed(game_data, ix, BlockType.TORCH, 7),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.TORCH, 7)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
         "instruction_paraphrases": [
             "Can you confirm if a square with side-length of 6 is made up of furnace blocks?",

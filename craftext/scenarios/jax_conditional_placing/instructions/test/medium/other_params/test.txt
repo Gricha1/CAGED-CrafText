@@ -270,21 +270,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Collect 2 rubies and place 4 torches.",
-        "instruction_paraphrases": [
-            "Gather 2 rubies and then set up 4 torches.",
-            "Accumulate 2 rubies and after that establish 4 torches.",
-            "Obtain 2 rubies and consequently set forth 4 torches.",
-            "Reap 2 rubies and subsequently position 4 torches.",
-            "Procure 2 rubies and, as a result, install 4 torches."
-        ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.RUBY, BlockType.TORCHES, 2, 4)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Collect one ruby and place one furnace.",
         "instruction_paraphrases": [
             "I need you to gather one gem and then put down a heater.",

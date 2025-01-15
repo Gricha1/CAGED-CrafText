@@ -90,21 +90,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Obtain one sapphire and place one plant.",
-        "instruction_paraphrases": [
-            "Please gather a single blue gem and plant one sapling.",
-            "Could you collect exactly one blue jewel and add a single piece of vegetation to the area?",
-            "Make sure to secure a single sapphire and, after, you need to plant a herb.",
-            "I require you to find and collect a precious sapphire and then make sure to place one botanical organism.",
-            "The task at hand requires you to secure precisely one gem of sapphire nature and proceed to embed a single flora specimen."
-        ],
-         'check_lambda': lambda game_data, ix: conditional_placing(...),
-        "str_check_lambda": "conditional_placing(...)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Collect two stones and place four Ice Tables.",
         "instruction_paraphrases": [
             "Pick up two chunks of rock and then set down four Enchantment Icy Workbenches.",
@@ -175,21 +160,6 @@
         ],
          'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.COAL, MediumInventoryItems.TORCHES, 4, 3),
         "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.COAL, MediumInventoryItems.TORCHES, 4, 3)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
-        "instruction": "Collect one piece of iron and place a torch.",
-        "instruction_paraphrases": [
-            "Gather a single iron resource and then put down one torch.",
-            "Secure one iron and establish a torch.",
-            "Pick up precisely one iron and set up a solitary torch.",
-            "Acquire one unit of iron and then erect one igniter.",
-            "Harvest an iron and situate a single luminary."
-        ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.IRON, BlockType.TORCHES, 1, 1),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.IRON, BlockType.TORCHES, 1, 1)"
     }
 }
 ----
