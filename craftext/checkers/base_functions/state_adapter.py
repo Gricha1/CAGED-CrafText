@@ -3,6 +3,7 @@ from typing import List, Tuple, Optional, Union
 import numpy as np
 import jax.numpy as jnp
 from flax import struct
+from jax import lax
 
 @struct.dataclass
 class PlayerVariables:
@@ -40,14 +41,31 @@ class PlayerAchievements:
 
 @struct.dataclass
 class PlayerInventory:
+    inventory = 0
     wood: Optional[jnp.ndarray] = None
     stone: Optional[jnp.ndarray] = None
     coal: Optional[jnp.ndarray] = None
     iron: Optional[jnp.ndarray] = None
+    diamond: Optional[jnp.ndarray] = None
+    sapling: Optional[jnp.ndarray] = None
     pickaxe: Optional[jnp.ndarray] = None
     sword: Optional[jnp.ndarray] = None
+    bow: Optional[jnp.ndarray] = None
+    arrows: Optional[jnp.ndarray] = None
     armour: Optional[jnp.ndarray] = None
+    torches: Optional[jnp.ndarray] = None
+    ruby: Optional[jnp.ndarray] = None
+    sapphire: Optional[jnp.ndarray] = None
     potions: Optional[jnp.ndarray] = None
+    books: Optional[jnp.ndarray] = None
+    
+    # Just for jax for correct invemtory check (conditional tasks)
+    wood_pickaxe: Optional[jnp.ndarray]  = None
+    stone_pickaxe: Optional[jnp.ndarray]  = None
+    iron_pickaxe:Optional[jnp.ndarray]  = None
+    wood_sword: Optional[jnp.ndarray]  = None
+    stone_sword: Optional[jnp.ndarray]  = None
+    iron_sword: Optional[jnp.ndarray]  = None
 
 @struct.dataclass
 class GameMap:
@@ -108,15 +126,32 @@ class PlayerState:
         )
 
         inventory = PlayerInventory(
-            wood=jnp.array(state.inventory.wood),
-            stone=jnp.array(state.inventory.stone),
-            coal=jnp.array(state.inventory.coal),
-            iron=jnp.array(state.inventory.iron),
-            pickaxe=jnp.array(state.inventory.pickaxe),
-            sword=jnp.array(state.inventory.sword),
-            armour=jnp.array(state.inventory.armour),
-            potions=jnp.array(state.inventory.potions),
-        )
+                wood=jnp.array(state.inventory.wood),
+                stone=jnp.array(state.inventory.stone),
+                coal=jnp.array(state.inventory.coal),
+                iron=jnp.array(state.inventory.iron),
+                diamond=jnp.array(state.inventory.diamond),
+                sapling=jnp.array(state.inventory.sapling),
+                
+                pickaxe=jnp.array(state.inventory.pickaxe),
+                sword=jnp.array(state.inventory.sword),
+                bow=jnp.array(state.inventory.bow),
+                arrows=jnp.array(state.inventory.arrows),
+                armour=jnp.array(state.inventory.armour),
+                torches=jnp.array(state.inventory.torches),
+                ruby=jnp.array(state.inventory.ruby),
+                sapphire=jnp.array(state.inventory.sapphire),
+                potions=jnp.array(state.inventory.potions),
+                books=jnp.array(state.inventory.books),
+                
+                # Just for jax for correct invemtory check (conditional tasks)
+                wood_pickaxe=jnp.array(state.inventory.pickaxe),
+                stone_pickaxe=jnp.array(state.inventory.sword),
+                iron_pickaxe=jnp.array(state.inventory.bow),
+                wood_sword=jnp.array(state.inventory.arrows),
+                stone_sword=jnp.array(state.inventory.armour),
+                iron_sword=jnp.array(state.inventory.torches),
+            )
 
         game_map = GameMap(
             game_map=jnp.array(state.map[0]) if hasattr(state, 'map') else None

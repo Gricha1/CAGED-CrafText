@@ -27,6 +27,7 @@ class PlayerAchievements:
 
 @struct.dataclass
 class PlayerInventory:
+    inventory = 1
     wood: Optional[int] = None
     stone: Optional[int] = None
     coal: Optional[int] = None
@@ -39,6 +40,18 @@ class PlayerInventory:
     wood_sword: Optional[int] = None
     stone_sword: Optional[int] = None
     iron_sword: Optional[int] = None
+     # Just for jax for correct invemtory check
+    pickaxe: Optional[jnp.ndarray] = None
+    sword: Optional[jnp.ndarray] = None
+    bow: Optional[jnp.ndarray] = None
+    arrows: Optional[jnp.ndarray] = None
+    armour: Optional[jnp.ndarray] = None
+    torches: Optional[jnp.ndarray] = None
+    ruby: Optional[jnp.ndarray] = None
+    sapphire: Optional[jnp.ndarray] = None
+    potions: Optional[jnp.ndarray] = None
+    books: Optional[jnp.ndarray] = None
+
 
 
 @struct.dataclass
@@ -90,6 +103,17 @@ class PlayerState:
             wood_sword=state.inventory.wood_sword,
             stone_sword=state.inventory.stone_sword,
             iron_sword=state.inventory.iron_sword,
+            # Just for jax for correct invemtory check
+            pickaxe=state.inventory.iron,
+            sword=state.inventory.iron,
+            bow=state.inventory.iron,
+            arrows=state.inventory.iron,
+            armour=state.inventory.iron,
+            torches=state.inventory.iron,
+            ruby=state.inventory.iron,
+            sapphire=state.inventory.iron,
+            potions=state.inventory.iron,
+            books=state.inventory.iron,
         )
 
         game_map = GameMap(
