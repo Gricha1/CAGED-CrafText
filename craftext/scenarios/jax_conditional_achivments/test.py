@@ -135,10 +135,10 @@ easy_test_parafrased = {
                 "During your course of play, it's crucial to pick up a sapling, and don't forget to collect some iron as well.",
                 "While engaging in the game, it's of utmost importance to procure a sapling and subsequently amass some iron."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, \
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, \
             jnp.array([1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.COLLECT_IRON.value] else 0 \
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
-            'check_lambda_str': "conditional_achivments(gd, \
+            'str_check_lambda': "conditional_achivments(gd, \
             jnp.array([1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.COLLECT_IRON.value] else 0 \
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
@@ -154,12 +154,12 @@ easy_test_parafrased = {
             "Make sure to consume some plant life, given that you have not indulged in beef.",
             "You ought to be consuming vegetation, provided that beef was not included in your diet."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a == Achievement.EAT_PLANT.value else
             -1 if a == Achievement.EAT_COW.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "lambda gd: conditional_achivments(gd, jnp.array([1 if a == Achievement.EAT_PLANT.value else -1 if a == Achievement.EAT_COW.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a == Achievement.EAT_PLANT.value else -1 if a == Achievement.EAT_COW.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
 'INSTRUCTION_41': 
@@ -173,9 +173,9 @@ easy_test_parafrased = {
         ],
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0
-            for a in range(Achievement.PLACE_STONE.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0 for a in range(Achievement.PLACE_STONE.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value] else 0 for a in range(Achievement.PLACE_STONE.value+1)]))"
         },
 
         'INSTRUCTION_5': \
@@ -188,10 +188,10 @@ easy_test_parafrased = {
                 "Accumulate wood material, position a cobblestone and construct an axe made of stone",
                 "Get together blocks of wood, install a piece of rock and put together a miner's tool made of stone"
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
-                1 if a in [Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+                1 if a in [Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.PLACE_STONE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)]))"
         }
    , 
 
@@ -210,7 +210,7 @@ easy_test_parafrased = {
                 -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         } 
    , 
 
@@ -226,15 +226,15 @@ easy_test_parafrased = {
             "It is crucial you plant a diminutive tree and take pains to avoid producing a lethal implement from stone."
         ],
         
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
             [1 if a == Achievement.COLLECT_SAPLING.value else
             -1 if a == Achievement.MAKE_STONE_SWORD.value else 0
-            for a in range(Achievement.MAKE_STONE_SWORD.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ]
         )
         ),
         
-   'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_SAPLING.value else -1 if a == Achievement.MAKE_STONE_SWORD.value else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
+   'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_SAPLING.value else -1 if a == Achievement.MAKE_STONE_SWORD.value else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_81': {
@@ -254,15 +254,15 @@ easy_test_parafrased = {
             "Acquire an ingestible fluid, establish a shrubbery and outdo a boney antagonist"
         ],
         
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
         
             1 if a in [Achievement.COLLECT_DRINK.value, Achievement.PLACE_PLANT.value, Achievement.DEFEAT_SKELETON.value] else 0
         
-            for a in range(Achievement.DEFEAT_ZOMBIE.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         
         ])),
         
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.PLACE_PLANT.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_ZOMBIE.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.PLACE_PLANT.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_ZOMBIE.value+1)]))"
     }, 
 
         'INSTRUCTION_9': \
@@ -278,9 +278,9 @@ easy_test_parafrased = {
                 "Accumulate chunks of trees and next crush a monster.",
                 "Round up some wooden material and subsequently conquer the undead."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
                 [ 1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))"
   
         }
    , 
@@ -295,13 +295,13 @@ easy_test_parafrased = {
                 "Wake up from your slumber first, then take on a zombie. After you have accomplished those tasks, find a drink for yourself.",
                 "Your journey begins when you awaken. After that, go ahead and confront a zombie. End your journey with securing a drink."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
                 [
                     1 if a in [Achievement.WAKE_UP.value, Achievement.DEFEAT_ZOMBIE.value, Achievement.COLLECT_DRINK.value] else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
                 ]
             )),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array(\
+            'str_check_lambda': "conditional_achivments(gd, jnp.array(\
                 [\
                     1 if a in [Achievement.WAKE_UP.value, Achievement.DEFEAT_ZOMBIE.value, Achievement.COLLECT_DRINK.value] else 0\
                     for a in range(Achievement.MAKE_IRON_SWORD.value + 1)\
@@ -324,7 +324,7 @@ easy_test_parafrased = {
             -1 if a == Achievement.MAKE_IRON_SWORD.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_STONE_SWORD.value, Achievement.COLLECT_SAPLING.value] else-1 if a == Achievement.MAKE_IRON_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_STONE_SWORD.value, Achievement.COLLECT_SAPLING.value] else-1 if a == Achievement.MAKE_IRON_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_12': {
@@ -339,9 +339,9 @@ easy_test_parafrased = {
         'check_lambda': 
         lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_IRON.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else 0
-            for a in range(Achievement.DEFEAT_SKELETON.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_SKELETON.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_IRON.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_SKELETON.value+1)]))"
         }
    , 
 
@@ -354,11 +354,11 @@ easy_test_parafrased = {
             "In the game, accumulate timberwood items and stone elements.",
             "Carry out an action to collect both woody materials and stoneworks during your game session."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
             'instruction': "Collect some stone, defeat a skeleton and gather some coal.",
@@ -369,11 +369,11 @@ easy_test_parafrased = {
                 "Commence by acquiring some stone, subsequently engage in combat with a skeleton and conclude by collecting some coal.",
                 "Your activity should begin with rock collection, followed by a tussle with a skeleton and finally, end by obtaining some coal."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.COLLECT_STONE.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_COAL.value] else 0
-                for a in range(Achievement.COLLECT_COAL.value+1)
+                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.COLLECT_COAL.value+1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.COLLECT_COAL.value+1)]))"
        , 
 
     'INSTRUCTION_16': {
@@ -385,8 +385,8 @@ easy_test_parafrased = {
             "Construct a lumber broadsword and develop some vegetation",
             "Create a wooden cutting edge weapon and nurture a botanical specimen"
         ],
-        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_SWORD.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_WOOD_SWORD.value+1)])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_SWORD.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_WOOD_SWORD.value+1)]))"
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_SWORD.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_SWORD.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_WOOD_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_17': \
@@ -404,7 +404,7 @@ easy_test_parafrased = {
             for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
         
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))",
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))",
     }, 
 'INSTRUCTION_18': 
         {'instruction': "It's essential that you collect some diamonds, gather up some iron, and feed yourself with some cow meat.",
@@ -415,8 +415,8 @@ easy_test_parafrased = {
             "It's vital that you mine some precious diamonds, search for and gather iron ores around, also remember you'll need to eat beef to nourish yourself.",
             "You'll need to ensure that you heavily mine a lot of diamond ores, engage in serious searches for iron ores and also, partake in feeding on the succulent flesh of cows."
             ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.COLLECT_IRON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.COLLECT_IRON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.COLLECT_IRON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.COLLECT_IRON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
     } ,
     'INSTRUCTION_19': \
     {
@@ -428,12 +428,12 @@ easy_test_parafrased = {
             "Triumph over an osteal opponent following the development of a woodcutter's implement.",
             "Subjugate an exoskeletal entity subsequent to the production of a timber chopper."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else
             0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
         
-        'check_lambda_str': """conditional_achivments(gd, jnp.array([
+        'str_check_lambda': """conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.DEFEAT_SKELETON.value] else
             0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ]))"""
@@ -449,11 +449,11 @@ easy_test_parafrased = {
                 "Combat with a revenant, bring it down and subsequently ingest a botanical item.",
                 "Engage in a fight with a living dead creature, outfighting it, following which ingest green fodder."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] 
-                    else 0 for a in range(Achievement.EAT_PLANT.value + 1)
+                    else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
                 ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.EAT_PLANT.value + 1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.EAT_PLANT.value + 1)]))"
         }, 
 
         'INSTRUCTION_21': \
@@ -466,11 +466,11 @@ easy_test_parafrased = {
                     "The task involves getting hold of some wood from trees and unearthing certain amounts of iron deposits.",
                     "Acquire a significant volume of tree-derived materials and excavate considerable traces of the metallic element iron."
                 ],
-                'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+                'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_IRON.value] else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value+1)
                 ])),
-                'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_IRON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+                'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_IRON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
             }
    , 
 
@@ -484,11 +484,11 @@ easy_test_parafrased = {
             "I require you to ingest some beef and amass a few chunks of iron.",
             "The task involves feeding on flesh of a cow and mining to accumulate iron ores."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.EAT_COW.value, Achievement.COLLECT_IRON.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(...)"
+        'str_check_lambda': "conditional_achivments(...)"
     }, 
 
         'INSTRUCTION_24_1': {
@@ -504,7 +504,7 @@ easy_test_parafrased = {
                 1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': "'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+            'str_check_lambda': "'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.COLLECT_IRON.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
    , 
 
@@ -518,10 +518,10 @@ easy_test_parafrased = {
             "Craft a cobblestone pickaxe and establish a kiln.",
             "Construct a stone cutter and erect a furnace."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_STONE_PICKAXE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
         'INSTRUCTION_27_1': {
@@ -533,11 +533,11 @@ easy_test_parafrased = {
                 "Ingest flora, assemble a rock digger, and partake in extra botany-based nourishment",
                 "Swallow greens, build a pebble chopping tool, and chow down another vegetative matter"
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd,
+            'check_lambda': lambda gd, ix: conditional_achivments(gd,
                                                              jnp.array([1 if a in [
                                                                  Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in
-                                                                        range(Achievement.MAKE_STONE_PICKAXE.value + 1)])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [ Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value + 1)]))"
+                                                                        range(Achievement.MAKE_IRON_SWORD.value + 1)])),
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [ Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value + 1)]))"
         }
    , 
 
@@ -554,7 +554,7 @@ easy_test_parafrased = {
                 -1 if a == Achievement.PLACE_PLANT.value else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
             ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
        , 
 
         'INSTRUCTION_29':
@@ -567,12 +567,12 @@ easy_test_parafrased = {
                     "Confirm the furnace installation but refrain from constructing an iron pickaxe. Constructing an iron cutlass is allowable though.",
                     "The furnace should be positioned appropriately, but the fabrication of an iron pickaxe should not be executed. However, forming an iron epee is permissible."
                 ],
-                'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+                'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else
                     -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value+1)
                 ])),
-                'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+                'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_IRON_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
    , 
 
@@ -585,12 +585,12 @@ easy_test_parafrased = {
             "Acquire an aqueous solution and refrain from locating a worktable.",
             "Apprehend a drink though forbear from establishing a workstation."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_DRINK.value] else
             -1 if a == Achievement.PLACE_TABLE.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([ \
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([ \
             1 if a in [Achievement.COLLECT_DRINK.value] else \
             -1 if a == Achievement.PLACE_TABLE.value else 0 \
             for a in range(Achievement.MAKE_IRON_SWORD.value+1) \
@@ -607,11 +607,11 @@ easy_test_parafrased = {
                     "Obtain pieces of coal, set down a greenery and bring together a liquid nourishment.",
                     "Accumulate deposits of coal, plant and secure a thirst-quenching liquid."
                 ],
-                'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+                'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a in [Achievement.COLLECT_COAL.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
                 ])),
-                'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
+                'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_DRINK.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
             }
    , 
 
@@ -626,12 +626,12 @@ easy_test_parafrased = {
             "Overcome the walking dead and install a tabletop.",
             "Annihilate a monster from hell and put in place a work surface."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
         [
             1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0
-            for a in range(Achievement.PLACE_TABLE.value + 1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
-        'check_lambda_str':"'conditional_achivments(gd, jnp.array(\n\t[\n\t\t1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0\n\t\tfor a in range(Achievement.PLACE_TABLE.value + 1)\n\t]))'"
+        'str_check_lambda':"'conditional_achivments(gd, jnp.array(\n\t[\n\t\t1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_TABLE.value] else 0\n\t\tfor a in range(Achievement.PLACE_TABLE.value + 1)\n\t]))'"
     }, 
 
         'INSTRUCTION_33':
@@ -645,11 +645,11 @@ easy_test_parafrased = {
                 "Amass a pile of stones, install them at an appropriate location and aid yourself to a drink.",
                 "Assemble a collection of stone items, dispatch them in a certain configuration and partake in the enjoyment of a drink."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                                             1 if a in [Achievement.COLLECT_STONE.value, Achievement.PLACE_STONE.value, Achievement.COLLECT_DRINK.value] else 0
                                             for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
                                         ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.PLACE_STONE.value, Achievement.COLLECT_DRINK.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.PLACE_STONE.value, Achievement.COLLECT_DRINK.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
         }
    , 
 
@@ -665,9 +665,9 @@ easy_test_parafrased = {
             ],
             'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.PLACE_PLANT.value, Achievement.PLACE_FURNACE.value] else 0
-                for a in range(Achievement.PLACE_FURNACE.value+1)
+                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
         }
    , 
 
@@ -681,10 +681,10 @@ easy_test_parafrased = {
                    "The foremost task you must undertake requires you to procure an assortment of geological rocks, next fabricate a weapon of stone.",
                    "Before anything else, you are to undertake the deposition of an accumulation of boulders, afterwards follow-through with the formation of a blade of stony constitution."
              ],
-             'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+             'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                  1 if a in [Achievement.COLLECT_STONE.value, Achievement.MAKE_STONE_SWORD.value] else 0
-                 for a in range(Achievement.MAKE_STONE_SWORD.value+1)])),
-             'check_lambda_str': "check_lambda: lambda gd: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
+                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
+             'str_check_lambda': "check_lambda: lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
         }
    , 
 
@@ -697,11 +697,11 @@ easy_test_parafrased = {
             "Amass a quantity of diamonds and fabricate a pick crafted from stones.",
             "Hoist in some diamond gems and construct a stone based pickaxe."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_PICKAXE.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"""
+        'str_check_lambda':"""
             conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_PICKAXE.value] else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
@@ -719,9 +719,9 @@ easy_test_parafrased = {
         ],
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.COLLECT_DIAMOND.value] else 0
-            for a in range(Achievement.COLLECT_DIAMOND.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.COLLECT_DIAMOND.value] else 0 for a in range(Achievement.COLLECT_DIAMOND.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.COLLECT_DIAMOND.value] else 0 for a in range(Achievement.COLLECT_DIAMOND.value+1)]))"
     }, 
 
     'INSTRUCTION_38_1': {
@@ -733,11 +733,11 @@ easy_test_parafrased = {
             "Secure a quota of coal, assemble a miner's tool of iron and nourish yourself with a plant.",
             "Could you, kindly, procure a small batch of coal, put together a mineral extractor made of iron and ingest some vegetation?"
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_COAL.value, Achievement.MAKE_IRON_PICKAXE.value, Achievement.EAT_PLANT.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.MAKE_IRON_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_COAL.value, Achievement.MAKE_IRON_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_39': \
@@ -750,12 +750,12 @@ easy_test_parafrased = {
               "The main actions you need to perform are rising from sleep, setting the crafting table in place, and steering clear of any kind of cultivation.",
               "You must rouse yourself from sleep, establish your workstation, and refrain from engaging in any horticultural activities."
           ],
-          'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+          'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
               1 if a in [Achievement.WAKE_UP.value, Achievement.PLACE_TABLE.value] else
               -1 if a == Achievement.PLACE_PLANT.value else 0
-              for a in range(Achievement.PLACE_FURNACE.value+1)
+              for a in range(Achievement.MAKE_IRON_SWORD.value+1)
           ])),
-          'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.PLACE_TABLE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+          'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.WAKE_UP.value, Achievement.PLACE_TABLE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
       }
  , 
 
@@ -770,11 +770,11 @@ easy_test_parafrased = {
                 "Could you accumulate some black minerals for me?",
                 "Ensure to have some coal in your inventory"
             ],
-            'check_lambda':lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda':lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a == Achievement.COLLECT_COAL.value else 0 
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str':"""conditional_achivments(gd, jnp.array([
+            'str_check_lambda':"""conditional_achivments(gd, jnp.array([
                 1 if a == Achievement.COLLECT_COAL.value else 0 
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ]))"""
@@ -792,9 +792,9 @@ easy_test_parafrased = {
         ],
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a == Achievement.WAKE_UP.value else 0
-            for a in range(Achievement.WAKE_UP.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.WAKE_UP.value else 0 for a in range(Achievement.WAKE_UP.value+1)]))'
+        'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.WAKE_UP.value else 0 for a in range(Achievement.WAKE_UP.value+1)]))'
     }
 }
 
@@ -887,9 +887,9 @@ easy_test_other_paramets = {
         ],
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_PICKAXE.value] else 0
-            for a in range(Achievement.MAKE_STONE_PICKAXE.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(...)"
+        'str_check_lambda': "conditional_achivments(...)"
     }, 
 
     'INSTRUCTION_52 1':
@@ -903,12 +903,12 @@ easy_test_other_paramets = {
             "Amass some lumber and make a weapon out of stone.",
             "Hoard some wooden materials and produce an weapon made of hard rock."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
         [
             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.MAKE_STONE_SWORD.value] else 0
-            for a in range(Achievement.MAKE_STONE_SWORD.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
     },
 
     'INSTRUCTION_53': {
@@ -923,9 +923,9 @@ easy_test_other_paramets = {
         'check_lambda': lambda gd, ix: 
 conditional_achivments(gd, jnp.array(
             [1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_PLANT.value, Achievement.DEFEAT_SKELETON.value] else 0 
-             for a in range(Achievement.DEFEAT_SKELETON.value+1)]
+             for a in range(Achievement.MAKE_IRON_SWORD.value+1)]
         )),
-        'check_lambda_str': 
+        'str_check_lambda': 
 "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_PLANT.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.DEFEAT_SKELETON.value+1)]))"
         }, 
 'INSTRUCTION_54': \
@@ -937,12 +937,12 @@ conditional_achivments(gd, jnp.array(
             "You need to accumulate drink items but please make sure not to install a furnace.",
             "Your mission is to obtain liquids while ensuring that no furnace is being set up."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a == Achievement.COLLECT_DRINK.value else
             -1 if a == Achievement.PLACE_FURNACE.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value + 1) 
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_DRINK.value else -1 if a == Achievement.PLACE_FURNACE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a == Achievement.COLLECT_DRINK.value else -1 if a == Achievement.PLACE_FURNACE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
         'DEFEAT_ZOMBIE_AND_MAKE_IRON_SWORD': 
@@ -960,7 +960,7 @@ conditional_achivments(gd, jnp.array(
                 1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.MAKE_IRON_SWORD.value] else
                 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': 'conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))'
+            'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))'
         }
    , 
 
@@ -977,7 +977,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.PLACE_PLANT.value, Achievement.DEFEAT_ZOMBIE.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_58_1': {
@@ -991,8 +991,8 @@ conditional_achivments(gd, jnp.array(
             "Acquire wood, victorious be against the skeleton whilst abstaining from any form of cultivation."
         ],
         
-        'check_lambda': lambda gd:conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_WOOD.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_WOOD.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'check_lambda': lambda gd, ix:conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_WOOD.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])),
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_WOOD.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
    
    }, 
 'INSTRUCTION_59': \
@@ -1003,11 +1003,11 @@ conditional_achivments(gd, jnp.array(
             "Subdue a ghoul, position a boulder, and manufacture a lumber sword.",
             "Overcome a zombie, install a solid stone and produce a sword out of wood.",
             "Triumph over a zombie, arrange a cobble stone and shape a sword with the help of wood."],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_STONE.value, Achievement.MAKE_WOOD_SWORD.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_STONE.value, Achievement.MAKE_WOOD_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.PLACE_STONE.value, Achievement.MAKE_WOOD_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_611': {
@@ -1023,7 +1023,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_WOOD.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_WOOD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))",
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_PLANT.value, Achievement.COLLECT_WOOD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))",
     }, 
 
     'INSTRUCTION_62': {
@@ -1035,13 +1035,13 @@ conditional_achivments(gd, jnp.array(
             "Avoid grabbing any liquid refreshments and concentrate on constructing iron diggers and wooden sabers.",
             "Establish your inventory with the likes of an iron dull miner's tool and a sword made from forest produce but steer clear from hydration refreshments of any kind."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([ 
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([ 
             1 if a in [Achievement.MAKE_IRON_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value] else 
             -1 if a == Achievement.COLLECT_DRINK.value else 0 
             for a in range(Achievement.MAKE_IRON_SWORD.value+1) 
         ])),
         
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.MAKE_IRON_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value] else -1 if a == Achievement.COLLECT_DRINK.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))" 
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.MAKE_IRON_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value] else -1 if a == Achievement.COLLECT_DRINK.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))" 
     }, 
 
     'INSTRUCTION_63': {
@@ -1053,12 +1053,12 @@ conditional_achivments(gd, jnp.array(
             "Under no circumstances should you produce a wood-based sword. In contrast, you are expected to install a heating appliance.",
             "The crafting of the wooden broadsword is not to be endeavoured. In lieu of that, establish a hearth's presence."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_FURNACE.value] else
             -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': """conditional_achivments(gd, jnp.array([
+        'str_check_lambda': """conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_FURNACE.value] else
             -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
@@ -1079,7 +1079,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.PLACE_STONE.value, Achievement.WAKE_UP.value, Achievement.COLLECT_IRON.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.WAKE_UP.value, Achievement.COLLECT_IRON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))" 
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.WAKE_UP.value, Achievement.COLLECT_IRON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))" 
         }
    , 
 
@@ -1101,7 +1101,7 @@ conditional_achivments(gd, jnp.array(
                         for a in range(Achievement.MAKE_IRON_SWORD.value+1)
                     ]
                 )),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.WAKE_UP.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_PLANT.value, Achievement.WAKE_UP.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
    , 
 
@@ -1118,7 +1118,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value, Achievement.DEFEAT_SKELETON.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([ 1 if a in [Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_WOOD_SWORD.value, Achievement.DEFEAT_SKELETON.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'STONE_PICKAXE_COW_PLANT': {
@@ -1130,11 +1130,11 @@ conditional_achivments(gd, jnp.array(
             "Transform a piece of bedrock into a tool for breaking apart the ground, quench your hunger by the flesh of a grazing animal and a piece of greenery.",
             "Carve a hardened mineral into a primitive excavation instrument, ingest the meat of a domesticated mammal and satiate your thirst with a botanical specimen."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, Achievement.EAT_PLANT.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': ("conditional_achivments(..., jnp.array(["
+        'str_check_lambda': ("conditional_achivments(..., jnp.array(["
                              "1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, "
                              "Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)])")
     }, 
@@ -1150,9 +1150,9 @@ conditional_achivments(gd, jnp.array(
         ],
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_SWORD.value] else 0
-            for a in range(Achievement.MAKE_STONE_SWORD.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.MAKE_STONE_SWORD.value] else 0 for a in range(Achievement.MAKE_STONE_SWORD.value+1)]))"
     }, 
 
     'PLACE_STONE_TABLE_NOT_PLANT': {
@@ -1167,9 +1167,9 @@ conditional_achivments(gd, jnp.array(
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_STONE.value, Achievement.PLACE_TABLE.value] else
             -1 if a == Achievement.PLACE_PLANT.value else 0 
-            for a in range(Achievement.PLACE_STONE.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.PLACE_TABLE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_STONE.value+1)]))"
+        'str_check_lambda': "lambda gd, ix: conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.PLACE_TABLE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_STONE.value+1)]))"
     }, 
 
         'INSTRUCTION_70': 
@@ -1182,12 +1182,12 @@ conditional_achivments(gd, jnp.array(
                 "Install the crafting bench but stay clear of the act of sowing",
                 "Arrange the work station but avoid the act of cultivation"
                 ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                     1 if a == Achievement.PLACE_TABLE.value else
                     -1 if a == Achievement.PLACE_PLANT.value else 0
                     for a in range(Achievement.MAKE_IRON_SWORD.value+1)
                 ])),
-            'check_lambda_str':"conditional_achivments(gd, jnp.array([ 1 if a == Achievement.PLACE_TABLE.value else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))"
+            'str_check_lambda':"conditional_achivments(gd, jnp.array([ 1 if a == Achievement.PLACE_TABLE.value else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))"
             }
    , 
 
@@ -1200,11 +1200,11 @@ conditional_achivments(gd, jnp.array(
             "It is required for you to harvest tree materials, vanquish a bony combatant, and accumulate a young tree.",
             "It is necessary for you to obtain log, overpower a skeleton, and secure a small plant originated from a seed.",
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_SAPLING.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': """conditional_achivments(gd, jnp.array([
+        'str_check_lambda': """conditional_achivments(gd, jnp.array([
         1 if a in [Achievement.COLLECT_WOOD.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_SAPLING.value] else 0
         for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"""
     }, 
@@ -1220,13 +1220,13 @@ conditional_achivments(gd, jnp.array(
                 "Procure some wooden blocks and steer clear from putting any sprouts into the ground.",
                 "Accumulate chunks of wood, yet do not commit to the act of setting down any seedlings."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
             [
                 1 if a == Achievement.COLLECT_WOOD.value else
                 -1 if a == Achievement.PLACE_PLANT.value else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str': "conditional_achivments(gd, jnp.array([ \
+            'str_check_lambda': "conditional_achivments(gd, jnp.array([ \
             1 if a == Achievement.COLLECT_WOOD.value else \
             -1 if a == Achievement.PLACE_PLANT.value else 0 \
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
@@ -1242,11 +1242,11 @@ conditional_achivments(gd, jnp.array(
                 "Acquire diamond and situate a furnace",
                 "Obtain diamond and establish a furnace."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_FURNACE.value] else 0 
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+            'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
    , 
 
@@ -1259,10 +1259,10 @@ conditional_achivments(gd, jnp.array(
             "Formulate a stone-based pickaxe, consume a portion of bovine sustenance and position a furnace in place.",
             "Construct a pickaxe through the usage of stones, partake in the intake of beef from a cow and implement the installation of a furnace."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
-            1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
+            1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_COW.value, Achievement.PLACE_FURNACE.value] else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
     }, 
 
     'INSTRUCTION_75': {
@@ -1274,13 +1274,13 @@ conditional_achivments(gd, jnp.array(
             "Be certain that you have situated a bench, accumulated a sapling, and collected a libation.",
             "Verify that you have positioned a tabletop, reaped a seedling, and amassed a drink."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             
             1 if a in [Achievement.PLACE_TABLE.value, Achievement.COLLECT_SAPLING.value, Achievement.COLLECT_DRINK.value] else 0 
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         
         ])),
-        'check_lambda_str':"""conditional_achivments(gd, jnp.array([
+        'str_check_lambda':"""conditional_achivments(gd, jnp.array([
             
             1 if a in [Achievement.PLACE_TABLE.value, Achievement.COLLECT_SAPLING.value, Achievement.COLLECT_DRINK.value] else 0 
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
@@ -1298,12 +1298,12 @@ conditional_achivments(gd, jnp.array(
               "Allocate time to accumulate wooden materials and feast on a plant, yet it is essential not to sow any type of seed.",
               "As an integral part of your mission, the acquisition of firewood and intake of a plant are essential, while deliberately avoiding the planting of seeds."
           ],
-          'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+          'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.COLLECT_WOOD.value, Achievement.EAT_PLANT.value] else
                 -1 if a == Achievement.PLACE_PLANT.value else 0
-                for a in range(Achievement.PLACE_FURNACE.value+1)
+                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
           ])),
-          'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.EAT_PLANT.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+          'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.EAT_PLANT.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
       }
  , 
 
@@ -1316,11 +1316,11 @@ conditional_achivments(gd, jnp.array(
             "Fetch a drinkable, accumulate a tree bud and place a greenery.",
             "Gain a potable, secure a young plant and station a herb."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_DRINK.value, Achievement.COLLECT_SAPLING.value, Achievement.PLACE_PLANT.value] else 0 
-            for a in range(Achievement.PLACE_PLANT.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.COLLECT_SAPLING.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.PLACE_PLANT.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.COLLECT_SAPLING.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.PLACE_PLANT.value+1)]))"
     }, 
 
     'INSTRUCTION_78': {
@@ -1336,7 +1336,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_PLANT.value, Achievement.COLLECT_COAL.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_PLANT.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_STONE.value, Achievement.EAT_PLANT.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_79': {
@@ -1348,12 +1348,12 @@ conditional_achivments(gd, jnp.array(
             "Although wooden swords are not to be fashioned, it's imperative that saplings are gathered in two instances.",
             "The manufacturing of wooden weaponry is disallowed, however, a dual procurement of saplings is required."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             -1 if a == Achievement.MAKE_WOOD_SWORD.value else
             1 if a == Achievement.COLLECT_SAPLING.value else 0
-            for a in range(Achievement.MAKE_WOOD_SWORD.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([-1 if a == Achievement.MAKE_WOOD_SWORD.value else 1 if a == Achievement.COLLECT_SAPLING.value else 0 for a in range(Achievement.MAKE_WOOD_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([-1 if a == Achievement.MAKE_WOOD_SWORD.value else 1 if a == Achievement.COLLECT_SAPLING.value else 0 for a in range(Achievement.MAKE_WOOD_SWORD.value+1)]))"
     }, 
 
     'COLLECT_SAPLING_MAKE_WOOD_PICKAXE_MAKE_IRON_SWORD': {
@@ -1369,7 +1369,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_IRON_SWORD.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
-        'check_lambda_str': '''conditional_achivments(gd,
+        'str_check_lambda': '''conditional_achivments(gd,
             jnp.array([ 1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_IRON_SWORD.value] 
                 else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
         '''}, 
@@ -1384,13 +1384,13 @@ conditional_achivments(gd, jnp.array(
             "First, lay your hands on a small tree. Once that task is done, eat some cow meat.",
             "Pursuit the acquisition of a sprinkling and in the sequence partake in the act of eating a ruminant creature."      
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array(
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array(
             [
                 1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.EAT_COW.value] else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ]
         )),
-        'check_lambda_str':"conditional_achivments(...)"
+        'str_check_lambda':"conditional_achivments(...)"
     } , 
 
     'DO_NOT_MAKE_STONE_SWORD_AND_COLLECT_DIAMOND_AND_EAT_PLANT': {
@@ -1401,12 +1401,12 @@ conditional_achivments(gd, jnp.array(
             "Bypass the creation of an ore slicer, unearth a glittering jewel, and indulge in some herbal nourishment.",
             "Eschew the construction of a mineral cleaver, discover and acquire a sparkling gemstone, and partake in botanical consumption."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd,jnp.array([ 
+        'check_lambda': lambda gd, ix: conditional_achivments(gd,jnp.array([ 
             -1 if a == Achievement.MAKE_STONE_SWORD.value else
             1 if a in [Achievement.COLLECT_DIAMOND.value,Achievement.EAT_PLANT.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': 'conditional_achivments(gd,jnp.array([ -1 if a == Achievement.MAKE_STONE_SWORD.value else 1 if a in [Achievement.COLLECT_DIAMOND.value,Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))'
+        'str_check_lambda': 'conditional_achivments(gd,jnp.array([ -1 if a == Achievement.MAKE_STONE_SWORD.value else 1 if a in [Achievement.COLLECT_DIAMOND.value,Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1) ]))'
     }, 
 
     'INSTRUCTION_84': \
@@ -1419,12 +1419,12 @@ conditional_achivments(gd, jnp.array(
             "Forge a sword from iron, place down a furnace and make sure not to make a wooden weapon",
             "Affix a furnace, assemble a sword using iron and don't use wood to form a sword."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else
             -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))" 
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.PLACE_FURNACE.value, Achievement.MAKE_IRON_SWORD.value] else -1 if a == Achievement.MAKE_WOOD_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))" 
     }, 
 
     'INSTRUCTION_87': {
@@ -1440,7 +1440,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.EAT_COW.value, Achievement.MAKE_IRON_SWORD.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.EAT_COW.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.EAT_COW.value, Achievement.MAKE_IRON_SWORD.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_88': {
@@ -1456,7 +1456,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.DEFEAT_ZOMBIE.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DIAMOND.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
     }, 
 
 'INSTRUCTION_89_1': 
@@ -1470,12 +1470,12 @@ conditional_achivments(gd, jnp.array(
             "It's necessary that you've dealt with the skeleton by defeating it and you've used a cow for sustenance."
         ],
         
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.EAT_COW.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
         
-        'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+        'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.EAT_COW.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
     'INSTRUCTION_90 1': {
@@ -1491,7 +1491,7 @@ conditional_achivments(gd, jnp.array(
             1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.COLLECT_COAL.value, Achievement.PLACE_STONE.value]
             else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str':"""lambda gd, ix: conditional_achivments(gd, jnp.array([
+        'str_check_lambda':"""lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_ZOMBIE.value, Achievement.COLLECT_COAL.value, Achievement.PLACE_STONE.value]
             else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ]))"""
@@ -1509,9 +1509,9 @@ conditional_achivments(gd, jnp.array(
         'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a == Achievement.MAKE_STONE_PICKAXE.value or a == Achievement.MAKE_STONE_SWORD.value else
             -1 if a == Achievement.PLACE_FURNACE.value else 0
-            for a in range(Achievement.PLACE_FURNACE.value+1)
+            for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_STONE_PICKAXE.value or a == Achievement.MAKE_STONE_SWORD.value else -1 if a == Achievement.PLACE_FURNACE.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_STONE_PICKAXE.value or a == Achievement.MAKE_STONE_SWORD.value else -1 if a == Achievement.PLACE_FURNACE.value else 0 for a in range(Achievement.PLACE_FURNACE.value+1)]))"
     }, 
 
         'INSTRUCTION_92_1': {
@@ -1523,11 +1523,11 @@ conditional_achivments(gd, jnp.array(
                 "Retrieve an elixir and launch an attack against the undead.",
                 "Achieve the goal of collecting a draught and waging war against a zombie."
             ],
-            'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
                 1 if a in [Achievement.COLLECT_DRINK.value, Achievement.DEFEAT_ZOMBIE.value] else 0
                 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
             ])),
-            'check_lambda_str':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
+            'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_DRINK.value, Achievement.DEFEAT_ZOMBIE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
         }
    , 
 \
@@ -1540,12 +1540,12 @@ conditional_achivments(gd, jnp.array(
             "Steer clear of locating the coke oven but fabricate rock chopper.",
             "Evade standing the cooking range but contrive cobblestone mining tool."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             -1 if a in [Achievement.PLACE_FURNACE.value] else
             1 if a == Achievement.MAKE_STONE_PICKAXE.value else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value+1)
         ])),
-        'check_lambda_str': 'conditional_achivments'
+        'str_check_lambda': 'conditional_achivments'
     }, 
 
     'DEFEAT_SKELETON_AND_PLACE_PLANT': {
@@ -1557,9 +1557,9 @@ conditional_achivments(gd, jnp.array(
             "Your mission is to neutralize a skeleton entity and proceed to plant a flora.",
             "Your objective is to overcome a skeletal combatant, subsequent to which you are to establish a botanical lifeform."
         ],
-        'check_lambda': lambda gd: conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
-        'check_lambda_str': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
+        'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
     }
 }
