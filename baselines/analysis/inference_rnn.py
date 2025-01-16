@@ -22,6 +22,9 @@ from orbax.checkpoint import (
 sys.path.append("./models")
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
+from craftext.craftext_scenarious import create_scenarios_with_dataset
+from craftext.craftext_encoder import make_encoder
+from craftax.craftax_env import make_craftax_env_from_name
 #from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
 from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 
@@ -88,7 +91,7 @@ class ResultManager:
 class ExperimentArgs:
     def __init__(self, num_envs,experiment_name, ratio, 
                  checkpoint_num, env_name, max_grad_norm,
-                 lr,layer_size, total_timesteps, craftext_settings, path, view):
+                 lr,layer_size, total_timesteps, craftext_settings, path, view, use_plans):
         self.num_envs = num_envs
         self.experiment_name=experiment_name
         self.ratio = ratio
@@ -101,6 +104,7 @@ class ExperimentArgs:
         self.craftext_settings = craftext_settings
         self.path = path
         self.view = view
+        self.use_plans = use_plans
    
 
 def experiment_args_from_config(args):
@@ -124,6 +128,7 @@ def experiment_args_from_config(args):
     ratio = args.ratio
     experiment_name = args.experiment_name
     checkpoint_num = args.checkpoint_num
+    use_plans = args.use_plans
     path = getattr(args, 'path', None)
     view = getattr(args, 'view', None)
 
@@ -140,7 +145,8 @@ def experiment_args_from_config(args):
         total_timesteps=total_timesteps,
         craftext_settings=craftext_settings,
         path=path,
-        view=view
+        view=view,
+        use_plans=use_plans
     )
 
     return experiment_args
@@ -182,7 +188,14 @@ class Experiment:
         network_class = ActorCriticTextVisualRNN
         network = network_class(actions_count, self.config, layer_size=self.config.layer_size)
 
-        env = InstructionWrapper(env, self.config.craftext_settings)
+        if self.config.use_plans:
+            encoder = make_encoder(n_splits=5)
+            scenarious_loader = create_scenarios_with_dataset(True)
+            env = InstructionWrapper(env, self.config.craftext_settings, 
+                                    encode_model_class=encoder, 
+                                    scenario_handler_class=scenarious_loader)
+        else:
+            env = InstructionWrapper(env, self.config.craftext_settings,)
         if not view:
             env = OptimisticResetVecEnvWrapper(env, self.config.num_envs, 
                                                min(self.config.ratio, self.config.num_envs))
@@ -335,6 +348,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_envs", type=int, default=1, help="Number of environments")
     parser.add_argument("--ratio", type=int, default=16)
     parser.add_argument("--checkpoint_num", type=str, default="checkpoint_restart_1")
+    parser.add_argument("--use_plans", type=bool, default=False)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if args.path is None:
