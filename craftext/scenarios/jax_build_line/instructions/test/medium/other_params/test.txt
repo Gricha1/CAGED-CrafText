@@ -180,21 +180,6 @@
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Check if there is a line of torch with a size of two.",
-        "instruction_paraphrases": [
-            "Can you verify if there exists a sequence of two torches forming a line?",
-            "Kindly confirm whether a continuous arrangement of two torches is present.",
-            "Look out for an alignment of couple torches in the game.",
-            "Grasp if the game reflects a situation where two torches are arranged in a row.",
-            "Demonstrate if a linear positioning of two torches is present within the game."
-        ],
-         'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.LIGHT, 2, check_diagonal=False),
-        "str_check_lambda": "is_line_formed(game_data,ix, BlockType.LIGHT, 2, check_diagonal=False)"
-    }
-}
-----
-{
-    "INSTRUCTION": {
         "instruction": "Check if there is a line of plant blocks of length 5.",
         "instruction_paraphrases": [
             "Can you check for a string of five plant blocks in a row?",
