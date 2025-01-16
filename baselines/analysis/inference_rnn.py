@@ -82,7 +82,7 @@ class ResultManager:
         mean_sr_dict['overall_mean_sr'] = overall_mean_sr
         
         #dataset.to_csv(output_path, index=False)
-        print(f"Results saved to {output_path}")
+       # print(f"Results saved to {output_path}")
         
         return dataset, mean_sr_dict
 
@@ -335,7 +335,7 @@ class Experiment:
             self.env.scenario_handler.scenario_data.str_check_lambda_list,
             success_rates[:len(self.env.scenario_handler.scenario_data.instructions_list)]
         )
-        os.makedirs("results", exist_ok=True)
+        #os.makedirs("results", exist_ok=True)
         return self.result_manager.save_to_csv(f"results/{self.config.experiment_name}_{self.config.craftext_settings}.csv")
 
 
