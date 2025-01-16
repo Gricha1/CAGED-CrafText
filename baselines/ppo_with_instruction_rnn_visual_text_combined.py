@@ -485,7 +485,8 @@ def run_ppo(config):
             "total_timesteps": config['TOTAL_TIMESTEPS'],
             "path": wandb.run.dir,
             "view": False,
-            "use_plans": config["USE_PLANS"]
+            "use_plans": config["USE_PLANS"],
+            "inference_step":config["INFERENCE_STEP"]
         }
 
         # INFERENCE ON TRAIN
@@ -517,6 +518,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--use_plans", type=bool, default=False)
     parser.add_argument("--total_timesteps", type=lambda x: int(float(x)), default=250000000)
+    parser.add_argument("--inference_step", type=lambda x: int(float(x)), default=2000)
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=64)
     parser.add_argument("--update_epochs", type=int, default=4)

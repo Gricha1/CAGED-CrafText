@@ -91,7 +91,7 @@ class ResultManager:
 class ExperimentArgs:
     def __init__(self, num_envs,experiment_name, ratio, 
                  checkpoint_num, env_name, max_grad_norm,
-                 lr,layer_size, total_timesteps, craftext_settings, path, view, use_plans):
+                 lr,layer_size, total_timesteps, craftext_settings, path, view, use_plans, inference_step):
         self.num_envs = num_envs
         self.experiment_name=experiment_name
         self.ratio = ratio
@@ -105,6 +105,7 @@ class ExperimentArgs:
         self.path = path
         self.view = view
         self.use_plans = use_plans
+        self.inference_step = inference_step
    
 
 def experiment_args_from_config(args):
@@ -129,6 +130,7 @@ def experiment_args_from_config(args):
     experiment_name = args.experiment_name
     checkpoint_num = args.checkpoint_num
     use_plans = args.use_plans
+    inference_step = args.inference_step
     path = getattr(args, 'path', None)
     view = getattr(args, 'view', None)
 
@@ -146,7 +148,8 @@ def experiment_args_from_config(args):
         craftext_settings=craftext_settings,
         path=path,
         view=view,
-        use_plans=use_plans
+        use_plans=use_plans,
+        inference_step=inference_step
     )
 
     return experiment_args
@@ -288,7 +291,7 @@ class Experiment:
         done_count = np.zeros(self.config.num_envs)
         prev_indx = np.zeros(self.config.num_envs)
       #  params = self.train_state['runner_state'][0]["params"]
-        total_steps = 2000
+        total_steps = self.config.inference_step
         with tqdm(total=total_steps, desc="Simulation Steps") as pbar:
             while steps < total_steps:
                 # Prepare RNN input
@@ -349,6 +352,7 @@ if __name__ == "__main__":
     parser.add_argument("--ratio", type=int, default=16)
     parser.add_argument("--checkpoint_num", type=str, default="checkpoint_restart_1")
     parser.add_argument("--use_plans", type=bool, default=False)
+    parser.add_argument("--inference_step", type=int, default=2000)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if args.path is None:
