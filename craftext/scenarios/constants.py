@@ -3,7 +3,7 @@ import os
 
 
 base_path = os.getenv("CRAFTEXT_SCENARIO_PATH", "../craftext/scenarios/")
-
+plans_path = os.path.join(base_path, "extra_files", "easy_gpt4_action_plans.json")
 
 class MediumInventoryItems(Enum):
     WOOD = 0
