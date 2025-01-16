@@ -6,7 +6,9 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-from craftext.scenarios_loader import ScenariosConfigLoader, load_scenarios
+from craftext.craftext_encoder import EncodeModel, EncodeForm
+from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
+from craftext.scenarios.constants import plans_path
 from dataclasses import dataclass
 from jax import lax
 from tqdm import tqdm
@@ -27,7 +29,7 @@ class ScenarioDataJAX:
     checkers_list: list
 
 class CrafTextScenarios:
-    def __init__(self, encode_model, config_name=None):
+    def __init__(self, encode_model, config_name=None, use_plans=False):
         """
         Initializes the CrafTextScenarios with an EncodeModel and scenario configuration.
         """
@@ -35,6 +37,8 @@ class CrafTextScenarios:
         self.config = ScenariosConfigLoader().load_config(config_name)
         self.use_parafrases =  self.config.use_parafrases
         self.environment_key = 0 if "Classic" in self.config.base_environment else 1 # int("Classic" not in self.config.base_environment)
+       # print(self.config.base_environment)
+        #exit()
         self.all_scenario = self._load_scenarios(self.config)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self.scenarios_to_jax()
@@ -86,8 +90,8 @@ class CrafTextScenarios:
         # #         json.dump(instructions_list, f, ensure_ascii=False, indent=4)
 
         #easy_gpt4_action_plans
-        if instruction_to_apdate_file is not None:
-            with open(instruction_to_apdate_file, 'r', encoding='utf-8') as f:
+        if self.use_plans:
+            with open(self.instruction_to_apdate_file, 'r', encoding='utf-8') as f:
                 action_plans = json.load(f)
             instructions_list = [action_plans[instr] if instr in action_plans else "none" for instr in instructions_list ]
             print("="*40)
@@ -169,3 +173,9 @@ class CrafTextScenarios:
             return lax.switch(i, checkers_list, x, y)
         vmap_checkers = jax.vmap(apply_checker, in_axes=(None, None, None))
         return vmap_checkers
+
+def create_scenarios_with_dataset(use_plans_gpt):
+    class CustomCrafTextScenariosWithPlans(CrafTextScenarios):
+        def __init__(self, encode_model, config_name):
+            super().__init__(encode_model, config_name=config_name, use_plans=use_plans_gpt)
+    return CustomCrafTextScenariosWithPlans

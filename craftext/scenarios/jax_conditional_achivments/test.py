@@ -1563,3 +1563,33 @@ conditional_achivments(gd, jnp.array(
         'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.DEFEAT_SKELETON.value, Achievement.PLACE_PLANT.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value + 1)]))"
     }
 }
+
+from craftext.scenarios.parce_dataset import update_previous_dict
+from craftext.scenarios.constants import base_path
+import os
+
+medium_test_other_paramets = {}
+medium_test_other_paramets = update_previous_dict(
+    medium_test_other_paramets, 
+    os.path.join(base_path, "jax_conditional_achivments/instructions/test/medium"), 
+    "achivments"
+)
+
+
+if __name__ == "__main__":
+    import json
+    instructions = []
+    for key in easy_test_other_paramets.keys():
+        instructions.append(easy_test_other_paramets[key]['instruction'])
+        instructions += easy_test_other_paramets[key]['instruction_paraphrases']
+    with open("instructions_achivments_easy_test_other_paramets.json", "w", encoding="utf-8") as json_file:
+        json.dump(instructions, json_file, ensure_ascii=False, indent=4)
+        
+    for key in easy_test_parafrased.keys():
+        try:
+            instructions.append(easy_test_parafrased[key]['instruction'])
+            instructions += easy_test_parafrased[key]['instruction_paraphrases']
+        except:
+            print(key)
+    with open("instructions_achivments_easy_test_parafrased.json", "w", encoding="utf-8") as json_file:
+        json.dump(instructions, json_file, ensure_ascii=False, indent=4)

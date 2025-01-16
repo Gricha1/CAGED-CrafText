@@ -13,22 +13,41 @@ def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_
     :return: Boolean indicating if the required amount was collected.
     """
     
-    def get_item(index: int):
-        return lax.switch(index, [
-            lambda: inventory.wood,
-            lambda: inventory.stone,
-            lambda: inventory.coal,
-            lambda: inventory.iron,
-            lambda: inventory.diamond,
-            lambda: inventory.sapling,
-            lambda: inventory.wood_pickaxe,
-            lambda: inventory.stone_pickaxe,
-            lambda: inventory.iron_pickaxe,
-            lambda: inventory.wood_sword,
-            lambda: inventory.stone_sword,
-            lambda: inventory.iron_sword
-        ])
-    collected_count = get_item(object_inventory_enum.value)
+    def get_item(index, inventory):
+        return lax.switch(index,
+            [
+                lambda: inventory.wood,
+                lambda: inventory.stone,
+                lambda: inventory.coal,
+                lambda: inventory.iron,
+                lambda: inventory.diamond,
+                lambda: inventory.sapling,
+                
+                # In instructions, don't use pickaxes or swords. Instead, use a constant, such as diamond. These variables have different sizes in Craftax, so their usage leads to errors.
+                lambda: inventory.diamond,
+                lambda: inventory.diamond,
+                lambda: inventory.diamond,
+                lambda: inventory.diamond,
+                lambda: inventory.diamond,
+                lambda: inventory.diamond,
+                
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.pickaxe, lambda: inventory.wood_pickaxe]), 
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.sword, lambda: inventory.stone_pickaxe]),
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.bow,   lambda: inventory.iron_pickaxe]), 
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.arrows, lambda: inventory.wood_sword]),
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.armour, lambda: inventory.stone_sword]),
+                # lambda: lax.switch(inventory.inventory, [lambda: inventory.torches, lambda: inventory.iron_sword]),
+            
+                lambda: inventory.ruby,
+                lambda: inventory.sapphire,
+                
+                ####
+                lambda: inventory.diamond, #lambda: inventory.potions
+                lambda: inventory.diamond, #lambda: inventory.books
+            ]
+        )
+        
+    collected_count = get_item(object_inventory_enum.value, inventory)
     return collected_count >= count_to_collect
 
 

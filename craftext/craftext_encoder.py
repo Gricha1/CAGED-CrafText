@@ -50,7 +50,7 @@ class EncodeModel(ABC):
 
 
 class DistilBertEncode:
-    def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL):
+    def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL, n_splits=1):
         """
         Unified implementation of DistilBERT encoder with multiple embedding options.
         """
@@ -58,14 +58,16 @@ class DistilBertEncode:
         model_name = "distilbert-base-uncased"
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=".")
         self.model = AutoModel.from_pretrained(model_name, cache_dir=".")
+        self.n_splits=n_splits
         self.stopwords = {"a", "an", "the", "in", "on", "at", "by", "to", "for", "of", "with", "and", "or", "but", "so"}  # Пример списка предлогов
 
-    def encode(self, instruction, n_splits=1):
+    def encode(self, instruction):
         """
         Encodes the instruction based on the selected form_to_use.
         :param instruction: Text instruction.
         :param n_splits: Number of splits (used in EMBED_CLS_FOR_SPLITS mode).
         """
+        n_splits=self.n_splits
         if self.form_to_use == EncodeForm.TOKEN:
             return self.get_tokens(instruction)
         elif self.form_to_use == EncodeForm.EMBED_CONCAT_ALL:
@@ -144,3 +146,11 @@ class DistilBertEncode:
         Generates tokens for the given instruction.
         """
         return self.tokenizer(instruction, max_length=30, truncation=True, padding="max_length", return_tensors='np')['input_ids']
+
+# Фабрика, возвращающая класс с определённым model_name
+def make_encoder(n_splits):
+    class CustomBertEncodeModel(DistilBertEncode):
+        def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL):
+            super().__init__(form_to_use=form_to_use, n_splits=n_splits)
+    
+    return CustomBertEncodeModel
