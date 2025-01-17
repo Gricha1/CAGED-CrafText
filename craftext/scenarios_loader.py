@@ -1,16 +1,17 @@
 import os
 import importlib
+import flax.struct
 import yaml
 import craftext
 
 import pathlib
 import inspect
-import dataclasses
+import flax
 
 
 CONFIG_DIR_NAME = "configs"
 
-@dataclasses.dataclass(frozen=True, init=True)
+@flax.struct.dataclass
 class ScenariosConfig:
     """Scenarios configuration structure
     

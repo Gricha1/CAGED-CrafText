@@ -20,6 +20,7 @@ import wandb
 from flax.training import (
     orbax_utils,
 )
+import flax
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
@@ -45,10 +46,11 @@ from craftext.craftext_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
 
-from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
+from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 from baselines.analysis.inference_rnn import Experiment, ExperimentArgs
 
-class TransitionScheme(NamedTuple):
+@flax.struct.dataclass
+class TransitionScheme:
     done        : jax.Array
     action      : jax.Array
     value       : jax.Array
