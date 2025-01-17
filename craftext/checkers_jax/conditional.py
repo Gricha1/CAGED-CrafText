@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 from jax import lax
 
-from craftext.checkers.deserialization import PlayerInventory
+from craftext.checkers.base_functions.state_adapter import PlayerInventory
 
 def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_collect: int):
     """

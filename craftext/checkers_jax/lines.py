@@ -1,7 +1,8 @@
 import jax
 import jax.numpy as jnp
+from typing import Tuple
 
-def check_line_2(center, region, check_diagonal=False):
+def check_line_2(center: Tuple[int, int], region: jax.Array, check_diagonal: bool=False):
     """
     Проверка наличия линии размера 2.
     Если check_diagonal=True, проверяется диагональная линия.
@@ -37,7 +38,7 @@ def check_line_2(center, region, check_diagonal=False):
     return jax.lax.cond(check_diagonal, check_diagonal_lines, check_straight_lines, None)
 
 
-def check_line_3(center, region, check_diagonal=False):
+def check_line_3(center: Tuple[int, int], region: jax.Array, check_diagonal=False):
     """
     Проверка наличия линии размера 3.
     Если check_diagonal=True, проверяется диагональная линия.
@@ -77,7 +78,7 @@ def check_line_3(center, region, check_diagonal=False):
     return jax.lax.cond(check_diagonal, check_diagonal_lines, check_straight_lines, None)
 
 
-def check_line_4(center, region, check_diagonal=False):
+def check_line_4(center: Tuple[int, int], region: jax.Array, check_diagonal=False):
     """
     Проверка наличия линии размера 4.
     Если check_diagonal=True, проверяется диагональная линия.

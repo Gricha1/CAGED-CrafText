@@ -1,93 +1,82 @@
-from dataclasses import dataclass, field
-from typing import List, Tuple, Optional, Union
-import numpy as np
+from typing import List, Tuple 
 import jax.numpy as jnp
 from flax import struct
-from jax import lax
+import jax
 
 @struct.dataclass
 class PlayerVariables:
-    player_position: Optional[jnp.ndarray] = None
-    player_level: Optional[int] = None
-    player_direction: Optional[int] = None
-    player_health: Optional[float] = None
-    player_food: Optional[int] = None
-    player_drink: Optional[int] = None
-    player_energy: Optional[int] = None
-    player_mana: Optional[int] = None
-    is_sleeping: Optional[bool] = None
-    is_resting: Optional[bool] = None
-    player_recover: Optional[float] = None
-    player_hunger: Optional[float] = None
-    player_thirst: Optional[float] = None
-    player_fatigue: Optional[float] = None
-    player_recover_mana: Optional[float] = None
-    player_xp: Optional[int] = None
-    player_dexterity: Optional[int] = None
-    player_strength: Optional[int] = None
-    player_intelligence: Optional[int] = None
-    learned_spells: Optional[jnp.ndarray] = None
-    sword_enchantment: Optional[int] = None
-    bow_enchantment: Optional[int] = None
-    boss_progress: Optional[int] = None
-    boss_timesteps_to_spawn_this_round: Optional[int] = None
-    light_level: Optional[float] = None
-    state_rng: Optional[jnp.ndarray] = None
-    timestep: Optional[int] = None
+    player_position: jax.Array 
+    player_level: int
+    player_direction: int
+    player_health: float
+    player_food: int 
+    player_drink: int 
+    player_energy: int 
+    player_mana: int
+    is_sleeping: bool 
+    is_resting: bool 
+    player_recover: float 
+    player_hunger: float 
+    player_thirst: float
+    player_fatigue: float 
+    player_recover_mana: float 
+    player_xp: int
+    player_dexterity: int 
+    player_strength: int 
+    player_intelligence: int 
+    learned_spells: jax.Array
+    sword_enchantment: int
+    bow_enchantment: int
+    boss_progress: int 
+    boss_timesteps_to_spawn_this_round: int 
+    light_level: float 
+    state_rng: jax.Array 
+    timestep: int 
 
 @struct.dataclass
 class PlayerAchievements:
-    achievements: Optional[List[str]] = None
+    achievements: List[str] 
 
 @struct.dataclass
 class PlayerInventory:
     inventory = 0
-    wood: Optional[jnp.ndarray] = None
-    stone: Optional[jnp.ndarray] = None
-    coal: Optional[jnp.ndarray] = None
-    iron: Optional[jnp.ndarray] = None
-    diamond: Optional[jnp.ndarray] = None
-    sapling: Optional[jnp.ndarray] = None
-    pickaxe: Optional[jnp.ndarray] = None
-    sword: Optional[jnp.ndarray] = None
-    bow: Optional[jnp.ndarray] = None
-    arrows: Optional[jnp.ndarray] = None
-    armour: Optional[jnp.ndarray] = None
-    torches: Optional[jnp.ndarray] = None
-    ruby: Optional[jnp.ndarray] = None
-    sapphire: Optional[jnp.ndarray] = None
-    potions: Optional[jnp.ndarray] = None
-    books: Optional[jnp.ndarray] = None
+    wood: jax.Array 
+    stone: jax.Array 
+    coal: jax.Array 
+    iron: jax.Array 
+    diamond: jax.Array 
+    sapling: jax.Array 
+    pickaxe: jax.Array 
+    sword: jax.Array 
+    bow: jax.Array 
+    arrows: jax.Array 
+    armour: jax.Array 
+    torches: jax.Array 
+    ruby: jax.Array 
+    sapphire: jax.Array 
+    potions: jax.Array 
+    books: jax.Array 
     
     # Just for jax for correct invemtory check (conditional tasks)
-    wood_pickaxe: Optional[jnp.ndarray]  = None
-    stone_pickaxe: Optional[jnp.ndarray]  = None
-    iron_pickaxe:Optional[jnp.ndarray]  = None
-    wood_sword: Optional[jnp.ndarray]  = None
-    stone_sword: Optional[jnp.ndarray]  = None
-    iron_sword: Optional[jnp.ndarray]  = None
+    wood_pickaxe: jax.Array  
+    stone_pickaxe: jax.Array  
+    iron_pickaxe: jax.Array  
+    wood_sword: jax.Array  
+    stone_sword: jax.Array  
+    iron_sword: jax.Array  
 
 @struct.dataclass
 class GameMap:
-    game_map: Optional[jnp.ndarray] = None
+    game_map: jax.Array 
 
-    def look_around(self, position):
-        if self.game_map is None:
-            return None
-        r = 4
-        x, y = position
-        map_around = self.game_map[x-r:x+r+1, y-r:y+r+1]
-        unique_objects = jnp.unique(map_around)
-        unique_object_indices = [blocks_list.index(item) for item in unique_objects]
-        return unique_object_indices
 
 @struct.dataclass
 class PlayerState:
     variables: PlayerVariables
-    achievements: Optional[PlayerAchievements] = None
-    inventory: Optional[PlayerInventory] = None
-    map: Optional[GameMap] = None
-    action: Optional[int] = None
+    achievements: PlayerAchievements
+    inventory: PlayerInventory
+    map: GameMap
+    action: int 
 
     @classmethod
     def from_state(cls, state, action):
@@ -168,7 +157,7 @@ class PlayerState:
 
 @struct.dataclass
 class GameData:
-    states: list
+    states: list[PlayerState]
 
     @classmethod
     def from_state(cls, previos_state, current_state, action):

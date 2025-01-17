@@ -1,6 +1,8 @@
 import jax.numpy as jnp
+import jax
+from typing import Tuple
 
-def check_square_2x2(center, region, stone_index):
+def check_square_2x2(center: Tuple[int, int], region: jax.Array, stone_index: int) -> jax.Array:
     """
     Проверка наличия квадрата 2x2 из блоков stone_index.
     """
@@ -29,7 +31,7 @@ def check_square_2x2(center, region, stone_index):
     ]))
 
 
-def check_square_3x3(center, region, stone_index):
+def check_square_3x3(center: Tuple[int, int], region: jax.Array, stone_index: int) -> jax.Array:
     """
     Проверка наличия квадрата 3x3 из блоков stone_index.
     """
@@ -67,7 +69,7 @@ def check_square_3x3(center, region, stone_index):
     ]))
 
 
-def check_square_4x4(center, region, stone_index):
+def check_square_4x4(center: Tuple[int, int], region: jax.Array, stone_index: int) -> jax.Array:
     """
     Проверка наличия квадрата 4x4 из блоков stone_index.
     """

@@ -3,12 +3,16 @@ from jax import (
     numpy as jnp,
     lax
 )
+from flax import struct
+from typing import Callable, NamedTuple
 from craftext.checkers_jax.squeres import (
     check_square_2x2, 
     check_square_3x3, 
     check_square_4x4
 )
-### CROSS
+from craftext.checkers.base_functions.state_adapter import GameData
+from typing import Tuple 
+
 
 # Blocks list as an example
 blocks_list = [
@@ -22,25 +26,39 @@ blocks_list = [
     "GRAVE3", "NECROMANCER_VULNERABLE"
 ]
 
-def check_cross(center, game_map, stone_index):
+def check_cross(center: Tuple[int, int], game_map: jax.Array, stone_index: int) -> jax.Array:
     """
-    Checks if a cross pattern of stones is formed.
+    Checks if a cross pattern of stones is formed around the given center.
     """
-    i, j = center
-    return jnp.all(jnp.array([
-        game_map[i, j] == stone_index,     
-        game_map[i - 1, j] == stone_index, 
-        game_map[i + 1, j] == stone_index, 
-        game_map[i, j - 1] == stone_index, 
-        game_map[i, j + 1] == stone_index, 
+    # Positional mask of neighbors
+    mask = jnp.array([
+        [ 0,  0], 
+        [-1,  0], 
+        [ 1,  0], 
+        [ 0, -1], 
+        [ 0,  1],
+        [-1, -1], 
+        [ 1,  1],
+        [-1,  1], 
+        [ 1, -1]   
+    ])
+    
+    neighbors = mask + center
+    
+    neighbor_values = game_map[neighbors[:, 0], neighbors[:, 1]]
+    
+    cross_check = jnp.all(neighbor_values[:5] == stone_index)
+    diagonal_check = jnp.all(neighbor_values[5:] != stone_index)
+    
+    return cross_check & diagonal_check
 
-        game_map[i-1, j-1] != stone_index,
-        game_map[i+1, j+1] != stone_index,
-        game_map[i-1, j+1] != stone_index,
-        game_map[i+1, j-1] != stone_index
-    ]))
+@struct.dataclass
+class Building(NamedTuple):
+    game_map: jax.Array
+    stone_index: int
+    region_size: int
 
-def scan_function(carry, x):
+def scan_function(carry: Building, x: int) -> Tuple[Building, jax.Array]:
     """
     Scans the region to check for cross patterns.
     """
@@ -49,17 +67,15 @@ def scan_function(carry, x):
     is_cross = check_cross((i, j), game_map, stone_index)
     return carry, is_cross
 
-def is_cross_formed(game_data, block_name: str, radius: int = 5) -> bool:
+def is_cross_formed(game_data: GameData, block_name: str, radius: int = 5) -> jax.Array:
     stone_index = blocks_list.index(block_name)
     
-    game_map = game_data.states[0].map.game_map[0]
-    if game_map is None:
-        return False
-    
-    player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return False
+    game_data_states = game_data.states
+    game_data_states_map = game_data_states[0].map
+    game_map = game_data_states_map.game_map[0]
 
+    player_position = game_data.states[0].variables.player_position
+    
     x, y = player_position
 
     region_size = 2 * radius + 1
@@ -72,7 +88,7 @@ def is_cross_formed(game_data, block_name: str, radius: int = 5) -> bool:
 
     indices = jnp.arange(region_size * region_size)
 
-    carry = (region, stone_index, region_size)
+    carry = Building(region, stone_index, region_size)
     _, crosses = lax.scan(scan_function, carry, indices)
     return jnp.any(crosses)
 
@@ -97,15 +113,33 @@ def scan_square_function(carry, x):
     return carry, is_square
 
 
-def is_square_formed(game_data,  ix:int, block_name: str, size: int = 2, radius: int = 5) -> bool:
+def is_square_formed(game_data: GameData,  ix:int, block_name: str, size: int = 2, radius: int = 5) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
     # Получаем индекс блока по имени
     stone_index = block_name.value
 
+    
+    if game_data is None:
+        return jnp.array(False)
+    
+    game_data_states = game_data.states
+    
+    if game_data_states is None:
+        return jnp.array(False)
+    
+    game_data_states_map = game_data_states[0].map
+
+    if game_data_states_map is None:
+        return jnp.array(False)
+    
+    if game_data_states_map.game_map is None:
+        return jnp.array(False)
+    
+    game_map = game_data_states_map.game_map
+    
     # Получаем карту
-    game_map = game_data.states[0].map.game_map
     
     if game_map is None:
         return False
@@ -143,10 +177,10 @@ def is_square_formed(game_data,  ix:int, block_name: str, size: int = 2, radius:
 ### LINE
 from craftext.checkers_jax.lines import check_line_2, check_line_3, check_line_4
 
-def check_line_by_size(center, region, stone_index, size, check_diagonal):
+def check_line_by_size(center: Tuple[int, int], region: jax.Array, stone_index: int, size: int, check_diagonal: bool) -> Callable:
     i, j = center
 
-    return jax.lax.switch(
+    func = jax.lax.switch(
         size - 2, 
         [
             lambda: check_line_2((i, j), region, check_diagonal),
@@ -154,6 +188,8 @@ def check_line_by_size(center, region, stone_index, size, check_diagonal):
             lambda: check_line_4((i, j), region, check_diagonal)
         ]
     )
+        
+    return func
 
 def scan_line_function(carry, x):
     region, stone_index, region_size, size, check_diagonal = carry
@@ -163,7 +199,7 @@ def scan_line_function(carry, x):
 
 
 
-def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diagonal:bool = False) -> bool:
+def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diagonal:bool = False) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """

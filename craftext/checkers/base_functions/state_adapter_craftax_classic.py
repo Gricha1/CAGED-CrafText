@@ -1,71 +1,69 @@
-from dataclasses import dataclass, field
 from typing import List, Tuple, Optional, Union
-import numpy as np
 import jax.numpy as jnp
 from flax import struct
-
+import jax
 @struct.dataclass
 class PlayerVariables:
-    player_position: Optional[jnp.ndarray] = None
-    player_direction: Optional[int] = None
-    player_health: Optional[int] = None
-    player_food: Optional[int] = None
-    player_drink: Optional[int] = None
-    player_energy: Optional[int] = None
-    is_sleeping: Optional[bool] = None
-    player_recover: Optional[float] = None
-    player_hunger: Optional[float] = None
-    player_thirst: Optional[float] = None
-    player_fatigue: Optional[float] = None
-    light_level: Optional[float] = None
-    state_rng: Optional[jnp.ndarray] = None
-    timestep: Optional[int] = None
+    player_position: jax.Array
+    player_direction: int
+    player_health: int
+    player_food: int
+    player_drink: int
+    player_energy: int
+    is_sleeping: bool
+    player_recover: float
+    player_hunger: float
+    player_thirst: float
+    player_fatigue: float
+    light_level: float
+    state_rng: jax.Array
+    timestep: int
 
 @struct.dataclass
 class PlayerAchievements:
-    achievements: Optional[List[str]] = None
+    achievements: List[str]
 
 @struct.dataclass
 class PlayerInventory:
     inventory = 1
-    wood: Optional[int] = None
-    stone: Optional[int] = None
-    coal: Optional[int] = None
-    iron: Optional[int] = None
-    diamond: Optional[int] = None
-    sapling: Optional[int] = None
-    wood_pickaxe: Optional[int] = None
-    stone_pickaxe: Optional[int] = None
-    iron_pickaxe: Optional[int] = None
-    wood_sword: Optional[int] = None
-    stone_sword: Optional[int] = None
-    iron_sword: Optional[int] = None
+    wood: int
+    stone: int
+    coal: int
+    iron: int
+    diamond: int
+    sapling: int
+    wood_pickaxe: int
+    stone_pickaxe: int
+    iron_pickaxe: int
+    wood_sword: int
+    stone_sword: int
+    iron_sword: int
      # Just for jax for correct invemtory check
-    pickaxe: Optional[jnp.ndarray] = None
-    sword: Optional[jnp.ndarray] = None
-    bow: Optional[jnp.ndarray] = None
-    arrows: Optional[jnp.ndarray] = None
-    armour: Optional[jnp.ndarray] = None
-    torches: Optional[jnp.ndarray] = None
-    ruby: Optional[jnp.ndarray] = None
-    sapphire: Optional[jnp.ndarray] = None
-    potions: Optional[jnp.ndarray] = None
-    books: Optional[jnp.ndarray] = None
+    pickaxe: jax.Array
+    sword: jax.Array
+    bow: jax.Array
+    arrows: jax.Array
+    armour: jax.Array
+    torches: jax.Array
+    ruby: jax.Array
+    sapphire: jax.Array
+    potions: jax.Array
+    books: jax.Array
 
 
 
 @struct.dataclass
 class GameMap:
-    game_map: Optional[jnp.ndarray] = None
+    game_map: jax.Array
 
 
 @struct.dataclass
 class PlayerState:
     variables: PlayerVariables
-    achievements: Optional[PlayerAchievements] = None
-    inventory: Optional[PlayerInventory] = None
-    map: Optional[GameMap] = None
-    action: Optional[int] = None
+    achievements: PlayerAchievements
+    inventory: PlayerInventory
+    map: GameMap
+    action: int
 
     @classmethod
     def from_state(cls, state, action):
