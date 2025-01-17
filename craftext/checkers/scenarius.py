@@ -1,7 +1,7 @@
 from typing import List, Tuple
-from deserialization import GameData, achievements_list
+
 from craftext.checkers.base_functions.base import is_variable_increasing, check_achievement_inventory_radius, was_item_placed
-from math import sqrt
+from craftext.checkers.base_functions.state_adapter import GameData
 
 
 
