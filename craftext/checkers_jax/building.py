@@ -52,7 +52,7 @@ def check_cross(center: Tuple[int, int], game_map: jax.Array, stone_index: int) 
     
     return cross_check & diagonal_check
 
-@struct.dataclass
+
 class Building(NamedTuple):
     game_map: jax.Array
     stone_index: int
