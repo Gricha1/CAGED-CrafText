@@ -75,13 +75,9 @@ class InstructionWrapper(Wrapper):
         """
         Resets the environment and selects a random instruction embedding or token for the new episode.
         """
-        ### need to remove or rewrite
-       # new_rng = jnp.full_like(_rng, 42)
-      #  key = jax.random.PRNGKey(0)
-        obs, state = self.env.reset(_rng, env_params) #self.env.reset(_rng, env_params)
+
+        obs, state = self.env.reset(_rng, env_params)
         
-        # Select a random index for an instruction
-       # rng, subkey = jax.random.split(rng, 2)
         idx = jax.random.randint(_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list))
         instructions_emb = self.scenario_handler.scenario_data_jax.embeddings_list[idx]
 
