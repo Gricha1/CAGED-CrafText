@@ -1,10 +1,9 @@
 import jax
-from jax import jit
-import jax.numpy as jnp
-from jax import lax
-from typing import List
-from functools import partial
-
+from jax import (
+    numpy as jnp,
+    lax
+)
+from craftext.checkers.base_functions.state_adapter import GameData
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
     "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
@@ -15,13 +14,9 @@ blocks_list = [
     "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
     "GRAVE3", "NECROMANCER_VULNERABLE"
 ]
-import jax
-import jax.numpy as jnp
-from jax import lax
 
 
-
-def place_object_relevant_to(game_data, object_name, target_object_name, side, distance):
+def place_object_relevant_to(game_data: GameData, object_name: str, target_object_name: str, side: int, distance: int) -> jax.Array:
     """
     Check if the object is placed at a specific side (right, left, top, or bottom) and distance from the target_object_name
     within the area around the player (with a fixed radius of 15).
@@ -35,7 +30,7 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
     - distance (int): The distance at which the object should be placed from the target object.
 
     Returns:
-    - bool: True if the object is placed at the specified side and distance relative to the target object, otherwise False.
+    - jax.Array[bool]: True if the object is placed at the specified side and distance relative to the target object, otherwise False.
     """
     game_map = game_data.states[0].map.game_map
 
@@ -98,7 +93,7 @@ def place_object_relevant_to(game_data, object_name, target_object_name, side, d
 
     return result
 
-def move_to(game_data, side):
+def move_to(game_data, side) -> jax.Array:
     """
     Check if the player is significantly on one of the sides (North, West, East, South) of the map.
     A player is considered to be on a side if they are at least 20 units away from the center of the map
@@ -117,7 +112,7 @@ def move_to(game_data, side):
     player_position = game_data.states[0].variables.player_position
 
     if player_position is None:
-        return False
+        return jnp.array(False)
 
     x, y = player_position
     center_x, center_y = game_map.shape[0] // 2, game_map.shape[1] // 2  # Center of the map

@@ -1,6 +1,5 @@
 # craftext_scenarious.py
 
-import os
 import json
 
 import time
@@ -11,25 +10,22 @@ from craftext.craftext_encoder import EncodeModel, EncodeForm
 from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
 from craftext.scenarios.constants import plans_path
 from dataclasses import dataclass
-from dataclasses import dataclass, asdict, field
 from jax import lax
 from tqdm import tqdm
- #
-@dataclass
 
+
+@dataclass
 class ScenarioData:
     instructions_list: list
     checkers_list: list
     str_check_lambda_list: list
     indices_list: list
-  #  encoded_instructions_list: list
     scenario_names: list
     embeddings_list: list
 
 @dataclass
 class ScenarioDataJAX:
-  #  encoded_instructions_list: jnp.array
-    embeddings_list: jnp.array
+    embeddings_list: jax.Array
     checkers_list: list
 
 class CrafTextScenarios:
@@ -39,12 +35,9 @@ class CrafTextScenarios:
         """
         self.encode_model = encode_model
         self.config = ScenariosConfigLoader().load_config(config_name)
-       # self.config = self._load_config(config_name)
         self.use_parafrases =  self.config.use_parafrases
-       # GameData if self.environment_key == 1 else GameDataClassic
         self.environment_key = 0 if "Classic" in self.config.base_environment else 1 # int("Classic" not in self.config.base_environment)
-        self.use_plans = use_plans
-        self.instruction_to_apdate_file = plans_path
+       # print(self.config.base_environment)
         #exit()
         self.all_scenario = self._load_scenarios(self.config)
         self.scenario_data = self._prepare_scenarios()

@@ -9,17 +9,26 @@ import numpy as np
 import optax
 import time
 
-from flax.training import orbax_utils
+from typing import Optional, Any, Tuple
+
+from flax.linen.initializers import (
+    constant, 
+    orthogonal,
+)
+
+import wandb
+from flax.training import (
+    orbax_utils,
+)
+import flax
+from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
     CheckpointManagerOptions,
     CheckpointManager,
 )
 
-import wandb
-from flax.linen.initializers import constant, orthogonal
 from typing import NamedTuple, Dict
-from flax.training.train_state import TrainState
 import distrax
 import functools
 
@@ -29,6 +38,7 @@ from wrappers import (
     BatchEnvWrapper,
     AutoResetEnvWrapper,
 )
+
 from logz.batch_logging import create_log_dict, batch_log
 
 from craftext.craftext_scenarious import create_scenarios_with_dataset
@@ -36,18 +46,19 @@ from craftext.craftext_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
 
-from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
+from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 from baselines.analysis.inference_rnn import Experiment, ExperimentArgs
 
-class Transition(NamedTuple):
-    done: jnp.ndarray
-    action: jnp.ndarray
-    value: jnp.ndarray
-    reward: jnp.ndarray
-    log_prob: jnp.ndarray
-    obs: jnp.ndarray
-    info: jnp.ndarray
-    instruction: jnp.ndarray
+@flax.struct.dataclass
+class TransitionScheme:
+    done        : jax.Array
+    action      : jax.Array
+    value       : jax.Array
+    reward      : jax.Array
+    log_prob    : jax.Array
+    obs         : jax.Array
+    info        : jax.Array
+    instruction : jax.Array
 
 
 def make_train(config, network_params):
@@ -104,6 +115,7 @@ def make_train(config, network_params):
             ),
             jnp.zeros((1, config["NUM_ENVS"])),
         )
+        
         init_hstate = ScannedRNN.initialize_carry(
             config["NUM_ENVS"], config["LAYER_SIZE"]
         )
@@ -141,9 +153,6 @@ def make_train(config, network_params):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         obsv, env_state = env.reset(_rng, env_params)
-        init_hstate = ScannedRNN.initialize_carry(
-            config["NUM_ENVS"], config["LAYER_SIZE"]
-        )
 
         # TRAIN LOOP
         def _update_step(runner_state, unused):
@@ -179,7 +188,7 @@ def make_train(config, network_params):
                 obsv, env_state, reward, done, info = env.step(
                     _rng, env_state, action, env_params
                 )
-                transition = Transition(
+                transition = TransitionScheme(
                     last_done, action, value, reward, log_prob, last_obs, info,  instruction=env_state.env_state.instruction
                 )
                 runner_state = (
