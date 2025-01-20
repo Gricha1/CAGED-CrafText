@@ -1365,7 +1365,7 @@ conditional_achivments(gd, jnp.array(
             "The first item on your list should be the collection of a sapling. Move on to creating a handy tool, the wooden pickaxe. Wrap up your tasks with the intricate process of forging a sword made of metal - specifically, iron.",
             "Kick off your game with the essential task of procuring a sapling. Use your crafting skills to give life to a wooden pickaxe. Lastly, leave your mark by crafting an iron sword."
         ],
-        'check_lambda': lambda gd : conditional_achivments(gd, jnp.array([
+        'check_lambda': lambda gd, ix : conditional_achivments(gd, jnp.array([
             1 if a in [Achievement.COLLECT_SAPLING.value, Achievement.MAKE_WOOD_PICKAXE.value, Achievement.MAKE_IRON_SWORD.value] else 0
             for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
         ])),
