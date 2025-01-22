@@ -1,6 +1,13 @@
 import os
 from typing import List
+### Imports for correct lambda-function parsing, dont remove! 
+import jax.numpy as jnp
 
+from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.checkers_jax.achivments import conditional_achivments
+from craftext.checkers_jax.conditional import conditional_placing
+from craftext.checkers_jax.relevant import place_object_relevant_to
+from craftext.scenarios.constants import Achievement, MediumInventoryItems,InventoryItems,BlockType
 
 def parse_instructions(file_name_txt: str) -> List[str]:
     with open(file_name_txt, 'r') as file:
