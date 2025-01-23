@@ -6,32 +6,32 @@ import jax
 @struct.dataclass
 class PlayerVariables:
     player_position: jax.Array 
-    player_level: int
-    player_direction: int
-    player_health: float
-    player_food: int 
-    player_drink: int 
-    player_energy: int 
-    player_mana: int
-    is_sleeping: bool 
-    is_resting: bool 
-    player_recover: float 
-    player_hunger: float 
-    player_thirst: float
-    player_fatigue: float 
-    player_recover_mana: float 
-    player_xp: int
-    player_dexterity: int 
-    player_strength: int 
-    player_intelligence: int 
-    learned_spells: jax.Array
-    sword_enchantment: int
-    bow_enchantment: int
-    boss_progress: int 
-    boss_timesteps_to_spawn_this_round: int 
-    light_level: float 
-    state_rng: jax.Array 
-    timestep: int 
+    # player_level: int
+    # player_direction: int
+    # player_health: float
+    # player_food: int 
+    # player_drink: int 
+    # player_energy: int 
+    # player_mana: int
+    # is_sleeping: bool 
+    # is_resting: bool 
+    # player_recover: float 
+    # player_hunger: float 
+    # player_thirst: float
+    # player_fatigue: float 
+    # player_recover_mana: float 
+    # player_xp: int
+    # player_dexterity: int 
+    # player_strength: int 
+    # player_intelligence: int 
+    # learned_spells: jax.Array
+    # sword_enchantment: int
+    # bow_enchantment: int
+    # boss_progress: int 
+    # boss_timesteps_to_spawn_this_round: int 
+    # light_level: float 
+    # state_rng: jax.Array 
+    # timestep: int 
 
 @struct.dataclass
 class PlayerAchievements:
@@ -83,31 +83,31 @@ class PlayerState:
         action = action
         variables = PlayerVariables(
             player_position=jnp.array(state.player_position) if hasattr(state, 'player_position') else None,
-            player_level=state.player_level,
-            player_direction=state.player_direction,
-            player_health=state.player_health,
-            player_food= state.player_food,
-            player_drink=state.player_drink,
-            player_energy=state.player_energy,
-            player_mana=state.player_mana,
-            is_sleeping=state.is_sleeping,
-            is_resting=state.is_resting,
-            player_recover=state.player_recover,
-            player_hunger=state.player_hunger,
-            player_thirst=state.player_thirst,
-            player_fatigue=state.player_fatigue,
-            player_recover_mana=state.player_recover_mana,
-            player_xp=state.player_xp,
-            player_dexterity=state.player_dexterity,
-            player_strength=state.player_strength,
-            player_intelligence=state.player_intelligence,
-            learned_spells=state.learned_spells,
-            sword_enchantment=state.sword_enchantment,
-            bow_enchantment=state.bow_enchantment,
-            boss_progress=state.boss_progress,
-            light_level=state.light_level,
-            state_rng=state.state_rng,
-            timestep=state.timestep,
+            # player_level=state.player_level,
+            # player_direction=state.player_direction,
+            # player_health=state.player_health,
+            # player_food= state.player_food,
+            # player_drink=state.player_drink,
+            # player_energy=state.player_energy,
+            # player_mana=state.player_mana,
+            # is_sleeping=state.is_sleeping,
+            # is_resting=state.is_resting,
+            # player_recover=state.player_recover,
+            # player_hunger=state.player_hunger,
+            # player_thirst=state.player_thirst,
+            # player_fatigue=state.player_fatigue,
+            # player_recover_mana=state.player_recover_mana,
+            # player_xp=state.player_xp,
+            # player_dexterity=state.player_dexterity,
+            # player_strength=state.player_strength,
+            # player_intelligence=state.player_intelligence,
+            # learned_spells=state.learned_spells,
+            # sword_enchantment=state.sword_enchantment,
+            # bow_enchantment=state.bow_enchantment,
+            # boss_progress=state.boss_progress,
+            # light_level=state.light_level,
+            # state_rng=state.state_rng,
+            # timestep=state.timestep,
         )
 
         achievements = PlayerAchievements(
