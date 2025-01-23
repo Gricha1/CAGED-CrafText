@@ -11,4 +11,5 @@ container:
 cloud:
   region: "SR006"                                                                        
   instance_type: "a100plus.1gpu.80vG.12C.96G"                                            
-  n_workers: 1                                                                          
+  n_workers: 1 
+  description: "craftext_easy_plans"                                                                         
