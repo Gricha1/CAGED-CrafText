@@ -39,6 +39,8 @@ class CrafTextScenarios:
         self.environment_key = 0 if "Classic" in self.config.base_environment else 1 # int("Classic" not in self.config.base_environment)
        # print(self.config.base_environment)
         #exit()
+        self.use_plans = use_plans
+        self.instruction_to_apdate_file = plans_path
         self.all_scenario = self._load_scenarios(self.config)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self.scenarios_to_jax()

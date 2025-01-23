@@ -540,23 +540,6 @@ easy_test_parafrased = {
             'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [ Achievement.EAT_PLANT.value, Achievement.MAKE_STONE_PICKAXE.value, Achievement.EAT_PLANT.value] else 0 for a in range(Achievement.MAKE_STONE_PICKAXE.value + 1)]))"
         }
    , 
-
-            'instruction': "Craft a wooden pickaxe, but don't plant anything.",
-            'instruction_paraphrases': [
-                "Make a wooden pickaxe and ensure no plant is planted.",
-                "Without any planting involved, I want you to create a wooden pickaxe.",
-                "Construct a pickaxe out of wood, but refrain from planting.",
-                "Without engaging in any planting activities, fabricate a pickaxe made of wood.",
-                "I need you to masterfully forge a primitive wood-wielding pickaxe while strictly avoiding any agricultural activities."
-            ],
-            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-                1 if a in [Achievement.MAKE_WOOD_PICKAXE.value] else
-                -1 if a == Achievement.PLACE_PLANT.value else 0
-                for a in range(Achievement.MAKE_IRON_SWORD.value + 1)
-            ])),
-            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.MAKE_WOOD_PICKAXE.value] else -1 if a == Achievement.PLACE_PLANT.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
-       , 
-
         'INSTRUCTION_29':
             {
                 'instruction': "Make sure you have placed the furnace and not built an iron pickaxe. You can make the iron sword though.",
