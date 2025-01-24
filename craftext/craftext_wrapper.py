@@ -53,16 +53,23 @@ class InstructionWrapper(Wrapper):
 
         print("Initialized Instruction Wrapper with environment key:", self.environment_key)
         print(self.StateStructure)
+        self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
+        print(self.scenario_handler.scenario_data.instructions_list)
+        print(len(self.scenario_handler.scenario_data.instructions_list))
        # exit()
     
-    def reset(self, _rng, env_params):
+    def reset(self, _rng, env_params, instruction_idx=-1):
         """
         Resets the environment and selects a random instruction embedding or token for the new episode.
         """
 
         obs, state = self.env.reset(_rng, env_params)
         
-        idx = jax.random.randint(_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list))
+        idx = jax.lax.cond(
+                instruction_idx == -1, 
+                lambda: jax.random.randint(_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list)),
+                lambda: instruction_idx
+            )
         instructions_emb = self.scenario_handler.scenario_data_jax.embeddings_list[idx]
 
         # Initialize the state with the selected instruction embedding/token and set success rates to zero
