@@ -1,4 +1,4 @@
-#from craftext.craftext_encoder import EncodeModel, EncodeForm
+from craftext.craftext_encoder import EncodeForm
 import time
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
@@ -13,15 +13,16 @@ from peft import PeftModel
 import torch
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.prompts import promt_instruction
+from craftext.craftext_encoder import DistilBertEncode
 from trl import SFTTrainer
 import yaml
 
-class EncodeForm(Enum):
-    EMBEDDING = "embedding"
-    TOKEN = "token"
-    GENERATION = "generation"
-    WEIGHTED_MEAN = "weighted_mean"
-    PROMPT_EOL = "prompt_eol"
+# class EncodeForm(Enum):
+#     EMBEDDING = "embedding"
+#     TOKEN = "token"
+#     GENERATION = "generation"
+#     WEIGHTED_MEAN = "weighted_mean"
+#     PROMPT_EOL = "prompt_eol"
 
 
 
@@ -146,47 +147,46 @@ def generate_examples(dataset, model, tokenizer):
 
 
 #"Qwen/Qwen2.5-3B-Instruct"
-class QwenEncodeModel:
+class QwenEncodeModel(DistilBertEncode):
     def __init__(self, model_name="Qwen/Qwen2.5-3B-Instruct", form_to_use=EncodeForm.EMBEDDING, 
-                 num_return_sequences=5, load_model=True):
+                 num_return_sequences=5, load_model=True, n_splits=5):
         """
         Concrete implementation for Qwen with advanced embedding extraction methods.
         """
+        super().__init__(form_to_use=form_to_use, n_splits=n_splits)
         base_model_name = "Qwen/Qwen2.5-3B-Instruct"  # Base model name
         self.form_to_use = form_to_use
-        self.model_name = model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
-        self.tokenizer.add_eos_token = True
+        self.plan_model_name = model_name
+        self.plan_tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
+        self.plan_tokenizer.add_eos_token = True
         self.num_return_sequences = num_return_sequences
 
-        self.model = None  # Initialize the model
+        self.plan_model = None  # Initialize the model
         self.lora_model = None  # For LoRA weights if used
 
         if load_model:
             # Load the base model
-            self.model = AutoModelForCausalLM.from_pretrained(
+            self.plan_model = AutoModelForCausalLM.from_pretrained(
                 base_model_name,
                 torch_dtype="auto",  # Automatically use the optimal dtype
                 device_map="auto",  # Automatically distribute model layers across devices
                 trust_remote_code=True
             ).to("cuda")
-            self.model.eval()
-            # print(f"Load {model_name} !")
-            # exit()
-
+            self.plan_model.eval()
+            
             # If LoRA weights are used, load them on top of the base model
             if model_name != base_model_name:
                 try:
                     # Load LoRA weights
-                    self.model = PeftModel.from_pretrained(self.model, self.model_name)
-                    self.model.to("cuda")
-                    self.model.eval()
+                    self.plan_model = PeftModel.from_pretrained(self.plan_model, self.plan_model_name)
+                    self.plan_model.to("cuda")
+                    self.plan_model.eval()
                     print("LoRA weights successfully loaded.")
                 except Exception as e:
                     print(f"Error loading LoRA weights: {e}")
 
     def train(self, dataset, data_for_inference, train_config):
-        trainer = EncoderTrainer(config=train_config).init_trainer(dataset, self.model_name, self.tokenizer)
+        trainer = EncoderTrainer(config=train_config).init_trainer(dataset, self.plan_model_name, self.plan_tokenizer)
         for i in range(3):
             
             examples = generate_examples(data_for_inference, trainer.model, trainer.tokenizer)
@@ -222,56 +222,56 @@ class QwenEncodeModel:
         full_prompt= [f"{promt_instruction(instruction)}" for instruction in instructions]
         
         responses, tokens = self._generate_text(full_prompt, max_new_tokens, num_return_sequences=self.num_return_sequences)
-        # for r in responses:
-        #     print(r)
-        # exit()
+        if return_responses:
+            return  [super().encode(responses), responses]
+        return super().encode(responses)
 
-        if self.form_to_use == EncodeForm.EMBEDDING:
-           # return self._default_embedding(full_prompt)
-            if return_responses:
-                return [self._prompt_eol_embedding(responses), responses]
-            else:
-                return self._prompt_eol_embedding(responses)
-        elif self.form_to_use == EncodeForm.WEIGHTED_MEAN:
-           # return self._default_embedding(full_prompt)
-            if return_responses:
-                return [self._weighted_mean_embedding(responses), responses]
-            else:
-                return self._weighted_mean_embedding(responses)
-        elif self.form_to_use == EncodeForm.TOKEN:
-            if return_responses:
-                return [self._prompt_eol_embedding(responses), responses]
-            else:
-                return tokens.cpu().numpy()
-        elif self.form_to_use == EncodeForm.GENERATION:
-            return responses
-        else:
-            raise ValueError(f"Unsupported EncodeForm: {self.form_to_use}")
+        # if self.form_to_use == EncodeForm.EMBEDDING:
+        #    # return self._default_embedding(full_prompt)
+        #     if return_responses:
+        #         return [self._prompt_eol_embedding(responses), responses]
+        #     else:
+        #         return self._prompt_eol_embedding(responses)
+        # elif self.form_to_use == EncodeForm.WEIGHTED_MEAN:
+        #    # return self._default_embedding(full_prompt)
+        #     if return_responses:
+        #         return [self._weighted_mean_embedding(responses), responses]
+        #     else:
+        #         return self._weighted_mean_embedding(responses)
+        # elif self.form_to_use == EncodeForm.TOKEN:
+        #     if return_responses:
+        #         return [self._prompt_eol_embedding(responses), responses]
+        #     else:
+        #         return tokens.cpu().numpy()
+        # elif self.form_to_use == EncodeForm.GENERATION:
+        #     return responses
+        # else:
+        #     raise ValueError(f"Unsupported EncodeForm: {self.form_to_use}")
 
 
-    def _prompt_eol_embedding(self, texts):
-        """
-        Batch-based method for extracting contextualized embeddings of the last tokens
-        from multiple input sentences.
-        """
-        prompt_template = "This sentence: {text} means in one word:"
-        prompt_texts = [prompt_template.format(text=text) for text in texts]
+    # def _prompt_eol_embedding(self, texts):
+    #     """
+    #     Batch-based method for extracting contextualized embeddings of the last tokens
+    #     from multiple input sentences.
+    #     """
+    #     prompt_template = "This sentence: {text} means in one word:"
+    #     prompt_texts = [prompt_template.format(text=text) for text in texts]
 
-        # Tokenize inputs in a batch
-        inputs = self.tokenizer(prompt_texts, return_tensors="pt", padding=True, truncation=True).to(self.model.device)
+    #     # Tokenize inputs in a batch
+    #     inputs = self.plan_tokenizer(prompt_texts, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
 
-        with torch.no_grad():
-            outputs = self.model(**inputs, output_hidden_states=True, return_dict=True)
-            last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
+    #     with torch.no_grad():
+    #         outputs = self.plan_model(**inputs, output_hidden_states=True, return_dict=True)
+    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
 
-        # Find the index of the last non-padding token for each input in the batch
-        idx_of_last_non_padding = inputs.attention_mask.bool().sum(dim=1) - 1
-        batch_indices = torch.arange(last_hidden_state.size(0), device=self.model.device)
+    #     # Find the index of the last non-padding token for each input in the batch
+    #     idx_of_last_non_padding = inputs.attention_mask.bool().sum(dim=1) - 1
+    #     batch_indices = torch.arange(last_hidden_state.size(0), device=self.plan_model.device)
         
-        # Extract embeddings for the last non-padding token of each input
-        sentence_embeddings = last_hidden_state[batch_indices, idx_of_last_non_padding]
+    #     # Extract embeddings for the last non-padding token of each input
+    #     sentence_embeddings = last_hidden_state[batch_indices, idx_of_last_non_padding]
 
-        return sentence_embeddings.float().cpu().numpy()
+    #     return sentence_embeddings.float().cpu().numpy()
 
     def _generate_text(self, full_prompt, max_new_tokens, num_beams=6, num_return_sequences=5):
         """
@@ -287,16 +287,16 @@ class QwenEncodeModel:
         - List of generated text responses.
         - List of token IDs corresponding to the generated responses.
         """
-        #print(self.model.device)
+        #print(self.plan_model.device)
         
-        inputs = self.tokenizer(full_prompt,padding=True, truncation=True, return_tensors="pt").to(self.model.device)
+        inputs = self.plan_tokenizer(full_prompt,padding=True, truncation=True, return_tensors="pt").to(self.plan_model.device)
         #exit()
 
         with torch.no_grad():
-            outputs = self.model.generate(
+            outputs = self.plan_model.generate(
                 **inputs,
                 max_new_tokens=max_new_tokens,
-                eos_token_id= self.tokenizer.eos_token_id,
+                eos_token_id= self.plan_tokenizer.eos_token_id,
                 num_beams=num_beams,
                 num_beam_groups=6,
                 diversity_penalty=2.3, 
@@ -307,7 +307,7 @@ class QwenEncodeModel:
             )
 
         generated_text_ids = outputs.sequences
-        responses = self.tokenizer.batch_decode(generated_text_ids, skip_special_tokens=True)
+        responses = self.plan_tokenizer.batch_decode(generated_text_ids, skip_special_tokens=True)
 
         responses_new =  []
         for r in responses:
@@ -326,44 +326,44 @@ class QwenEncodeModel:
             responses_new.append(formeted_r)
         return responses_new, generated_text_ids
 
-    def _weighted_mean_embedding(self, text ):
-        """
-        Weighted-mean pooling for sentence embeddings.
-        """
-        inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.model.device)
-        inputs["attention_mask"] = inputs["attention_mask"].float()  # Ensure mask is float for scaling
+    # def _weighted_mean_embedding(self, text ):
+    #     """
+    #     Weighted-mean pooling for sentence embeddings.
+    #     """
+    #     inputs = self.plan_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
+    #     inputs["attention_mask"] = inputs["attention_mask"].float()  # Ensure mask is float for scaling
 
-        with torch.no_grad():
-            outputs = self.model(**inputs, output_hidden_states=True)
-            last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
-          # last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
+    #     with torch.no_grad():
+    #         outputs = self.plan_model(**inputs, output_hidden_states=True)
+    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
+    #       # last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
 
-        # Create weights based on token positions and attention mask
-        seq_len = last_hidden_state.shape[1]
-        token_weights = inputs.attention_mask * torch.arange(1, seq_len + 1).unsqueeze(0).to(self.model.device)
+    #     # Create weights based on token positions and attention mask
+    #     seq_len = last_hidden_state.shape[1]
+    #     token_weights = inputs.attention_mask * torch.arange(1, seq_len + 1).unsqueeze(0).to(self.plan_model.device)
 
-        # Compute weighted mean of embeddings
-        sum_embeddings = torch.sum(last_hidden_state * token_weights.unsqueeze(-1), dim=1)
-        sum_weights = torch.sum(token_weights, dim=1).unsqueeze(-1)
-        sentence_embeddings = sum_embeddings / sum_weights
+    #     # Compute weighted mean of embeddings
+    #     sum_embeddings = torch.sum(last_hidden_state * token_weights.unsqueeze(-1), dim=1)
+    #     sum_weights = torch.sum(token_weights, dim=1).unsqueeze(-1)
+    #     sentence_embeddings = sum_embeddings / sum_weights
 
-        return sentence_embeddings.cpu().numpy()
+    #     return sentence_embeddings.cpu().numpy()
     
-        # ATTENTION: it has not been tested
-    def _default_embedding(self, text):
-        """
-        Default embedding method (e.g., CLS token or mean pooling).
-        """
-        inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.model.device)
+    #     # ATTENTION: it has not been tested
+    # def _default_embedding(self, text):
+    #     """
+    #     Default embedding method (e.g., CLS token or mean pooling).
+    #     """
+    #     inputs = self.plan_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
 
-        with torch.no_grad():
-            outputs = self.model(**inputs, output_hidden_states=True)
-            last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
-          #  last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
+    #     with torch.no_grad():
+    #         outputs = self.plan_model(**inputs, output_hidden_states=True)
+    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
+    #       #  last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
 
-        # Mean pooling as a default embedding
-        sentence_embedding = last_hidden_state.mean(dim=1)
-        return sentence_embedding.cpu().numpy()
+    #     # Mean pooling as a default embedding
+    #     sentence_embedding = last_hidden_state.mean(dim=1)
+    #     return sentence_embedding.cpu().numpy()
 
 
 # Фабрика, возвращающая класс с определённым model_name
