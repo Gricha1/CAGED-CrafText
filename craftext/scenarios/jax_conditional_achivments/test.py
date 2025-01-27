@@ -361,21 +361,6 @@ easy_test_parafrased = {
         'str_check_lambda':"conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_WOOD.value, Achievement.COLLECT_STONE.value] else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))"
     }, 
 
-            'instruction': "Collect some stone, defeat a skeleton and gather some coal.",
-            'instruction_paraphrases': [
-                "Please gather some rock then fight off a skeleton and afterwards collect some coal.",
-                "Begin by getting some stone, move forward by annihilating a skeleton and finally acquire some coal.",
-                "Firstly, mine some stone, secondly, slay a skeleton and ultimately gather some coal.",
-                "Commence by acquiring some stone, subsequently engage in combat with a skeleton and conclude by collecting some coal.",
-                "Your activity should begin with rock collection, followed by a tussle with a skeleton and finally, end by obtaining some coal."
-            ],
-            'check_lambda': lambda gd, ix: conditional_achivments(gd, jnp.array([
-                1 if a in [Achievement.COLLECT_STONE.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_COAL.value] else 0
-                for a in range(Achievement.MAKE_IRON_SWORD.value+1)
-            ])),
-            'str_check_lambda': "conditional_achivments(gd, jnp.array([1 if a in [Achievement.COLLECT_STONE.value, Achievement.DEFEAT_SKELETON.value, Achievement.COLLECT_COAL.value] else 0 for a in range(Achievement.COLLECT_COAL.value+1)]))"
-       , 
-
     'INSTRUCTION_16': {
         'instruction': "Craft a wooden sword and cultivate a plant",
         'instruction_paraphrases': [
