@@ -39,6 +39,7 @@ class CrafTextScenarios:
         self.environment_key = 0 if "Classic" in self.config.base_environment else 1 # int("Classic" not in self.config.base_environment)
        # print(self.config.base_environment)
         #exit()
+        self.n_instructions = 0
         self.use_plans = use_plans
         self.instruction_to_apdate_file = plans_path
         self.all_scenario = self._load_scenarios(self.config)
@@ -69,6 +70,7 @@ class CrafTextScenarios:
 
     def _load_original_scenarios(self, instruction_to_apdate_file=None):
         instructions_list, checkers_list, indices_list, scenario_names_list = [], [], [], []
+
         for idx, (key, scenario) in tqdm(enumerate(self.all_scenario.items())):
             # Collect instructions and their corresponding checkers
             print(scenario)

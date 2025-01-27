@@ -103,27 +103,28 @@ class InstructionWrapper(Wrapper):
         reward /= 50
         reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instruction_done | done
-        done_mask = jnp.array(done, dtype=jnp.bool_)
+       # done_mask = jnp.array(done, dtype=jnp.bool_)
         # Update success rate and total success rate
+       
         new_episode_sr = env_state.success_rate + jnp.float32(instruction_done)
         # Split the RNG only if done is True
-        __rng, new_rng = jax.random.split(env_state.rng)
-        new_rng = jnp.where(done_mask, new_rng, env_state.rng)  # Keep the current RNG if done is False
+       # __rng, new_rng = jax.random.split(env_state.rng)
+      #  new_rng = jnp.where(done_mask, new_rng, env_state.rng)  # Keep the current RNG if done is False
 
         # Generate idx only if done is True
-        idx = jax.random.randint(new_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list))
-        idx = jnp.where(done_mask, idx, env_state.idx)  # Keep the current idx if done is False
+       # idx = jax.random.randint(new_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list))
+       # idx = jnp.where(done_mask, idx, env_state.idx)  # Keep the current idx if done is False
 
         # Update state with the new success rates
         state = TextEnvState(
             env_state=state,
             timestep=state.timestep,
             instruction=env_state.instruction,
-            idx=idx,
+            idx=env_state.idx,
             environment_key=env_state.environment_key,
             success_rate=new_episode_sr * (1 - done),
             total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done,
-            rng=new_rng
+            rng=env_state.rng
         )
         
         # Update step information in info dictionary
