@@ -49,7 +49,7 @@ def run_policy_inference(llm_name, dataset_name, experiment_name,
             "python", "policy_inference.py", 
             "--experiment_name", experiment_name,
             "--craftext_settings", craftext_settings,
-            "--num_envs", "2048",  
+            "--num_envs", "256",  
             "--inference", "True",  
             "--llm_path", llm_name,
             "--dataset_path", dataset_name,
@@ -104,12 +104,18 @@ def get_rl_experiment_name(rl_experiment_path):
     return experiment_name
 
 if __name__=="__main__":
+    run_policy_inference("Qwen/Qwen2.5-3B-Instruct" , "any.json",
+                                    experiment_name="run-20250124_103954-5t1eqxol",
+                                    craftext_settings="simple_achivments_one", 
+                                    num_return_sequences='3')
+    exit()
+    
 
     wandb.init(project="super_igor_cycle_rest")
 
     
     llm_name = "Qwen/Qwen2.5-3B-Instruct" 
-    experiment_name = "achivments_full_v6"
+    experiment_name = "achivments_full_v6_test"
     temp_path = f"{experiment_name}/temp_dataset"
     craftext_settings = "simple_achivments"
     rl_experiment_path = "None"
@@ -126,7 +132,7 @@ if __name__=="__main__":
             num_envs=1024,
             start_checkpoint_path=rl_experiment_path,
             experiment_name=experiment_name,
-            encode_form_name="WEIGHTED_MEAN",
+            encode_form_name="EMBED_CLS_FOR_SPLITS",
             total_timesteps=250000000
         )
         
@@ -148,6 +154,7 @@ if __name__=="__main__":
             # Validation on train with new LLM and SuperDataset generation
             run_policy_inference(llm_name, dataset_name, experiment_name=rl_experiment_name, craftext_settings=craftext_settings)
             log_validation(dataset_name, context="train_dataset")
+           # exit()
 
             # Merge datasets
             if i>0:

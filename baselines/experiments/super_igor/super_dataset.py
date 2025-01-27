@@ -2,7 +2,7 @@ import json
 import numpy as np
 from datasets import Dataset
 from baselines.experiments.super_igor.prompts import promt_instruction
-
+import warnings
 
 class Instruction:
     def __init__(self, instruction, plan_options, rewards=None):
@@ -13,13 +13,26 @@ class Instruction:
         :param plan_options: A list of strings, each representing a potential plan to achieve the instruction.
         :param rewards: A list of rewards corresponding to each plan option.
         """
+        self.NOT_MEAURED = -1
         self.instruction = instruction
         self.plan_options = plan_options
-        self.rewards = rewards if rewards is not None else [-1 for _ in range(len(plan_options))]
+        self.rewards = rewards if rewards is not None else [self.NOT_MEAURED for _ in range(len(plan_options))]
+        if -1 in self.rewards:
+            warnings.warn("For some reason, during the initialization of instructions and plans\
+                          in init, some plans were not validated. \
+                          They were added to the dataset with a value of -1.", UserWarning)
 
         self.mean_reward = 0
         self.update_mean_reward()
         self.sort_plans_by_reward()
+    
+    def __str__(self):
+        """Return a formatted string representation of the instruction."""
+        result = [f"Instruction: {self.instruction}"]
+        for i, (plan, reward) in enumerate(zip(self.plan_options, self.rewards)):
+            reward_str = f"{reward}" if reward != self.NOT_MEAURED else "Not Measured"
+            result.append(f"  ----- Plan_{i + 1}: {plan} | Reward: {reward_str}")
+        return "\n".join(result)
     
     def update_mean_reward(self):
         np_rewards = np.array(self.rewards)
@@ -58,7 +71,10 @@ class Instruction:
         print(rewards)
         for i, plan_option in enumerate(plan_options):
             if rewards is None:
-                reward_to_add = -1
+                reward_to_add = self.NOT_MEAURED
+                warnings.warn("For some reason, the added plan during the 'update()' \
+                              operation was not validated. It was added to the dataset \
+                              with a value of -1", UserWarning)
             else:
                 reward_to_add = rewards[i]
             if plan_option in self.plan_options:
@@ -74,9 +90,13 @@ class Instruction:
  
     
     def _update_reward(self, old_reward, new_reward):
-        if old_reward==-1:
+        if old_reward==self.NOT_MEAURED:
             return new_reward
-        return old_reward *0.1 + new_reward*0.9
+        
+        print(self)
+        print("SR pairs to updates: ", old_reward, new_reward)
+        
+        return np.mean([old_reward, new_reward])
 
     def to_dict(self):
         return {
@@ -98,6 +118,7 @@ class Instruction:
 
 class SuperDataset:
     def __init__(self):
+        self.NOT_MEAURED = -1
         self.instructions = dict()  # List of Instruction objects
         self.mapping_plan_to_instruction = dict()
 
@@ -107,13 +128,18 @@ class SuperDataset:
         else:
             self.instructions[instruction] = Instruction(instruction=instruction, 
                                                          plan_options=plans, 
-                                                         rewards=rewards)
+                                                         rewards=[self.NOT_MEAURED for _ in range(len(plans))])
         for plan in plans:
             self.mapping_plan_to_instruction[plan] = instruction
     
     def update(self, plan, reward):
         instruction = self.mapping_plan_to_instruction[plan]
         self.instructions[instruction].update([plan], [reward])
+   
+    def super_print(self):
+        for instruction in self.instructions:
+            print( self.instructions[instruction])
+        return 
     
     def batch_update(self, plans, rewards):
         for plan, reward in zip(plans, rewards):
@@ -143,7 +169,8 @@ class SuperDataset:
         rewards = []
         for instruction in self.instructions.values():
             for i in range(len(instruction.rewards)):
-                rewards.append(instruction.rewards[i])
+                if instruction.rewards[i]!=self.NOT_MEAURED:
+                    rewards.append(instruction.rewards[i])
         array = np.array(rewards)
         cleaned_array = array[~np.isnan(array)]
         sorted_array = np.sort(cleaned_array)  # Сортируем массив по возрастанию

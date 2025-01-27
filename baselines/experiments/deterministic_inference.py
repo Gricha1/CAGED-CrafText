@@ -56,6 +56,7 @@ class DetermEnvState:
     instructions: int
     v1: int
     v2: int
+    v3: int
 
 class GymnaxWrapper(object):
     """Base class for Gymnax wrappers."""
@@ -102,7 +103,8 @@ class DetermOptimisticResetVecEnvWrapper(GymnaxWrapper):
                                rngs = rngs[:self.num_envs],
                                instructions=instructions[:self.num_envs],
                                v1=indecec_vector, 
-                               v2=indecec_vector )
+                               v2=indecec_vector ,
+                               v3=indecec_vector)
 
         return obs, state
 
@@ -123,7 +125,8 @@ class DetermOptimisticResetVecEnvWrapper(GymnaxWrapper):
         
         # Sample indices, use last_vector as propability, so indices we already used will have probability = 0
         # NOT CORRECT p CALCULATION
-        indices_ = jax.random.choice(rng, possible_indices, (self.num_envs,), p=last_vector/self.n_instructions)
+        
+        indices_ = jax.random.choice(rng, possible_indices, (self.num_envs,), p=last_vector/jnp.sum(last_vector))
         
         # Run reset with sampled RNG + Instruction_ID
         obs_re, state_re = self.reset_fn(rngs[indices_], params, instructions[indices_])
@@ -137,20 +140,20 @@ class DetermOptimisticResetVecEnvWrapper(GymnaxWrapper):
         # Calculate new vector of vector with indices we already used
         last_vector = last_vector - used_instructions.astype(last_vector.dtype)
         
-        rng__, _rng = jax.random.split(rng)
-        reset_indexes = jnp.arange(self.num_resets).repeat(self.reset_ratio)
+        # rng__, _rng = jax.random.split(rng)
+        # reset_indexes = jnp.arange(self.num_resets).repeat(self.reset_ratio)
 
-        being_reset = jax.random.choice(
-            _rng,
-            jnp.arange(self.num_envs),
-            shape=(self.num_resets,),
-            p=done,
-            replace=False,
-        )
-        reset_indexes = reset_indexes.at[being_reset].set(jnp.arange(self.num_resets))
+        # being_reset = jax.random.choice(
+        #     _rng,
+        #     jnp.arange(self.num_envs),
+        #     shape=(self.num_resets,),
+        #     p=done,
+        #     replace=False,
+        # )
+        # reset_indexes = reset_indexes.at[being_reset].set(jnp.arange(self.num_resets))
 
-        obs_re = obs_re[reset_indexes]
-        state_re = jax.tree_map(lambda x: x[reset_indexes], state_re)
+        # obs_re = obs_re[reset_indexes]
+        # state_re = jax.tree_map(lambda x: x[reset_indexes], state_re)
 
         # Auto-reset environment based on termination
         def auto_reset(done, state_re, state_st, obs_re, obs_st):
@@ -167,7 +170,8 @@ class DetermOptimisticResetVecEnvWrapper(GymnaxWrapper):
                                rngs=rngs[indices_],
                                instructions=instructions[indices_],
                                v1=instructions,
-                               v2=rngs)
+                               v2=rngs,
+                               v3=last_vector/jnp.sum(last_vector))
         return obs, state, reward, done, info
 
 

@@ -10,13 +10,14 @@ from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_scenarious import CrafTextScenarios, ScenarioData
 
 class CrafTextScenariosWithSuperDataset(CrafTextScenarios):
-    def __init__(self, encode_model, config_name=None, super_dataset_name = "None",):
+    def __init__(self, encode_model, config_name=None, super_dataset_name = "None", use_plans=False):
+        self.use_plans = use_plans
         self.super_dataset_name = super_dataset_name
         if  self.super_dataset_name != "None":
             self.super_dataset = SuperDataset.load_from_json(super_dataset_name)
         else:
             self.super_dataset = SuperDataset()
-        super().__init__(encode_model, config_name)
+        super().__init__(encode_model, config_name, use_plans)
     
     def is_instruction_trainable(self, mean_instruction_value):
         lower_treshold = 0

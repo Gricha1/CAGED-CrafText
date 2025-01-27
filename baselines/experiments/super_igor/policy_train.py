@@ -19,7 +19,8 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-from baselines.experiments.super_igor.encoder import  EncodeForm, QwenModelWrapper
+from baselines.experiments.super_igor.encoder import QwenModelWrapper
+from craftext.craftext_encoder import EncodeForm
 from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
@@ -71,7 +72,7 @@ def make_train(config, network_params):
     env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
-                            encode_form=EncodeForm.WEIGHTED_MEAN)
+                            encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -732,6 +733,8 @@ def run_ppo(config):
         config['ENCODE_FORM'] = EncodeForm.WEIGHTED_MEAN
     elif config['ENCODE_FORM_NAME'] == 'TOKENS':
         config['ENCODE_FORM'] = EncodeForm.TOKEN
+    elif config['ENCODE_FORM_NAME'] == 'EMBED_CLS_FOR_SPLITS':
+         config['ENCODE_FORM'] = EncodeForm.EMBED_CLS_FOR_SPLITS
 
     # Initialize random keys
     rng = jax.random.PRNGKey(config["SEED"])
