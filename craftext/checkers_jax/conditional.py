@@ -47,7 +47,7 @@ def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_
             ]
         )
         
-    collected_count = get_item(object_inventory_enum.value, inventory)
+    collected_count = get_item(object_inventory_enum, inventory)
     return collected_count >= count_to_collect
 
 
@@ -90,7 +90,8 @@ def conditional_placing(gd, object_inventory_enum: int, object_to_place: int, co
     :return: Returns True if both conditions are satisfied in sequence, 
              otherwise False.
     """
-    
+    object_inventory_enum = object_inventory_enum.value
+    object_to_place = object_to_place.value
     previous_state = gd.states[0]
     current_state = gd.states[1]
     
