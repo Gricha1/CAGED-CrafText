@@ -82,7 +82,8 @@ def make_train(config, network_params):
                                  encode_model_class=encoder, 
                                  scenario_handler_class=scenarious_loader)
     else:
-        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"])
+        encoder = make_encoder(n_splits=config["EXPAND_EMB"])
+        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], encode_model_class=encoder)
     # Wrap with some extra logging
     env = LogWrapper(env)
 
@@ -495,7 +496,8 @@ def run_ppo(config):
             "path": wandb.run.dir,
             "view": False,
             "use_plans": config["USE_PLANS"],
-            "inference_step":config["INFERENCE_STEP"]
+            "inference_step":config["INFERENCE_STEP"],
+            "expand_emb": config["EXPAND_EMB"]
         }
 
         # INFERENCE ON TRAIN
@@ -520,6 +522,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", type=str, default="Craftax-Classic-Symbolic-v1")
     parser.add_argument("--craftext_settings", type=str, default=None)
+    parser.add_argument("--expand_emb", type=int, default=1)
     parser.add_argument(
         "--num_envs",
         type=int,

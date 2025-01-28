@@ -91,7 +91,8 @@ class ResultManager:
 class ExperimentArgs:
     def __init__(self, num_envs,experiment_name, ratio, 
                  checkpoint_num, env_name, max_grad_norm,
-                 lr,layer_size, total_timesteps, craftext_settings, path, view, use_plans, inference_step):
+                 lr,layer_size, total_timesteps, craftext_settings,
+                 path, view, use_plans, inference_step, expand_emb):
         self.num_envs = num_envs
         self.experiment_name=experiment_name
         self.ratio = ratio
@@ -106,6 +107,7 @@ class ExperimentArgs:
         self.view = view
         self.use_plans = use_plans
         self.inference_step = inference_step
+        self.expand_emb=expand_emb
    
 
 def experiment_args_from_config(args):
@@ -131,6 +133,7 @@ def experiment_args_from_config(args):
     checkpoint_num = args.checkpoint_num
     use_plans = args.use_plans
     inference_step = args.inference_step
+    expand_emb = args.expand_emb
     path = getattr(args, 'path', None)
     view = getattr(args, 'view', None)
 
@@ -149,7 +152,8 @@ def experiment_args_from_config(args):
         path=path,
         view=view,
         use_plans=use_plans,
-        inference_step=inference_step
+        inference_step=inference_step,
+        expand_emb=expand_emb
     )
 
     return experiment_args
@@ -198,7 +202,8 @@ class Experiment:
                                     encode_model_class=encoder, 
                                     scenario_handler_class=scenarious_loader)
         else:
-            env = InstructionWrapper(env, self.config.craftext_settings,)
+            encoder = make_encoder(n_splits=self.config.expand_emb)
+            env = InstructionWrapper(env, self.config.craftext_settings,encode_model_class=encoder)
         if not view:
             env = OptimisticResetVecEnvWrapper(env, self.config.num_envs, 
                                                min(self.config.ratio, self.config.num_envs))
@@ -353,6 +358,7 @@ if __name__ == "__main__":
     parser.add_argument("--checkpoint_num", type=str, default="checkpoint_restart_1")
     parser.add_argument("--use_plans", type=bool, default=False)
     parser.add_argument("--inference_step", type=int, default=2000)
+    parser.add_argument("--expand_emb", type=int, default=1)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if args.path is None:
