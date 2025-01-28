@@ -53,8 +53,8 @@
             "Secure duo shine stones and estable one creation stand",
             "Procure two units of the hardest mineral and install a solitary production bench"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.CRAFTING_TABLE, 2, 1)"
     }
 }
 ----
@@ -68,8 +68,8 @@
             "Procure the trio of precious stones and subsequently deposit a duo of vegetation in the area.",
             "After accumulating a trifecta of precious jewels, conspicuously plant a pair of greenery onto the landscape."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 3, 2),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 3, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 3, 2),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 3, 2)"
     }
 }
 ----
@@ -233,8 +233,8 @@
             "Accumulate two diamond pieces and then deposit quartet of rocks",
             "Accrue two units of diamond and following that, position four units of stone"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 2, 4),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 2, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 2, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 2, 4)"
     }
 }
 ----
@@ -293,8 +293,8 @@
             "Obtain one specimen of diamond and position on the earth four young trees.",
             "Secure a unit of diamond and establish four juvenile flora on the map."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 1, 4)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 1, 4),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 1, 4)"
     }
 }
 ----

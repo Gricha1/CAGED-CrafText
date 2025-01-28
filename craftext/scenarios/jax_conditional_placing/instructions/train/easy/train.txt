@@ -157,8 +157,8 @@
             "Procure a handful of these precious gems, exactly five diamonds and establish one solid element, a stone to be exact",
             "Your primary mission is to acquire an exact quantity of five of the most desirable gems known as diamonds, and following that, position one fundamental element on the field which refers to as 'stone'"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 5, 1),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 5, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 5, 1),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 5, 1)"
     }
 }
 ----
@@ -247,8 +247,8 @@
             "Get hold of two precious Diamonds and lay down three Green Plants",
             "Accumulate a couple of luminous Diamonds and put in place three natural Plants"
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 2, 3),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 2, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 2, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 2, 3)"
     }
 }
 ----
@@ -292,8 +292,8 @@
             "Retrieve five precious diamonds from your surroundings, after which you are to embed three offspring of a tree into the earth.",
             "Procure a quintet of shimmering diamonds, subsequent to which you should ensure that a trio of tree progenies is securely situated in the ground."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 5, 3),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 5, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 5, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 5, 3)"
     }
 }
 ----
