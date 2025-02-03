@@ -68,7 +68,7 @@ class ResultManager:
 
 class Experiment:
     def __init__(self, args):
-        self.seeds_to_use = 10
+        self.seeds_to_use = 50
         self.args = args
         self.config = self._load_config()
         self.checkpoint_manager = self._initialize_checkpoint_manager()
@@ -200,9 +200,10 @@ class Experiment:
             params = self.train_state['runner_state'][0]["params"]
             seeds_per_instruction = {}
             steps = 0
-            remain_steps = 5000
+            remain_steps = 35000
             instr_rngs = dict()
             instr_rngs_alt = dict()
+            steps_changed = False
             while steps < remain_steps:
                 pi, value = self.network.apply(params, obs, env_state.env_state.instruction)
                 action = pi.sample(seed=rng)
@@ -232,10 +233,12 @@ class Experiment:
                     prev_indx = env_state.env_state.idx
                     
                     
-                    if np.sum(env_state.v3)==0:
+                    if np.sum(env_state.v3[1:])==0 and not steps_changed:
                         remain_steps = steps+300 # If all instructions_seeds pair starts, wait 300 steps for finish
+                        steps_changed = True
                     else:
-                        print(env_state.v3)
+                        pass
+                       # print(env_state.v3)
                         
                     indicec_used = np.array(env_state.env_state.idx)
                     rngs_used = np.array(env_state.env_state.rng)

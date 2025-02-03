@@ -3,7 +3,7 @@ import numpy as np
 import wandb
 import os
 from baselines.experiments.super_igor.super_dataset import SuperDataset
-
+from faker import Faker
 
 def run_policy_train(craftext_settings, env_name, 
                      llm_path, super_dataset, num_envs,
@@ -49,7 +49,7 @@ def run_policy_inference(llm_name, dataset_name, experiment_name,
             "python", "policy_inference.py", 
             "--experiment_name", experiment_name,
             "--craftext_settings", craftext_settings,
-            "--num_envs", "256",  
+            "--num_envs", "512",  
             "--inference", "True",  
             "--llm_path", llm_name,
             "--dataset_path", dataset_name,
@@ -104,18 +104,20 @@ def get_rl_experiment_name(rl_experiment_path):
     return experiment_name
 
 if __name__=="__main__":
-    run_policy_inference("Qwen/Qwen2.5-3B-Instruct" , "any.json",
-                                    experiment_name="run-20250124_103954-5t1eqxol",
-                                    craftext_settings="simple_achivments_one", 
-                                    num_return_sequences='3')
-    exit()
-    
-
     wandb.init(project="super_igor_cycle_rest")
-
+    os.makedirs("super_experiments", exist_ok=True)
     
+    #Make random name for expariment
+    fake = Faker()
+
+    name = fake.first_name()
+    surname = fake.last_name()
+
     llm_name = "Qwen/Qwen2.5-3B-Instruct" 
-    experiment_name = "achivments_full_v6_test"
+    experiment_tag = "simple_achivements_one_test"
+    use_llm_tuning = True
+    
+    experiment_name = f"super_experiments/{experiment_tag}_llmt_{str(use_llm_tuning)}_{name}_{surname}"
     temp_path = f"{experiment_name}/temp_dataset"
     craftext_settings = "simple_achivments"
     rl_experiment_path = "None"
@@ -133,7 +135,7 @@ if __name__=="__main__":
             start_checkpoint_path=rl_experiment_path,
             experiment_name=experiment_name,
             encode_form_name="EMBED_CLS_FOR_SPLITS",
-            total_timesteps=250000000
+            total_timesteps=50000000#0
         )
         
         rl_experiment_path = get_rl_checkpoint_path(experiment_name)
@@ -149,34 +151,47 @@ if __name__=="__main__":
        # rl_experiment_name='run-20241213_171349-clql9lvy'
         for i in range(0,4):
             dataset_name = f"{temp_path}/super_dataset{j}_{i}.json"
-            output_dir = f'.{experiment_name}/llm_checkpoints/mix_text_cycle_{j}_{i}'
+            output_dir = f'./{experiment_name}/llm_checkpoints/mix_text_cycle_{j}_{i}'
             
             # Validation on train with new LLM and SuperDataset generation
-            run_policy_inference(llm_name, dataset_name, experiment_name=rl_experiment_name, craftext_settings=craftext_settings)
+            run_policy_inference(llm_name,
+                                 dataset_name, 
+                                 experiment_name=rl_experiment_name,
+                                 craftext_settings=craftext_settings,
+                                 num_return_sequences='20')
             log_validation(dataset_name, context="train_dataset")
-           # exit()
 
-            # Merge datasets
+            
             if i>0:
+                # Merge datasets
                 old_data_path = f"{temp_path}/super_dataset{j}_{i-1}.json"
                 merger_last_datasets(old_data_path, dataset_name) 
+                #
+                
+                train_results_path = f"{temp_path}/train_{j}_{i}.json"
+                run_policy_inference(llm_name, train_results_path,
+                                    experiment_name=rl_experiment_name,
+                                    craftext_settings=craftext_settings, 
+                                    num_return_sequences='1')
+                log_validation(train_results_path, context="train_1")
 
                 # Validation with RL on parafrases and new goals
-                test_parafeases_results_path = f"{temp_path}/test_parafeases{j}_{i}.json"
-                run_policy_inference(llm_name, test_parafeases_results_path,
-                                    experiment_name=rl_experiment_name,
-                                    craftext_settings="simple_achivments_test_parafrases", 
-                                    num_return_sequences='1')
-                log_validation(test_parafeases_results_path, context="test_parafeases")
+                # test_parafeases_results_path = f"{temp_path}/test_parafeases{j}_{i}.json"
+                # run_policy_inference(llm_name, test_parafeases_results_path,
+                #                     experiment_name=rl_experiment_name,
+                #                     craftext_settings=craftext_settings+"_test_parafrases", 
+                #                     num_return_sequences='1')
+                # log_validation(test_parafeases_results_path, context="test_parafeases")
 
-                test_new_obj_results_path = f"{temp_path}/test_new_obj{j}_{i}.json"
-                run_policy_inference(llm_name, test_new_obj_results_path, 
-                                    experiment_name=rl_experiment_name,
-                                    craftext_settings="simple_achivments_test_other_params", 
-                                    num_return_sequences='1')
-                log_validation(test_new_obj_results_path, context="test_new_obj")
+                # test_new_obj_results_path = f"{temp_path}/test_new_obj{j}_{i}.json"
+                # run_policy_inference(llm_name, test_new_obj_results_path, 
+                #                     experiment_name=rl_experiment_name,
+                #                     craftext_settings=craftext_settings+"_test_other_params", 
+                #                     num_return_sequences='1')
+                # log_validation(test_new_obj_results_path, context="test_new_obj")
 
                 # Train LLM
-            run_llm_train(dataset_name, llm_name, output_dir)
-            llm_name = output_dir 
+            if use_llm_tuning:
+                run_llm_train(dataset_name, llm_name, output_dir)
+                llm_name = output_dir
         super_dataset_name = dataset_name

@@ -67,7 +67,8 @@ def make_train(config, network_params):
         env_name, not config["USE_OPTIMISTIC_RESETS"]
     )
     env_params = env.default_params
-    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=1)
+    #REPLACE INTO DATASET
+    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20)
     ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'])
     env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
@@ -83,8 +84,6 @@ def make_train(config, network_params):
         
     
     
-    # else:
-   # env = BatchEnvWrapper(env, num_envs=config["NUM_ENVS"])
 
     def linear_schedule(count):
         frac = (

@@ -30,7 +30,7 @@ def train_llm(dataset,
     eos_token = encoder.tokenizer.eos_token
     llm_dataset, data_dict, bad_data_dict = dataset.llm_dataset(eos_token=eos_token)
 
-    encoder.train(llm_dataset, bad_data_dict, llm_train_config)
+    encoder.train(llm_dataset, bad_data_dict, llm_train_config, data_dict)
 
     return get_latest_folder(ouput_dir)
 

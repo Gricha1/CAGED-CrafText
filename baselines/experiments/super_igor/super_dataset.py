@@ -13,6 +13,7 @@ class Instruction:
         :param plan_options: A list of strings, each representing a potential plan to achieve the instruction.
         :param rewards: A list of rewards corresponding to each plan option.
         """
+        self.PLANS_STORE_SIZE = 15
         self.NOT_MEAURED = -1
         self.instruction = instruction
         self.plan_options = plan_options
@@ -44,8 +45,8 @@ class Instruction:
         paired_options = list(zip(self.rewards, self.plan_options))
         paired_options.sort(key=lambda x: x[0], reverse=True)
         self.rewards, self.plan_options = zip(*paired_options)
-        self.rewards = list(self.rewards)[:5]
-        self.plan_options = list(self.plan_options)[:5]
+        self.rewards = list(self.rewards)[:self.PLANS_STORE_SIZE]
+        self.plan_options = list(self.plan_options)[:self.PLANS_STORE_SIZE]
         return
 
     def map_instruction_to_plan(self):
@@ -96,7 +97,7 @@ class Instruction:
         print(self)
         print("SR pairs to updates: ", old_reward, new_reward)
         
-        return np.mean([old_reward, new_reward])
+        return new_reward #np.max([old_reward, new_reward])
 
     def to_dict(self):
         return {
@@ -221,9 +222,9 @@ class SuperDataset:
                 combined_rewards = instr_obj.rewards
             if combined_rewards is not None:
                 sorted_data = sorted(zip(combined_plans, combined_rewards), key=lambda x: x[1], reverse=True)
-                top_5_plans, top_5_rewards = zip(*sorted_data[:5])
+                top_5_plans, top_5_rewards = zip(*sorted_data[:self.PLANS_STORE_SIZE])
             else:
-                top_5_plans = combined_plans[:5]
+                top_5_plans = combined_plans[:self.PLANS_STORE_SIZE]
                 top_5_rewards = [None] * len(top_5_plans)
             self.add_instruction(instruction, list(top_5_plans), list(top_5_rewards))
 

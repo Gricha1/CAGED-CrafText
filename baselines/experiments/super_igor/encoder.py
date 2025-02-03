@@ -129,6 +129,12 @@ def generate(prompt, model, tokenizer):
         result = tokenizer.decode(output_ids[0], skip_special_tokens=True)
     return result
 
+def extract_promt_and_answers(dataset):
+    texts = dataset['text']
+    prompts = ["Plan:".join(text.split('Plan:')[:2])+"Plan:" for text in texts]
+    previos_answes = [text.split('Plan:')[2] for text in texts]
+    return {"prompts": prompts, 'previos_plans':previos_answes}
+    
 def generate_examples(dataset, model, tokenizer):
     texts = dataset['text'][:5]
     prompts = ["Plan:".join(text.split('Plan:')[:2])+"Plan:" for text in texts]
@@ -185,9 +191,9 @@ class QwenEncodeModel(DistilBertEncode):
                 except Exception as e:
                     print(f"Error loading LoRA weights: {e}")
 
-    def train(self, dataset, data_for_inference, train_config):
+    def train(self, dataset, data_for_inference, train_config, full_train_set=None):
         trainer = EncoderTrainer(config=train_config).init_trainer(dataset, self.plan_model_name, self.plan_tokenizer)
-        for i in range(3):
+        for i in range(2):
             
             examples = generate_examples(data_for_inference, trainer.model, trainer.tokenizer)
             table_bad = wandb.Table(columns=["Prompt", "Previous Plans", "Current Plans"])
@@ -202,6 +208,15 @@ class QwenEncodeModel(DistilBertEncode):
             trainer.train()
             wandb.log({"Generated Examples Good": table})
             wandb.log({"Generated Examples Previosly Bad": table_bad})
+            
+            table = wandb.Table(columns=["Prompt", "Previous Plans"])
+            if full_train_set:
+                train_data_dict = extract_promt_and_answers(full_train_set)
+                for prompt, prev_plan in zip(train_data_dict["prompts"], train_data_dict["previos_plans"]):
+                    table.add_data(prompt, prev_plan)
+            wandb.log({"TrainSet": table})
+                
+            
         trainer.model.save_pretrained(train_config['training_args']['output_dir'])
         
 
@@ -225,53 +240,6 @@ class QwenEncodeModel(DistilBertEncode):
         if return_responses:
             return  [super().encode(responses), responses]
         return super().encode(responses)
-
-        # if self.form_to_use == EncodeForm.EMBEDDING:
-        #    # return self._default_embedding(full_prompt)
-        #     if return_responses:
-        #         return [self._prompt_eol_embedding(responses), responses]
-        #     else:
-        #         return self._prompt_eol_embedding(responses)
-        # elif self.form_to_use == EncodeForm.WEIGHTED_MEAN:
-        #    # return self._default_embedding(full_prompt)
-        #     if return_responses:
-        #         return [self._weighted_mean_embedding(responses), responses]
-        #     else:
-        #         return self._weighted_mean_embedding(responses)
-        # elif self.form_to_use == EncodeForm.TOKEN:
-        #     if return_responses:
-        #         return [self._prompt_eol_embedding(responses), responses]
-        #     else:
-        #         return tokens.cpu().numpy()
-        # elif self.form_to_use == EncodeForm.GENERATION:
-        #     return responses
-        # else:
-        #     raise ValueError(f"Unsupported EncodeForm: {self.form_to_use}")
-
-
-    # def _prompt_eol_embedding(self, texts):
-    #     """
-    #     Batch-based method for extracting contextualized embeddings of the last tokens
-    #     from multiple input sentences.
-    #     """
-    #     prompt_template = "This sentence: {text} means in one word:"
-    #     prompt_texts = [prompt_template.format(text=text) for text in texts]
-
-    #     # Tokenize inputs in a batch
-    #     inputs = self.plan_tokenizer(prompt_texts, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
-
-    #     with torch.no_grad():
-    #         outputs = self.plan_model(**inputs, output_hidden_states=True, return_dict=True)
-    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
-
-    #     # Find the index of the last non-padding token for each input in the batch
-    #     idx_of_last_non_padding = inputs.attention_mask.bool().sum(dim=1) - 1
-    #     batch_indices = torch.arange(last_hidden_state.size(0), device=self.plan_model.device)
-        
-    #     # Extract embeddings for the last non-padding token of each input
-    #     sentence_embeddings = last_hidden_state[batch_indices, idx_of_last_non_padding]
-
-    #     return sentence_embeddings.float().cpu().numpy()
 
     def _generate_text(self, full_prompt, max_new_tokens, num_beams=6, num_return_sequences=5):
         """
@@ -297,10 +265,14 @@ class QwenEncodeModel(DistilBertEncode):
                 **inputs,
                 max_new_tokens=max_new_tokens,
                 eos_token_id= self.plan_tokenizer.eos_token_id,
-                num_beams=num_beams,
-                num_beam_groups=6,
-                diversity_penalty=2.3, 
-                do_sample=False,
+                # num_beams=num_beams,
+                # num_beam_groups=6,
+                # diversity_penalty=2.3, 
+                # do_sample=False,
+                do_sample=True,
+                temperature=1,
+                top_k=50, 
+                top_p=2.4,  
                 early_stopping=True,
                 num_return_sequences=num_return_sequences,
                 return_dict_in_generate=True
@@ -326,45 +298,7 @@ class QwenEncodeModel(DistilBertEncode):
             responses_new.append(formeted_r)
         return responses_new, generated_text_ids
 
-    # def _weighted_mean_embedding(self, text ):
-    #     """
-    #     Weighted-mean pooling for sentence embeddings.
-    #     """
-    #     inputs = self.plan_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
-    #     inputs["attention_mask"] = inputs["attention_mask"].float()  # Ensure mask is float for scaling
-
-    #     with torch.no_grad():
-    #         outputs = self.plan_model(**inputs, output_hidden_states=True)
-    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
-    #       # last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
-
-    #     # Create weights based on token positions and attention mask
-    #     seq_len = last_hidden_state.shape[1]
-    #     token_weights = inputs.attention_mask * torch.arange(1, seq_len + 1).unsqueeze(0).to(self.plan_model.device)
-
-    #     # Compute weighted mean of embeddings
-    #     sum_embeddings = torch.sum(last_hidden_state * token_weights.unsqueeze(-1), dim=1)
-    #     sum_weights = torch.sum(token_weights, dim=1).unsqueeze(-1)
-    #     sentence_embeddings = sum_embeddings / sum_weights
-
-    #     return sentence_embeddings.cpu().numpy()
-    
-    #     # ATTENTION: it has not been tested
-    # def _default_embedding(self, text):
-    #     """
-    #     Default embedding method (e.g., CLS token or mean pooling).
-    #     """
-    #     inputs = self.plan_tokenizer(text, return_tensors="pt", padding=True, truncation=True).to(self.plan_model.device)
-
-    #     with torch.no_grad():
-    #         outputs = self.plan_model(**inputs, output_hidden_states=True)
-    #         last_hidden_state = outputs.hidden_states[-1]  # Shape: [batch_size, seq_length, hidden_size]
-    #       #  last_hidden_state = torch.cat(last_hidden_state, dim=0).cpu() 
-
-    #     # Mean pooling as a default embedding
-    #     sentence_embedding = last_hidden_state.mean(dim=1)
-    #     return sentence_embedding.cpu().numpy()
-
+  
 
 # Фабрика, возвращающая класс с определённым model_name
 def QwenModelWrapper(model_name, num_return_sequences):
