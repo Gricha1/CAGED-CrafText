@@ -9,6 +9,7 @@ from craftext.scenarios.jax_conditional_achivments import test as conditional_ac
 easy_test_parafrased = {**build_line_instructions.easy_test_parafrased, 
                         **build_squere_instructions.easy_test_parafrased, 
                         **conditional_place_instructions.easy_test_parafrased,
+                        **conditional_achivments_instructions.easy_test_parafrased,
                         **localization_place_instructions.easy_test_parafrased}
 
 
@@ -25,6 +26,7 @@ easy_test_other_paramets = {**build_line_instructions.easy_test_other_paramets,
 medium_test_parafrased = {**build_line_instructions.medium_test_parafrased, 
                         **build_squere_instructions.medium_test_parafrased, 
                         **conditional_place_instructions.medium_test_parafrased,
+                        **conditional_achivments_instructions.medium_test_parafrased,
                         **localization_place_instructions.medium_test_parafrased}
 
 

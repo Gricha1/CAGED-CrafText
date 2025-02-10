@@ -1539,7 +1539,14 @@ import os
 medium_test_other_paramets = {}
 medium_test_other_paramets = update_previous_dict(
     medium_test_other_paramets, 
-    os.path.join(base_path, "jax_conditional_achivments/instructions/test/medium"), 
+    os.path.join(base_path, "jax_conditional_achivments/instructions/test/medium/other_params"), 
+    "achivments"
+)
+
+medium_test_parafrased = {}
+medium_test_parafrased = update_previous_dict(
+    medium_test_parafrased, 
+    os.path.join(base_path, "jax_conditional_achivments/instructions/test/medium/paraphrases"), 
     "achivments"
 )
 

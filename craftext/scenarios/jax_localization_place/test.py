@@ -28,3 +28,16 @@ medium_test_other_paramets = update_previous_dict(
     os.path.join(base_path, "jax_localization_place/instructions/test/medium/other_params"), 
     "localization_place_test_op"
 )
+
+easy_test_parafrased = update_previous_dict(
+    easy_test_parafrased, 
+    os.path.join(base_path, "jax_localization_place/instructions/test/easy/paraphrases"), 
+    "jax_localization_place_test_paraphrases"
+)
+
+
+medium_test_parafrased = update_previous_dict(
+    medium_test_parafrased, 
+    os.path.join(base_path, "jax_localization_place/instructions/test/medium/paraphrases"), 
+    "jax_localization_place_test_paraphrases"
+)

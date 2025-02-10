@@ -24,8 +24,24 @@ easy_test_other_paramets = update_previous_dict(
     "jax_build_line_test_op"
 )
 
+
+
 medium_test_other_paramets = update_previous_dict(
     medium_test_other_paramets, 
     os.path.join(base_path, "jax_build_line/instructions/test/medium/other_params"), 
     "jax_build_line_test_op"
+)
+
+
+easy_test_parafrased = update_previous_dict(
+    easy_test_parafrased, 
+    os.path.join(base_path, "jax_build_line/instructions/test/easy/paraphrases"), 
+    "jax_build_line_test_paraphrases"
+)
+
+
+medium_test_parafrased = update_previous_dict(
+    medium_test_parafrased, 
+    os.path.join(base_path, "jax_build_line/instructions/test/medium/paraphrases"), 
+    "jax_build_line_test_paraphrases"
 )
