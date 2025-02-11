@@ -138,8 +138,8 @@
 "Acquire, in your possession, 5 precious diamonds, then followed by arranging 1 earthly stone",
 "In your journey, seek you must, a hoard of 5 gleaming shards of the eternal earth's heart and once gained, bestow you shall, a single pebble unto its rightful place",
 "In your hands, five shards of the starry cosmos gather and in turn, a stone, one and simple, is to be set into the silent cradle of the earth"],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 5, 1),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.STONE, 5, 1)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 5, 1),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.STONE, 5, 1)"
     }
 }
 
@@ -212,8 +212,8 @@
     "INSTRUCTION": {
         "instruction": "Collect 2 Diamonds and place 3 Plants",
         "instruction_paraphrases":["Amass 2 gems and position 3 flora", "By gathering a pair of diamonds then carefully situating three plants", "Acquire a pair of precious stones and carefully locate three green lives in a complex setup", "Procure thou, two jewels of inimitable shimmer and anchor three seedlings deeply rooted in loamy soil, I beseech thee", "Within the world's immense silence, gather two stars fallen to earth and nestle three breaths of green close to your heart."],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 2, 3),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 2, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 2, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 2, 3)"
     }
 }
 
@@ -257,8 +257,8 @@
 "Secure five precious stones and institute the growth of trio of young flora using a more complex linguistic structure.",
 "In your task lies the charge of assembling quintet of stars stolen from heaven's expanse, and bestow life to triple progeny of the ancient forest in a manner as engaging as a tale spun by J.R.R. Tolkien.", 
 "Ponder upon the quest of amassing five glints of hard brilliance, and the quiet nurturing of three newborn whispers of the forest in the manner of Ursula K. Le Guin."],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 5, 3),
-        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.DIAMOND, BlockType.PLANT, 5, 3)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 5, 3),
+        "str_check_lambda": "conditional_placing(game_data, InventoryItems.DIAMOND, BlockType.PLANT, 5, 3)"
     }
 }
 
