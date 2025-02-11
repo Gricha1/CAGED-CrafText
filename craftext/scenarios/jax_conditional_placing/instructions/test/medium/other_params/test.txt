@@ -263,8 +263,8 @@
             "Amass a duet of COAL and situate two spellbinding frost tables within the gaming arena.",
             "Procure two units of COAL and establish two pieces of mystic ice platforms on the playing field."
         ],
-         'check_lambda': lambda game_data, ix: conditional_placing(game_data, InventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2),
-        "str_check_lambda": "conditional_placing(game_data, InventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2)"
+         'check_lambda': lambda game_data, ix: conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2),
+        "str_check_lambda": "conditional_placing(game_data, MediumInventoryItems.COAL, BlockType.ENCHANTMENT_TABLE_ICE, 2, 2)"
     }
 }
 ----
