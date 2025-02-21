@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Количество целей (по умолчанию 2, можно изменить при запуске)
-COUNT_GOALS=${1:-2}
+COUNT_GOALS=20
 
 echo "Using COUNT_GOALS=$COUNT_GOALS"
 
@@ -31,11 +31,14 @@ generate_and_validate() {
 # generate_and_validate "building_line" "MEDIUM" "instructions/instructions_line_medium.txt"
 # generate_and_validate "building_line" "EASY" "instructions/instructions_line_easy.txt"
 
+generate_and_validate "building_star" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/easy/test.txt"
+generate_and_validate "building_star" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/medium/test.txt"
+
 # generate_and_validate "building_square" "MEDIUM" "instructions/instructions_square_medium.txt"
 # generate_and_validate "building_square" "EASY" "instructions/instructions_square_easy.txt"
 
-generate_and_validate "localization_placing" "MEDIUM" "instructions/instructions_localization_medium.txt"
-generate_and_validate "localization_placing" "EASY" "instructions/instructions_localization_easy.txt"
+# generate_and_validate "localization_placing" "MEDIUM" "instructions/instructions_localization_medium.txt"
+# generate_and_validate "localization_placing" "EASY" "instructions/instructions_localization_easy.txt"
 
 # generate_and_validate "conditonal_placing" "MEDIUM" "instructions/instructions_conditonal_placing_medium.txt"
 # generate_and_validate "conditonal_placing" "EASY" "instructions/instructions_conditonal_placing_easy.txt"

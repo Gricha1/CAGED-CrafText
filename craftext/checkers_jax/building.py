@@ -12,6 +12,8 @@ from craftext.checkers_jax.squeres import (
 )
 from craftext.checkers.base_functions.state_adapter import GameData
 from typing import Tuple 
+from craftext.scenarios.constants import BlockType
+
 
 
 # Blocks list as an example
@@ -25,6 +27,7 @@ blocks_list = [
     "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
     "GRAVE3", "NECROMANCER_VULNERABLE"
 ]
+
 
 def check_cross(center: Tuple[int, int], game_map: jax.Array, stone_index: int) -> jax.Array:
     """
@@ -67,8 +70,8 @@ def scan_function(carry: Building, x: int) -> Tuple[Building, jax.Array]:
     is_cross = check_cross((i, j), game_map, stone_index)
     return carry, is_cross
 
-def is_cross_formed(game_data: GameData, block_name: str, radius: int = 5) -> jax.Array:
-    stone_index = blocks_list.index(block_name)
+def is_cross_formed(game_data: GameData, block_name: BlockType, radius: int = 5) -> jax.Array:
+    stone_index = blocks_list.index(block_name.name)
     
     game_data_states = game_data.states
     game_data_states_map = game_data_states[0].map
@@ -113,7 +116,7 @@ def scan_square_function(carry, x):
     return carry, is_square
 
 
-def is_square_formed(game_data: GameData,  ix:int, block_name: str, size: int = 2, radius: int = 5) -> jax.Array:
+def is_square_formed(game_data: GameData,  ix:int, block_name: BlockType, size: int = 2, radius: int = 5) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
@@ -199,7 +202,7 @@ def scan_line_function(carry, x):
 
 
 
-def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diagonal:bool = False) -> jax.Array:
+def is_line_formed(game_data, ix:int, block_name: BlockType, size: int = 2, check_diagonal:bool = False) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
@@ -241,3 +244,6 @@ def is_line_formed(game_data, ix:int, block_name: int, size: int = 2, check_diag
     #print(squares)
     # Проверяем, найден ли хотя бы один квадрат
     return jnp.any(squares)
+
+
+def is_star_formed(game_data)

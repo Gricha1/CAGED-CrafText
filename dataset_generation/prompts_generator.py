@@ -6,11 +6,12 @@ def generate_prompt(template, **kwargs):
 def load_resources(instructions_class):
     """Loads resources based on the instruction class."""
     resource_paths = {
-        "achivments": "prompts/achivments",
-        "building_line": "prompts/building_line",
-        "building_square": "prompts/building_square",
-        "conditonal_placing": "prompts/conditonal_placing",
-        "localization_placing":"prompts/localization_placing"
+        "achivments"            : "prompts/achivments",
+        "building_line"         : "prompts/building_line",
+        "building_star"         : "prompts/building_star",
+        "building_square"       : "prompts/building_square",
+        "conditonal_placing"    : "prompts/conditonal_placing",
+        "localization_placing"  : "prompts/localization_placing"
     }
     
     if instructions_class not in resource_paths:
@@ -19,7 +20,7 @@ def load_resources(instructions_class):
     base_path = resource_paths[instructions_class]
     
     module = __import__(
-        f"dataset_generation.prompts.{instructions_class}.goal_generator",
+        f"prompts.{instructions_class}.goal_generator",
         fromlist=['generate_example_goals']
     )
     
