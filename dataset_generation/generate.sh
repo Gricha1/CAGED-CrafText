@@ -31,8 +31,18 @@ generate_and_validate() {
 # generate_and_validate "building_line" "MEDIUM" "instructions/instructions_line_medium.txt"
 # generate_and_validate "building_line" "EASY" "instructions/instructions_line_easy.txt"
 
-generate_and_validate "building_star" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/easy/test.txt"
-generate_and_validate "building_star" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/medium/test.txt"
+#generate_and_validate "building_star" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/easy/test.txt"
+#generate_and_validate "building_star" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/medium/test.txt"
+
+generate_and_validate "night_base" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/easy/test.txt"
+generate_and_validate "night_base" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/medium/test.txt"
+
+generate_and_validate "night_did_not_fight" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/easy/test.txt"
+generate_and_validate "night_did_not_fight" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/medium/test.txt"
+
+generate_and_validate "night_at_shelter" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/easy/test.txt"
+generate_and_validate "night_at_shelter" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/medium/test.txt"
+
 
 # generate_and_validate "building_square" "MEDIUM" "instructions/instructions_square_medium.txt"
 # generate_and_validate "building_square" "EASY" "instructions/instructions_square_easy.txt"
