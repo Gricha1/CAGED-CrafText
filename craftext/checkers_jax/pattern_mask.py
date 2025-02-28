@@ -4,18 +4,6 @@ import jax
 from flax.struct import dataclass
 from enum import Enum
 
-
-blocks_list = [
-    "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
-    "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
-    "FURNACE", "SAND", "LAVA", "PLANT", "RIPE_PLANT", "WALL", 
-    "DARKNESS", "WALL_MOSS", "STALAGMITE", "SAPPHIRE", "RUBY", 
-    "CHEST", "FOUNTAIN", "FIRE_GRASS", "ICE_GRASS", "GRAVEL", 
-    "FIRE_TREE", "ICE_SHRUB", "ENCHANTMENT_TABLE_FIRE", 
-    "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
-    "GRAVE3", "NECROMANCER_VULNERABLE"
-]
-
 class PatternType:
     CROSS = jnp.array([
         [0, 1, 0],
@@ -63,7 +51,7 @@ def scale_pattern(pattern: jax.Array, size: int) -> jax.Array:
     
     return scaled_pattern
 
-def get_pattern(pattern_type: jax.Array, size: int) -> jax.Array:
+def get_pattern(pattern_type: PatternType, size: int) -> jax.Array:
     """
     Получает масштабированный шаблон.
     """
@@ -74,17 +62,16 @@ def check_pattern(region: jax.Array, stone_index: int, pattern: jax.Array) -> ja
     Проверяет, соответствует ли подрегион переданному шаблону.
     """
     pattern_size = pattern.shape[0]
-    region_size = region.shape[0]
-
     sub_region = lax.dynamic_slice(region, (0, 0), (pattern_size, pattern_size))
 
-    # Индексы элементов, где pattern == 1
+    # Получаем индексы, где pattern == 1
     mask_indices = jnp.where(pattern == 1)
     
-    # Получаем только те элементы sub_region, которые соответствуют маске
-    selected_elements = sub_region[mask_indices]
+    # Используем jnp.take_along_axis для извлечения соответствующих значений
+    selected_elements = jnp.take_along_axis(sub_region, mask_indices, axis=None)
 
     return jnp.all(selected_elements == stone_index)
+
 
 @dataclass
 class Carry:
@@ -107,11 +94,11 @@ def scan_pattern_function(carry: Carry, x):
     
     return carry, result
 
-def is_pattern_formed(game_data, block_name, pattern_type: jax.Array, size=3, radius=5):
+def is_pattern_formed(game_data, block_name, pattern_type: PatternType, size=3, radius=5):
     """
     Проверяет, сформирован ли заданный шаблон в окрестности игрока.
     """
-    stone_index = blocks_list.index(block_name)
+    stone_index = block_name
     
     if game_data is None or game_data.states is None:
         return False
