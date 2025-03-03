@@ -3,6 +3,7 @@ import jax.lax as lax
 import jax
 from flax.struct import dataclass
 from enum import Enum
+
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
     "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
@@ -48,11 +49,12 @@ def transform_pattern(pattern: jax.Array, stone_index, size: int) -> jax.Array:
     #only pattern 
     return pattern * stone_index
 
+
 def get_pattern(pattern_type: jax.Array, stone_index, size: int) -> jax.Array:
     return transform_pattern(pattern_type, stone_index, size)
 
-def check_pattern(sub_region: jax.Array, pattern: jax.Array) -> jax.Array:
 
+def check_pattern(sub_region: jax.Array, pattern: jax.Array) -> jax.Array:
     mask_indices = pattern > 0
     return (mask_indices == sub_region).all()
 
