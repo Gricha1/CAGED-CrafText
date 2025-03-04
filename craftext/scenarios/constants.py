@@ -5,6 +5,13 @@ import os
 base_path = os.getenv("CRAFTEXT_SCENARIO_PATH", "../craftext/scenarios/")
 plans_path = os.path.join(base_path, "extra_files", "easy_gpt4_action_plans.json")
 
+class AchievementState(Enum):
+    NOT_MATTER = 0
+    NEED_TO_ACHIEVE = 1
+    AVOID_TO_ACHIEVE = - 1
+    
+class Scenarios(Enum):
+    CONDITIONAL_ACIEVEMENTS = 0
 class MediumInventoryItems(Enum):
     WOOD = 0
     STONE = 1

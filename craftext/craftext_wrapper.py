@@ -7,11 +7,14 @@ import jax.numpy as jnp
 from flax import linen as nn, struct
 from gym import Wrapper
 
+from jax import tree_map
+
 from craftext.craftext_encoder import EncodeForm, DistilBertEncode
 from craftext.craftext_scenarious import CrafTextScenarios
+from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-
+from craftext.checkers_jax.achivments import conditional_achivments
 
 @struct.dataclass
 class TextEnvState:
@@ -23,9 +26,41 @@ class TextEnvState:
     total_success_rate: float
     environment_key: int
     rng: int
+    
+from typing import List, TypeVar, Type
+
+T = TypeVar("T")
+
+
+import jax.numpy as jnp
+from typing import List, TypeVar, Type
+
+T = TypeVar("T")
+
+def list_to_array(lst: List[T]) -> T:
+    """Convert a list of dataclass instances to a batched version with jnp.arrays."""
+    if not lst:
+        raise ValueError("Input list is empty.")
+
+    cls: Type[T] = type(lst[0])  # Определяем класс элементов списка
+    converted_data = {}
+
+    for k, field in cls.__dataclass_fields__.items():
+        values = [getattr(v, k) for v in lst]
+
+        # Если поле уже является jnp.ndarray, то стекуем его вдоль первой оси
+        if isinstance(values[0], jnp.ndarray):
+            converted_data[k] = jnp.stack(values, axis=0)  # Собираем массив массивов
+        elif isinstance(values[0], (int, float, bool)):  
+            converted_data[k] = jnp.array(values)  # Просто массив скаляров
+        else:
+            converted_data[k] = list_to_array(values)  # Рекурсивный вызов для вложенных датаклассов
+
+    return cls(**converted_data)
+
 
 class InstructionWrapper(Wrapper):
-    def __init__(self, env, config_name=None, scenario_handler_class=CrafTextScenarios,
+    def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambda,
                   encode_model_class=DistilBertEncode, encode_form=EncodeForm.EMBEDDING):
         """
         Initializes the InstructionWrapper with the environment, creating EncodeModel and CrafTextScenarios.
@@ -44,6 +79,7 @@ class InstructionWrapper(Wrapper):
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
+        self.scenario_arguments =list_to_array(self.scenario_handler.scenario_data_jax.arguments)
         self.env = env
         self.steps = 0
 
@@ -56,7 +92,9 @@ class InstructionWrapper(Wrapper):
         self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
         print(self.scenario_handler.scenario_data.instructions_list)
         print(len(self.scenario_handler.scenario_data.instructions_list))
-       # exit()
+        
+        #print(self.scenario_handler.scenario_data_jax.arguments)
+        #exit()
     
     def reset(self, _rng, env_params, instruction_idx=-1):
         """
@@ -89,31 +127,21 @@ class InstructionWrapper(Wrapper):
         """
         Takes a step in the environment, checking if the instruction is done, updating success rate and rewards.
         """
-        ### need to remove or rewrite
-       # vector_rng = jnp.full_like(_rng, 42)
-       # key = jax.random.PRNGKey(0)
-
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
-        
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
-        instruction_done = jax.lax.switch(env_state.idx, self.scenario_handler.scenario_data.checkers_list, game_data_vector, self.environment_key)
+        
+        # Run all function over all game_data_vector (now only conditional_achivments) 
+        conditional_achivments_vmap = jax.vmap(conditional_achivments, in_axes=(None, 0))
+        results = conditional_achivments_vmap(game_data_vector, self.scenario_arguments)
+        # Choose result releted instructions in current env
+        instruction_done = results[env_state.idx]
 
-        # Normalize reward and increment if instruction is done
         reward /= 50
         reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instruction_done | done
-       # done_mask = jnp.array(done, dtype=jnp.bool_)
-        # Update success rate and total success rate
-       
+   
         new_episode_sr = env_state.success_rate + jnp.float32(instruction_done)
-        # Split the RNG only if done is True
-       # __rng, new_rng = jax.random.split(env_state.rng)
-      #  new_rng = jnp.where(done_mask, new_rng, env_state.rng)  # Keep the current RNG if done is False
-
-        # Generate idx only if done is True
-       # idx = jax.random.randint(new_rng, shape=(), minval=0, maxval=len(self.scenario_handler.scenario_data_jax.embeddings_list))
-       # idx = jnp.where(done_mask, idx, env_state.idx)  # Keep the current idx if done is False
 
         # Update state with the new success rates
         state = TextEnvState(
@@ -131,3 +159,4 @@ class InstructionWrapper(Wrapper):
         info.update({"SR": state.total_success_rate, "steps": self.steps})
         self.steps += 1
         return obs, state, reward, done, info
+ 
