@@ -67,7 +67,7 @@ def scan_function(carry: Building, x: int) -> Tuple[Building, jax.Array]:
     """
     game_map, stone_index, region_size = carry
     i, j = x // region_size, x % region_size
-    is_cross = check_cross((i, j), game_map, stone_index)
+    is_cross = check_cross((i, j), game_map, stone_index) 
     return carry, is_cross
 
 def is_cross_formed(game_data: GameData, block_name: BlockType, radius: int = 5) -> jax.Array:

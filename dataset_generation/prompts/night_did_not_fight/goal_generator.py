@@ -13,10 +13,10 @@ def generate_example_goals(num_goals: int, difficulty="EASY") -> Tuple[list[str]
     """
     times_of_day = ['night', 'day'] 
 
-    mobs = ['cow', 'skeleton', 'zombie', 'creeper', 'spider', 'enderman']
+    mobs = ['cow', 'skeleton', 'zombie']
 
 
-    combinations = set()
+    combinations : set[str] = set()
     make_synonims_to = []
 
 

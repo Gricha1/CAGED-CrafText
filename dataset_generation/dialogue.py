@@ -33,10 +33,10 @@ def main(count_goals, instructions_class, difficulty, output_file, client):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Generate Instructions from Prompts')
-    parser.add_argument('--count_goals', type=int, required=True, help='Number of goals to generate instructions for')
+    parser.add_argument('--count_goals',        type=int, required=True, help='Number of goals to generate instructions for')
     parser.add_argument('--instructions_class', type=str, required=True, help='Class of instructions to generate: achivments|building_line|building_squere|conditonal_placing|localization_placing')
-    parser.add_argument('--output_file', type=str, required=True, help='Output file to save instructions')
-    parser.add_argument('--difficulty', type=str, default="EASY", help='EASY/MEDIUM/HARD')
+    parser.add_argument('--output_file',        type=str, required=True, help='Output file to save instructions')
+    parser.add_argument('--difficulty',         type=str, default="EASY", help='EASY/MEDIUM/HARD')
 
 
     args = parser.parse_args()

@@ -39,8 +39,8 @@ def generate_parafrases(path_for_parafrasing):
     for i, id in enumerate(instructions_dict):
         
         
-        first=chunks[i].index("[")
-        second=chunks[i].index("]")
+        first = chunks[i].index("[")
+        second = chunks[i].index("]")
         chunks[i] = chunks[i].replace(chunks[i][first-1: second+1], instructions_parafrases[i])
         
         

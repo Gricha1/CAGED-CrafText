@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Количество целей (по умолчанию 2, можно изменить при запуске)
-COUNT_GOALS=20
+COUNT_GOALS=10
 
 echo "Using COUNT_GOALS=$COUNT_GOALS"
 
@@ -12,13 +12,13 @@ generate_and_validate() {
     local output_file=$3
 
     echo "Generating instructions for $class with difficulty $difficulty..."
-    python dialogue.py --count_goals "$COUNT_GOALS" \
+    python3 dialogue.py --count_goals "$COUNT_GOALS" \
                        --instructions_class "$class" \
                        --output_file "$output_file" \
                        --difficulty "$difficulty"
 
     echo "Validating generated instructions: $output_file..."
-    python validator.py "$output_file"
+    python3 validator.py "$output_file"
 
     if [ $? -eq 0 ]; then
         echo "Validation passed for $output_file!"
@@ -34,15 +34,36 @@ generate_and_validate() {
 #generate_and_validate "building_star" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/easy/test.txt"
 #generate_and_validate "building_star" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_build_star/instructions/train/medium/test.txt"
 
-generate_and_validate "night_base" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/easy/test.txt"
-generate_and_validate "night_base" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/medium/test.txt"
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
 
-generate_and_validate "night_did_not_fight" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/easy/test.txt"
-generate_and_validate "night_did_not_fight" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/medium/test.txt"
+# generate_and_validate "time_base"           "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/easy/train.txt"
+# generate_and_validate "time_base"           "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/train/medium/train.txt"
 
-generate_and_validate "night_at_shelter" "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/easy/test.txt"
-generate_and_validate "night_at_shelter" "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/medium/test.txt"
+# generate_and_validate "time_did_not_fight"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/easy/train.txt"
+# generate_and_validate "time_did_not_fight"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/train/medium/train.txt"
 
+# generate_and_validate "time_at_shelter"     "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/easy/train.txt"
+# generate_and_validate "time_at_shelter"     "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/train/medium/train.txt"
+
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+
+# generate_and_validate "time_base"           "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/test/easy/train.txt"
+# generate_and_validate "time_base"           "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_base/instructions/test/medium/train.txt"
+
+# generate_and_validate "time_did_not_fight"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/test/easy/train.txt"
+# generate_and_validate "time_did_not_fight"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_did_not_fight/instructions/test/medium/train.txt"
+
+# generate_and_validate "time_at_shelter"     "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/test/easy/train.txt"
+# generate_and_validate "time_at_shelter"     "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_night_at_shelter/instructions/test/medium/train.txt"
+
+# # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
+
+generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/easy/train.txt"
+generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/medium/train.txt"
+
+
+generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/easy/train.txt"
+generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/medium/train.txt"
 
 # generate_and_validate "building_square" "MEDIUM" "instructions/instructions_square_medium.txt"
 # generate_and_validate "building_square" "EASY" "instructions/instructions_square_easy.txt"

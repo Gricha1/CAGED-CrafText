@@ -11,7 +11,11 @@ def load_resources(instructions_class):
         "building_star"         : "prompts/building_star",
         "building_square"       : "prompts/building_square",
         "conditonal_placing"    : "prompts/conditonal_placing",
-        "localization_placing"  : "prompts/localization_placing"
+        "localization_placing"  : "prompts/localization_placing",
+        "night_at_shelter"      : "prompts/night_at_shelter",
+        "night_did_not_fight"   : "prompts/night_did_not_fight",
+        "night_base"            : "prompts/night_base",
+        "time_placement"        : "promnts/time_placement",
     }
     
     if instructions_class not in resource_paths:
