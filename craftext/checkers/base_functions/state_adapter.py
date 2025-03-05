@@ -105,7 +105,7 @@ class PlayerState:
             # sword_enchantment=state.sword_enchantment,
             # bow_enchantment=state.bow_enchantment,
             # boss_progress=state.boss_progress,
-            # light_level=state.light_level,
+            light_level=state.light_level,
             # state_rng=state.state_rng,
             # timestep=state.timestep,
         )
