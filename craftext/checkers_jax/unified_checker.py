@@ -1,11 +1,13 @@
+from typing import Tuple, Literal
+
 import jax.numpy as jnp
 import jax.lax as lax
 import jax
-from flax.struct import dataclass
-from enum import Enum
-from typing import Tuple, Literal
-from craftext.scenarios.constants import BlockType
 
+from flax.struct import dataclass
+
+from craftext.scenarios.constants import BlockType
+from craftext.checkers.base_functions.state_adapter import GameData
 
 def transform_pattern(pattern: jax.Array, block_index: int, size: int) -> jax.Array:
     #TODO:
@@ -38,7 +40,7 @@ def scan_pattern_function(carry: Carry, x: jax.Array) -> Tuple[Carry, jax.Array]
      
     return carry, check_pattern(sub_region, carry.pattern)
 
-def is_pattern_formed(game_data, block_type: BlockType, pattern_type: jax.Array, size: int, radius: int) -> (jax.Array | Literal[False]):
+def is_pattern_formed(game_data: GameData, block_type: BlockType, pattern_type: jax.Array, size: int, radius: int) -> (jax.Array | Literal[False]):
 
     block_index = block_type.value
 
