@@ -246,4 +246,4 @@ def is_line_formed(game_data, ix:int, block_name: BlockType, size: int = 2, chec
     return jnp.any(squares)
 
 
-def is_star_formed(game_data)
+# def is_star_formed(game_data)

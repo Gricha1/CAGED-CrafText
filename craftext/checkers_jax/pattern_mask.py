@@ -70,12 +70,13 @@ def scan_pattern_function(carry: Carry, x: int):
     position = x // carry.region_size, x % carry.region_size
 
     sub_region = lax.dynamic_slice(carry.region, position, carry.pattern.shape)
+    
     if sub_region.shape[0] < carry.pattern.shape[0] or sub_region.shape[1] < carry.pattern.shape[1]:
         return carry, jnp.array(False)
      
     return carry, check_pattern(sub_region, carry.pattern)
 
-def is_pattern_formed(game_data, block_name: str, pattern_type: PatternType, size=3, radius=5):
+def is_pattern_formed(game_data, block_name: str, pattern_type: jax.Array, size=3, radius=5):
 
     stone_index = blocks_list.index(block_name)
 

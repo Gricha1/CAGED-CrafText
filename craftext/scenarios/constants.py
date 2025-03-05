@@ -12,6 +12,7 @@ class AchievementState(Enum):
     
 class Scenarios(Enum):
     CONDITIONAL_ACIEVEMENTS = 0
+    
 class MediumInventoryItems(Enum):
     WOOD = 0
     STONE = 1
