@@ -148,9 +148,9 @@ class DistilBertEncode:
         return self.tokenizer(instruction, max_length=30, truncation=True, padding="max_length", return_tensors='np')['input_ids']
 
 # Фабрика, возвращающая класс с определённым model_name
-def make_encoder(n_splits):
+def make_encoder(n_splits, form_to_use=EncodeForm.EMBED_CONCAT_ALL):
     class CustomBertEncodeModel(DistilBertEncode):
-        def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL):
+        def __init__(self, form_to_use=form_to_use):
             super().__init__(form_to_use=form_to_use, n_splits=n_splits)
     
     return CustomBertEncodeModel
