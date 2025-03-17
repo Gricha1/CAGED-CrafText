@@ -111,7 +111,7 @@ class DistilBertEncode:
             # 1. Разделяем инструкцию на N частей
             if instruction is None:
                 instruction = 'None'
-            words = instruction.split()
+            words = instruction.split("\n")
             split_size = max(1, len(words) // n_splits)
             splits = [' '.join(words[i:i + split_size]) for i in range(0, len(words), split_size)]
 
