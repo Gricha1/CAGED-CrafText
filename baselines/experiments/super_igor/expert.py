@@ -15,7 +15,7 @@ template = """Does the given TEXT provide a sequence?
 Do not select 'Yes' if TEXT do not starts from word "Here".
 Answer 'Yes' or 'No'. Your answer: {}"""
 
-# Примеры few-shot
+
 few_shot_examples = [
     ("Here's a revised plan: ?\\n\\nFinish!", "No"),
     ("Here's a revised plan following the provided format:1. Gather resources 2. Build a foundation 3. Construct walls 4.Finish!", "No"),
@@ -24,7 +24,7 @@ few_shot_examples = [
     ("1. Gather resources 2. Build a foundation 3. Construct walls 4.Finish!", "Yes")
 ]
 
-# Генерируем few-shot контекст
+
 few_shot = "\n\n".join(template.format(text, answer) for text, answer in few_shot_examples)
 
 def correctness_plan_prompt(plan):
