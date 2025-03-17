@@ -2,6 +2,9 @@ import json
 import numpy as np
 from datasets import Dataset
 from baselines.experiments.super_igor.prompts import promt_instruction
+from scipy.signal import find_peaks
+from sklearn.neighbors import KernelDensity
+
 import warnings
 
 class Instruction:
@@ -13,8 +16,10 @@ class Instruction:
         :param plan_options: A list of strings, each representing a potential plan to achieve the instruction.
         :param rewards: A list of rewards corresponding to each plan option.
         """
-        self.PLANS_STORE_SIZE = 15
+        self.PLANS_STORE_SIZE = 50
         self.NOT_MEAURED = -1
+        self.bad_list = ["Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans",
+                         ]
         self.instruction = instruction
         self.plan_options = plan_options
         self.rewards = rewards if rewards is not None else [self.NOT_MEAURED for _ in range(len(plan_options))]
@@ -25,7 +30,7 @@ class Instruction:
 
         self.mean_reward = 0
         self.update_mean_reward()
-        self.sort_plans_by_reward()
+       # self.sort_plans_by_reward()
     
     def __str__(self):
         """Return a formatted string representation of the instruction."""
@@ -34,6 +39,33 @@ class Instruction:
             reward_str = f"{reward}" if reward != self.NOT_MEAURED else "Not Measured"
             result.append(f"  ----- Plan_{i + 1}: {plan} | Reward: {reward_str}")
         return "\n".join(result)
+    
+    def clear_scores(self):
+        self.rewards = [-1 for _ in range(len(self.rewards))]
+    
+    
+    def kde_treshold(self):
+        rewards = np.array(self.rewards)
+        
+        good_idx = [idx for idx in range(len(self.plan_options)) if self.plan_options[idx] not in self.bad_list]
+        rewards = rewards[good_idx]
+        mask = ~np.isnan(rewards)
+        rewards = rewards[mask]
+        data_reshaped = np.array(rewards).reshape(-1, 1)
+        # Построим KDE (ядровая оценка плотности)
+        kde = KernelDensity(kernel='gaussian', bandwidth=0.05).fit(data_reshaped)
+        x_vals = np.linspace(min(rewards), max(rewards), 500).reshape(-1, 1)
+        log_density = kde.score_samples(x_vals)
+
+        # Находим пики (локальные максимумы) и минимумы
+        peaks, _ = find_peaks(log_density)
+        minima, _ = find_peaks(-log_density)
+        
+        boundaries = x_vals[peaks].flatten()
+        if len(boundaries) == 0:
+            boundaries = [1,1.1]
+
+        return np.max(boundaries)
     
     def update_mean_reward(self):
         np_rewards = np.array(self.rewards)
@@ -69,25 +101,44 @@ class Instruction:
 
 
     def update(self, plan_options, rewards):
-        print(rewards)
+       # print(rewards)
+        updated = False
         for i, plan_option in enumerate(plan_options):
+            
+           # Fetermine what reward to use
             if rewards is None:
+                 # if ther no reward and no options yet
                 reward_to_add = self.NOT_MEAURED
                 warnings.warn("For some reason, the added plan during the 'update()' \
                               operation was not validated. It was added to the dataset \
                               with a value of -1", UserWarning)
             else:
                 reward_to_add = rewards[i]
+
+            # CASE - 1: WE ALREADY HAVE PLAN 
             if plan_option in self.plan_options:
-                index = self.plan_options.index(plan_option)
-                old_reward = self.rewards[index]
-                new_reward = reward_to_add
-                self.rewards[index] = self._update_reward(old_reward, new_reward)
+                # Look for all same plans
+                indices = [i for i, option in enumerate(self.plan_options) if option == plan_option]
+
+                 # CASE - 1.1: WE ALREADY HAVE PLAN BUT IT IS NOT MEASURED
+                for i in indices:
+                    if self.rewards[i]==self.NOT_MEAURED:
+                        new_reward = reward_to_add
+                        self.rewards[i] = new_reward 
+                        updated = True
+                        break
+                    
+                # IF ALL SAME PLANS ALREADY MESURED THIS INSTRUCTION WILL SKIPED
+            
+             # CASE - 2: WE HAVENT THIS PLAN YET
             else:
                 self.plan_options.append(plan_option)
                 self.rewards.append(reward_to_add)
+                updated = True
+                
         self.update_mean_reward()
-        self.sort_plans_by_reward()
+        return updated
+
  
     
     def _update_reward(self, old_reward, new_reward):
@@ -121,7 +172,30 @@ class SuperDataset:
     def __init__(self):
         self.NOT_MEAURED = -1
         self.instructions = dict()  # List of Instruction objects
+        self.PLANS_STORE_SIZE = 50
+        self.bad_list = ["Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans",
+                         ]
         self.mapping_plan_to_instruction = dict()
+        
+    def rebuild_mapping(self):
+        instructions = self.instructions
+        mapping_plan_to_instruction = {}
+        for instruction in instructions:
+            for plan in instructions[instruction].plan_options:
+                if plan not in mapping_plan_to_instruction:           
+                    mapping_plan_to_instruction[plan] = [instruction]
+                else:
+                    mapping_plan_to_instruction[plan].append(instruction)
+        self.mapping_plan_to_instruction = mapping_plan_to_instruction
+    
+    def is_plan_correct_rule(self, plan):
+        steps = plan.split("\n")
+        if len(steps)<2:
+            return 0
+        for step in steps:
+            if step in self.bad_list:
+                return 0
+        return 1
 
     def add_instruction(self, instruction, plans, rewards = None):
         if instruction in self.instructions:
@@ -133,9 +207,29 @@ class SuperDataset:
         for plan in plans:
             self.mapping_plan_to_instruction[plan] = instruction
     
+    def clear_scores(self):
+        for instruction in self.instructions:
+             self.instructions[instruction].clear_scores()
+             
     def update(self, plan, reward):
-        instruction = self.mapping_plan_to_instruction[plan]
-        self.instructions[instruction].update([plan], [reward])
+        if plan == "?\n\nFinish!":
+            print(self.mapping_plan_to_instruction[plan])
+        if plan not in list(self.mapping_plan_to_instruction.keys()):
+            return
+        instructions = self.mapping_plan_to_instruction[plan]
+        for instruction in instructions:
+            updated = self.instructions[instruction].update([plan], [reward])
+            if plan == "?\n\nFinish!":
+                print("- - - - - - - - - - - -")
+                print()
+                print(reward)
+                print()
+                print("- - - - - - - - - - - -")
+            if updated:
+                if plan == "?\n\nFinish!":
+                    print("Update for :") 
+                    print(instruction)
+                break
    
     def super_print(self):
         for instruction in self.instructions:
@@ -164,6 +258,9 @@ class SuperDataset:
        # print(dataset.instructions)
         #exit()
         dataset.mapping_plan_to_instruction = data["mapping_plan_to_instruction"]
+        dataset.remove_unecessary_keys()
+       # print(dataset.mapping_plan_to_instruction)
+       # exit()
         return dataset
     
     def get_rewards(self, return_full=False):
@@ -226,10 +323,30 @@ class SuperDataset:
             else:
                 top_5_plans = combined_plans[:self.PLANS_STORE_SIZE]
                 top_5_rewards = [None] * len(top_5_plans)
-            self.add_instruction(instruction, list(top_5_plans), list(top_5_rewards))
+            self.instructions[instruction] = Instruction(instruction=instruction, 
+                                                         plan_options=list(top_5_plans),
+                                                         rewards=list(top_5_rewards))
+            #self.add_instruction(instruction, list(top_5_plans), list(top_5_rewards))
 
-
-    def llm_dataset(self, eos_token=None):
+    def remove_unecessary_keys(self):
+        current_keys = self.instructions.keys()
+       # print(current_keys)
+        plans = self.mapping_plan_to_instruction.keys()
+       # print(plans)
+        new_mapping = dict()
+        for plan in plans:
+            instruction_lst = self.mapping_plan_to_instruction[plan]
+            #print(instruction)
+            for instruction in instruction_lst:
+                if instruction in list(current_keys):
+                # print("YYY")
+                    if plan not in new_mapping:
+                        new_mapping[plan] = []
+                    new_mapping[plan].append(instruction)
+        self.mapping_plan_to_instruction = new_mapping
+        
+        
+    def llm_dataset(self, eos_token=None, use_kde=True, return_poor_plans=False):
         prompts = []
         answers = []
         treshold =  self._treshold()
@@ -238,15 +355,18 @@ class SuperDataset:
         bad_example_answer = []
         for instruction in self.instructions.keys():
             instruction_obj = self.instructions[instruction]
+            if use_kde:
+                treshold = instruction_obj.kde_treshold()
             for i in range(len(instruction_obj.rewards)):
                 reward = instruction_obj.rewards[i]
-                if reward >= treshold and reward is not np.nan:
-                    prompts.append(promt_instruction(instruction))
-                    answers.append(instruction_obj.plan_options[i])
+                if self.is_plan_correct_rule(instruction_obj.plan_options[i]):
+                    if reward >= treshold and reward is not np.nan:
+                        prompts.append(promt_instruction(instruction))
+                        answers.append(instruction_obj.plan_options[i])
 
-                else:
-                    bad_examples_prompts.append(promt_instruction(instruction))
-                    bad_example_answer.append(instruction_obj.plan_options[i])
+                    else:
+                        bad_examples_prompts.append(promt_instruction(instruction))
+                        bad_example_answer.append(instruction_obj.plan_options[i])
             
         text = SuperDataset.formatting(prompts, answers, eos_token)
         bad_text =  SuperDataset.formatting(bad_examples_prompts, bad_example_answer, eos_token)
@@ -258,6 +378,9 @@ class SuperDataset:
             }
         full_dataset = Dataset.from_dict(data_dict)
         full_bad_dataset =  Dataset.from_dict(bad_data_dict)
+        
+        if return_poor_plans:
+            return full_dataset, data_dict, bad_data_dict, answers
     
         return full_dataset, data_dict, bad_data_dict
         
