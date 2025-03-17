@@ -16,7 +16,7 @@ Craftax is a virtual environment designed for exploration, crafting, and task co
 The agent can move, collect resources, craft items, place objects, and interact with its surroundings. 
 Tasks often require gathering resources and crafting items before placing or utilizing them.
 
-Task: Create a step-by-step action plan (minimum 2, maximum 5 steps) for the agent in Craftax to achieve the instruction.
+Task: Create a step-by-step action plan (minimum 2, maximum 3 steps) for the agent in Craftax to achieve the instruction.
 
 Response Format:  
 - Provide the plan as a numbered list.  
@@ -36,9 +36,8 @@ Plan:
 For Instruction: $INSTRUCTION$  
 Plan:""")
 
-    # Инструкция для задачи
+
     instruction = instruction
     
-    # Генерация полного промпта
     full_prompt = prompt_template.render(INSTRUCTION=instruction)
     return full_prompt
