@@ -9,6 +9,8 @@ import pickle
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments, pipeline
 from peft import LoraConfig, get_peft_model
 from peft import PeftModel
+import random
+import string
 
 import torch
 from baselines.experiments.super_igor.super_dataset import SuperDataset
@@ -17,14 +19,33 @@ from craftext.craftext_encoder import DistilBertEncode
 from trl import SFTTrainer
 import yaml
 
-# class EncodeForm(Enum):
-#     EMBEDDING = "embedding"
-#     TOKEN = "token"
-#     GENERATION = "generation"
-#     WEIGHTED_MEAN = "weighted_mean"
-#     PROMPT_EOL = "prompt_eol"
 
+from itertools import combinations
+import random
 
+def plan_augmentations(plan):
+    steps = plan.split("\n")
+    combinations_result = []
+    for i in range(2, 6):
+        combination = combinations(steps, i)
+        combination_str = ["\n".join(combo) for combo in list(combination)]
+        combinations_result+=combination_str
+    combinations_result = list(combinations_result)
+    random.shuffle(combinations_result)
+    masked_plans = []
+    if len(combinations_result[:4])<3:
+        masked_plans = ["Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans"] * (3-len(combinations_result[:3]))
+    return combinations_result[:4]+[plan]+masked_plans
+        
+def generate_random_word(length):
+    letters = string.ascii_lowercase  # используем только строчные буквы для слов
+    return ''.join(random.choice(letters) for _ in range(length))
+
+def generate_random_sentence(num_words, word_length):
+    words = [generate_random_word(word_length) for _ in range(num_words)]
+    # Склеиваем слова в предложение
+    sentence = ' '.join(words)
+    return sentence.capitalize() + '.'
 
 class EncoderTrainer():
     def __init__(self, config):
@@ -136,40 +157,173 @@ def extract_promt_and_answers(dataset):
     return {"prompts": prompts, 'previos_plans':previos_answes}
     
 def generate_examples(dataset, model, tokenizer):
-    texts = dataset['text'][:5]
+    dataset_size = len(dataset['text'])
+    examples_inices = [random.randint(1, dataset_size) for i in range(5)]
+    texts = [dataset['text'][i] for i in examples_inices]
     prompts = ["Plan:".join(text.split('Plan:')[:2])+"Plan:" for text in texts]
     previos_answes = [text.split('Plan:')[2] for text in texts]
     plans = []
     model.eval()
     for prompt in prompts:
         plan = generate(prompt, model, tokenizer)
+        plan = plan.split('Plan:')[2] 
         plans.append(plan)
+        
     
     predictions = {'prompts':prompts, 'previos_plans': previos_answes, 'current_plans': plans}
     return predictions
 
 
+class SuperDatasetEncoder(DistilBertEncode):
+    def __init__(self, super_dataset, form_to_use=EncodeForm.EMBEDDING, num_return_sequences=5, n_splits=5, augment=False):
+        """
+        Concrete implementation for Qwen with advanced embedding extraction methods.
+        """
+        super().__init__(form_to_use=form_to_use, n_splits=n_splits)
+        self.super_dataset = super_dataset
+        self.augment = augment
+        self.DEFAULT_PLAN = "Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans"
+        self.num_return_sequences = num_return_sequences
+    
+    def encode(self, instructions, max_new_tokens=100, return_responses=False):
+        plans_per_instruction = self._extract_preinited_plans(instructions)
+        
+        if self.augment:
+            augmented_plans = []
+            for plan in plans_per_instruction:
+                 augmented_plan = plan_augmentations(plan)
+                 augmented_plans+=augmented_plan
+            plans_per_instruction = augmented_plans
+            
+        if return_responses:
+            return  [super().encode(plans_per_instruction), plans_per_instruction]
+        return super().encode(plans_per_instruction)
 
+    def _extract_preinited_plans(self, instructions):
+        current_plans = []
+        for instruction in instructions:
+            print(f"Is {instruction} in SD?")
+            print(instruction in self.super_dataset.instructions.keys())
+            print(self.super_dataset.instructions.keys())
+            if instruction in self.super_dataset.instructions.keys():
+                plans = self.super_dataset.instructions[instruction].plan_options
+                print(plans)
+            else:
+                plans = []
+              #  exit()
+            if len(plans)!=self.num_return_sequences:
+                plans += ([self.DEFAULT_PLAN]*(self.num_return_sequences - len(plans)))
+                
+                print("-----------------")
+                print(f"Expectef {self.num_return_sequences} but got {len(plans)}!")
+                print("-----------------")
+            current_plans.extend(plans)
+        print("HELLO WVERYb~ODY!")
+        return current_plans
+    
+from itertools import combinations
 
+class ShapledSuperDatasetEncoder(DistilBertEncode):
+    def __init__(self, super_dataset, form_to_use=EncodeForm.EMBEDDING, num_return_sequences=5, n_splits=5):
+        """
+        Concrete implementation for Qwen with advanced embedding extraction methods.
+        """
+        super().__init__(form_to_use=form_to_use, n_splits=n_splits)
+        self.super_dataset = super_dataset
+        self.DEFAULT_PLAN = "Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans"
+        self.num_return_sequences = num_return_sequences
+        
+    def augment_plan(self, plan, num_combinations=200):
+        """
+        Generates a specified number of plan item combinations without changing their order.
+        If there are not enough combinations, fills with the original plan.
+        If there are too many, shuffles and trims the list.
+        
+        :param plan: A string with plan items separated by '\n'.
+        :param num_combinations: The desired number of combinations.
+        :return: A list of lists, where each list is a valid combination of plan items.
+        """
+        plan_items = plan.split('\n')
+        all_combinations = []
+        
+        for r in range(1, len(plan_items) + 1):
+            all_combinations.extend(combinations(plan_items, r))
+        
+        all_combinations = [list(comb) for comb in all_combinations]
+        
+        if len(all_combinations) < num_combinations:
+            # Fill the remaining slots with the original plan
+            while len(all_combinations) < num_combinations:
+                all_combinations.append(plan_items)
+        else:
+            # Shuffle and trim
+            random.shuffle(all_combinations)
+            all_combinations = all_combinations[:num_combinations]
+        
+        all_combinations_joined = []
+        for combination in all_combinations:
+            all_combinations_joined.append("\n".join(combination))
+        return all_combinations_joined + [plan]
+        
+    
+    def encode(self, instructions, max_new_tokens=100, return_responses=False):
+        plans_per_instruction = self._extract_preinited_plans(instructions)
+        augmented_plans = []
+        
+        for plan in plans_per_instruction:
+            a_plan = self.augment_plan(plan)
+            #print(a_plan)
+            #exit()
+            augmented_plans+= a_plan
+            
+        if return_responses:
+            return  [super().encode(augmented_plans), augmented_plans]
+        return super().encode(augmented_plans)
+    
+    
+    def _extract_preinited_plans(self, instructions):
+        current_plans = []
+        for instruction in instructions:
+            print(f"Is {instruction} in SD?")
+            print(instruction in self.super_dataset.instructions.keys())
+            if instruction in self.super_dataset.instructions.keys():
+                plans = self.super_dataset.instructions[instruction].plan_options
+                print(plans)
+            else:
+                plans = []
+            if len(plans)!=self.num_return_sequences:
+                plans += ([self.DEFAULT_PLAN]*(self.num_return_sequences - len(plans)))
+                
+                print("-----------------")
+                print(f"Expectef {self.num_return_sequences} but got {len(plans)}!")
+                print("-----------------")
+            current_plans.extend(plans)
+        print("HELLO WVERYb~ODY!")
+        return current_plans
+    
 
 #"Qwen/Qwen2.5-3B-Instruct"
 class QwenEncodeModel(DistilBertEncode):
     def __init__(self, model_name="Qwen/Qwen2.5-3B-Instruct", form_to_use=EncodeForm.EMBEDDING, 
-                 num_return_sequences=5, load_model=True, n_splits=5):
+                 num_return_sequences=5, load_model=True, n_splits=5, use_expert=True, augment=False):
         """
         Concrete implementation for Qwen with advanced embedding extraction methods.
+        augment - use plans augmantaition with steps combination
         """
         super().__init__(form_to_use=form_to_use, n_splits=n_splits)
         base_model_name = "Qwen/Qwen2.5-3B-Instruct"  # Base model name
         self.form_to_use = form_to_use
         self.plan_model_name = model_name
+        self.augment = augment
         self.plan_tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
         self.plan_tokenizer.add_eos_token = True
         self.num_return_sequences = num_return_sequences
 
         self.plan_model = None  # Initialize the model
         self.lora_model = None  # For LoRA weights if used
-
+        
+        self.DEFAULT_PLAN = "Deafault_plans Deafault_plans Deafault_plans Deafault_plans Deafault_plans"
+        
         if load_model:
             # Load the base model
             self.plan_model = AutoModelForCausalLM.from_pretrained(
@@ -183,13 +337,17 @@ class QwenEncodeModel(DistilBertEncode):
             # If LoRA weights are used, load them on top of the base model
             if model_name != base_model_name:
                 try:
+                    
                     # Load LoRA weights
                     self.plan_model = PeftModel.from_pretrained(self.plan_model, self.plan_model_name)
                     self.plan_model.to("cuda")
                     self.plan_model.eval()
                     print("LoRA weights successfully loaded.")
+                  #  exit()
                 except Exception as e:
                     print(f"Error loading LoRA weights: {e}")
+                    exit()
+        
 
     def train(self, dataset, data_for_inference, train_config, full_train_set=None):
         trainer = EncoderTrainer(config=train_config).init_trainer(dataset, self.plan_model_name, self.plan_tokenizer)
@@ -217,7 +375,7 @@ class QwenEncodeModel(DistilBertEncode):
             wandb.log({"TrainSet": table})
                 
             
-        trainer.model.save_pretrained(train_config['training_args']['output_dir'])
+            trainer.model.save_pretrained(f"{train_config['training_args']['output_dir']}/{i}_")
         
 
         
@@ -234,9 +392,20 @@ class QwenEncodeModel(DistilBertEncode):
         - Sentence embedding, tokens, or generated response.
         """
 
-        full_prompt= [f"{promt_instruction(instruction)}" for instruction in instructions]
-        
-        responses, tokens = self._generate_text(full_prompt, max_new_tokens, num_return_sequences=self.num_return_sequences)
+        do_plan = False
+        if do_plan:
+            full_prompt= [f"{promt_instruction(instruction)}" for instruction in instructions]
+            
+            responses, tokens = self._generate_text(full_prompt, max_new_tokens, num_return_sequences=self.num_return_sequences)
+            if self.augment:
+                augmented_plans = []
+                for plan in responses:
+                    augmented_plan = plan_augmentations(plan)
+                    augmented_plans+=augmented_plan
+                responses = augmented_plans
+        else:
+            responses = instructions
+            
         if return_responses:
             return  [super().encode(responses), responses]
         return super().encode(responses)
@@ -259,24 +428,43 @@ class QwenEncodeModel(DistilBertEncode):
         
         inputs = self.plan_tokenizer(full_prompt,padding=True, truncation=True, return_tensors="pt").to(self.plan_model.device)
         #exit()
-
+        if num_return_sequences==1:
+            num_beam_groups = 2
+            num_beams = 2
+        else:
+            num_beam_groups, num_beams = 10, num_return_sequences
+            
         with torch.no_grad():
-            outputs = self.plan_model.generate(
+            if num_return_sequences==1:
+                outputs = self.plan_model.generate(
                 **inputs,
-                max_new_tokens=max_new_tokens,
+                max_new_tokens=50,
                 eos_token_id= self.plan_tokenizer.eos_token_id,
-                # num_beams=num_beams,
-                # num_beam_groups=6,
-                # diversity_penalty=2.3, 
-                # do_sample=False,
-                do_sample=True,
-                temperature=1,
-                top_k=50, 
-                top_p=2.4,  
+                num_beams=5,
+                do_sample=False,
                 early_stopping=True,
                 num_return_sequences=num_return_sequences,
                 return_dict_in_generate=True
             )
+            else:
+                        
+                outputs = self.plan_model.generate(
+                    **inputs,
+                    max_new_tokens=50,
+                    eos_token_id= self.plan_tokenizer.eos_token_id,
+                    num_beams=num_beams,
+                    num_beam_groups=num_beam_groups,
+                    diversity_penalty=0.2, 
+                    do_sample=False,
+                    # do_sample=True,
+                    # temperature=1,
+                    # top_k=50, 
+                    # top_p=2.4,  
+                    early_stopping=True,
+                    num_return_sequences=num_return_sequences,
+                    return_dict_in_generate=True
+                )
+            
 
         generated_text_ids = outputs.sequences
         responses = self.plan_tokenizer.batch_decode(generated_text_ids, skip_special_tokens=True)
@@ -295,17 +483,37 @@ class QwenEncodeModel(DistilBertEncode):
 
             if "Finish!" in r:
                 formeted_r = formeted_r.split("Finish!")[0] + "Finish!"
+            
             responses_new.append(formeted_r)
         return responses_new, generated_text_ids
 
   
+def SuperEncoder(super_dataset, form_to_use=EncodeForm.EMBEDDING,
+                 num_return_sequences=5, n_splits=5, shap = False, augment=False):
+    if shap:
+        class CustomShapledSuperDatasetEncoder(ShapledSuperDatasetEncoder):
+            def __init__(self,  super_dataset=super_dataset, 
+                        form_to_use=form_to_use, 
+                        num_return_sequences=num_return_sequences, n_splits=n_splits):
+                super().__init__(super_dataset=super_dataset, form_to_use=form_to_use,
+                                num_return_sequences=num_return_sequences, n_splits=n_splits)
+        return CustomShapledSuperDatasetEncoder
+    
+    class CustomSuperEncoder(SuperDatasetEncoder):
+        def __init__(self,  super_dataset=super_dataset, 
+                    form_to_use=form_to_use, 
+                    num_return_sequences=num_return_sequences, n_splits=n_splits, augment=augment):
+            super().__init__(super_dataset=super_dataset, form_to_use=form_to_use,
+                            num_return_sequences=num_return_sequences, n_splits=n_splits, augment=augment)
+    return CustomSuperEncoder
+            
 
 # Фабрика, возвращающая класс с определённым model_name
-def QwenModelWrapper(model_name, num_return_sequences):
+def QwenModelWrapper(model_name, num_return_sequences,augment=False):
     class CustomQwenEncodeModel(QwenEncodeModel):
-        def __init__(self, form_to_use=None, load_model=True):
+        def __init__(self, form_to_use=None, load_model=True, augment=augment):
             super().__init__(model_name=model_name, form_to_use=form_to_use,
-                             num_return_sequences=num_return_sequences, load_model=load_model)
+                             num_return_sequences=num_return_sequences, load_model=load_model, augment=augment)
     
     return CustomQwenEncodeModel
 
