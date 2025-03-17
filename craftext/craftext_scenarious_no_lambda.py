@@ -66,6 +66,11 @@ class ScenariosNoLambda:
     def initial_instruction(self):
         """Generates the default encoded instruction for initializing network parameters."""
         return self.encode_model.encode(["None"])[:1]
+    
+
+    def castom_initial_instruction(self, instruction):
+        """Generates the default encoded instruction for initializing network parameters."""
+        return self.encode_model.encode([instruction])[:1]
 
     def _load_scenarios(self, config):
         """Loads scenarios from a specified configuration file."""
@@ -104,6 +109,9 @@ class ScenariosNoLambda:
 
             for key in checkers_data_f.keys():
                 checkers_data_f[key].extend(batch_results["checkers_data"][key])
+        # with open("instructions_new_obj.json", 'w', encoding='utf-8') as f:
+        #          json.dump(instructions_f, f, ensure_ascii=False, indent=4)
+        # exit()
 
         self.scenario_data = ScenarioData(
             instructions_list=instructions_f,
