@@ -21,13 +21,15 @@ from orbax.checkpoint import (
 )
 from baselines.experiments.super_igor.encoder import QwenModelWrapper
 from craftext.craftext_encoder import EncodeForm
-from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
+from baselines.experiments.super_igor.scenarius_loader_v2 import create_scenarios_with_super_dataset
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic import (
     ActorCritic,
     ActorCriticConv,
     ActorCriticConvWithBERT,
+    ActorCriticConvWithFiLM,
+    ActorCriticConvWithBiFiLM,
     ActorCriticConvWithIdxEmbedding
 )
 from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
@@ -69,7 +71,7 @@ def make_train(config, network_params):
     env_params = env.default_params
     #REPLACE INTO DATASET
     EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20)
-    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'])
+    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=False)
     env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
@@ -98,7 +100,7 @@ def make_train(config, network_params):
         if "Symbolic" in config["ENV_NAME"]:
             network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
         elif "Text" in config["ENV_NAME"]:
-            network = ActorCriticConvWithBERT(
+            network = ActorCriticConvWithFiLM(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
         else:
@@ -848,7 +850,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_envs",
         type=int,
-        default=256,#1024,
+        default=1024,#1024,
     )
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
@@ -860,7 +862,7 @@ if __name__ == "__main__":
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)
     parser.add_argument("--clip_eps", type=float, default=0.2)
-    parser.add_argument("--ent_coef", type=float, default=0.01)
+    parser.add_argument("--ent_coef", type=float, default=0.1) #0.01
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
@@ -881,7 +883,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_optimistic_resets", action=argparse.BooleanOptionalAction, default=True
     )
-    parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
+    parser.add_argument("--optimistic_reset_ratio", type=int, default=1) #16
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
@@ -906,7 +908,7 @@ if __name__ == "__main__":
         assert args.train_icm
         assert args.icm_reward_coeff == 0
     if args.seed is None:
-        args.seed = np.random.randint(2**31)
+        args.seed = 42
 
     if args.jit:
         run_ppo(args)
