@@ -1,17 +1,28 @@
+# ========= Standard Library Imports =========
 import argparse
+import json
 import os
+import random
 import sys
+
+# Set environment variables (it's best to set these before importing some third-party libraries)
+os.environ["XLA_FLAGS"] = "--xla_gpu_deterministic_ops=true --xla_gpu_autotune_level=0"
+os.environ["TF_DETERMINISTIC_OPS"] = "1"
+
+# ========= Third-Party Libraries =========
 import imageio
 import jax
-import json
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
 import numpy as np
-import pickle
 import optax
-import random
+import torch
 import yaml
-import pandas as pd
 
+import pandas as pd
+from tqdm import tqdm
+
+# Additional third-party imports for machine learning
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
@@ -19,23 +30,34 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 
-from baselines.models.actor_critic import (ActorCriticConv, 
-                          ActorCriticConvWithIdxEmbedding,
-                          ActorCriticConvWithBERT)
-
-from baselines.wrappers import (
-    OptimisticResetVecEnvWrapper,
-)
-from craftax.craftax_env import make_craftax_env_from_name
-
-from craftext.craftext_wrapper import InstructionWrapper
-
-from craftext.craftext_encoder import EncodeForm
-from baselines.experiments.super_igor.encoder import QwenEncodeModel, QwenModelWrapper
-from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset
+# ========= Local Modules =========
+# Imports from the baselines package
 from baselines.experiments.deterministic_inference import DetermOptimisticResetVecEnvWrapper
-from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
+from baselines.experiments.super_igor.encoder import QwenEncodeModel, QwenModelWrapper, SuperEncoder
+from baselines.experiments.super_igor.expert import PlansExpert
+from baselines.experiments.super_igor.scenarius_loader_v2 import (
+    CrafTextScenariosWithSuperDataset,
+    create_scenarios_with_super_dataset
+)
+from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
+from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
+from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM
+
+# Imports from other local packages
+from craftax.craftax_env import make_craftax_env_from_name
+from craftext.craftext_encoder import EncodeForm
+from craftext.craftext_encoder import EncodeForm, DistilBertEncode
+from craftext.craftext_wrapper import InstructionWrapper, CustomInstructionWrapper
+
+# ========= Seed Configuration =========
+# seed_value = 42  # Choose any fixed seed value
+
+# random.seed(seed_value)           # Fix seed for the random module
+# np.random.seed(seed_value)        # Fix seed for NumPy
+# torch.manual_seed(seed_value)     # Fix seed for PyTorch
+# torch.cuda.manual_seed_all(seed_value)  # Fix seed for all GPUs in PyTorch
+
 
 class ResultManager:
     def __init__(self, experiment_name, craftext_settings):
@@ -65,15 +87,20 @@ class ResultManager:
         dataset.to_csv(output_path, index=False)
         print(f"Results saved to {output_path}")
 
-
+    
 class Experiment:
     def __init__(self, args):
-        self.seeds_to_use = 50
+        self.seeds_to_use = 30
         self.args = args
         self.config = self._load_config()
         self.checkpoint_manager = self._initialize_checkpoint_manager()
         self.env, self.network = self._initialize_environment_and_network()
+        self.use_expert = False
         # Load pairs instriction - plans
+        if self.use_expert:
+            self.plan_expert = PlansExpert()
+            
+                        
         self.super_dataset = self.env.scenario_handler.super_dataset 
         self.train_state = self._initialize_train_state()
         
@@ -91,7 +118,13 @@ class Experiment:
         config['INFERENCE'] = self.args.inference
         config['LLM_PATH'] = self.args.llm_path
         config['DATASET_PATH'] = self.args.dataset_path
+        config['SAVE_DATASET_PATH'] = self.args.save_dataset_path
         config['NUM_RETURN_SEQUENCES'] = self.args.num_return_sequences
+        config['PLAN_WITH_LLM'] = self.args.plan_with_llm
+        config['AUGMENT'] = self.args.augment
+        config['CUSTOM_COMMAND'] = self.args.custom_command
+        # print("Planning?: ",  config['PLAN_WITH_LLM'])
+        # exit()
         return config
 
     def _initialize_checkpoint_manager(self):
@@ -107,13 +140,36 @@ class Experiment:
 
         env = make_craftax_env_from_name(env_name, False)
         actions_count = 17 if "Classic" in env_name else 43
-        network_class = ActorCriticConvWithBERT if "Pixels" in env_name else ActorCriticConv
+        network_class = ActorCriticConvWithFiLM
         network = network_class(actions_count, self.config["LAYER_SIZE"])
 
-        EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])
-        env = InstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=CrafTextScenariosWithSuperDataset,
+        #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])
+        
+
+        if not self.config['PLAN_WITH_LLM']:
+            print("Use previos plans")
+         #   exit()
+            super_dataset = SuperDataset.load_from_json(self.config["DATASET_PATH"])
+            EncodeModel = SuperEncoder(super_dataset, form_to_use=EncodeForm.EMBEDDING,
+                                       num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], n_splits=5,  augment=self.config['AUGMENT'])
+            ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
+        elif self.config['CUSTOM_COMMAND']:
+            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=1, augment=self.config['AUGMENT'])
+            ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
+        else:
+            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'])
+            ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
+        
+        env = InstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
                                   encode_model_class=EncodeModel,
                                   encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
+
+        if self.config['CUSTOM_COMMAND']:
+           env = CustomInstructionWrapper(env, instruction=self.config['CUSTOM_COMMAND'])
+        
+        #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])
+       # env = InstructionWrapper(env, self.args.craftext_settings,  encode_model_class=EncodeModel,
+        #                          encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
         
         print("N_INSTRUCTIOnS: ", env.n_instructions)
        # exit()
@@ -125,26 +181,10 @@ class Experiment:
         return env, network
 
     def _initialize_train_state(self):
-        # init_x = jnp.zeros((self.config["NUM_ENVS"], *self.env.observation_space(self.env.default_params).shape))
-        # rng = jax.random.PRNGKey(np.random.randint(2**31))
-        # rng, _rng, __rng = jax.random.split(rng, 3)
-
-        # instructions = jnp.tile(self.env.encoded_instruction, (self.config["NUM_ENVS"], 1))
-        # network_params = self.network.init(_rng, init_x, instructions)
-
-        # tx = optax.chain(
-        #     optax.clip_by_global_norm(self.config["MAX_GRAD_NORM"]),
-        #     optax.adam(self.config["LR"], eps=1e-5),
-        # )
-        # train_state = TrainState.create(
-        #     apply_fn=self.network.apply,
-        #     params=network_params,
-        #     tx=tx,
-        # )
         return self.checkpoint_manager.restore(int(self.config["TOTAL_TIMESTEPS"]))
 
     def view(self):
-        rng = jax.random.PRNGKey(42)
+        rng = jax.random.PRNGKey(43)
         obs, env_state = self.env.reset(rng, self.env.default_params)
         step_fn = jax.jit(self.env.step)
         done = False
@@ -153,11 +193,20 @@ class Experiment:
         step_fn = jax.jit(self.env.step)
         params = self.train_state['runner_state'][0]["params"]
         observations = []
-        while not done and steps < 5000:
+        agent_rng, _rng_ = jax.random.split(rng)
+        while not done and steps < 300:
             obs = jnp.expand_dims(obs, axis=0)
-            instruction =self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
-            pi, value = self.network.apply(params, obs, env_state.instruction.reshape(1, -1))
-            action = pi.sample(seed=rng)[0]
+            if self.config['CUSTOM_COMMAND']:
+                instruction =self.config['CUSTOM_COMMAND']
+                instruction_emb = self.env.castom_initial_instruction
+            else:
+                instruction = self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
+                instruction_emb = env_state.instruction.reshape(1, -1)
+            pi, value = self.network.apply(params, obs, instruction_emb)
+            agent_rng, _rng_ = jax.random.split(agent_rng)
+            action = pi.sample(seed=agent_rng)[0]
+            
+           # action = pi.sample(seed=rng)[0]
             
             action = jax.device_put(action, device=jax.devices('gpu')[0])
 
@@ -170,7 +219,7 @@ class Experiment:
 
             image = renderer.render_to_image(env_state.env_state)
             observations.append(image)
-        gif_name = "_".join(self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()].split()[:5])
+        gif_name = "_".join(instruction.split()[:5])
        # gif_name = inst.replace(" ", "_")
         ix = random.randint(0,200)
         folder_name = "animation"
@@ -179,108 +228,170 @@ class Experiment:
         os.makedirs(folder_name, exist_ok=True)
         with imageio.get_writer(f'animation/{ix}_{gif_name}.gif', mode='I', duration=0.1) as writer:
             for i, image in enumerate(observations):
-                text = f"Step {i}, Instruction {self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]}"
+                text = f"Step {i}, Instruction {instruction}"
                 image_with_text = add_text_to_image(image, text)
                 writer.append_data(image_with_text.astype(np.uint8))
         print(f'Save with name animation/{ix}_{gif_name}.gif')
 
+    def _update_rng_logs(self, rng_dict, indices, rng_values):
+        for i, instruction in enumerate(indices):
+            inst = int(instruction)
+            if inst not in rng_dict:
+                rng_dict[inst] = []
+            rng_dict[inst].append(tuple(rng_values[i].tolist()))
+    
+    def _postprocess_and_save_rng_logs(self, rng_dict, filename):
+        for instruction in rng_dict:
+            rng_dict[instruction] = tuple(set(rng_dict[instruction]))
+        with open(filename, "w", encoding="utf-8") as json_file:
+            json.dump(rng_dict, json_file, ensure_ascii=False, indent=4)
+            
     def run(self):
         rng = jax.random.PRNGKey(42)
+        log_rngs = False    # Флаг отладки RNG
+        render_obs = False  # Флаг отрисовки наблюдений
+        N_INSTRUCTIONS = self.env.n_instructions
         
+        if render_obs:
+            self._init_rendering()
+
+       # Variables for agent perfomance
+        obs, env_state = self.env.reset(rng, self.env.default_params)
+        step_fn = jax.jit(self.env.step)
+        params = self.train_state['runner_state'][0]["params"]
+
+        # Variables for SR measurement
         SR = []
-
-        for i in range(1):
-            obs, env_state = self.env.reset(rng, self.env.default_params)
-            step_fn = jax.jit(self.env.step)
-
-            total_success_rate = np.zeros(self.config["NUM_ENVS"]*100)
-            done_count = np.zeros(self.config["NUM_ENVS"]*100)
-            prev_indx = np.zeros(self.config["NUM_ENVS"])
-            prev_seeds = np.zeros(self.config["NUM_ENVS"])
-            params = self.train_state['runner_state'][0]["params"]
-            seeds_per_instruction = {}
-            steps = 0
-            remain_steps = 35000
-            instr_rngs = dict()
-            instr_rngs_alt = dict()
-            steps_changed = False
-            while steps < remain_steps:
-                pi, value = self.network.apply(params, obs, env_state.env_state.instruction)
-                action = pi.sample(seed=rng)
-                if action is not None:
-                    
-                    obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
-                    steps += 1
-  
-                    instruction_done_float = info['SR']
-
-                    indices = np.where(instruction_done_float > 0)
-                    done_indices = np.where(done > 0)
-                    
-                    inst_done = []
-                    for inst in prev_indx[done_indices]:
-                        if done_count[int(inst)] < self.seeds_to_use:
-                            done_count[int(inst)] += 1
-                        if done_count[int(inst)] == self.seeds_to_use:
-                            inst_done.append(int(inst))
-                        
-                    for inst in prev_indx[indices]: 
-                        if inst not in inst_done:
-                            total_success_rate[int(inst)] += 1
-
-                    
-                        
-                    prev_indx = env_state.env_state.idx
-                    
-                    
-                    if np.sum(env_state.v3[1:])==0 and not steps_changed:
-                        remain_steps = steps+300 # If all instructions_seeds pair starts, wait 300 steps for finish
-                        steps_changed = True
-                    else:
-                        pass
-                       # print(env_state.v3)
-                        
-                    indicec_used = np.array(env_state.env_state.idx)
-                    rngs_used = np.array(env_state.env_state.rng)
-                    for i, instruction in enumerate(indicec_used):
-                        if instruction not in instr_rngs:
-                            instr_rngs[int(instruction)] = []
-                        instr_rngs[int(instruction)].append(tuple(rngs_used[i].tolist()))
-                    
-                    indicec_used = np.array(env_state.v1)
-                    rngs_used = np.array(env_state.v2)
-                    for i, instruction in enumerate(indicec_used):
-                        if instruction not in instr_rngs_alt:
-                            instr_rngs_alt[int(instruction)] = []
-                        instr_rngs_alt[int(instruction)].append(tuple(rngs_used[i].tolist()))
-
-            success_rates = total_success_rate / done_count
-            SR.append(success_rates)
-            
-        # For seeds control
-        for instruction in instr_rngs:
-            instr_rngs[instruction] = tuple(set(instr_rngs[instruction]))
+        total_success_rate = np.zeros(N_INSTRUCTIONS+1)
+        done_count = np.zeros(N_INSTRUCTIONS+1)
+        prev_indx = env_state.env_state.idx
+    
+        # Additianal Variables for logginf
+        instr_rngs = dict()
+        instr_rngs_alt = dict()
+        agent_rng, _rng_ = jax.random.split(rng)
         
-        for instruction in instr_rngs_alt:
-            instr_rngs_alt[instruction] = tuple(set(instr_rngs_alt[instruction]))
+        # Variables for track experiment progress
+        remain_steps = 50000
+        progress_bar = tqdm(total= N_INSTRUCTIONS * self.seeds_to_use, desc="Steps")
+        steps = 0
 
-        with open("seeds.json", "w", encoding="utf-8") as json_file:
-            json.dump(instr_rngs, json_file, ensure_ascii=False, indent=4)
+        while steps < remain_steps:
+            pi, _ = self.network.apply(params, obs, env_state.env_state.instruction)
+            agent_rng, _rng_ = jax.random.split(agent_rng)
+            action = pi.sample(seed=agent_rng)
+            if action is not None:
+                obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
+                steps += 1
+                progress_bar.n = np.sum(done_count)
+                progress_bar.refresh()
+
+                if render_obs:
+                    self._render_observations(obs, action, env_state)
+
+                prev_indx = self._update_success_metrics(prev_indx, env_state, done, info,
+                                                        done_count, total_success_rate)
+
+                if np.sum(done_count) >= self.env.n_instructions * self.seeds_to_use:
+                    break
+
+                if log_rngs:
+                    self._update_rng_logs_if_needed(env_state, instr_rngs, instr_rngs_alt)
+
+        progress_bar.close()
+        success_rates = total_success_rate / done_count
+        SR.append(success_rates)
+
+        if log_rngs:
+            self._postprocess_and_save_rng_logs(instr_rngs, "seeds.json")
+            self._postprocess_and_save_rng_logs(instr_rngs_alt, "seeds_alt.json")
+
+        mean_sr = np.mean(np.array(SR), axis=0)
+        scores = []
+
+        if self.use_expert:
+            scores = self._expertize_plans(self.env.scenario_handler.scenario_data.instructions_list)
+            total_score =  mean_sr[:len(self.env.scenario_handler.scenario_data.instructions_list)] * np.array(scores) 
+        else:
+            total_score =  mean_sr[:len(self.env.scenario_handler.scenario_data.instructions_list)] 
+        self._update_super_dataset(total_score)
+    
         
-        with open("seeds_alt.json", "w", encoding="utf-8") as json_file:
-            json.dump(instr_rngs_alt, json_file, ensure_ascii=False, indent=4)
+    def _init_rendering(self):
+        import os
+        self.save_dir = self.config.get("OBS_SAVE_PATH", "./observations_v2")
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
+        self.num_envs = self.config["NUM_ENVS"]
+        self.env_obs_count = {env_idx: 0 for env_idx in range(self.num_envs)}
 
-        mean_sr = np.mean(np.array(SR), axis = 0)
 
+    def _render_observations(self, obs, action, env_state):
+        obs_np = np.array(obs)
+        for env_idx in range(self.num_envs):
+            env_folder = os.path.join(self.save_dir, f"env_{env_idx}")
+            if not os.path.exists(env_folder):
+                os.makedirs(env_folder)
+            image_array = obs_np[env_idx]
+            filename = os.path.join(env_folder, f"{env_idx}-{self.env_obs_count[env_idx]}.png")
+            text = f"Act {action[env_idx]} - IDX{env_state.env_state.idx[env_idx]}"
+            image_with_text = add_text_to_image(image_array * 255, text)
+            plt.imsave(filename, image_with_text)
+            self.env_obs_count[env_idx] += 1
+
+
+    def _update_success_metrics(self, prev_indx, env_state, done, info, done_count, total_success_rate):
+        instruction_done_float = info['SR']
+        indices = np.where(instruction_done_float > 0)
+        done_indices = np.where(done > 0)
+
+        inst_done = []
+        for inst in prev_indx[done_indices]:
+            inst = int(inst)
+            if done_count[inst] < self.seeds_to_use:
+                done_count[inst] += 1
+            if done_count[inst] == self.seeds_to_use:
+                inst_done.append(inst)
+
+        for inst in prev_indx[indices]:
+            if inst not in inst_done:
+                total_success_rate[int(inst)] += 1
+
+        return env_state.env_state.idx
+
+
+    def _update_rng_logs_if_needed(self, env_state, instr_rngs, instr_rngs_alt):
+        indicec_used = np.array(env_state.env_state.idx)
+        rngs_used = np.array(env_state.env_state.rng)
+        self._update_rng_logs(instr_rngs, indicec_used, rngs_used)
+
+        indicec_used_alt = np.array(env_state.v1)
+        rngs_used_alt = np.array(env_state.v2)
+        self._update_rng_logs(instr_rngs_alt, indicec_used_alt, rngs_used_alt)
+
+
+    def _expertize_plans(self, plans):
+        from tqdm import tqdm
+        scores = []
+        print("Make plans expertize...")
+        for i in tqdm(range(0, len(plans), 5)):
+            plans_batch = plans[i:i+5]
+            expertize = self.plan_expert.check_plan_correctness(plans_batch)
+            for yes, no in expertize:
+                scores.append(1.0 if yes > no else 0.0)
+        print("Finish")
+        return scores
+
+
+    def _update_super_dataset(self, total_score):
         self.super_dataset.super_print()
-        
-        # FIX: Now is some problem in SR calulation: some env might be not fineshed, and one of that run many time on the same SEED
-        self.super_dataset.batch_update(self.env.scenario_handler.scenario_data.instructions_list[1:], 
-                                        mean_sr[1:len(self.env.scenario_handler.scenario_data.instructions_list)])
+        self.super_dataset.clear_scores()
+        self.super_dataset.rebuild_mapping()
+        self.super_dataset.batch_update(self.env.scenario_handler.scenario_data.instructions_list, total_score)
         self.super_dataset.save_to_json(self.config["DATASET_PATH"])
 
-        print(total_success_rate[:10])
-        print(done_count[:10])
+
+
 
 
 
@@ -289,23 +400,31 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", default=None, type=str)
     parser.add_argument("--experiment_name", default=None, type=str)
+    parser.add_argument("--plan_with_llm", default='False', type=str)
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--num_envs", type=int, default=1, help="Number of environments")
     parser.add_argument("--ratio", type=int, default=1)
-    parser.add_argument("--inference", type=bool, default=False)
+    parser.add_argument("--inference", type=int, default=False)
     parser.add_argument("--llm_path", type=str, default="Qwen/Qwen2.5-3B-Instruct-Advanced")
     parser.add_argument("--dataset_path", type=str, default="temp_dataset/super_dataset.json")
+    parser.add_argument("--save_dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--num_return_sequences", type=int, default=5)
+    parser.add_argument("--augment", type=int, default=0)
+    parser.add_argument("--custom_command", type=str, default=None)
 
-
+  
     args, rest_args = parser.parse_known_args(sys.argv[1:])
+    args.plan_with_llm = False if args.plan_with_llm=="False" else True
+    # print(args.plan_with_llm)
+    # exit()
     if args.path is None:
         args.path = f"./wandb/{args.experiment_name}/files/"
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
     experiment = Experiment(args)
+   # experiment.view()
     if args.debug:
         with jax.disable_jit():
             if not args.inference:
