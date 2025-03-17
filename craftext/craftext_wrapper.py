@@ -59,6 +59,24 @@ def list_to_array(lst: List[T]) -> T:
     return cls(**converted_data)
 
 
+class CustomInstructionWrapper(Wrapper):
+    def __init__(self, env, instruction):
+        self.env = env
+        self.castom_initial_instruction = self.env.scenario_handler.castom_initial_instruction(instruction)
+    
+    def reset(self, _rng, env_params, instruction_idx=-1):
+        """
+        Resets the environment and selects a random instruction embedding or token for the new episode.
+        """
+
+        obs, state = self.env.reset(_rng, env_params)
+        return obs, state
+    
+    def step(self, _rng, env_state, action, env_params):
+         obs, state, reward, done, info = self.env.step(_rng, env_state, action, env_params)
+         return obs, state, reward, False, info
+        
+        
 class InstructionWrapper(Wrapper):
     def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambda,
                   encode_model_class=DistilBertEncode, encode_form=EncodeForm.EMBEDDING):
