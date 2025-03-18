@@ -1,19 +1,57 @@
 from flax import struct
 import jax.numpy as jnp
-from craftext.scenarios.constants import Achievement, AchievementState
+from craftext.scenarios.constants import Achievement, AchievementState, BlockType
+import jax 
+
+@struct.dataclass
+class BuildLineAchievement:
+    block_type: BlockType
+    size:int
+    is_diagonal:bool
+
+@struct.dataclass
+class BuildSquareAchievement:
+    block_type: BlockType
 
 
 @struct.dataclass
+class BuildStarAchievement:
+    block_type: BlockType
+    size: int
+    radius: int
+
+
+@struct.dataclass
+class ConditionalPlacingAchievement:
+    achievement_mask: jax.Array
+    block_type: BlockType
+
+@struct.dataclass
+class LocalizaPlacingAchievement:
+    achievement_mask: jax.Array
+    block_type: BlockType
+
+@struct.dataclass
 class Achievements:
-    achievement_mask: jnp.ndarray
+    achievement_mask: jnp.ndarray = struct.field(default_factory=jnp.array([AchievementState.NOT_MATTER.value for i in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
+
+class TaskState:
+    # TODO:
+    # Про
 
 
 @struct.dataclass
 class TargetState:
-    achievements: Achievements
-
-
-
+    achievements: Achievements = Achievements
+    building_line: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
+    building_square: AchievementState | BuildSquareAchievement = AchievementState.NOT_MATTER
+    building_star: AchievementState | BuildStarAchievement = AchievementState.NOT_MATTER
+    conditional_placing: AchievementState | ConditionalPlacingAchievement = AchievementState.NOT_MATTER
+    time_placement: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
+    time_with_several_task: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
+    time_base: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
+    
+    #building_line: Tuple[AchievementState, BuildLineAchievement]
     # collect_wood: int = AchievementState.NOT_MATTER.value
     # place_table: int = AchievementState.NOT_MATTER.value
     # eat_cow: int = AchievementState.NOT_MATTER.value

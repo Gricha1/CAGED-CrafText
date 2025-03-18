@@ -66,7 +66,7 @@ def is_pattern_formed(game_data: GameData, block_type: BlockType, pattern_type: 
     )
 
     indices = jnp.arange(region_size * region_size)
-    carry = Carry(region, block_index, region_size, pattern)
+    carry = Carry(region=region, block_index=block_index, region_size=region_size, pattern=pattern)
     
     
     _, matches = lax.scan(scan_pattern_function, carry, indices)
