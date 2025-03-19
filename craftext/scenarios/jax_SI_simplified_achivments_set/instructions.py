@@ -76,6 +76,8 @@ def create_target_state(required=[], forbidden=[]):
             base_vector[i] = AchievementState.NEED_TO_ACHIEVE.value
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE.value
+        elif i > max(required):
+            base_vector[i] = AchievementState.AVOID_TO_ACHIEVE.value
     target_achievements = Achievements(jnp.array(base_vector))
     return TargetState(achievements=target_achievements)
 
