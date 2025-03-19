@@ -120,7 +120,7 @@ class ScenariosNoLambda:
             str_check_lambda_list=checkers_data_f["str_check_lambda"],
             scenario_names=[str(i) for i in indices_f],
             indices_list=np.array(indices_f).reshape(-1, 1),
-            embeddings_list=np.array(embeddings_f).reshape(len(embeddings_f), -1) if embeddings_f else None
+            embeddings_list=np.array(embeddings_f) if embeddings_f else None
         )
 
         return self.scenario_data

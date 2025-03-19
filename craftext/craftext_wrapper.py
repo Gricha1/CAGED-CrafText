@@ -74,7 +74,7 @@ class CustomInstructionWrapper(Wrapper):
     
     def step(self, _rng, env_state, action, env_params):
          obs, state, reward, done, info = self.env.step(_rng, env_state, action, env_params)
-         return obs, state, reward, False, info
+         return obs, state, reward, done, info
         
         
 class InstructionWrapper(Wrapper):
