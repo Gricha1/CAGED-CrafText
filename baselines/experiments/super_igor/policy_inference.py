@@ -32,10 +32,10 @@ from orbax.checkpoint import (
 
 # ========= Local Modules =========
 # Imports from the baselines package
-from baselines.experiments.deterministic_inference import DetermOptimisticResetVecEnvWrapper
-from baselines.experiments.super_igor.encoder import QwenEncodeModel, QwenModelWrapper, SuperEncoder
+from baselines.experiments.super_igor.craftext_wrappers.deterministic_inference import DetermOptimisticResetVecEnvWrapper
+from baselines.experiments.super_igor.craftext_wrappers.encoder import QwenEncodeModel, QwenModelWrapper, SuperEncoder
 from baselines.experiments.super_igor.expert import PlansExpert
-from baselines.experiments.super_igor.scenarius_loader_v2 import (
+from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import (
     CrafTextScenariosWithSuperDataset,
     create_scenarios_with_super_dataset
 )
@@ -48,7 +48,9 @@ from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticCo
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_encoder import EncodeForm
 from craftext.craftext_encoder import EncodeForm, DistilBertEncode
-from craftext.craftext_wrapper import InstructionWrapper, CustomInstructionWrapper
+from craftext.craftext_wrapper import InstructionWrapper
+
+from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper, CustomInstructionWrapper
 
 # ========= Seed Configuration =========
 # seed_value = 42  # Choose any fixed seed value
@@ -139,7 +141,7 @@ class Experiment:
         self.config["ENV_NAME"] = env_name
 
         env = make_craftax_env_from_name(env_name, False)
-        actions_count = 17 if "Classic" in env_name else 43
+        actions_count = 18 if "Classic" in env_name else 43
         network_class = ActorCriticConvWithFiLM
         network = network_class(actions_count, self.config["LAYER_SIZE"])
 
@@ -154,18 +156,18 @@ class Experiment:
                                        num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], n_splits=5,  augment=self.config['AUGMENT'])
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
         elif self.config['CUSTOM_COMMAND']:
-            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=1, augment=self.config['AUGMENT'])
+            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=1, augment=self.config['AUGMENT'], split_into_steps=True, do_plan=False)
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
         else:
-            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'])
+            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'], n_splits=1)
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
         
-        env = InstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
+        env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
                                   encode_model_class=EncodeModel,
                                   encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
 
         if self.config['CUSTOM_COMMAND']:
-           env = CustomInstructionWrapper(env, instruction=self.config['CUSTOM_COMMAND'])
+           env = CustomInstructionWrapper(env, instruction=self.config['CUSTOM_COMMAND'].replace("\\n", "\n") )
         
         #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])
        # env = InstructionWrapper(env, self.args.craftext_settings,  encode_model_class=EncodeModel,
@@ -184,7 +186,7 @@ class Experiment:
         return self.checkpoint_manager.restore(int(self.config["TOTAL_TIMESTEPS"]))
 
     def view(self):
-        rng = jax.random.PRNGKey(43)
+        rng = jax.random.PRNGKey(45)
         obs, env_state = self.env.reset(rng, self.env.default_params)
         step_fn = jax.jit(self.env.step)
         done = False
@@ -194,14 +196,26 @@ class Experiment:
         params = self.train_state['runner_state'][0]["params"]
         observations = []
         agent_rng, _rng_ = jax.random.split(rng)
-        while not done and steps < 300:
+        instructions = []
+        while not done:
             obs = jnp.expand_dims(obs, axis=0)
             if self.config['CUSTOM_COMMAND']:
-                instruction =self.config['CUSTOM_COMMAND']
-                instruction_emb = self.env.castom_initial_instruction
+                print(env_state.step_idx)
+                o_instruction = self.config['CUSTOM_COMMAND'].replace("\\n", "\n") 
+                steps_todo =  o_instruction.split("\n") 
+                print(o_instruction, steps_todo)
+                if env_state.step_idx < len(steps_todo):
+                    instruction =steps_todo[env_state.step_idx]
+                    
+                    print("DO: ",instruction)
+                instruction_emb = env_state.instruction.reshape(1, -1)
             else:
                 instruction = self.env.scenario_handler.scenario_data.instructions_list[env_state.idx.item()]
                 instruction_emb = env_state.instruction.reshape(1, -1)
+                
+            instructions.append(instruction)
+            print(np.array(self.env.castom_initial_instruction).shape)
+            print(np.array(instruction_emb).shape)
             pi, value = self.network.apply(params, obs, instruction_emb)
             agent_rng, _rng_ = jax.random.split(agent_rng)
             action = pi.sample(seed=agent_rng)[0]
@@ -228,7 +242,8 @@ class Experiment:
         os.makedirs(folder_name, exist_ok=True)
         with imageio.get_writer(f'animation/{ix}_{gif_name}.gif', mode='I', duration=0.1) as writer:
             for i, image in enumerate(observations):
-                text = f"Step {i}, Instruction {instruction}"
+                instr = instructions[i]
+                text = f"Step {i}, Instruction {instr}"
                 image_with_text = add_text_to_image(image, text)
                 writer.append_data(image_with_text.astype(np.uint8))
         print(f'Save with name animation/{ix}_{gif_name}.gif')

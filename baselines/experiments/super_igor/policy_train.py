@@ -19,9 +19,11 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-from baselines.experiments.super_igor.encoder import QwenModelWrapper
+from baselines.experiments.super_igor.craftext_wrappers.encoder import QwenModelWrapper
 from craftext.craftext_encoder import EncodeForm
-from baselines.experiments.super_igor.scenarius_loader_v2 import create_scenarios_with_super_dataset
+from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import create_scenarios_with_super_dataset
+from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
+
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic import (
@@ -70,9 +72,9 @@ def make_train(config, network_params):
     )
     env_params = env.default_params
     #REPLACE INTO DATASET
-    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20)
+    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20, split_into_steps=True)
     ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=False)
-    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
+    env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
                             encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
