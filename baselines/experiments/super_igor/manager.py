@@ -124,16 +124,16 @@ if __name__=="__main__":
     
     craftext_settings = "SI_simplified_set"
     use_llm_tuning = True
-    start_from_checkpoint= True
+    start_from_checkpoint= False
     validate = False
     
     rl_done = 0
     inference_done = 0
     llm_done = 0
     
-    rl_skip = 1
-    inference_skip = 2
-    llm_skip = 1
+    rl_skip = 1 if start_from_checkpoint else 0
+    inference_skip = 2 if start_from_checkpoint else 0
+    llm_skip = 1 if start_from_checkpoint else 0
     
     if start_from_checkpoint:
         
@@ -162,7 +162,7 @@ if __name__=="__main__":
                 start_checkpoint_path=rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=250000000
+                total_timesteps=500000000
             )
         else:
             print("SKIP RL TRAINING!")
