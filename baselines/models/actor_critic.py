@@ -154,99 +154,84 @@ import flax.linen as nn
 import distrax
 from flax.linen.initializers import orthogonal, constant
 
+import jax.numpy as jnp
+from flax import linen as nn
+import distrax
 
-class ActorCriticConvWithBiFiLM(nn.Module):
+class ActorCriticConvWithFiLMonehot(nn.Module):
     action_dim: int
     layer_width: int
-    activation: str = "tanh"
-    bert_model_name: str = "bert-base-uncased"
+    embed_dim: int = 64  # Размер выходного эмбеддинга после обработки one-hot
 
-    def compute_film_params_from_text(self, text_embedding, num_channels):
-        """
-        Compute FiLM parameters (γ and β) from text embedding.
-        """
-        gamma = nn.Dense(num_channels)(text_embedding)   # W_γ * x_text + b_γ
-        beta = nn.Dense(num_channels)(text_embedding)    # W_β * x_text + b_β
+    def setup(self):
+        # MLP для обработки one-hot-вектора в плотное представление
+        self.text_processor = nn.Sequential([
+            nn.Dense(self.embed_dim), 
+            nn.relu, 
+            nn.Dense(self.embed_dim), 
+            nn.relu
+        ])
+
+    def compute_film_params(self, processed_embedding, num_channels):
+        gamma = nn.Dense(num_channels)(processed_embedding)
+        beta = nn.Dense(num_channels)(processed_embedding)
+        gamma = gamma[:, None, None, :]
+        beta = beta[:, None, None, :]
         return gamma, beta
-
-    def compute_film_params_from_image(self, image_tensor, num_channels):
-        """
-        Compute FiLM parameters (Γ and B) from image features.
-        image_tensor: [batch, height, width, channels]
-        """
-        # Convolution to extract spatial features
-        gamma = nn.Conv(features=num_channels, kernel_size=(1, 1))(image_tensor)
-        beta = nn.Conv(features=num_channels, kernel_size=(1, 1))(image_tensor)
-        return gamma, beta
-
+    
     @nn.compact
     def __call__(self, obs, text_embedding):
-        # === First convolutional block with FiLM modulation from text ===
-        x = nn.Conv(features=32, kernel_size=(5, 5))(obs)
-        x = nn.relu(x)
-        gamma, beta = self.compute_film_params_from_text(text_embedding, num_channels=32)
-        gamma = gamma[:, None, None, :]  # Expand dimensions for broadcasting over spatial coordinates
-        beta = beta[:, None, None, :]
-        x = (1 + gamma) * x + beta
-        x = nn.max_pool(x, window_shape=(3, 3), strides=(3, 3))
+        # Преобразуем one-hot в плотное представление через MLP
+        processed_embedding = self.text_processor(text_embedding)
 
-        # === Second convolutional block with FiLM modulation from text ===
-        x = nn.Conv(features=32, kernel_size=(5, 5))(x)
-        x = nn.relu(x)
-        gamma, beta = self.compute_film_params_from_text(text_embedding, num_channels=32)
-        gamma = gamma[:, None, None, :]
-        beta = beta[:, None, None, :]
-        x = (1 + gamma) * x + beta
-        x = nn.max_pool(x, window_shape=(3, 3), strides=(3, 3))
+        # Первый свёрточный FiLM-блок
+        x_conv = nn.Conv(features=32, kernel_size=(5, 5))(obs)
+        x_conv = nn.LayerNorm()(x_conv)
+        x_conv = nn.relu(x_conv)
 
-        # === Third convolutional block with FiLM modulation from text ===
-        x = nn.Conv(features=32, kernel_size=(5, 5))(x)
-        x = nn.relu(x)
-        gamma, beta = self.compute_film_params_from_text(text_embedding, num_channels=32)
-        gamma = gamma[:, None, None, :]
-        beta = beta[:, None, None, :]
-        x = (1 + gamma) * x + beta
-        x = nn.max_pool(x, window_shape=(3, 3), strides=(3, 3))
+        gamma, beta = self.compute_film_params(processed_embedding, num_channels=32)
+        x_film = gamma * x_conv + beta
+        x = nn.max_pool(x_film + x_conv, window_shape=(3, 3), strides=(3, 3))
 
-        # === Bidirectional FiLM Modulation ===
-        # Compute Γ and B from the image
-        gamma_text, beta_text = self.compute_film_params_from_image(
-            obs, num_channels=text_embedding.shape[-1]
-        )
+        # Второй свёрточный FiLM-блок
+        x_conv = nn.Conv(features=32, kernel_size=(5, 5))(x)
+        x_conv = nn.LayerNorm()(x_conv)
+        x_conv = nn.relu(x_conv)
 
-        # Apply modulation to text embedding
-        text_embedding = (1 + gamma_text.mean(axis=(1, 2))) * text_embedding + beta_text.mean(axis=(1, 2))
+        gamma, beta = self.compute_film_params(processed_embedding, num_channels=32)
+        x_film = gamma * x_conv + beta
+        x = nn.max_pool(x_film + x_conv, window_shape=(3, 3), strides=(3, 3))
 
-        # === Flatten feature map ===
+        # Третий свёрточный FiLM-блок
+        x_conv = nn.Conv(features=32, kernel_size=(5, 5))(x)
+        x_conv = nn.LayerNorm()(x_conv)
+        x_conv = nn.relu(x_conv)
+
+        gamma, beta = self.compute_film_params(processed_embedding, num_channels=32)
+        x_film = gamma * x_conv + beta
+        x = nn.max_pool(x_film + x_conv, window_shape=(3, 3), strides=(3, 3))
+
+        # Преобразование карты признаков в вектор
         image_embedding = x.reshape(x.shape[0], -1)
 
-        # === Combine image and text embeddings ===
-        combined_embedding = jnp.concatenate([image_embedding, text_embedding], axis=-1)
+        # Residual соединение между изображением и текстовым эмбеддингом
+        combined_embedding = jnp.concatenate([image_embedding, processed_embedding], axis=-1)
 
-        # === Actor network ===
-        actor_hidden = nn.Dense(
-            self.layer_width, kernel_init=orthogonal(2), bias_init=constant(0.0)
-        )(combined_embedding)
+        # Actor с residual
+        actor_hidden = nn.Dense(self.layer_width)(combined_embedding)
         actor_hidden = nn.relu(actor_hidden)
-        actor_hidden = nn.Dense(
-            self.layer_width, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
-        )(actor_hidden)
-        actor_hidden = nn.relu(actor_hidden)
-        actor_logits = nn.Dense(
-            self.action_dim, kernel_init=orthogonal(0.01), bias_init=constant(0.0)
-        )(actor_hidden)
+        actor_residual = nn.Dense(self.layer_width)(actor_hidden)
+        actor_hidden = nn.relu(actor_hidden + actor_residual)
+        actor_logits = nn.Dense(self.action_dim)(actor_hidden)
 
-        # Categorical distribution over actions
         pi = distrax.Categorical(logits=actor_logits)
 
-        # === Critic network ===
-        critic_hidden = nn.Dense(
-            self.layer_width, kernel_init=orthogonal(2), bias_init=constant(0.0)
-        )(combined_embedding)
+        # Critic с residual
+        critic_hidden = nn.Dense(self.layer_width)(combined_embedding)
         critic_hidden = nn.relu(critic_hidden)
-        critic_value = nn.Dense(
-            1, kernel_init=orthogonal(1.0), bias_init=constant(0.0)
-        )(critic_hidden)
+        critic_residual = nn.Dense(self.layer_width)(critic_hidden)
+        critic_hidden = nn.relu(critic_hidden + critic_residual)
+        critic_value = nn.Dense(1)(critic_hidden)
 
         return pi, jnp.squeeze(critic_value, axis=-1)
 
@@ -263,6 +248,7 @@ class ActorCriticConvWithFiLM(nn.Module):
     
     @nn.compact
     def __call__(self, obs, text_embedding):
+        print("text_emb.shape: ", text_embedding.shape)
         # Первый свёрточный FiLM-блок
         x_conv = nn.Conv(features=32, kernel_size=(5, 5))(obs)
         x_conv = nn.LayerNorm()(x_conv)
