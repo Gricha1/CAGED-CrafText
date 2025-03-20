@@ -3,28 +3,8 @@ import json
 from craftext.scenarios.constants import base_path, BlockType
 from craftext.checkers_jax.building import is_line_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
-from typing import List
 
-
-import json
-
-
-class JSONEncoderEx(json.JSONEncoder):
-
-    def __init__(self, *, skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys, indent, separators, default):
-        super().__init__(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular,
-                         allow_nan=allow_nan, sort_keys=sort_keys, indent=indent, separators=separators,
-                         default=default)
-        self.item_separator = ""
-
-
-json.encoder.encode_basestring = lambda x: json.encoder.py_encode_basestring(x)[1:-1]
-json.encoder.encode_basestring_ascii = lambda x: json.encoder.py_encode_basestring_ascii(x)[1:-1]
-
-
-
-
-def transform_instruction(instruction: List[str]):
+def transform_instruction(instruction: json):
     """
     Преобразует одну инструкцию:
     - Удаляет поле 'check_lambda', так как его нельзя сохранить в JSON.
@@ -65,14 +45,7 @@ def transform_instruction(instruction: List[str]):
     }
 }
 """
-    instruction_template = {
-        "instruction": "",
-        "scenario_checker": Scenarios.BUILD_LINE.value,
-        "instruction_paraphrases": [],
-        "arguments": [],
-        "str_check_lambda": ""
-        
-    }
+    
     # При необходимости можно добавить другие преобразования
     return instruction
 
@@ -96,7 +69,7 @@ def process_instructions_file(input_filepath, output_filepath):
         print(*instruction, sep="\n")
         instruction = json.loads("\n".join(instruction))
         instruction = transform_instruction(instruction)
-        data[i] = json.dumps(instruction, cls=JSONEncoderEx, ensure_ascii=False, indent=4)
+        data[i] = json.dumps(instruction, ensure_ascii=False, indent=4)
     # print(data[-1])
     # print(data[-1])
     # Предполагаем, что данные – это словарь, где ключи – идентификаторы инструкций.

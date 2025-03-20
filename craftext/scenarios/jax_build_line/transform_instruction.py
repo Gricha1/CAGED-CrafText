@@ -1,14 +1,21 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState, BuildLineAchievement
+from craftext.checkers_jax.target_state import Achievements, TargetState
 import re
-from craftext.checkers_jax.building import is_line_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
 import jax
 from jax import numpy as jnp
 
 from jax.tree_util import Partial  # Используем jax.tree_util.Partial
+
+
+from craftext.checkers_jax.building import is_line_formed as is_complete_instr
+from craftext.checkers_jax.target_state import BuildLineAchievement as AchievmentClass
+
+
+
+
 class JSONEncoderEx(json.JSONEncoder):
 
     def __init__(self, *, skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys, indent, separators, default):
@@ -23,13 +30,13 @@ json.encoder.encode_basestring_ascii = lambda x: json.encoder.py_encode_basestri
 
 @jax.jit
 def _check_func(gd, ix, block_type, size, check_diagonal):
-    return is_line_formed(gd, ix, block_type, size, check_diagonal)
+    return is_complete_instr(gd, ix, block_type, size, check_diagonal)
 
 def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
 def create_target_state(block_type:BlockType, size:int, is_diagonal:bool):
-    target_achievements = BuildLineAchievement(block_type, size, is_diagonal)
+    target_achievements = AchievmentClass(block_type, size, is_diagonal)
     return TargetState(building_line=target_achievements)
 
 
@@ -41,6 +48,7 @@ def transform_instruction(instruction, func, args):
         raise ValueError("Instruction is empty")
     
     instruction_name =  f'{block_type.split('.')[1].upper()}_{size}'
+    print(func)
     template_instruction = {
         f'INSTRUCTION_{instruction_name}':{
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
@@ -115,13 +123,27 @@ def process_directory(input_dir, output_dir):
             process_instructions_file(input_filepath, output_filepath)
 
 if __name__ == "__main__":
-    # Пусть старые файлы для построения лежат в следующих директориях:
     input_easy_dir = os.path.join(".", "instructions/train/easy/")
     input_medium_dir = os.path.join(".", "instructions/train/medium/")
     
-    # Новая структура файлов будет сохранена в новых директориях:
     output_easy_dir = os.path.join(".", "instructions/train/easy_transformed/")
     output_medium_dir = os.path.join(".", "instructions/train/medium_transformed/")
     
     process_directory(input_easy_dir, output_easy_dir)
     process_directory(input_medium_dir, output_medium_dir)
+    
+    input_test_easy_other_dir = os.path.join(".", "instructions/test/easy/other_params/")
+    input_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy/paraphrases/")
+    input_test_medium_other_dir = os.path.join(".", "instructions/test/medium/other_params/")
+    input_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium/paraphrases/")
+    
+
+    output_test_easy_other_dir = os.path.join(".", "instructions/test/easy_transformed/other_params/")
+    output_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy_transformed/paraphrases/")
+    output_test_medium_other_dir = os.path.join(".", "instructions/test/medium_transformed/other_params/")
+    output_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium_transformed/paraphrases/")
+    
+    process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
+    process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
+    process_directory(input_test_medium_other_dir, output_test_medium_other_dir)
+    process_directory(input_test_medium_parapshare_dir, output_test_medium_parapshare_dir)

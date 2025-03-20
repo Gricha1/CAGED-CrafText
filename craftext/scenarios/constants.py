@@ -11,7 +11,13 @@ class AchievementState(Enum):
     AVOID_TO_ACHIEVE = - 1
     
 class Scenarios(Enum):
-    CONDITIONAL_ACIEVEMENTS = 0
+    CONDITIONAL_ACHIEVEMENTS = 0
+    CONDITIONAL_PLACING = 1
+    LOCALIZATION_PLACE = 2
+    
+    BUILD_LINE = 3
+    BUILD_SQUARE = 4
+    BUILD_STAR = 5
     
 class MediumInventoryItems(Enum):
     WOOD = 0
@@ -182,3 +188,8 @@ class BlockType(Enum):
     GRAVE3 = 35
     NECROMANCER_VULNERABLE = 36
 
+class TimeState(Enum):
+    DAY = 0,
+    NIGHT = 1,
+    EVENING = 2,
+    MORNING = 3

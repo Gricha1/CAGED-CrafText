@@ -98,13 +98,27 @@ def process_directory(input_dir, output_dir):
             process_instructions_file(input_filepath, output_filepath)
 
 if __name__ == "__main__":
-    # Пусть старые файлы для построения лежат в следующих директориях:
     input_easy_dir = os.path.join(".", "instructions/train/easy/")
     input_medium_dir = os.path.join(".", "instructions/train/medium/")
     
-    # Новая структура файлов будет сохранена в новых директориях:
     output_easy_dir = os.path.join(".", "instructions/train/easy_transformed/")
     output_medium_dir = os.path.join(".", "instructions/train/medium_transformed/")
     
     process_directory(input_easy_dir, output_easy_dir)
     process_directory(input_medium_dir, output_medium_dir)
+    
+    input_test_easy_other_dir = os.path.join(".", "instructions/test/easy/other_params/")
+    input_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy/paraphrases/")
+    input_test_medium_other_dir = os.path.join(".", "instructions/test/medium/other_params/")
+    input_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium/paraphrases/")
+    
+
+    output_test_easy_other_dir = os.path.join(".", "instructions/test/easy_transformed/other_params/")
+    output_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy_transformed/paraphrases/")
+    output_test_medium_other_dir = os.path.join(".", "instructions/test/medium_transformed/other_params/")
+    output_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium_transformed/paraphrases/")
+    
+    process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
+    process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
+    process_directory(input_test_medium_other_dir, output_test_medium_other_dir)
+    process_directory(input_test_medium_parapshare_dir, output_test_medium_parapshare_dir)

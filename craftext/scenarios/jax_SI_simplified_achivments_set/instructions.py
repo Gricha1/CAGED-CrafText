@@ -1,4 +1,3 @@
-
 from functools import partial
 
 from enum import Enum
@@ -81,7 +80,7 @@ def create_target_state(required=[], forbidden=[]):
 
 add =  {
         "instruction": "Chop some wood and install a workbench.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Gather wood and set down a crafting table.",
             "Harvest timber and position a crafting bench nearby.",
@@ -90,7 +89,7 @@ add =  {
             "Procure wood and place a crafting table in the area."
         ],
         "str_check_lambda": "",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "arguments": create_target_state(required=[Achievement.COLLECT_WOOD.value, Achievement.PLACE_TABLE.value]),
       #  "arguments": create_target_state([Achievement.COLLECT_WOOD.value, Achievement.PLACE_TABLE.value])
     }
@@ -134,7 +133,7 @@ one = {str(i):add for i in range(20)}
 easy = {
     "collect_wood": {
         "instruction": "Collect wood.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Harvest logs from nearby trees.",
             "Chop down some timber to gather wood.",
@@ -147,7 +146,7 @@ easy = {
     },
     "place_table": {
         "instruction": "Place a crafting table.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Set down a crafting bench in the area.",
             "Install a crafting workstation at your location.",
@@ -160,7 +159,7 @@ easy = {
     },
     "make_stone_pickaxe": {
         "instruction": "Craft a stone pickaxe.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Forge a sturdy pickaxe from stone.",
             "Construct a durable mining tool using rocks.",
@@ -173,7 +172,7 @@ easy = {
     },
       "collect_drink": {
         "instruction": "Collect a drink.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Retrieve a liquid for hydration.",
             "Acquire a beverage to quench thirst.",
@@ -186,7 +185,7 @@ easy = {
     },
        "eat_cow": {
         "instruction": "Eat a cow.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
         "instruction_paraphrases": [
             "Consume beef from a butchered cow.",
             "Devour meat obtained from a bovine animal.",
@@ -199,7 +198,7 @@ easy = {
     },
     'INSTRUCTION_PICKAXE': {
     'instruction': "Craft a wooden pickaxe but avoid making a wooden sword.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Construct a wooden mining tool, but do not forge a wooden blade.",
         "Your task is to make a wooden pickaxe—do not craft a sword.",
@@ -217,7 +216,7 @@ easy = {
 },
 'INSTRUCTION_SWORD': {
     'instruction': "Craft a wooden sword but avoid making a wooden pickaxe.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a wooden blade, but make sure not to construct a timber pickaxe.",
         "Your task is to carve a sword from wood, yet you must abstain from fashioning a wooden mining tool.",
@@ -236,7 +235,7 @@ easy = {
 
 'INSTRUCTION_WOOD_SWORD_ONLY': {
     'instruction': "Craft a wooden sword but avoid making a stone sword.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a blade from wood, but do not shape one from stone.",
         "You must create a wooden sword—do not craft a stone one.",
@@ -254,7 +253,7 @@ easy = {
 },
 'INSTRUCTION_WOOD_PICKAXE_ONLY': {
     'instruction': "Craft a wooden pickaxe but avoid making a stone pickaxe.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Construct a mining tool from wood, but do not carve one from stone.",
         "Your task is to make a wooden pickaxe—do not fashion a stone one.",
@@ -272,7 +271,7 @@ easy = {
 },
 'INSTRUCTION_SWORD_ZOMBIE_ONLY': {
     'instruction': "Craft a wooden sword and defeat a zombie, but do not attack a skeleton.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a wooden blade and slay a zombie, but avoid fighting skeletons.",
         "Your task is to craft a wooden sword and take down a zombie, not a skeleton.",
@@ -290,7 +289,7 @@ easy = {
 },
 'INSTRUCTION_SWORD_SKELETON_ONLY': {
     'instruction': "Craft a wooden sword and defeat a skeleton, but do not attack a zombie.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a wooden blade and slay a skeleton, but do not fight zombies.",
         "Your goal is to craft a wooden sword and eliminate a skeleton, not a zombie.",
@@ -308,7 +307,7 @@ easy = {
 },
 'INSTRUCTION_STONE_SWORD_ZOMBIE_ONLY': {
     'instruction': "Defeat a zombie using a stone sword, but do not attack skeletons.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Use a stone blade to slay a zombie, but do not fight skeletons.",
         "Destroy a zombie with a stone sword, but leave skeletons alone.",
@@ -326,7 +325,7 @@ easy = {
 },
 'INSTRUCTION_STONE_SWORD_NO_SKELETON': {
     'instruction': "Craft a stone sword but do not kill any skeletons.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a stone weapon, but keep skeletons unharmed.",
         "You must craft a stone blade—however, do not strike skeletons.",
@@ -344,7 +343,7 @@ easy = {
 },
 'INSTRUCTION_STONE_SWORD_NO_ZOMBIE': {
     'instruction': "Craft a stone sword but do not kill any zombies.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a stone blade, but avoid striking down zombies.",
         "Your task is to craft a stone sword—just don’t use it on zombies.",
@@ -362,7 +361,7 @@ easy = {
 },
 'INSTRUCTION_STONE_SWORD_ALL_UNDEAD': {
     'instruction': "Craft a stone sword and eliminate all undead.",
-    "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
     'instruction_paraphrases': [
         "Forge a stone blade and exterminate every undead creature.",
         "Your mission is to create a stone sword and defeat all undead enemies.",
@@ -419,7 +418,7 @@ for key in easy:
         print(arguments)
         
         easy[key]['arguments'] = eval(arguments)
-        easy[key]['scenario_checker'] = Scenarios.CONDITIONAL_ACIEVEMENTS.value
+        easy[key]['scenario_checker'] = Scenarios.CONDITIONAL_ACHIEVEMENTS.value
         
 
 

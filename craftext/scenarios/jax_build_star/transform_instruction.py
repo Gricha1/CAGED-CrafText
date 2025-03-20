@@ -1,9 +1,9 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState, BuildLineAchievement
+from craftext.checkers_jax.target_state import Achievements, TargetState, BuildStarAchievement
 import re
-from craftext.checkers_jax.building import is_line_formed
+from craftext.checkers_jax.building_star import is_cross_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
 import jax
 from jax import numpy as jnp
@@ -22,24 +22,24 @@ json.encoder.encode_basestring = lambda x: json.encoder.py_encode_basestring(x)[
 json.encoder.encode_basestring_ascii = lambda x: json.encoder.py_encode_basestring_ascii(x)[1:-1]
 
 @jax.jit
-def _check_func(gd, ix, block_type, size, check_diagonal):
-    return is_line_formed(gd, ix, block_type, size, check_diagonal)
+def _check_func(gd, ix, block_type, size, radius):
+    return is_cross_formed(gd, ix, block_type, size, radius)
 
 def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
-def create_target_state(block_type:BlockType, size:int, is_diagonal:bool):
-    target_achievements = BuildLineAchievement(block_type, size, is_diagonal)
-    return TargetState(building_line=target_achievements)
+def create_target_state(block_type:BlockType, size:int, radius:int):
+    target_achievements = BuildStarAchievement(block_type, size, radius)
+    return TargetState(building_star=target_achievements)
 
 
 def transform_instruction(instruction, func, args):
-    block_type, size = args
+    block_type, size, radius = args
     if instruction == {}:
         raise ValueError("Instruction is empty")
     if instruction.keys() is None:
         raise ValueError("Instruction is empty")
-    
+    print(block_type)
     instruction_name =  f'{block_type.split('.')[1].upper()}_{size}'
     template_instruction = {
         f'INSTRUCTION_{instruction_name}':{
