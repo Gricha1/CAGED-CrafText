@@ -43,6 +43,13 @@ class TimeCosntrainedPlacmentState:
     time_state: TimeState = TimeState.DAY
 
 @struct.dataclass
+class UnifiedPatternState:
+    block_type: BlockType = BlockType.INVALID
+    pattern_type: jax.Array = struct.field(default_factory=jnp.zeros(1))
+    size: int = -1
+    radius: int = -1
+
+@struct.dataclass
 class TargetState:
     achievements: Achievements = Achievements()
     building_line: BuildLineState = BuildLineState()
@@ -51,6 +58,8 @@ class TargetState:
     conditional_placing: ConditionalPlacingState = ConditionalPlacingState()
     time_placement: TimeCosntrainedPlacmentState = TimeCosntrainedPlacmentState()
     time_cosntrained_placment_state = TimeCosntrainedPlacmentState()
+    unified_pattern_state = UnifiedPatternState()
+    
     #building_line: Tuple[AchievementState, BuildLineAchievement]
     # collect_wood: int = AchievementState.NOT_MATTER.value
     # place_table: int = AchievementState.NOT_MATTER.value

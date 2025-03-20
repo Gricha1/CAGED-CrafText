@@ -8,6 +8,7 @@ from flax.struct import dataclass
 
 from craftext.scenarios.constants import BlockType
 from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.checkers_jax.target_state import TargetState
 
 def transform_pattern(pattern: jax.Array, block_index: int, size: int) -> jax.Array:
     #TODO:
@@ -40,8 +41,13 @@ def scan_pattern_function(carry: Carry, x: jax.Array) -> Tuple[Carry, jax.Array]
      
     return carry, check_pattern(sub_region, carry.pattern)
 
-def is_pattern_formed(game_data: GameData, block_type: BlockType, pattern_type: jax.Array, size: int, radius: int) -> (jax.Array | Literal[False]):
-
+def is_pattern_formed(game_data: GameData, target_state: TargetState) -> (jax.Array | Literal[False]):
+    """ block_type: BlockType, pattern_type: jax.Array, size: int, radius: int"""
+    block_type = target_state.unified_pattern_state.block_type 
+    pattern_type = target_state.unified_pattern_state.pattern_type
+    size = target_state.unified_pattern_state.size
+    radius = target_state.unified_pattern_state.radius
+    
     block_index = block_type.value
 
     if game_data is None or game_data.states is None:
