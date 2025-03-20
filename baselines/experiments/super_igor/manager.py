@@ -53,7 +53,7 @@ def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_n
             "--craftext_settings", craftext_settings,
             "--num_envs", "1024",  
             "--plan_with_llm", str(plan_with_llm),
-            "--inference", "True",  
+            "--inference", "1",  
             "--llm_path", llm_name,
             "--augment", str(augment),
             "--dataset_path", dataset_name,
