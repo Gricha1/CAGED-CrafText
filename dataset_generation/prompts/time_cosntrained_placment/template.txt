@@ -38,32 +38,26 @@ class BlockType(Enum):
     NECROMANCER_VULNERABLE = 36
 
 
-def is_cross_formed(game_data, block_name, size=3, radius=5):
-
-    stone_index = block_name.value
+def at_time_block_placed(game_data: GameData, block_name: BlockType, radius: int) -> jax.Array:
     
     if game_data is None or game_data.states is None:
-        return jnp.array(False)
-    
+        return False
+
     game_map = game_data.states[0].map.game_map
     if game_map is None:
-        return jnp.array(False)
-    
+        return False
+
     player_position = game_data.states[0].variables.player_position
     if player_position is None:
-        return jnp.array(False)
-    
+        return False
+
     x, y = player_position
     region_size = 2 * radius + 1
-    
+
     region = lax.dynamic_slice(
         game_map,
         start_indices=(x - radius, y - radius),
         slice_sizes=(region_size, region_size)
     )
     
-    indices = jnp.arange(region_size * region_size)
-    carry = (region, stone_index, region_size, size)
-    _, crosses = lax.scan(scan_cross_function, carry, indices)
-    
-    return jnp.any(crosses)
+    return (region == block_name.value).any()

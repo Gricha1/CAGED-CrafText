@@ -46,5 +46,6 @@ def generate_example_goals(num_goals: int, difficulty="EASY") -> Tuple[List[str]
             make_synonyms_to.append(synonyms_to)
         
         combinations.add(goal)
+        print(f"len(combinations): {len(combinations)}, goal: {goal}")
     
     return list(combinations), make_synonyms_to

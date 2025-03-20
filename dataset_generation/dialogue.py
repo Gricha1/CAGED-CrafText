@@ -16,9 +16,11 @@ def check_and_format(content):
 def main(count_goals, instructions_class, difficulty, output_file, client):
     """Generates instructions based on prompts."""
     instructions = []
+    print("Generating promts")
     prompts = generate_prompts(count_goals, instructions_class, difficulty)
    # print(prompts[0])
-
+    print("Promts generated")
+    
     for prompt in tqdm(prompts, desc='Generating Instructions'):
         response = client.chat.completions.create(model="gpt-4",
         messages=[{"role": "user", "content": prompt}])

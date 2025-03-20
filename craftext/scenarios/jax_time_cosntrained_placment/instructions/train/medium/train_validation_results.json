@@ -100,6 +100,32 @@
         },
         {
             "instruction_index": 23,
+            "validation": {}
+        },
+        {
+            "instruction_index": 24,
+            "validation": {}
+        },
+        {
+            "instruction_index": 25,
+            "validation": {
+                "parsing_error": "unexpected indent (<string>, line 2)"
+            }
+        },
+        {
+            "instruction_index": 26,
+            "validation": {}
+        },
+        {
+            "instruction_index": 27,
+            "validation": {}
+        },
+        {
+            "instruction_index": 28,
+            "validation": {}
+        },
+        {
+            "instruction_index": 29,
             "validation": {
                 "parsing_error": "invalid syntax (<string>, line 1)"
             }
@@ -122,6 +148,11 @@
         15,
         18,
         20,
-        22
+        22,
+        23,
+        24,
+        26,
+        27,
+        28
     ]
 }

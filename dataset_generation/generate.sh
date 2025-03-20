@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Количество целей (по умолчанию 2, можно изменить при запуске)
-COUNT_GOALS=10
+COUNT_GOALS=6
 
 echo "Using COUNT_GOALS=$COUNT_GOALS"
 
@@ -58,12 +58,21 @@ generate_and_validate() {
 
 # # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
 
-generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/easy/train.txt"
-generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/medium/train.txt"
+# generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/easy/train.txt"
+# generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/train/medium/train.txt"
 
 
-generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/easy/train.txt"
-generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/medium/train.txt"
+# generate_and_validate "time_placement"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/easy/train.txt"
+# generate_and_validate "time_placement"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/medium/train.txt"
+
+
+generate_and_validate "time_cosntrained_placment"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/jax_time_cosntrained_placment/instructions/train/easy/train.txt"
+generate_and_validate "time_cosntrained_placment"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/jax_time_cosntrained_placment/instructions/train/medium/train.txt"
+
+
+# generate_and_validate "jax_time_cosntrained_placment"  "EASY"   "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/easy/train.txt"
+# generate_and_validate "jax_time_cosntrained_placment"  "MEDIUM" "/home/dmitriyl/CrafText/craftext/scenarios/time_placement/instructions/test/medium/train.txt"
+
 
 # generate_and_validate "building_square" "MEDIUM" "instructions/instructions_square_medium.txt"
 # generate_and_validate "building_square" "EASY" "instructions/instructions_square_easy.txt"
