@@ -2,6 +2,9 @@ import jax.numpy as jnp
 import jax.lax as lax
 import jax
 from flax.struct import dataclass
+
+from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.checkers_jax.target_state import TargetState
 # Blocks list as an example
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
@@ -16,7 +19,7 @@ blocks_list = [
 
 
 
-def check_cross(region: jax.Array, stone_index: int, size: int) -> jax.Array:
+def check_cross(region: jax.Array, stone_index: int, size: int,) -> jax.Array:
 
     center = size // 2
     
@@ -60,8 +63,11 @@ def scan_cross_function(carry: Carry, x):
     return carry, is_cross
 
     
-def is_cross_formed(game_data, block_name, size=3, radius=5):
-
+def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array:
+    block_name = target_state.building_star.block_type
+    radius = target_state.building_star.radius
+    size = target_state.building_star.size 
+    
     stone_index = block_name.value
     
     if game_data is None or game_data.states is None:

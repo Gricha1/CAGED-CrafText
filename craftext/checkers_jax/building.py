@@ -13,7 +13,7 @@ from craftext.checkers_jax.squeres import (
 from craftext.checkers.base_functions.state_adapter import GameData
 from typing import Tuple 
 from craftext.scenarios.constants import BlockType
-
+from craftext.checkers_jax.target_state import TargetState
 
 
 # Blocks list as an example
@@ -116,11 +116,16 @@ def scan_square_function(carry, x):
     return carry, is_square
 
 
-def is_square_formed(game_data: GameData,  ix:int, block_name: BlockType, size: int = 2, radius: int = 5) -> jax.Array:
+def is_square_formed(game_data: GameData,  ix:int, target_state: TargetState) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
     # Получаем индекс блока по имени
+    
+    block_name = target_state.building_square.block_type
+    radius = target_state.building_square.radius
+    size = target_state.building_square.size
+    
     stone_index = block_name.value
 
     
@@ -202,11 +207,15 @@ def scan_line_function(carry, x):
 
 
 
-def is_line_formed(game_data, ix:int, block_name: BlockType, size: int = 2, check_diagonal:bool = False) -> jax.Array:
+def is_line_formed(game_data, ix:int, target_state: TargetState) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
-    radius = 5
+    block_name = target_state.building_line.block_type
+    radius = target_state.building_line.radius
+    check_diagonal = target_state.building_line.is_diagonal
+    size = target_state.building_line.size
+    
     stone_index = block_name.value
     # Получаем карту
     game_map =  game_data.states[0].map.game_map

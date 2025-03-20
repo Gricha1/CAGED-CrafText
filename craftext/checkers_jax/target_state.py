@@ -1,56 +1,56 @@
 from flax import struct
 import jax.numpy as jnp
-from craftext.scenarios.constants import Achievement, AchievementState, BlockType
+from craftext.scenarios.constants import Achievement, AchievementState, BlockType, TimeState
 import jax 
 
 @struct.dataclass
-class BuildLineAchievement:
-    block_type: BlockType
-    size:int
-    is_diagonal:bool
+class BuildLineState:
+    block_type: BlockType = BlockType.INVALID
+    size:int = -1
+    radius: int = -1
+    is_diagonal:bool = False
 
 @struct.dataclass
-class BuildSquareAchievement:
-    block_type: BlockType
-
+class BuildSquareState:
+    block_type: BlockType = BlockType.INVALID
+    size: int = -1
+    radius: int = -1
+    
+@struct.dataclass
+class BuildStarState:
+    block_type: BlockType = BlockType.INVALID
+    size: int = -1
+    radius: int = -1
+    is_diagonal:bool = False
 
 @struct.dataclass
-class BuildStarAchievement:
-    block_type: BlockType
-    size: int
-    radius: int
-
+class ConditionalPlacingState:
+    block_type: BlockType = BlockType.INVALID
+    achievement_mask: jax.Array = struct.field(default_factory=jnp.zeros(1))
 
 @struct.dataclass
-class ConditionalPlacingAchievement:
-    achievement_mask: jax.Array
-    block_type: BlockType
-
-@struct.dataclass
-class LocalizaPlacingAchievement:
-    achievement_mask: jax.Array
-    block_type: BlockType
+class LocalizaPlacingState:
+    block_type: BlockType = BlockType.INVALID
+    achievement_mask: jax.Array  = struct.field(default_factory=jnp.zeros(1))
 
 @struct.dataclass
 class Achievements:
     achievement_mask: jnp.ndarray = struct.field(default_factory=jnp.array([AchievementState.NOT_MATTER.value for i in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
 
-class TaskState:
-    # TODO:
-    # Про
-
+@struct.dataclass
+class TimeCosntrainedPlacmentState:
+    block_type: BlockType = BlockType.INVALID
+    time_state: TimeState = TimeState.DAY
 
 @struct.dataclass
 class TargetState:
-    achievements: Achievements = Achievements
-    building_line: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
-    building_square: AchievementState | BuildSquareAchievement = AchievementState.NOT_MATTER
-    building_star: AchievementState | BuildStarAchievement = AchievementState.NOT_MATTER
-    conditional_placing: AchievementState | ConditionalPlacingAchievement = AchievementState.NOT_MATTER
-    time_placement: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
-    time_with_several_task: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
-    time_base: AchievementState | BuildLineAchievement = AchievementState.NOT_MATTER
-    
+    achievements: Achievements = Achievements()
+    building_line: BuildLineState = BuildLineState()
+    building_square: BuildSquareState = BuildSquareState()
+    building_star: BuildStarState = BuildStarState()
+    conditional_placing: ConditionalPlacingState = ConditionalPlacingState()
+    time_placement: TimeCosntrainedPlacmentState = TimeCosntrainedPlacmentState()
+    time_cosntrained_placment_state = TimeCosntrainedPlacmentState()
     #building_line: Tuple[AchievementState, BuildLineAchievement]
     # collect_wood: int = AchievementState.NOT_MATTER.value
     # place_table: int = AchievementState.NOT_MATTER.value
