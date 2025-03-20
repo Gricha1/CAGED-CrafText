@@ -42,7 +42,7 @@ from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 impo
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
-from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM
+from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM, ActorCriticConvWithFiLMonehot
 
 # Imports from other local packages
 from craftax.craftax_env import make_craftax_env_from_name
@@ -142,7 +142,7 @@ class Experiment:
 
         env = make_craftax_env_from_name(env_name, False)
         actions_count = 18 if "Classic" in env_name else 43
-        network_class = ActorCriticConvWithFiLM
+        network_class = ActorCriticConvWithFiLMonehot
         network = network_class(actions_count, self.config["LAYER_SIZE"])
 
         #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])

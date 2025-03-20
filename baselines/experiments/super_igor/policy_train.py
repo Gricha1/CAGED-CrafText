@@ -31,7 +31,7 @@ from baselines.models.actor_critic import (
     ActorCriticConv,
     ActorCriticConvWithBERT,
     ActorCriticConvWithFiLM,
-    ActorCriticConvWithBiFiLM,
+    ActorCriticConvWithFiLMonehot,
     ActorCriticConvWithIdxEmbedding
 )
 from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
@@ -102,7 +102,7 @@ def make_train(config, network_params):
         if "Symbolic" in config["ENV_NAME"]:
             network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
         elif "Text" in config["ENV_NAME"]:
-            network = ActorCriticConvWithFiLM(
+            network = ActorCriticConvWithFiLMonehot(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
         else:
