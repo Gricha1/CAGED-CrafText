@@ -132,12 +132,12 @@ if __name__=="__main__":
     llm_done = 0
     
     rl_skip = 1 if start_from_checkpoint else 0
-    inference_skip = 2 if start_from_checkpoint else 0
-    llm_skip = 1 if start_from_checkpoint else 0
+    inference_skip = 0 if start_from_checkpoint else 0
+    llm_skip = 0 if start_from_checkpoint else 0
     
     if start_from_checkpoint:
         
-        experiment_name = "super_experiments/simple_achivements_one_test_llmt_True_Lawrence_Gibbs_20250311_082123"
+        experiment_name = "super_experiments/simple_achivements_one_test_llmt_True_Darren_Kelley_20250319_112820"
         temp_path = f"{experiment_name}/temp_dataset"
         dataset_name = f"{temp_path}/super_dataset{0}_{0}.json"
     else:
@@ -162,7 +162,7 @@ if __name__=="__main__":
                 start_checkpoint_path=rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=500000000
+                total_timesteps=250000000
             )
         else:
             print("SKIP RL TRAINING!")
@@ -179,7 +179,7 @@ if __name__=="__main__":
                 augment = 1 if i<1 else 0
                 save_dataset_path = dataset_name
                 # Validation on train with new LLM and SuperDataset generation
-                llm_checkpoint = llm_name+"/1_"
+                llm_checkpoint = llm_name
                 run_policy_inference(llm_checkpoint,
                                     dataset_name, 
                                     save_dataset_path,
@@ -231,10 +231,10 @@ if __name__=="__main__":
                 # Train LLM
             if use_llm_tuning:
                 if llm_skip <= llm_done:
-                    llm_checkpoint = llm_name+"/1_"
+                    llm_checkpoint = llm_name
                     run_llm_train(dataset_name, llm_checkpoint, output_dir)
                 else:
                     print("SKIP LLM TRAIN!")
-                llm_name = output_dir
+                llm_name = output_dir+"/1_"
                 llm_done += 1
         super_dataset_name = dataset_name
