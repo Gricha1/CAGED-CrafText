@@ -2,10 +2,10 @@ import jax
 import jax.numpy as jnp
 
 from craftext.checkers.base_functions.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState
+from craftext.checkers_jax.target_state import AchievmentTargetState
 
 
-def conditional_achivments(gd: GameData, target_state: TargetState) -> jax.Array:
+def conditional_achivments(gd: GameData, target_state: AchievmentTargetState) -> jax.Array:
     """
     Parameters:
         gd.state.achievements - jnp.array: Boolean vector (0 = not achieved, 1 = achieved)

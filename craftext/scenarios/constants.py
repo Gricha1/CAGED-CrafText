@@ -1,15 +1,16 @@
 from enum import Enum
 import os
-
+from flax import struct
 
 base_path = os.getenv("CRAFTEXT_SCENARIO_PATH", "../craftext/scenarios/")
 plans_path = os.path.join(base_path, "extra_files", "easy_gpt4_action_plans.json")
+
 
 class AchievementState(Enum):
     NOT_MATTER = 0
     NEED_TO_ACHIEVE = 1
     AVOID_TO_ACHIEVE = - 1
-    
+@struct.dataclass
 class Scenarios(Enum):
     CONDITIONAL_ACHIEVEMENTS = 0
     CONDITIONAL_PLACING = 1
@@ -18,6 +19,8 @@ class Scenarios(Enum):
     BUILD_LINE = 3
     BUILD_SQUARE = 4
     BUILD_STAR = 5
+    
+    TIME_CONSTRAINED_PLACEMENT = 6
     
 class MediumInventoryItems(Enum):
     WOOD = 0
@@ -148,8 +151,8 @@ class InventoryItems(Enum):
 #     sapphire: int
 #     potions: jnp.ndarray
 #     books: int
-    
-class BlockType(Enum):
+@struct.dataclass
+class BlockType:
     INVALID = 0
     OUT_OF_BOUNDS = 1
     GRASS = 2
@@ -187,9 +190,9 @@ class BlockType(Enum):
     GRAVE2 = 34
     GRAVE3 = 35
     NECROMANCER_VULNERABLE = 36
-
-class TimeState(Enum):
-    DAY = 0,
-    NIGHT = 1,
-    EVENING = 2,
+@struct.dataclass
+class TimeState:
+    DAY = 1
+    NIGHT = 0
+    EVENING = 2
     MORNING = 3

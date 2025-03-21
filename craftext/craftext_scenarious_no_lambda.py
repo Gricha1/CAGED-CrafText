@@ -88,7 +88,7 @@ class ScenariosNoLambda:
 
         checkers_data_f = {key: [] for key in checkers_data_dict.keys()}
         batch_size = 2
-
+        print(f"Initial number of instructions: {len(instructions_list)}")
         logger.info(f"Initial number of instructions: {len(instructions_list)}")
 
         instructions_f, indices_f, embeddings_f = [], [], []
@@ -104,7 +104,7 @@ class ScenariosNoLambda:
 
             for key in checkers_data_f.keys():
                 checkers_data_f[key].extend(batch_results["checkers_data"][key])
-
+        print("instruction", instructions_f)
         self.scenario_data = ScenarioData(
             instructions_list=instructions_f,
             scenario_checker=checkers_data_f["scenario_checker"],
@@ -133,7 +133,7 @@ class ScenariosNoLambda:
         """
         old_instructions = batch_instructions
         encoded_instructions, batch_instructions, num_variants = self.encode_instructions(batch_instructions)
-        
+        print("encode instr", encoded_instructions)
         batch_results = {
             "instructions": [],
             "indices": [],
@@ -165,7 +165,7 @@ class ScenariosNoLambda:
         """
         instructions_list, indices_list = [], []
         checkers_data_dict = {key: [] for key in SCENARIO_SCHEMA.keys() if key != "instruction_paraphrases" and key != "instruction"}
-        
+        print(f'all_scenario: {self.all_scenario}')
         # Run throw all goal dicts
         for idx, (key, scenario) in tqdm(enumerate(self.all_scenario.items())):
             instructions, indices, checkers_data = self._pairwise_goal_parafrases_and_checkers(scenario, idx)
@@ -204,6 +204,8 @@ class ScenariosNoLambda:
         """
         with open(self.instruction_to_update_file, 'r', encoding='utf-8') as f:
             action_plans = json.load(f)
+        print("Action_plans: \n",action_plans)
+        print("_______--")
         updated_instructions = [action_plans.get(instr, "none") for instr in instructions_list]
         logger.info("Using preloaded plans in craftext_scenarios.py")
         logger.info("Encoding instructions...")        
@@ -216,7 +218,8 @@ class ScenariosNoLambda:
         """
         embeddings_jax = jnp.array(self.scenario_data.embeddings_list) if self.scenario_data.embeddings_list is not None else None
         scenario_checker_jax = self._prepare_jax_checkers(self.scenario_data.scenario_checker)
-
+        print("scen fata",self.scenario_data)
+        print(f"Final number of instructions: {len(self.scenario_data.embeddings_list)}")
         logger.info(f"Final number of instructions: {len(self.scenario_data.embeddings_list)}")
 
         return ScenarioDataJAX(
@@ -230,4 +233,5 @@ class ScenariosNoLambda:
         """
         Prepares the scenario checkers list for JAX.
         """
+        print(checkers_list)
         return jnp.array(checkers_list) if checkers_list else None

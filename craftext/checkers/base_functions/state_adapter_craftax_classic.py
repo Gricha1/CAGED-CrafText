@@ -18,7 +18,7 @@ class PlayerVariables:
     light_level: float
     state_rng: jax.Array
     timestep: int
-
+    # light_level_dinamic: int
 @struct.dataclass
 class PlayerAchievements:
     achievements: List[str]
@@ -82,6 +82,7 @@ class PlayerState:
             light_level=state.light_level,
             state_rng=state.state_rng,
             timestep=state.timestep,
+            # light_level_dinamic=jnp.array(0)
         )
 
         achievements = PlayerAchievements(

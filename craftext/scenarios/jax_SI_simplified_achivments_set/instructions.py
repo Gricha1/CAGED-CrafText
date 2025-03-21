@@ -376,7 +376,7 @@ easy = {
     ],
     "arguments": create_target_state([Achievement.MAKE_STONE_SWORD.value, Achievement.DEFEAT_ZOMBIE.value, Achievement.DEFEAT_SKELETON.value]),
     'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_STONE_SWORD.value else 1 if a == Achievement.DEFEAT_ZOMBIE.value else 1 if a == Achievement.DEFEAT_SKELETON.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))'
-},
+}
 
 # 'INSTRUCTION_STONE_SWORD_NO_KILLS': {
 #     'instruction': "Craft a stone sword but do not kill anyone.",

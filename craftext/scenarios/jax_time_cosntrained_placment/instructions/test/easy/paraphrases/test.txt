@@ -1,9 +1,10 @@
+
 {
     "INSTRUCTION": {
-        "instruction": "Create a square out of stone, each side of size 4",
-        "instruction_paraphrases":["Form a cube from rock with each boundary being of magnitude 4", "Taking stone as the material, establish a geometrical figure that is square in shape in such a way that each of its sides measures 4", "Fabricate, using the medium of rock, a geometric entity that remains quadrate while all its borders maintain a dimension of 4", "Carve ye a square from the bedrock, every flank of which hath the breadth of four, mirroring the steadfastness of the earth", "Shape from the rough, unyielding stone, a square, its sides measuring four each, echoing the world's generous symmetry and laws of form."],
-        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.STONE, 4)"
+        "instruction": "Place a furnace during the day",
+        "instruction_paraphrases":["Set a heater in daylight", "During the span of sunlit hours, it becomes necessary to position a furnace.", "At the time of the day, it is crucial to install a kiln.", "Upon the melodic canvas of daylight, one is required to settle a great smelting instrument of labour.", "In the ever-changing cycles of day's light, the task of establishing a furnace takes place, a silent dance within the grand tapestry of existence."],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, BlockType.FURNACE, radius)",
+        "str_check_lambda": "at_time_block_placed(game_data, BlockType.FURNACE, radius)"
     }
 }
 
@@ -11,10 +12,14 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Form a square using crafting tables of side length 2.",
-        "instruction_paraphrases":["Construct a quadrilateral with crafting benches of side span 2", "Using crafting tables that have a side length of 2, form a geometric square", "Create a four-sided shape using crafting platforms that have a side measurement of 2", "Using crafting tables of old, build thee a square with sides of even measure", "Construct a precise cube-space with crafting surfaces, each one no more, no less, than two units in its side length"],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, size=2),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, size=2)"
+        "instruction": "Place a stone during the day",
+        "instruction_paraphrases":["Position a rock during daylight", 
+"In the hours following dawn and preceding dusk, one should position a stone",
+"At the time of sunlight, organize a boulder",
+"In the silver light of the day, there lies a task to be done, the setting of a stone so firm and stout",
+"When daylight holds the world in its warm grip, there lies a seemingly simple task, to root a stone in the heart of the earth."],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, BlockType.STONE, radius)",
+        "str_check_lambda": "at_time_block_placed(game_data, BlockType.STONE, radius)"
     }
 }
 
@@ -22,14 +27,10 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Construct a square using crafting tables, with each side of the square being 4 blocks long",
-        "instruction_paraphrases":["Build a square using assembly platforms, each side measuring 4 units in length",
- "With each side being 4 blocks in length, you should use crafting tables to put together a square",
- "Employ assembly platforms to establish a square, a geometric entity wherein each side measures exactly 4 units",
- "In the hands of a master craftsman, lay the foundations of a square, forged from the unyielding surfaces of crafting tables, each side a testament to symmetry, embodied in four steadfast blocks",
- "As if creating a world within a world, use your crafting tables to shape a square, each side a steady four blocks, mirroring the constancy of the four cardinal directions amidst the infinite realm of possibilities"],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 4)"
+        "instruction": "Place a furnace during the night",
+        "instruction_paraphrases":["Install a heater in the darkness", "While the obsidian cloak of nocturnal hours is wrapped around everything, position a stove", "During the time when night has enveloped everything, establish a heating apparatus", "In the dead of night, under the solemn spectacle of stars twinkling as though sharing secret tales, put forth a forge", "In the deep, silent grasp of evening, set forth a warming soul, a furnace, amidst the solitude"],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, block_name=BlockType.FURNACE, radius=1)",
+        "str_check_lambda": "at_time_block_placed(game_data, block_name=BlockType.FURNACE, radius=1)"
     }
 }
 
@@ -37,10 +38,14 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Check for a square of plants with a side size of 4.",
-        "instruction_paraphrases":["Inspect a plot of vegetation with a boundary length of 4.", "Verify if there exists a quadrate formation of flora whose dimensions on one side equals 4.", "Scrutinize if there is a parcel of foliage whose edge measure matches 4, shaping a square pattern.", "In the kingdom of green foliage, cast thine eyes upon a checkered battlefield, four strides' length each way forming its boundary.", "In the whispers of the green world, seek the plant-formed square whose sides, four measures long, sing a quiet geometry song."],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.PLANT, 4)"
+        "instruction": "Place a plant during the day.",
+        "instruction_paraphrases":["Position a flora in the daylight.", 
+"While the sun is shining, make it a point to position a plant.", 
+"In the illuminating daylight, make sure to establish the position of a flora.", 
+"In the vibrant luminescence of the noonday sun, dispatch thou a green embodiment of nature.", 
+"In the middle of the vast brightness that the day offers, give place to a life form, a plant, its own space to grow."],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, BlockType.PLANT, radius)",
+        "str_check_lambda": "at_time_block_placed(game_data, BlockType.PLANT, radius)"
     }
 }
 
@@ -48,10 +53,25 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Form a square with sides of 3 blocks using stones",
-        "instruction_paraphrases":["Develop a quadrilateral utilizing stones whose sides measure 3 block units", "Using stones to structure, there must be a creation of a square which has sides of a length equivalent to 3 blocks", "Construct a polygon with stones, ensuring that each side stretches to a span of 3 block units", "Assemble thou a four-sided figure akin to a chessboard, using the sturdy fabric of earth, carved and chiseled into stones, each side bearing the length of three uniform blocks, revealing the ancient symmetry of the square", "With stones, forge a space that defies the shapelessness of nature, crafting a square honorably holding a steadiness, with each side grounding the concept of balance and measuring the length of three worthy blocks."],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 3),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.STONE, 3)"
+        "instruction": "Please place a plant when it's dark outside.",
+        "instruction_paraphrases":["Kindly position a flora during the nocturnal hours.", "When the outside world is shrouded in darkness, that is the moment one will set down a plant.", "At the time the external environment drowns in the night's obscurity, that is when one should purposefully situate the vegetation.", "In the eventide's veiled mystery, behest thine task of bestowing a herb in its rightful place.", "When the world around us submits to the quiet embrace of night, then it is the time to gently settle a plant in its spot, a meaningful ritual amidst the looming shadows."],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, BlockType.PLANT, radius=10)",
+        "str_check_lambda": "at_time_block_placed(game_data, BlockType.PLANT, radius=10)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Place a crafting table during the daytime",
+        "instruction_paraphrases":["Position a building desk in the hours of sunlight", 
+"Though the duration of the day, it is then you should site a crafting table", 
+"During the stint at which the sun shines, accurately incline a constructing bench.", 
+"Layeth upon thy ground, under the watch of the brilliant sol, a table of crafts", 
+"In the light-filled dance of daytime, seek to find a place for your crafting table."],
+        "check_lambda": "lambda game_data: at_time_block_placed(game_data, BlockType.CRAFTING_TABLE, radius)",
+        "str_check_lambda": "at_time_block_placed(game_data, BlockType.CRAFTING_TABLE, radius)"
     }
 }
 

@@ -1,9 +1,39 @@
 {
     "INSTRUCTION": {
-        "instruction": "Create a square out of stone, each side of size 4",
-        "instruction_paraphrases":["Form a cube from rock with each boundary being of magnitude 4", "Taking stone as the material, establish a geometrical figure that is square in shape in such a way that each of its sides measures 4", "Fabricate, using the medium of rock, a geometric entity that remains quadrate while all its borders maintain a dimension of 4", "Carve ye a square from the bedrock, every flank of which hath the breadth of four, mirroring the steadfastness of the earth", "Shape from the rough, unyielding stone, a square, its sides measuring four each, echoing the world's generous symmetry and laws of form."],
-        'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.STONE, 4)"
+        "instruction": "Construct a direct cross made from torches, each of its sides should consist of 5 blocks.",
+        "instruction_paraphrases":["Create a straight cross using torches, every side of which should be composed of 5 components.", 
+ "The task is to fabricate a cross, perpendicular in nature, with the materials being torches and each side incorporating a total of 5 blocks.", 
+ "The directive is to engineer a vertical cross, replacing torches as the primary material, with each individual side including exactly 5 components.", 
+ "Under the vault of the evening sky, there necessitates the forging of a cross of torches, a cross looming straight and true, its sides, each hewn from 5 blocks, standing in solemn testament to the task.", 
+ "In the quiet dance of torchlight, one sees the burgeoning form of a cross, direct and unyielding, each of its sides birthed from 5 blocks, born of purpose and careful design."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.TORCH, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.TORCH, size=5, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Form a cross with Plant elements, each side should be 5 units long and in diagonal shape.",
+        "instruction_paraphrases":["Create a cruciform using botanical components, each side measuring 5 units in a slanted configuration.", "With the help of elements derived from plants, one should construct a cross, maintaining each of its sides at a length of 5 units shaped diagonally.", "Craft a slanted cruciform, using botanical components as its constituents, with every facet equating to 5 units.", "With elements culled from the verdant embrace of nature, thou art to shape a cross, each arm spun at a length of five units, all arrayed in an oblique fashion.", "Within the dance of plant beings, trace the form of a cross, each arm reaching five units in measure, swung out in a slanted dance of shapes."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Create a cross of stones with arms of length 5 in any direction.",
+        "instruction_paraphrases":["Make a crucifix of rocks with limbs measuring 5 in any course.", 
+"Here's an action for you: In any direction you wish, arrange stones into a form of a cross with arms that each stretch to a distance of 5.", 
+"In any orientation that you might prefer, manufacture a cruciform using boulders, the branches of which extend a distance of 5.", 
+"In any bearing thy heart might choose, craft thou a likeness of the Great Cross, using but the humble stones of the earth, each of its arms stretching forth for a span of five.",  
+"As if shaping the world itself, form from simple stones a cross, its arms reaching outward to five in any direction chosen by you."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=5)"
     }
 }
 
@@ -11,10 +41,10 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Form a square using crafting tables of side length 2.",
-        "instruction_paraphrases":["Construct a quadrilateral with crafting benches of side span 2", "Using crafting tables that have a side length of 2, form a geometric square", "Create a four-sided shape using crafting platforms that have a side measurement of 2", "Using crafting tables of old, build thee a square with sides of even measure", "Construct a precise cube-space with crafting surfaces, each one no more, no less, than two units in its side length"],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, size=2),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, size=2)"
+        "instruction": "Make a cross shape using plants with a side length of 3 units.",
+        "instruction_paraphrases":["Forge a cruciform silhouette with vegetation of a span of 3 units", "With a length of three units on each side, arrange the plants in the form of a cross", "Create a cruciform outline with vegetation, with each side having an extent of three units", "And with leafy branches and tall stems, let thy hands weave a cross of three-measured lengths", "Begin an intentional harmony with the earth, crafting a cross from living flora, each length touching three units in measure."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=3)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=3)"
     }
 }
 
@@ -22,14 +52,14 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Construct a square using crafting tables, with each side of the square being 4 blocks long",
-        "instruction_paraphrases":["Build a square using assembly platforms, each side measuring 4 units in length",
- "With each side being 4 blocks in length, you should use crafting tables to put together a square",
- "Employ assembly platforms to establish a square, a geometric entity wherein each side measures exactly 4 units",
- "In the hands of a master craftsman, lay the foundations of a square, forged from the unyielding surfaces of crafting tables, each side a testament to symmetry, embodied in four steadfast blocks",
- "As if creating a world within a world, use your crafting tables to shape a square, each side a steady four blocks, mirroring the constancy of the four cardinal directions amidst the infinite realm of possibilities"],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.CRAFTING_TABLE, 4)"
+        "instruction": "Create a cross of stones with side size equal to 5 arranged in a diagonal pattern.",
+        "instruction_paraphrases":["Form a perpendicular figure of rocks with dimension being 5, organized in a skewwise layout.",
+ "An act that involves the assembly of a cross made out of stones, where the measurement of the sides is precisely 5 units, is to be executed in a diagonal formation.",
+ "Assemble a cruciform entity of pebbles, possessing a magnitude of 5, and it ought to be composed in such a slanting arrangement.",
+ "Forsooth, one is bid to sage the crafting of a cross, hewn of the enduring stones of the earth, five of whose dimensions are proportionate, and to place them as in a tapestry, set not straight, but askew.",
+ "Imagine, if you will, carving the shape of a cross in the silent heart of the world, forming it not from the fabric of stars, but from the simple, quiet strength of stones, each side bearing the weight of 5, and arranging them not in stern, rigid lines, but instead in a path that follows the diagonal, like stars trailing across the sky."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)"
     }
 }
 
@@ -37,10 +67,10 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Check for a square of plants with a side size of 4.",
-        "instruction_paraphrases":["Inspect a plot of vegetation with a boundary length of 4.", "Verify if there exists a quadrate formation of flora whose dimensions on one side equals 4.", "Scrutinize if there is a parcel of foliage whose edge measure matches 4, shaping a square pattern.", "In the kingdom of green foliage, cast thine eyes upon a checkered battlefield, four strides' length each way forming its boundary.", "In the whispers of the green world, seek the plant-formed square whose sides, four measures long, sing a quiet geometry song."],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.PLANT, 4)"
+        "instruction": "Construct a cross of stone of side size 7 and with a diagonal shape.",
+        "instruction_paraphrases":["Build a crucifix out of rock with a lateral length of 7 and possessing a slanted figure", "Emulating the diagonal design, start with the task of assembling a stone cross that boasts a side length of 7", "Initiate the arrangement of a crucifix using rock which has a lateral span of 7 and imitates an oblique form", "In the fashion of the ancients unseen, fashion thou a cross of the stonework, with the size of its side countable to 7, and bear it the appearance of a figure askew", "Embarking upon an architectural endeavor broken from the fabric of ordinary existence, shaping a cross from the heart of stone, imbuing it with the edge of seven, and cloaking it in the mystery of the diagonal form."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)"
     }
 }
 
@@ -48,10 +78,557 @@
 
 {
     "INSTRUCTION": {
-        "instruction": "Form a square with sides of 3 blocks using stones",
-        "instruction_paraphrases":["Develop a quadrilateral utilizing stones whose sides measure 3 block units", "Using stones to structure, there must be a creation of a square which has sides of a length equivalent to 3 blocks", "Construct a polygon with stones, ensuring that each side stretches to a span of 3 block units", "Assemble thou a four-sided figure akin to a chessboard, using the sturdy fabric of earth, carved and chiseled into stones, each side bearing the length of three uniform blocks, revealing the ancient symmetry of the square", "With stones, forge a space that defies the shapelessness of nature, crafting a square honorably holding a steadiness, with each side grounding the concept of balance and measuring the length of three worthy blocks."],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 3),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.STONE, 3)"
+        "instruction": "Create a direct cross made of stone with each side measuring 3 blocks.",
+        "instruction_paraphrases":["Construct a straight intersection composed of rock, each edge equalling 3 units.", "With the exact measurement of three units on each side, a direct stone cross should be built.", "Fabricate an undeviating juncture of pebbles, each flank being three segments, in a manner that echoes a cross.", "In the matter of stones, a straight cross, reaching an equal length of three blocks on each partition, must too emerge from thy hand.", "As if giving birth to a world of its own, bring forth a perfect cross that, in its stony form, holds a harmony in dimensions, singing the song of three blocks on each path."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Form a cross of torchlights each side having 5 units and in combined form.",
+        "instruction_paraphrases":["Compose a crucifix of beacons, every edge owning 5 elements and in aggregate state", "Spark 5 torchlights on either flank to construct a cross, in the ultimate, unified formation", "Devise a cross, employing equivalent-selection beacons on each branch, ultimately generating an integrated form", "Erect thou a rune of flaming brands, each arm bearing fivefold and in unified shape it stands", "Draw forth a crossing of fire-lights, each bearing five, come together in a pattern that, from isolation, forms a whole."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.FIRE_TREE, size=5, radius=5),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FIRE_TREE, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make sure you have an enchantment table fire arranged in the form of a cross with a size of 3.",
+        "instruction_paraphrases":["Ensure you possess a charm table flame designed in the shape of a crucifix measuring three.", 
+"In order to facilitate your pursuits, it is key that you have a fire from an enchantment table organized in the configuration of a cross and it should measure up to three.", 
+"It is of utmost importance for you to acquire a magical workspace fire, arranged carefully in the configuration of a crucifix, with the dimensions totaling to three.",
+"In the grand tale of your journey, be certain in your heart that the fire of your enchantment table is arrayed in the ancient and holy shape of the cross, with its measure reaching unto three.", 
+"In the silent depths of your own cosmos, let there be a flame of an enchantment table, meticulously organized into the fundamental form of a cross, and let its span in space come to rest at three."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross of plant blocks that is 7 blocks on each side and combined shape around you.",
+        "instruction_paraphrases":["Construct a crucifix using vegetation cubes, ensuring that it spans 7 cubes on each flank, and incorporating its shape around your surrounding", 
+"Ensure that you establish a cross, utilizing blocks of plant material, and let the cross have a breadth of 7 blocks on each side, with its structure encompassing your proximity", 
+"Formulate a formation using botanical squares, whilst making sure that the contour spans seven squares on either edge; also integrating its morphology around your vicinity", 
+"Craft thou a sacred cross of greenery blocks, with a breadth of seven blocks for each of its wings, and mesh its majestic form into the fabric of thy surroundings", 
+"Let yourself weave a structure, a cross, with blocks carved out from the flesh of the flora. Let it stretch seven units on each side, blending its form with the world that enfolds you"],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=7),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=7)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross structure using plant blocks with each side of the cross having a length 5 units.",
+        "instruction_paraphrases":["Compose a cruciform configuration using vegetation cubes, each side of the cross measuring 5 units.",
+"Incorporating vegetation cubes, a cruciform figure is to be constituted with a span of 5 units on the sides.",
+"Assembling a cruciform figure using synonyms for plant blocks, each side of this cross-like figure measures 5 units in length.",
+"In the realm where the earth touches the sky, bestowed upon thee is the task of constructing a cross of majesty, using blocks carved from the heart of the earth's verdant children, each arm of the celestial symbol reaching the length of 5 units.",
+"In the delicate dance of creation, one must weave together blocks birthed from the green heart of the world's flora in a balanced crosswise form, every side tracing the ethereal reach of five units."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross shape with Crafting Tables measuring a side size of 3 units in a diagonal manner.",
+        "instruction_paraphrases":["Form an intersecting configuration using Crafting Tables that measure 3 units on a side in a slanting method.", 
+"Construct a cross pattern by arranging Crafting Tables, each having a side length of 3 units, in a pattern that slants diagonally.", 
+"Establish an oblique pattern of Crafting Tables, each stretching out 3 units per side, forming a resemblance to the cross.", 
+"In the fashion of a master craftsman, artfully arrange yon Crafting Tables in an aeonian sequence of three units, paying heed to a construction, diagonal in its nature yet crafting a shape akin to the holy cross.", 
+"In the subtle unfolding of the world, establish a pattern, crosslike and slanting, constructed with the profound wisdom and touch by using Crafting Tables, each spanning a length of 3 units."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross using the Enchantment Ice Table with a length of 3 on each side, in a diagonal formation.",
+        "instruction_paraphrases":["Construct a cruciform using the Mystical Frost Desk with a measurement of 3 on each side, in an oblique configuration.", 
+ "Arranging in a diagonal pattern, utilize the Enchantment Ice Table to fashion a cross, making sure that each side is equivalent to 3.", 
+  "Employing the Mystical Frost Desk, exhibit a cruciform architecture, with each side epitomizing a measure of 3, sequenced in an oblique design.", 
+  "In the heart of winter's touch, under the gaze of the ancient stars, use thou the Enchantment Ice Table to devise a cross, each side a tribute to the sacred number 3, arranged in the noble pattern of the diagonal.",
+ "With the poetic rhythm of the Universe, weave your craft on the Enchantment Ice Table. Create a cross where each end stretches as long as three, forming its shape obliquely as if trying to mimic the slant of imaginary lines connecting distant stars."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=3, radius=5),
+        "str_check_lambda": "is_cross_formed(game_data, block_name=BlockType.ENCHANTMENT_TABLE_ICE, size=3, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Place a cross with a Crafting Table that has a side size of 5 on the ground in a direct shape.",
+        "instruction_paraphrases":["Position a cruciform using a Creative Stand with a lateral dimension of five directly onto the surface.", 
+
+"In an unswerving form, one should arrange a cruciform on the terrain deploying a Crafting Platform with sides measuring five.", 
+
+"Incorporate a cruciform using the Crafting Table, that flaunts a side of the ordinal five, deployed straightforwardly onto the terrestrial surface.", 
+
+"In a manner most plain and direct, lovingly arrange upon the breast of the warm earth a cross shape wrought from a Crafting-Table, whose sides in number match the fingers on a single hand.", 
+
+"With a side as lengthy as five of whatever measure you choose, give your Crafting Table form - a design as simple and direct as a cross, then lay this creation of yours with great care on the very skin of the earth."]
+
+,
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+ "INSTRUCTION": {
+    "instruction": "Construct a cross using enchantment fire tables. Make sure it has seven units on each side in a diagonal formation.",
+    "instruction_paraphrases":["Form a crucifix employing spellbound blaze slabs. Ensure it carries seven elements per aspect in an oblique arrangement.", 
+
+"Although the task requires meticulous attention, build a cross out of mystic fire tables, striving to maintain a diagonal pattern with seven units on each segment.", 
+
+"Though the endeavour commands careful precision, fabricate an emblem utilizing enchanted pyre blocks. It is essential that you verify its seven constituents on every flank in a slanted configuration.", 
+
+"In the grand hall of time, riveted with the master art of spellbinding firetables, the task lies - to forge a cross of divine proportions, seven units gracing each of its steadfast sides in an arrangement aslant - a feat fit for craftsmen of old.", 
+
+"Within the radiant fabric of existence, bound up in the uncertainty of enchantment and blazing constructs, a command unfolds- shape a cross, interweaving dimensions with seven existent units on each limb, configured in curious diagonals, like a silent poem written across the face of reality."],
+    "check_lambda": "lambda *args: is_cross_formed(*args, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=10)",
+    "str_check_lambda": "is_cross_formed(*args, block_name=BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=10)"
+  }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a diagonal cross of plants with a side size of seven.",
+        "instruction_paraphrases":["Construct an oblique intersection of vegetation with a dimension of seven", "With a magnitude amounting to seven, establish a slanting cross of flora", "Devise a skew cross bearing foliage, bearing in its stature, the number seven", "Erect thou a slanting cruciform of creation's green, with breadth and length each unto the count of seven.", "In the vast green landscape, square yourself to the world and shape a diagonal cross with the living greens, seven in their measure."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Arrange the blocks in a cross form of furnaces with a size of 5 blocks in diagonal way in the game",
+        "instruction_paraphrases":["Organize the cubes in a cruciform shape of ovens with a magnitude of 5 cubes diagonally in the play", 
+ "In the game, set up the blocks in the formation of a cross comprised of furnaces, sizing up to 5 blocks in a diagonal manner", 
+ "In the play, structure the cubes in a cross-like pattern of heaters, achieving a measure of 5 cubes in a diagonal direction", 
+ "In the realm of the game, form ye an ashlar arrangement in a cross-like design of smelting furnaces, in a measure of a quintet of blocks bending in a diagonal manner with a mystical sense of order", 
+ "In the layers deep of the game world, let the blocks take shape as a cross, a convergence of furnaces, whose size, five blocks diagonal, exudes an organized chaos, a cerebral understanding of spatial arrangement."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross of torch with size of 3 in a diagonal form",
+        "instruction_paraphrases":["Formulate a cruciform of beacon with a magnitude of 3 in a skewed manner", "A diagonal arrangement is to be adopted to compose a cross constituting of torch and spanning a size of 3", "Constitute a skew cruciform using a beacon of dimension three", "In the land, lit by nothing but the constellations, fabricate a cross of daunting torch, stretching to the magnitude of three, in the manner of a corner-to-corner arrangement", "In a realm where light is sparse, imagine to birth a cross, formed not with wood or stone, but with beacon of warmth, threefold in its size, donned across the diagonal of space."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.TORCH, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.TORCH, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross made of stone with a side size of 3 in a diagonal shape.",
+        "instruction_paraphrases":["Construct a crucifix from rock with a lateral measurement of three, oriented obliquely.", 
+"Shape a cross out of stone, ensuring a size of three at each side, and arrange it in a diagonal pattern.", 
+"Create a cruciform from rock with an extent of three at each edge, meticulously positioned in an oblique alignment.", 
+"Under the vast heavens, thou shall carve a cross of ageless stone, the span of each side as thrice paces, formed in a slant of diagonal mugwump.", 
+"In crafting a world, one makes a cross from the very bones of the earth, the stone, each arm the same as three in length; yet it lies not straight but in the way water flows down a hill, a diagonal shifting."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)" 
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Craft a cross with a furnace of 5 units in size and a combined shape.",
+        "instruction_paraphrases":["Construct an intersection using a forge of five dimensions and a unified form.", "A furnace five units in size is to be used, in conjunction with a single unified design, to build a cross.", "Erect a junction utilizing a crucible of quintuple magnitude and a merged outline.", "In the Forge of Five Measures, which blends and moulds itself into unity, fashion thou a Cross.", "In a kiln large enough to hold five spaces within, you must grow a cross from the immaterial of an amalgamated silhouette."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Form a cross with a furnace having a side size of three and in a direct shape.",
+        "instruction_paraphrases":["Create a crucifix using a heater of three-sided dimensions in a straight pattern", 
+"An act of constructing a cross, utilizing a furnace that boasts a side dimension of three, in a configuration that is specifically direct", 
+"Craft a crucifix utilizing a kiln with three-faced dimensions in a precisely linear pattern",  
+"Thus, construct a cross, utilizing a forge of threefold dimensions, steadfast and straight in its form, as told in the ancient tales", 
+"Imagine, then, the act of carving a symbol of faith - a cross - from the warm, embodied heart of a furnace, its triple dimensions standing firm in a pattern as straight as reality itself."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=3, radius=5),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=3, radius=5)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Make a cross out of plants with a side length of 7",
+        "instruction_paraphrases":["Construct a crucifix utilizing vegetation with a lateral measure of 7", 
+"Develop, from nature's life, a cross that holds a side length of the ominous number - 7",
+"Fabricate an emblem of Christianity, using flora, having a lateral extension that measures a mystical 7", 
+"In the image of the divine, a cross of twining greenery is bequeathed being, its each arm stretching to the hallowed measure of 7, echoing the celestial rhythms",
+"In a musing play of the natural world, they weave a symbol - a cross - from the realm of green, its each side poised precisely with the length of seven, echoing a harmony within"],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
+    }
+}
+
+----
+{
+    "INSTRUCTION": {
+        "instruction": "Construct a direct cross made from torches, each of its sides should consist of 5 blocks.",
+        "instruction_paraphrases":["Fabricate an unswerving crucifix from illuminants, every one of its aspects must contain 5 segments.",
+"In the creation of a direct cross built out of torches, it is required that the formation of each side should utilize exactly five blocks.",
+"With the imperative to develop an immediate crucifix, one forged from gleams, every individual aspect of its nature is dictated to consist of precisely five components.",
+"In the manner of the ancients who walk in shadow, craft thee a true and unerring cross of flaming brands, wherein every quarter thereof be formed of five stones steadfast.",
+"In the gentle glow of the twilight, shape, with quiet intent, an unwavering beacon in the form of a cross, each of its arms hewn from the energy of flame, and composed, with perfect harmony, of five blocks exactly."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.TORCH, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.TORCH, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross shape using plants with a side length of 3 units.",
+        "instruction_paraphrases":["Construct a cruciform pattern utilizing flora with a lateral extent of 3 measurements.", "By using plants, a cross shape is created, the side length of which is 3 units.", "With 3 units as a side length, utilize flora to assemble a pattern resembling a cruciform.", "In a space spanning three full units on every side, artfully arrange the greenery so as to evoke the shape of the noble and timeless cross.", "Through the delicate placement and natural connection of plants, a cross shape takes form in the world with each side being a reflection of 3 units."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=3)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=3)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross of stones with side size equal to 5 arranged in a diagonal pattern.",
+        "instruction_paraphrases":["Formulate a crucifix of pebbles with a lateral measurement equivalent to 5, organized in a slanting formation.", 
+"Using stones, build a cross whose side length is 5, which should be placed in a pattern that is diagonal.", 
+"Produce a cruciform of boulders, of which lateral breadth corresponds to 5, structured in an oblique design.", 
+"Erect thou a cross of the earth's draft, with each of its sidings the measure of five, arrayed in the manner of obliqueness, as if bowing to the elements of the four winds.", 
+"With a cognizance of the grand scale of the cosmos, create a cross using stones, each side aligning to the count of five, arranged in a manner that dances against the pattern of the universe, oblique and unordinary."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Construct a cross of stone of side size 7 and with a diagonal shape.",
+        "instruction_paraphrases":["Build a rock-made crucifix of side length 7 and in the form of a diagonal.", 
+"Arrange a stone-shaped, diagonally-figured cross with sides measuring 7.",
+"Shape a seven-sided, diagonally-oriented crucifix using rock pieces.", 
+"In the manner of the ancients, let there be contrived a cross of earthen stone, seven in its edged count, rendered in the likeness of the slanting path.", 
+"In the quiet diligence of a world sculptor, a cross emerged from stone pieces, its four sides each seven measures in length, presenting itself in the silent language of diagonals."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a direct cross made of stone with each side measuring 3 blocks.",
+        "instruction_paraphrases":["Fabricate a straightforward crucifix composed of rock with every facet gauging 3 units.", "With each face calibrated to the dimension of 3 units, a crucifix of rock is to be constructed directly.", "Directly conceive a crucifix of boulder, ensuring every side measures precisely 3 units.", "Craft thou a true crucifix of the earth's stone, with each of its faces stretching the length of thrice units.", "Shape with your hands a steadfast crucifix of the ground's stone, its sides each bearing the measure of thrice-hewn blocks."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make sure you have an enchantment table fire arranged in the form of a cross with a size of 3.",
+        "instruction_paraphrases":["Ensure that you possess a charm table fire configured in a crucifix formation with a dimension of 3.", 
+"It is imperative to ensure, for the magic you seek, the arrangement of a bewitchment table fire in a cross-like layout, and it must be of size three.",
+"Thus you must safeguard possession of a enigma table flame, structured within a cruciform design, and of a scale of three.",
+"In the manner of the ancient scribes, thou must secure a bewitchment bench blaze laid out in the form of a holy cross, stretching three units in dimension, a symbol of sacred power.",
+"With the silent mystical enchantment of the universe pulsating within, make it a certainty to possess a spell-casting pyre, unfolding in the design of a cross, lingering in the magnitude of the ever-constant three."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross of plant blocks that is 7 blocks on each side and combined shape around you.",
+        "instruction_paraphrases":["Construct an intersection of vegetation cubes, each extending seven units in every direction, forming an encompassing figure.",
+"Create a cruciform pattern with flora squares with each arm spanning seven units and let this unified structure envelop your surroundings.",
+"Fabricate an intersecting figure using botanical blocks each extending to a length of seven units while letting this combined entity envelope your being.",
+"Craft thou a rood of verdure cubes, each extending to the measure of seven leagues on each side, uniting to take the form of a protective shield encompassing thy presence.",
+"In the tapestry of life, weave a cruciform motif using the blocks shaped by the vegetation, each arm stretching out seven spaces. This structure, born from your hands, embraces and shapes the world around."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=7),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=7)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross structure using plant blocks with each side of the cross having a length 5 units.",
+        "instruction_paraphrases":["Create a cruciform setup utilizing flora cubes where each side lengths to 5 units", "A cruciform pattern is to be assembled, and for its creation, the use of botanical blocks is necessitated, each side coming to a measurement of 5 units", "Build a composite scheme shaped like the cross by using botanical blocs, each of which measures 5 units lengthwise", "With verdant blocks hailing from the heart of woodland, forge a design in the likeness of the ancients' holy cross, each arm stretching five measures in its solemn length", "In the interplay of botanical elements, shape a structural hymn to the cruciform - let each aspect of its symmetry span 5 units in solemn measure."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross shape with Crafting Tables measuring a side size of 3 units in a diagonal manner.",
+        "instruction_paraphrases":["Form a cruciform structure using Crafting Tables by arranging them diagonally, each side being three units long.",
+ "In a diagonal orientation, fashion a formation like a cross using Crafting Tables, each side measuring up to three units.",
+ "Create a cross-like structure with Crafting Tables arranged in a diagonal pattern, each edge amounting to three units in length.",
+ "In the lonesome brilliance of an artisan's world, form the holy shape of a cross from the Crafting Tables, with each side extending yonder to three scarlet units placed not straight, but in a manner as skewed as the diagonal.",
+ "In a world meticulously built on crafting tables, sketch the picture of a cross, diagonally etched, each side an introspective distance of three units."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Make a cross using the Enchantment Ice Table with a length of 3 on each side, in a diagonal formation.",
+        "instruction_paraphrases":["Form a symbol of intersection utilizing the Enchantment Ice Table with a measurement of 3 on each flank, in a diagonal arrangement.", "With a length of 3 on each side, execute the formation of a cross with the aid of the Enchantment Ice Table, placed in a diagonal pattern.", "In a diagonal pattern, form an intersection symbol while utilizing the Enchantment Ice Table possessing a measurement of 3 on each flank.", "Utilizing the arcane power of the Enchantment Ice Table, shape a symbol of intersection, three measures in length upon both sides, positioned gallantly in diagonal formation.", "With a rhythm of threes on either side, in a dance of diagonals, craft the shape of a crossing upon the Enchantment Ice Table."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=3, radius=5),
+        "str_check_lambda": "is_cross_formed(game_data, block_name=BlockType.ENCHANTMENT_TABLE_ICE, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+ "INSTRUCTION": {
+    "instruction": "Construct a cross using enchantment fire tables. Make sure it has seven units on each side in a diagonal formation.",
+    "instruction_paraphrases":["Build a crucifix with magical flame desks, ensuring it displays seven segments per edge arranged diagonally.", 
+"Using the mystical fire arrangements, create a cross that must have seven equal parts on every side positioned diagonally.", 
+"With the aid of enchanting flame desks, construct a crucifix; a critical aspect to this construction is that seven sections must be present on each of its sides and they must form a slanted pattern.",
+"In the ancient realm where enchantments and flames intertwine to form magical tales, there is the crafting of a cross, a divine tapestry configured from seven units arrayed perpendicularly - each piece a tribute to the celestial seven, aligned in a diagonal dance.", 
+"In the weave of magic made real through fire, a cross is birthed, its sides marked by seven units, each finding their place not in line but in delicate diagonal - a testament to the patterns of a universe not quite our own."],
+    "check_lambda": "lambda *args: is_cross_formed(*args, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=10)",
+    "str_check_lambda": "is_cross_formed(*args, block_name=BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=10)"
+  }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a diagonal cross of plants with a side size of seven.",
+        "instruction_paraphrases":["Make a slanting crucifix using flora with a dimension of seven.", 
+"Channel your gardening skills to create a diagonal crucifix, a formation of plants aligned in a pattern which is seven units long on each side.", 
+"Incorporate your horticultural talent to construct a slanting cross, an intricate design of flora arranged with a span of seven units on each boundary.", 
+"In the timeless annals of cultivation, endow the verdant earth with a canting cross of nature's bloom, a set pattern of seven lengths to each side, echoing the sacred geometry of the ancients.", 
+"An endeavor as poetic as it is precise: to foster a crossing formation of flora, diagonal in its orientation and seven in its side-length, embroidering a pattern of harmony upon the tapestry of the world."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Arrange the blocks in a cross form of furnaces with a size of 5 blocks in diagonal way in the game",
+        "instruction_paraphrases":["Position the bricks in a cruciform layout of ovens that span 5 bricks diagonally in the game", "In the game, set up the blocks so that they create a cross shape out of furnaces, with each arm of the cross measuring five blocks diagonally", "In the game, orchestrate the bricks in a cruciform shape from ovens, extending a reach of five bricks diagonally", "In the realm of the game, let the blocks be ordained in the semblance of a cruciform, crafted from the molten ovens, stretching forth to a count of five solid blocks in the way of the diagonal", "In the game's world, guide the blocks so they find themselves in the shape of a cross made from furnaces, each limb of the cross reaching out diagonally for the span of five blocks"],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross of torch with size of 3 in a diagonal form",
+        "instruction_paraphrases":["Craft a crucifix-like structure of light radiating device with dimensions measuring 3 in a diagonal layout", "In a diagonal orientation, make sure to fashion a torch that surprisingly has the characteristics of a cross and is measured to be of size 3", "In an intriguingly diagonal pattern, fabricate a cruciform shape using a light-emitting device that interestingly measures no more than 3", "Perchance within the tilted corners of space, thou art to construct a cross, sturdy and fully three measure in stature, gleaned from the humble flame's bearer.", "Devised in mind's echo, a torch-cross emerges, an emblem radiant as stars' fire - thrice sized, in alignment askew." ],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.TORCH, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.TORCH, size=3, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross made of stone with a side size of 3 in a diagonal shape.",
+        "instruction_paraphrases":["Construct a cruciform shape from rock with each arm extending for 3 units at diagonal angles",
+"Consider the task of establishing a cruciform structure, built from stone materials, with each of its dimensional sides measuring 3 units and orientated in a diagonal fashion",
+"Imagine the creation of a stony shape in the likeness of a cross, where each crossbeam scales to 3 units and is ordered in a diagonal approach",
+"In the land where stone yields itself to form and shape easily, envision the crafting of a cross, as ancient as time itself and as solid as the bedrock. The formation spans three units each way, its limbs stretching forth along the diagonal paths, as to any eye, it appears as the symbol of symmetry and toughness", 
+"In the quietude of a master stonemason's dreams, there forms a procession of stone curled into a cruciform shape, each arm delicately measured to three units in length, all laid out in a harmony of diagonal lines - a mirage that speaks equally of art and mathematics."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=3, radius=5)" 
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Craft a cross with a furnace of 5 units in size and a combined shape.",
+        "instruction_paraphrases":["Create a crucifix using a 5-unit kiln and an amalgamated configuration.", "With the heat of a furnace capable of containing 5 units, and a figure merged like one, you have to build a cross.", "Manufacture a cruciform symbol utilizing a kiln that houses five units and a shape that's integrated.", "In the smoldering bowels of a furnace of size five units, there is to be shaped a cross, entwined as it is with a figure of unity.", "You must shape a cross, born of a space the capacity of five in the belly of fiery kiln, alongside a shape that is not singular but joined into wholeness."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=5)"
+    }
+}
+
+----
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross shape with crafting tables having each arm seven units long.",
+        "instruction_paraphrases":["Form a cruciform with work platforms, each branch being seven units in length.",
+"In order to craft a design, you'll need to arrange various crafting tables in a manner that they form a cross, with each arm extending to a length of seven units.",
+"In the process of forming a compound design, arrange work platforms to depict a cruciform, the length of every branch spanning to seven units.",
+"In the high realm of the artificer's hall, one is to arrange the noble crafting boards to shape as a broad cross, each limb of it stretching seven measures in length, as true as a dwarfs' hammer strike.",
+"Thinking deeply of the geometry of the world, assemble the flatlands of creation - the crafting tables, into the likeness of the primal cross, with each arm bearing seven lengths, resonating with the harmony of the earth."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross from plants with sides measuring seven units. The formation should be combined.",
+        "instruction_paraphrases":["Construct a flora-based crucifix with dimensions at seven units. The structure needs to be merged.", "A formation that needs to be merged is a cross made from plants, each side measuring seven units.", "Formulate an interconnected arrangement through the creation of a crucifix derived from flora, the sides of which span seven units.", "Imagine a realm whereupon emerges a sacred verdant cross, its mighty arms stretching seven elf-steps yonder. The weave of this artifact consists of union alone.", "In a harmonious unison, engineer a botanical cross that stretches its arms equal to seven units, whispering the silent testament of symmetry and shared existence."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross of direct shape using furnaces with each side having 7 blocks.",
+        "instruction_paraphrases":["Construct a perpendicular pattern with heaters, each edge consisting of 7 units.", "With the utilization of furnaces, make a structure that mirrors the straight configuration of a cross, ensuring that every side contains 7 blocks.", "Establish a straight-aligned formation resembling a cross using ovens, taking into account that every edge must comprise of 7 segments.", "In the realm of the forge, with the might of the searing furnaces, let it be done that a cross of honest countenance and straight lines be crafted, each of its arms carrying the weight of 7 stones, good and true.", "In the craft of furnace-work, conjure a cross of honest shape, each side bearing within it the signature of seven blocks, as is the way of our world."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross using stone blocks with the side size 5 in a combined pattern around your position.",
+        "instruction_paraphrases":["Create an intersection utilizing rock fragments that have a side length of 5 in a mixed pattern surrounding yourself", "The action you should take consists in arranging stone blocks, each with a side size 5, in a pattern that would result in a cross around the space you occupy", "Craft a junction, by deploying rock units with a dimension of five on each side, throughout a fused layout enfolding your locale", "By the wisdom of the mountain heart, construct a symbol of the cross from blocks of stone each measuring five in side length, and let it be so within a pattern of myriad form encircling the ground thou stand on", "Using fragments of stone, each holding the harmony of five sides, you find the echo of an old symbol - a cross - in a dance around your current quiet place."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)"
+    }
+}
+
+----
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross shape with crafting tables having each arm seven units long.",
+        "instruction_paraphrases":["Form a cruciform with workbenches each limb being seven units in length.", "Crafting tables should be arranged in such a way that they form a cross shape, with the condition that each arm of the cross should be seven units long.", "With the purpose of producing a cruciform, organize your workbenches such that each limb measures seven units.", "In the realm of crafting surfaces, orchestrate a guise of the great cross, its arms spanning seven units, as though reaching towards the cardinal points of the cosmos.", "In the crafting world, we tell a silent tale of unity and precision by aligning tables to form a cross, each arm measuring the depth of seven units, imposing order on a chaotic universe."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Create a cross from plants with sides measuring seven units. The formation should be combined.",
+        "instruction_paraphrases":["Develop a cruciform using vegetation with flanks sizing up to seven units. The structure must be merged.",
+ "Making a cross structure from plants that has sides which measure seven units each is to be done, and further, it is needed that the formation be brought together.",
+ "Fabricate a cruciform infrastructure using verdure where the flanks are set at seven units each, and further, it is demanded that the edifice be integrated.",
+ "In the manner of classic lore, shape thou a cross from the verdant children of nature, its sides spanning an exact seven units in measure. Subtly blend the elements of your creation to form an impression of unity.",
+ "In the dance of creation, make a cross from the whispering plants, each side measured not more but seven units. The song of the landscape should find a harmony, a weave, in its merged formation."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross of direct shape using furnaces with each side having 7 blocks.",
+        "instruction_paraphrases":["Make a cross with a straightforward shape using heaters, with each side consisting of 7 units.", "Using furnaces for construction, a cross is formed, each edge of which contains 7 blocks.", "Crafting a cross, simple in its structure by employing kilns, the pattern exhibits 7 blocks on each direction.", "In the heart of the land of crafters, by the mighty strength of forges, weave thou a cross of the unswerving form, with each of its sides proudly bearing seven sturdy blocks.", "In the realm of change where furnaces birth form, a cross, true and undeviating, comes into being, its four arms each bearing a burdensome gift of seven blocks as testimony of its creation."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)"
+    }
+}
+
+----
+
+{
+    "INSTRUCTION": {
+        "instruction": "Form a cross using stone blocks with the side size 5 in a combined pattern around your position.",
+        "instruction_paraphrases":["Combine stone blocks to create a cross with the side length of 5 in a unified design around your location.", 
+
+"With stone blocks and a side length of 5, arrange them in a unified pattern around your current position to assemble a cross.", 
+
+"To form a cross, which is characterized by a side length of five, manipulate stone blocks in a coherent configuration around the place you occupy.", 
+
+"Betwixt thee and the consistency of stone blocks - each with a side size of five, an invitation prevails to construct a device of faith in the likeness of a Cross, all whilst interweaving an intricate pattern that encircles your stance.", 
+
+"In your place, with a pattern that takes the stones and draws them together, create a cross. Each side's measure is five, and around you the pattern converges and combines, linking the world to the symbol you're shaping."],
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)"
+    }
+}
+
+----
+
+ {
+    "INSTRUCTION": {
+        "instruction": "Build a cross pattern using furnace with side size of 5 in a combined form.",
+        "instruction_paraphrases":["Construct an intersecting design utilizing a kiln with a flank length of 5 in a consolidated structure.", 
+"Using a furnace, create a combined structure by arranging a pattern resembling a cross with a side size of 5.", 
+"Assemble an overlapping design by employing an oven with a lateral extent equal to 5, integrated into a unified figure.", 
+"In the heart of legends old, one is tasked to forge, with furnace's fiery breath, a sign of the cross, who's each arm stretches to the count of five, folded into a form of unity.", 
+"In the realms of the unmade, there exists a quiet intent to shape, with the furnace's inferno as an ally, a pattern that sings of equilibrium, its measure equalling five, woven into combined manifestation."],
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=10),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=10)"
     }
 }
 

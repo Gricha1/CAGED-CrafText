@@ -29,7 +29,9 @@ class PlayerVariables:
     # bow_enchantment: int
     # boss_progress: int 
     # boss_timesteps_to_spawn_this_round: int 
-    # light_level: float 
+    light_level: jax.Array 
+    # light_level_dinamic: jax.Array
+
     # state_rng: jax.Array 
     # timestep: int 
 
@@ -106,6 +108,7 @@ class PlayerState:
             # bow_enchantment=state.bow_enchantment,
             # boss_progress=state.boss_progress,
             light_level=state.light_level,
+            # light_level_dinamic=jnp.array(0),
             # state_rng=state.state_rng,
             # timestep=state.timestep,
         )

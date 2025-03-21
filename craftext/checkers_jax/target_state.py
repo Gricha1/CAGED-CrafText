@@ -26,39 +26,45 @@ class BuildStarState:
 @struct.dataclass
 class ConditionalPlacingState:
     block_type: BlockType = BlockType.INVALID
-    achievement_mask: jax.Array = struct.field(default_factory=jnp.zeros(1))
+    achievement_mask: jax.Array = struct.field(default_factory= lambda: jnp.zeros(1))
 
 @struct.dataclass
 class LocalizaPlacingState:
     block_type: BlockType = BlockType.INVALID
-    achievement_mask: jax.Array  = struct.field(default_factory=jnp.zeros(1))
+    achievement_mask: jax.Array  = struct.field(default_factory=lambda: jnp.zeros(1))
 
 @struct.dataclass
 class Achievements:
-    achievement_mask: jnp.ndarray = struct.field(default_factory=jnp.array([AchievementState.NOT_MATTER.value for i in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
+    achievement_mask: jnp.ndarray = struct.field(default_factory=lambda: jnp.array([AchievementState.NOT_MATTER.value for i in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
 
 @struct.dataclass
 class TimeCosntrainedPlacmentState:
     block_type: BlockType = BlockType.INVALID
     time_state: TimeState = TimeState.DAY
+    radius: int = 5
 
 @struct.dataclass
 class UnifiedPatternState:
     block_type: BlockType = BlockType.INVALID
-    pattern_type: jax.Array = struct.field(default_factory=jnp.zeros(1))
+    pattern_type: jax.Array = struct.field(default_factory=lambda: jnp.zeros(1))
     size: int = -1
     radius: int = -1
 
 @struct.dataclass
-class TargetState:
-    achievements: Achievements = Achievements()
-    building_line: BuildLineState = BuildLineState()
-    building_square: BuildSquareState = BuildSquareState()
-    building_star: BuildStarState = BuildStarState()
-    conditional_placing: ConditionalPlacingState = ConditionalPlacingState()
-    time_placement: TimeCosntrainedPlacmentState = TimeCosntrainedPlacmentState()
-    time_cosntrained_placment_state = TimeCosntrainedPlacmentState()
-    unified_pattern_state = UnifiedPatternState()
+class AchievmentTargetState:
+    # achievements: Achievements = struct.field(default_factory=Achievements)
+    # building_line: BuildLineState =  struct.field(default_factory=BuildLineState)
+
+    # building_square: BuildSquareState =  struct.field(default_factory=BuildSquareState)
+
+    # building_star: BuildStarState =  struct.field(default_factory=BuildStarState)
+
+    # conditional_placing: ConditionalPlacingState = struct.field(default_factory=ConditionalPlacingState)
+
+    time_placement: TimeCosntrainedPlacmentState
+
+    # unified_pattern   _state: UnifiedPatternState = struct.field(default_factory=UnifiedPatternState)
+
     
     #building_line: Tuple[AchievementState, BuildLineAchievement]
     # collect_wood: int = AchievementState.NOT_MATTER.value

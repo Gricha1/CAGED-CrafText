@@ -10,11 +10,10 @@ from gym import Wrapper
 from jax import tree_map
 
 from craftext.craftext_encoder import EncodeForm, DistilBertEncode
-from craftext.craftext_scenarious import CrafTextScenarios
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.checkers_jax.achivments import conditional_achivments
+from craftext.checkers_jax.time_constrained import at_time_block_placed
 
 @struct.dataclass
 class TextEnvState:
@@ -27,14 +26,9 @@ class TextEnvState:
     environment_key: int
     rng: int
     
-from typing import List, TypeVar, Type
-
-T = TypeVar("T")
-
-
 import jax.numpy as jnp
 from typing import List, TypeVar, Type
-
+from enum import Enum
 T = TypeVar("T")
 
 def list_to_array(lst: List[T]) -> T:
@@ -79,7 +73,7 @@ class InstructionWrapper(Wrapper):
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
-        self.scenario_arguments =list_to_array(self.scenario_handler.scenario_data_jax.arguments)
+        self.scenario_arguments = list_to_array(self.scenario_handler.scenario_data_jax.arguments)
         self.env = env
         self.steps = 0
 
@@ -131,9 +125,20 @@ class InstructionWrapper(Wrapper):
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
+        light_dinamic = jnp.array(game_data_vector.states[0].variables.light_level - game_data_vector.states[0].variables.light_level)
+        # light_dinamic_batched = jnp.expand_dims(light_dinamic, env_state.num_envs)
+
+        # print(f'game_data_vector.states[0].variables: {game_data_vector.states[0].variables}')
+        # game_data_vector.states[0].variables.light_level_dinamic.set(light_dinamic)
+        # game_data_vector.states[0].variables = game_data_vector.states[0].variables.replace(light_level_dinamic=light_dinamic)
         # Run all function over all game_data_vector (now only conditional_achivments) 
-        conditional_achivments_vmap = jax.vmap(conditional_achivments, in_axes=(None, 0))
-        results = conditional_achivments_vmap(game_data_vector, self.scenario_arguments)
+        # print(f'shape: {game_data_vector}')
+        # print(f'shape:{self.scenario_arguments}')
+        # print(f'len: {len(self.scenario_arguments)}')
+        at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
+        # print(type(self.scenario_arguments))
+        # print(self.scenario_arguments.shape)
+        results = at_time_block_placed_achivment(game_data_vector, self.scenario_arguments)
         # Choose result releted instructions in current env
         instruction_done = results[env_state.idx]
 
