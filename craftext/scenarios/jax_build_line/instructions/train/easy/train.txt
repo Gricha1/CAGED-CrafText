@@ -1,5 +1,5 @@
 {
-    "INSTRUCTION_STONE_LINE_4": {
+    "INSTRUCTION": {
         "instruction": "Make a line of stone with four blocks.",
         "instruction_paraphrases": [
             "Create a line using four rocks.",
@@ -14,7 +14,7 @@
 }
 ----
 {
-    "INSTRUCTION_FURNACE_DIAGONAL_3": {
+    "INSTRUCTION": {
         "instruction": "Check if there is a diagonal line of furnace with a size of three on the map.",
         "instruction_paraphrases": [
             "Verify whether a line with a length of three tiles, composed of furnace units, is present diagonally on the game map.",
@@ -29,7 +29,7 @@
 }
 ----
 {
-    "INSTRUCTION_PLANTS_LINE_4": {
+    "INSTRUCTION": {
         "instruction": "Check if there's any line of Plants arranged in four.",
         "instruction_paraphrases": [
             "Confirm if you can find a row of Plants that is four long.",
@@ -44,7 +44,7 @@
 }
 ----
 {
-    "INSTRUCTION_PLANTS_LINE_3": {
+    "INSTRUCTION": {
         "instruction": "Check for a line of plants with a length of three",
         "instruction_paraphrases": [
             "Verify if there's a row of three flora in the game",
@@ -59,7 +59,7 @@
 }
 ----
 {
-    "INSTRUCTION_STONE_LINE_3": {
+    "INSTRUCTION": {
         "instruction": "Form a line of stones of length 3.",
         "instruction_paraphrases": [
             "Create a straight line using 3 pieces of rock.",
@@ -74,7 +74,7 @@
 }
 ----
 {
-    "INSTRUCTION_PLANT_LINE_2": {
+    "INSTRUCTION": {
         "instruction": "Check if there is a line of Plant blocks of size 2.",
         "instruction_paraphrases": [
             "Inspect for a sequence of Plant blocks with a length of 2.",
@@ -89,7 +89,7 @@
 }    
 ----
 {
-    "INSTRUCTION_CRAFTING_TABLE_DIAGONAL_3": {
+    "INSTRUCTION": {
         "instruction": "Create a diagonal line of crafting tables, each one block apart for a size of three.",
         "instruction_paraphrases": [
             "Build a slanted line using three crafting benches, with each one separated by a block.",
@@ -104,7 +104,7 @@
 }
 ----
 {
-    "INSTRUCTION_CRAFTING_TABLE_DIAGONAL_2": {
+    "INSTRUCTION": {
         "instruction": "Check on the game map for a diagonal line of Crafting Table blocks that are of length 2.",
         "instruction_paraphrases": [
             "Verify if there exists a two-block long Crafting Table arrangement in a diagonal line on the map.",

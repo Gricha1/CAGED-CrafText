@@ -1,7 +1,7 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState
+from craftext.checkers_jax.target_state import Achievements, AchievmentTargetState as TargetState
 import re
 from craftext.scenarios.parce_dataset import update_previous_dict
 import jax
@@ -11,18 +11,18 @@ from jax.tree_util import Partial  # Используем jax.tree_util.Partial
 
 
 from craftext.checkers_jax.building import is_line_formed as is_complete_instr
-from craftext.checkers_jax.target_state import BuildLineAchievement as AchievmentClass
+from craftext.checkers_jax.target_state import BuildLineState as AchievmentClass
 
 
 
 
-class JSONEncoderEx(json.JSONEncoder):
+# class JSONEncoderEx(json.JSONEncoder):
 
-    def __init__(self, *, skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys, indent, separators, default):
-        super().__init__(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular,
-                         allow_nan=allow_nan, sort_keys=sort_keys, indent=indent, separators=separators,
-                         default=default)
-        self.item_separator = ""
+#     def __init__(self, *, skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys, indent, separators, default):
+#         super().__init__(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular,
+#                          allow_nan=allow_nan, sort_keys=sort_keys, indent=indent, separators=separators,
+#                          default=default)
+#         self.item_separator = ""
 
 
 json.encoder.encode_basestring = lambda x: json.encoder.py_encode_basestring(x)[1:-1]
@@ -35,13 +35,13 @@ def _check_func(gd, ix, block_type, size, check_diagonal):
 def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
-def create_target_state(block_type:BlockType, size:int, is_diagonal:bool):
+def create_target_state(block_type:int, size:int, is_diagonal:bool):
     target_achievements = AchievmentClass(block_type, size, is_diagonal)
     return TargetState(building_line=target_achievements)
 
 
 def transform_instruction(instruction, func, args):
-    block_type, size = args
+    block_type, size, is_diagonal = args
     if instruction == {}:
         raise ValueError("Instruction is empty")
     if instruction.keys() is None:
@@ -54,8 +54,8 @@ def transform_instruction(instruction, func, args):
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
             "scenario_checker": Scenarios.BUILD_LINE.value, 
             'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
-            "arguments": f'create_target_state({block_type}, {size})',
-            'str_check_lambda': f'{func}(gd, ix)))'
+            "arguments": f'create_target_state({block_type}, {size}, {is_diagonal})',
+            'str_check_lambda': f'"{func}(gd, ix)"'
         }
     }
     
@@ -77,7 +77,7 @@ def extract_function_call(call_str):
     if open_index == -1 or close_index == -1 or close_index <= open_index:
         return None, []
     
-    func_name = call_str[:open_index].strip()
+    func_name = call_str[:open_index].strip().replace('"','')
     params_str = call_str[open_index + 1:close_index].strip()
     # Делим строку по запятым и обрезаем пробелы
     params = [p.strip() for p in params_str.split(",")]
@@ -102,7 +102,7 @@ def process_instructions_file(input_filepath, output_filepath):
         instruction = json.loads("\n".join(instruction))
         
         instruction = transform_instruction(instruction, func, args)
-        data[i] = json.dumps(instruction, cls=JSONEncoderEx, ensure_ascii=False, indent=4)
+        data[i] = json.dumps(instruction, indent=4)
 
     transformed_data = "\n----\n".join(data)
     with open(output_filepath, "w", encoding="utf-8") as outfile:

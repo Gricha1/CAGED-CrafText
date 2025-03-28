@@ -1,85 +1,105 @@
 import os
 import json
-from craftext.scenarios.constants import base_path, BlockType
-from craftext.checkers_jax.building import is_line_formed
+from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
+from craftext.checkers_jax.target_state import Achievements, TargetState, ConditionalPlacingState
+import re
+from craftext.checkers_jax.conditional import conditional_placing
 from craftext.scenarios.parce_dataset import update_previous_dict
+import jax
+from jax import numpy as jnp
 
-def transform_instruction(instruction: json):
-    """
-    Преобразует одну инструкцию:
-    - Удаляет поле 'check_lambda', так как его нельзя сохранить в JSON.
-    - Оставляет 'str_check_lambda' для последующего восстановления логики.
-    """
-    """
-    'INSTRUCTION_SWORD_ZOMBIE_ONLY': {
-        'instruction': "Craft a wooden sword and defeat a zombie, but do not attack a skeleton.",
-        "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS.value, 
-        'instruction_paraphrases': [
-            "Forge a wooden blade and slay a zombie, but avoid fighting skeletons.",
-            "Your task is to craft a wooden sword and take down a zombie, not a skeleton.",
-            "Make a wooden sword and hunt zombies, but leave skeletons alone.",
-            "Only zombies are your target—skeletons must remain untouched.",
-            "Defeat a zombie using a wooden sword, but do not engage a skeleton.",
-            "Make a sword from wood and fight zombies, but do not challenge a skeleton.",
-            "Slay the undead, but only the ones that rot—skeletons are not to be harmed.",
-            "Craft a wooden weapon and battle zombies, not bone warriors.",
-            "The wooden sword is for zombies only, not for skeletons.",
-            "Destroy the walking dead, but ignore the ones without flesh."
-        ],
-        "arguments": create_target_state([Achievement.MAKE_WOOD_SWORD.value, Achievement.DEFEAT_ZOMBIE.value], [Achievement.DEFEAT_SKELETON.value]),
-        'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_WOOD_SWORD.value else 1 if a == Achievement.DEFEAT_ZOMBIE.value else -1 if a == Achievement.DEFEAT_SKELETON.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)]))'
+from jax.tree_util import Partial  # Используем jax.tree_util.Partial
+class JSONEncoderEx(json.JSONEncoder):
+
+    def __init__(self, *, skipkeys, ensure_ascii, check_circular, allow_nan, sort_keys, indent, separators, default):
+        super().__init__(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular,
+                         allow_nan=allow_nan, sort_keys=sort_keys, indent=indent, separators=separators,
+                         default=default)
+        self.item_separator = ""
+
+
+json.encoder.encode_basestring = lambda x: json.encoder.py_encode_basestring(x)[1:-1]
+json.encoder.encode_basestring_ascii = lambda x: json.encoder.py_encode_basestring_ascii(x)[1:-1]
+
+@jax.jit
+def _check_func(gd, ix, object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
+    return conditional_placing(gd, ix, object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+
+def create_check_lambda(gd, ix):
+    return Partial(_check_func, gd=gd, ix=ix)
+
+def create_target_state(object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
+    target_achievements = ConditionalPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+    return TargetState(conditional_placing=target_achievements)
+
+
+def transform_instruction(instruction, func, args):
+    print(len(args))
+    object_inventory_enum, object_to_place, count_to_collect, count_to_stand = args
+    if instruction == {}:
+        raise ValueError("Instruction is empty")
+    if instruction.keys() is None:
+        raise ValueError("Instruction is empty")
+    print(object_to_place)
+    instruction_name =  f'PLACE_{object_inventory_enum.split('.')[1].upper()}_{object_to_place.split('.')[1].upper()}_{count_to_collect}_{count_to_stand}'
+    template_instruction = {
+        f'INSTRUCTION_{instruction_name}':{
+            'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
+            "scenario_checker": Scenarios.BUILD_LINE.value, 
+            'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
+            "arguments": f'create_target_state({object_inventory_enum}, {object_to_place}, {count_to_collect}, {count_to_stand})',
+            'str_check_lambda': f'{func}(gd, ix)))'
+        }
     }
-    
-    {
-    "INSTRUCTION": {
-        "instruction": "Check for a line of plants with a length of three",
-        "instruction_paraphrases": [
-            "Verify if there's a row of three flora in the game",
-            "Inspect the game map for a straight line formation of vegetation that consists of three blocks ",
-            "Ascertain if there's a series of three plant blocks in a row on the playing field",
-            "Investigate if a linear arrangement of three flora blocks is present in the current game state",
-            "Can you confirm the existence of a straight sequence of three vegetation units in line on the game?"
-        ],
-         'check_lambda': lambda game_data, ix: is_line_formed(game_data, ix, BlockType.PLANT, 3, check_diagonal=False),
-        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.PLANT, 3, check_diagonal=False)"
-    }
-}
-"""
     
     # При необходимости можно добавить другие преобразования
-    return instruction
+    return template_instruction
+
+def extract_function_call(call_str):
+    """
+    Извлекает имя функции и список аргументов из строки вызова.
+    
+    Пример:
+      call_str = "is_line_formed(game_data, ix, BlockType.STONE, 4, check_diagonal=False)"
+    Вернет:
+      ("is_line_formed", ['game_data', 'ix', 'BlockType.STONE', '4', 'check_diagonal=False'])
+      object_inventory_enum: int, object_to_place: int, count_to_collect: int, count_to_stand: int
+    """
+    open_index = call_str.find("(")
+    close_index = call_str.rfind(")")
+    
+    if open_index == -1 or close_index == -1 or close_index <= open_index:
+        return None, []
+    
+    func_name = call_str[:open_index].strip()
+    params_str = call_str[open_index + 1:close_index].strip()
+    # Делим строку по запятым и обрезаем пробелы
+    params = [p.strip() for p in params_str.split(",")]
+    print(params)
+    return func_name, params[1:]
+
+
 
 def process_instructions_file(input_filepath, output_filepath):
-    """
-    Обрабатывает один файл с инструкциями:
-      - Читает данные из JSON.
-      - Преобразует каждую инструкцию.
-      - Сохраняет результат в новый JSON-файл.
-    """
+    
     with open(input_filepath, "r", encoding="utf-8") as infile:
         data = infile.read()
     data = list(filter(lambda x: x != '', data.split("----\n")))
     print(len(data))
     for i, instruction in enumerate(data[:]):
-        # instruction = instruction.replace("\'", "\"")
-        print(instruction)
         instruction = instruction.split("\n")
-        instruction[-5:] = instruction[-4:]
-        del instruction[-1]
+        print(instruction[-4])
+        func, args = extract_function_call(instruction[-4])
+        instruction[-5] = ''
+        
         print(*instruction, sep="\n")
+        
         instruction = json.loads("\n".join(instruction))
-        instruction = transform_instruction(instruction)
-        data[i] = json.dumps(instruction, ensure_ascii=False, indent=4)
-    # print(data[-1])
-    # print(data[-1])
-    # Предполагаем, что данные – это словарь, где ключи – идентификаторы инструкций.
-    # transformed_data = {}
-    # for key, instr in data.items():
-    #     transformed_data[key] = transform_instruction(instr)
-    print(data[-1])
+        
+        instruction = transform_instruction(instruction, func, args)
+        data[i] = json.dumps(instruction, cls=JSONEncoderEx, ensure_ascii=False, indent=4)
+
     transformed_data = "\n----\n".join(data)
-    # with open(output_filepath, "w", encoding="utf-8") as outfile:
-    #     json.dump(transformed_data, outfile, ensure_ascii=False, indent=4)
     with open(output_filepath, "w", encoding="utf-8") as outfile:
         outfile.write(transformed_data)
          

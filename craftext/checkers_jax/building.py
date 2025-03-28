@@ -13,7 +13,7 @@ from craftext.checkers_jax.squeres import (
 from craftext.checkers.base_functions.state_adapter import GameData
 from typing import Tuple 
 from craftext.scenarios.constants import BlockType
-from craftext.checkers_jax.target_state import TargetState
+from craftext.checkers_jax.target_state import AchievmentTargetState
 
 
 # Blocks list as an example
@@ -70,8 +70,8 @@ def scan_function(carry: Building, x: int) -> Tuple[Building, jax.Array]:
     is_cross = check_cross((i, j), game_map, stone_index) 
     return carry, is_cross
 
-def is_cross_formed(game_data: GameData, block_name: BlockType, radius: int = 5) -> jax.Array:
-    stone_index = blocks_list.index(block_name.name)
+def is_cross_formed(game_data: GameData, block_index: int, radius: int = 5) -> jax.Array:
+    stone_index = jnp.array(block_index)
     
     game_data_states = game_data.states
     game_data_states_map = game_data_states[0].map
@@ -116,7 +116,7 @@ def scan_square_function(carry, x):
     return carry, is_square
 
 
-def is_square_formed(game_data: GameData,  ix:int, target_state: TargetState) -> jax.Array:
+def is_square_formed(game_data: GameData,  ix:int, target_state: AchievmentTargetState) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """
@@ -207,7 +207,7 @@ def scan_line_function(carry, x):
 
 
 
-def is_line_formed(game_data, ix:int, target_state: TargetState) -> jax.Array:
+def is_line_formed(game_data, ix:int, target_state: AchievmentTargetState) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
     """

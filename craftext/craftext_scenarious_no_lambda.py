@@ -2,13 +2,12 @@ import json
 import numpy as np
 import jax
 import jax.numpy as jnp
-import time
 import logging
 from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
 
-from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
+from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios
 from craftext.scenarios.constants import plans_path
 
 # Logging configuration

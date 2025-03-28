@@ -190,6 +190,7 @@ class BlockType:
     GRAVE2 = 34
     GRAVE3 = 35
     NECROMANCER_VULNERABLE = 36
+    
 @struct.dataclass
 class TimeState:
     DAY = 1

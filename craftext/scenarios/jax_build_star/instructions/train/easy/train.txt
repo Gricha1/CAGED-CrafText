@@ -53,8 +53,8 @@
             "Design a cruciform structure using plants, with each side having a length of 3 units.",
             "Fabricate a cross-shaped figure with greenery having each side of 3 units."
         ],
-        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=3)",
-        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=3)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=3, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=3, radius=5)"
     }
 }
 ----

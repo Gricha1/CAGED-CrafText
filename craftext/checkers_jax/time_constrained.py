@@ -4,7 +4,7 @@ import jax
 from flax.struct import dataclass
 from functools import partial
 from craftext.checkers.base_functions.state_adapter import GameData
-from craftext.checkers_jax.target_state import AchievmentTargetState as ATS
+from craftext.checkers_jax.target_state import TargetState as ATS
 # Blocks list as an example
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
@@ -42,8 +42,30 @@ def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     return region_masked
 
 @jax.jit
-# @partial(jax.jit, static_argnames=("target_state"))
 def at_time_block_placed(game_data: GameData, target_state: ATS) -> jax.Array:
+    block_name = target_state.time_placement.block_type
+    radius = target_state.time_placement.radius
+    
+    if game_data is None or game_data.states is None:
+        return False
+
+    game_map = game_data.states[0].map.game_map
+    if game_map is None:
+        return False
+
+    player_position = game_data.states[0].variables.player_position
+    if player_position is None:
+        return False
+
+    x, y = player_position
+    region = safe_dynamic_slice(game_map, x, y, radius, 5)
+    in_range = jnp.abs(game_data.states[0].variables.light_level - target_state.time_placement.time_state) <= 0.2
+    return in_range & (region == target_state.time_placement.block_type).any()
+
+
+
+@jax.jit
+def at_time_block_placed_with_mask(game_data: GameData, target_state: ATS) -> jax.Array:
     block_name = target_state.time_placement.block_type
     radius = target_state.time_placement.radius
     

@@ -23,8 +23,8 @@
             "Five units on each side, form a combined type cross with blocks of Enchantment Table Ice",
             "Using five units for each arm, construct a combined cross with blocks of Frost Magic Table"
         ],
-        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=5)",
-        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=5)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=5, radius=7)"
     }
 }
 ----
@@ -113,8 +113,8 @@
             "Please assemble a seven-unit long arm cross shape using the tables of Fire Enchantment on our game map.",
             "On the game map, erect a cross, each arm of which is crafted from seven Fire Enchantment Tables."
         ],
-        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=100)",
-        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=100)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=7)"
 }
 }
 ----
@@ -187,8 +187,8 @@
             "Using cobblestones, construct a cross shape directly with each side consisting of seven units.",
             "Form a direct cross design using stone blocks, make certain that each side measures seven units in length."
         ],
-        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=7, radius=10)",
-        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=7, radius=10)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=7, radius=7)"
     }
 }
 ----

@@ -1,7 +1,7 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState, BuildStarAchievement
+from craftext.checkers_jax.target_state import Achievements, TargetState, BuildStarState
 import re
 from craftext.checkers_jax.building_star import is_cross_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
@@ -28,8 +28,8 @@ def _check_func(gd, ix, block_type, size, radius):
 def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
-def create_target_state(block_type:BlockType, size:int, radius:int):
-    target_achievements = BuildStarAchievement(block_type, size, radius)
+def create_target_state(block_type:int, size:int, radius:int, cross_type:int):
+    target_achievements = BuildStarState(block_type, size, radius, cross_type)
     return TargetState(building_star=target_achievements)
 
 
@@ -46,7 +46,7 @@ def transform_instruction(instruction, func, args):
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
             "scenario_checker": Scenarios.BUILD_LINE.value, 
             'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
-            "arguments": f'create_target_state({block_type}, {size})',
+            "arguments": f'create_target_state({block_type}, {size}, {radius}, crossType.STRAIGHT)',
             'str_check_lambda': f'{func}(gd, ix)))'
         }
     }
@@ -73,7 +73,8 @@ def extract_function_call(call_str):
     params_str = call_str[open_index + 1:close_index].strip()
     # Делим строку по запятым и обрезаем пробелы
     params = [p.strip() for p in params_str.split(",")]
-    return func_name, params[2:]
+    print(params)
+    return func_name, params[1:]
 
 
 
