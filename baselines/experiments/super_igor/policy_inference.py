@@ -30,7 +30,7 @@ from craftax.craftax_env import make_craftax_env_from_name
 
 from craftext.craftext_wrapper import InstructionWrapper
 
-from craftext.craftext_encoder import EncodeForm
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
 from baselines.experiments.super_igor.encoder import QwenEncodeModel, QwenModelWrapper
 from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset
 from baselines.experiments.deterministic_inference import DetermOptimisticResetVecEnvWrapper

@@ -1,4 +1,4 @@
-from craftext.craftext_encoder import EncodeForm
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
 import time
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
@@ -13,7 +13,7 @@ from peft import PeftModel
 import torch
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.prompts import promt_instruction
-from craftext.craftext_encoder import DistilBertEncode
+from craftext.encoders.craftext_base_model_encoder import DistilBertEncode
 from trl import SFTTrainer
 import yaml
 

@@ -20,7 +20,7 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 from baselines.experiments.super_igor.encoder import QwenModelWrapper
-from craftext.craftext_encoder import EncodeForm
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
 from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
 
 from baselines.logz.batch_logging import batch_log, create_log_dict

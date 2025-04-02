@@ -42,12 +42,12 @@ from wrappers import (
 from logz.batch_logging import create_log_dict, batch_log
 
 from craftext.craftext_scenarious import create_scenarios_with_dataset
-from craftext.craftext_encoder import make_encoder
+from craftext.encoders.craftext_base_model_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
 
 from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
-from baselines.analysis.inference_rnn import Experiment, ExperimentArgs
+from analysis.inference_rnn import Experiment, ExperimentArgs
 
 @flax.struct.dataclass
 class TransitionScheme:
@@ -62,6 +62,7 @@ class TransitionScheme:
 
 
 def make_train(config, network_params):
+    print(config["CRAFTEXT_SETTINGS"])
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
@@ -76,14 +77,16 @@ def make_train(config, network_params):
     env_params = env.default_params
     
     if config["USE_PLANS"]:
-        encoder = make_encoder(n_splits=5)
         scenarious_loader = create_scenarios_with_dataset(True)
+        encoder = make_encoder(n_splits=5)
         env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], 
                                  encode_model_class=encoder, 
                                  scenario_handler_class=scenarious_loader)
     else:
         encoder = make_encoder(n_splits=config["EXPAND_EMB"])
         env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], encode_model_class=encoder)
+    
+    
     # Wrap with some extra logging
     env = LogWrapper(env)
 

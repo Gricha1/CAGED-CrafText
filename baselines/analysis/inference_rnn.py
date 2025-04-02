@@ -23,10 +23,10 @@ sys.path.append("./models")
 from craftax.craftax_env import make_craftax_env_from_name
 from craftext.craftext_wrapper import InstructionWrapper
 from craftext.craftext_scenarious import create_scenarios_with_dataset
-from craftext.craftext_encoder import make_encoder
+from craftext.encoders.craftext_base_model_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 #from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
-from baselines.rnn_network import ScannedRNN, ActorCriticTextVisualRNN
+from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 
 sys.path.append(".")
 from wrappers import OptimisticResetVecEnvWrapper

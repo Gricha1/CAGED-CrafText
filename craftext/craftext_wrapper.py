@@ -9,11 +9,12 @@ from gym import Wrapper
 
 from jax import tree_map
 
-from craftext.craftext_encoder import EncodeForm, DistilBertEncode
+from craftext.encoders.craftext_base_model_encoder import EncodeForm, DistilBertEncode
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
-from craftext.checkers.base_functions.state_adapter import GameData
-from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.checkers_jax.time_constrained import at_time_block_placed
+from craftext.adapters.state_adapter import GameData
+from craftext.adapters.state_adapter_classic import GameDataClassic
+# from craftext.checkers_jax.time_constrained import at_time_block_placed
+from craftext.checkers_jax.building_star import is_cross_formed
 
 @struct.dataclass
 class TextEnvState:
@@ -125,7 +126,6 @@ class InstructionWrapper(Wrapper):
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
-        light_dinamic = jnp.array(game_data_vector.states[0].variables.light_level - game_data_vector.states[0].variables.light_level)
         # light_dinamic_batched = jnp.expand_dims(light_dinamic, env_state.num_envs)
 
         # print(f'game_data_vector.states[0].variables: {game_data_vector.states[0].variables}')
@@ -135,7 +135,9 @@ class InstructionWrapper(Wrapper):
         # print(f'shape: {game_data_vector}')
         # print(f'shape:{self.scenario_arguments}')
         # print(f'len: {len(self.scenario_arguments)}')
-        at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
+        # at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
+        at_time_block_placed_achivment = jax.vmap(is_cross_formed, in_axes=(None, 0))
+
         # print(type(self.scenario_arguments))
         # print(self.scenario_arguments.shape)
         results = at_time_block_placed_achivment(game_data_vector, self.scenario_arguments)
