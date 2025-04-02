@@ -3,7 +3,7 @@ import jax.lax as lax
 import jax
 from flax.struct import dataclass
 from functools import partial
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState as ATS
 # Blocks list as an example
 blocks_list = [
@@ -80,10 +80,15 @@ def at_time_block_placed_with_mask(game_data: GameData, target_state: ATS) -> ja
     if player_position is None:
         return False
 
+    map2 = game_data.states[0].map.game_map
+    map1 = game_data.states[1].map.game_map
+    old_values = jnp.unique(map2)
+
+    mask = ~jnp.isin(map1, old_values)
+
+    updated_map2 = jnp.where(mask, map1, map2)
+    
     x, y = player_position
-    region = safe_dynamic_slice(game_map, x, y, radius, 5)
+    region = safe_dynamic_slice(updated_map2, x, y, radius, 5)
     in_range = jnp.abs(game_data.states[0].variables.light_level - target_state.time_placement.time_state) <= 0.2
     return in_range & (region == target_state.time_placement.block_type).any()
-
-
-

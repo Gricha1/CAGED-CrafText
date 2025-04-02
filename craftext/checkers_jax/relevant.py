@@ -3,7 +3,7 @@ from jax import (
     numpy as jnp,
     lax
 )
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.adapters.state_adapter import GameData
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
     "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 

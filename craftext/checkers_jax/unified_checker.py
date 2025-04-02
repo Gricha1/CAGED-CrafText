@@ -7,7 +7,7 @@ import jax
 from flax.struct import dataclass
 
 from craftext.scenarios.constants import BlockType
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState
 
 def transform_pattern(pattern: jax.Array, block_index: int, size: int) -> jax.Array:

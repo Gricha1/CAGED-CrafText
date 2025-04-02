@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import AchievmentTargetState
 
 

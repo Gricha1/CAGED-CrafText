@@ -3,7 +3,7 @@ import jax.lax as lax
 import jax
 from flax.struct import dataclass
 
-from craftext.checkers.base_functions.state_adapter import GameData
+from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState
 # Blocks list as an example
 blocks_list = [
@@ -112,7 +112,6 @@ def scan_cross_function(carry: Carry, x):
     
     return carry, is_cross
 
-    
 def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array:
     block_name = target_state.building_star.block_type
     radius = target_state.building_star.radius
@@ -140,9 +139,9 @@ def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array
         x,
         y,
         radius,
-        7
+        10
     )
-    
+    print(radius)
     indices = jnp.arange(region_size * region_size)
     carry = Carry(region, stone_index, region_size, size, cross_type)
     _, crosses = lax.scan(scan_cross_function, carry, indices)
