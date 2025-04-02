@@ -1,7 +1,7 @@
 from functools import partial
 
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, TimeState#, create_target_state_by_contrained_class,
-from craftext.checkers_jax.target_state import AchievmentTargetState
+from craftext.checkers_jax.target_state import TargetState
 import jax
 from jax import numpy as jnp
 
@@ -12,9 +12,9 @@ from craftext.checkers_jax.target_state import TimeCosntrainedPlacmentState as A
 # tg_test = AchievmentTargetState()
 # print(tg_test)
 
-def create_target_state_by_contrained_class(block_type:BlockType, time_state: TimeState):
+def create_target_state_by_contrained_class(block_type: int, time_state: int):
     target_achievements = AchievmentClass(block_type, time_state)
-    tg = AchievmentTargetState(time_placement=target_achievements)
+    tg = TargetState(time_placement=target_achievements)
     # tg.time_placement = target_achievements
     return tg
 

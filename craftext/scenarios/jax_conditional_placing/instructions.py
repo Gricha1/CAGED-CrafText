@@ -1,6 +1,6 @@
 from craftext.checkers_jax.conditional import conditional_placing
 from craftext.scenarios.constants import InventoryItems, BlockType, MediumInventoryItems
-
+from craftext.checkers_jax.target_state import TargetState, ConditionalPlacingState
 
 # one = {
 #     'simple_conditional_placing_001': {
@@ -26,7 +26,11 @@ from craftext.scenarios.constants import InventoryItems, BlockType, MediumInvent
 #         'check_lambda': lambda gd, ix: conditional_placing(gd, InventoryItems.WOOD, BlockType.FURNACE, 1, 1)
 #     },
 # }
-    
+
+def create_target_state(object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
+    target_achievements = ConditionalPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+    return TargetState(conditional_placing=target_achievements)
+
 easy = {
     "INSTRUCTION_PLACE_IRON_FURNACE_4_3": {
         "instruction": "Collect 4 iron and place 3 furnace",
@@ -497,7 +501,7 @@ medium = {
             "Obtain one unit of coal first, succeedingly assemble a duo of heating apparatus."
         ],
         "arguments": create_target_state(MediumInventoryItems.COAL, BlockType.FURNACE, 1, 2),
-        "str_check_lambda": "conditional_placing(gd, ix)"
+        "str_check_lambda": "conditional_placing(gd, ix)
     },
     "INSTRUCTION_PLACE_SAPLING_ENCHANTMENT_TABLE_FIRE_1_1": {
         "instruction": "Collect a sapling and place an enchantment table of fire.",

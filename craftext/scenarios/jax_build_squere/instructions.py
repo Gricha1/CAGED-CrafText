@@ -1,5 +1,12 @@
 from craftext.checkers_jax.building import is_square_formed
 from craftext.scenarios.constants import BlockType
+from craftext.checkers_jax.target_state import TargetState, BuildSquareState
+
+def create_target_state(block_type:int, size:int):
+    target_achievements = BuildSquareState(block_type=block_type, size=size, radius=11)
+    return TargetState(building_square=target_achievements)
+
+
 
 easy = {
     "INSTRUCTION_STONE_4": {
@@ -12,7 +19,7 @@ easy = {
             "I'd like you to put together a square with a side of 4 units using pebbles",
             "It'd be nice if you could fashion a 4-unit side square using the stones"
         ],
-        "arguments": create_target_state(BlockType.STONE, 4),
+        "arguments": create_target_state(BlockType.STONE, size=4 ),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_CRAFTING_TABLE_2": {
@@ -25,7 +32,7 @@ easy = {
             "Crafting tables should be placed in a way to form a square with each side made of 2 blocks.",
             "Set crafting tables in a position to produce a square shape having 2 as the length of its each side."
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 2),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=2 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_CRAFTING_TABLE_4": {
@@ -38,7 +45,7 @@ easy = {
             "With the utilization of crafting desks, arrange them in a way to form a square structure where the length of each side measures 4 blocks",
             "Using crafting tables as the building material, construct a square pattern, ensuring that each side measures exactly 4 blocks long"
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 4),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=4 ),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_4": {
@@ -51,7 +58,7 @@ easy = {
             "Probe for the presence of a quadrilateral of botanical elements with each side spanning 4 blocks.",
             "I need you to verify the existence of a 2D square-shaped arrangement of flora measuring 4 units on all sides."
         ],
-        "arguments": create_target_state(BlockType.PLANT, 4),
+        "arguments": create_target_state(BlockType.PLANT, size=4 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_STONE_3": {
@@ -59,7 +66,7 @@ easy = {
         "scenario_checker": 3,
         "instruction_paraphrases": [
             "Create a square block using 3 stones on each side",
-            "I want you to assemble a square from rocks, 3 units long on each side",
+            "I want you to assemble a square from rocks, size=3 units long on each side",
             "Can you build a 3 by 3 block square using some cobblestones?",
             "Utilizing stones, shape out a square block with each side being 3 blocks long",
             "With the use of rocks, I'd like you to construct a square formation where each side is composed of 3 blocks",
@@ -69,7 +76,7 @@ easy = {
             "Utilize stones to shape a square that each side contains 3 blocks.",
             "Make a square configuration using rocks, having three blocks on all sides"
         ],
-        "arguments": create_target_state(BlockType.STONE, 3),
+        "arguments": create_target_state(BlockType.STONE, size=3 ),
         "str_check_lambda": "is_square_formed(gd, ix)"
     }
 }
@@ -85,7 +92,7 @@ medium = {
             "Kindly arrange three Crafting platforms on each side to form a square configuration.",
             "I want you to position the construction desks in such a way that they form a square structure with each side containing three desks"
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=3 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_FURNACE_6": {
@@ -98,7 +105,7 @@ medium = {
             "Do assess if we have a square, each side 6 blocks long, made completely from furnace blocks.",
             "Inspect and confirm whether there is a square structure constituted of furnace blocks, six blocks long per side."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 6),
+        "arguments": create_target_state(BlockType.FURNACE, size=6 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_FURNACE_5": {
@@ -111,7 +118,7 @@ medium = {
             "Make sure a form of square having dimensions 5 by 5, built using forge blocks is in position?",
             "Inspect for any presence of a geometric configuration resembling a square with side length of 5, created using smelter blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 5),
+        "arguments": create_target_state(BlockType.FURNACE, size=5 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
@@ -124,7 +131,7 @@ medium = {
             "Verify the presence of a 7-blocks-wide square of crafting station",
             "Ensure the existence of a perfect square shape made up of 7 blocks per side of crafting tables"
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=7 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
@@ -137,7 +144,7 @@ medium = {
             "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
             "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 3),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=3 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_7": {
@@ -150,7 +157,7 @@ medium = {
             "Shape an ice enchantment table into a square with a side length of 7.",
             "With the ice enchantment table, assemble a square where each side measures 7 units."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 7),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=7 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     },
     "INSTRUCTION_FURNACE_7": {
@@ -163,7 +170,7 @@ medium = {
             "Form a furnace square that each edge has a length of 7 blocks.",
             "Construct a four-sided figure using 7 furnaces on each side."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 7),
+        "arguments": create_target_state(BlockType.FURNACE, size=7 ),
         "str_check_lambda": "is_square_formed(gd, ix)))"
     }
 }
