@@ -1,7 +1,7 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState, BuildLineAchievement
+from craftext.checkers_jax.target_state import Achievements, TargetState, BuildSquareState
 import re
 from craftext.checkers_jax.building import is_line_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
@@ -29,7 +29,7 @@ def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
 def create_target_state(block_type:BlockType, size:int, is_diagonal:bool):
-    target_achievements = BuildLineAchievement(block_type, size, is_diagonal)
+    target_achievements = BuildSquareState(block_type, size, is_diagonal)
     return TargetState(building_line=target_achievements)
 
 
@@ -44,7 +44,7 @@ def transform_instruction(instruction, func, args):
     template_instruction = {
         f'INSTRUCTION_{instruction_name}':{
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
-            "scenario_checker": Scenarios.BUILD_LINE.value, 
+            "scenario_checker": Scenarios.BUILD_SQUARE.value, 
             'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
             "arguments": f'create_target_state({block_type}, {size})',
             'str_check_lambda': f'{func}(gd, ix)))'

@@ -20,7 +20,7 @@ class CrossType:
 easy = {
     "INSTRUCTION_PLANT_5": {
         "instruction": "Form a cross with Plant elements, each side should be 5 units long and in diagonal shape.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Use Plant elements to construct a diagonal cross with each side consisting of 5 units.",
             "Make a cross that is diagonally oriented using Plant items, ensuring each arm of the cross is 5 units in length.",
@@ -33,7 +33,7 @@ easy = {
     },
     "INSTRUCTION_STONE_5": {
         "instruction": "Create a cross of stones with arms of length 5 in any direction.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Form a cross using rocks, ensuring each arm extends 5 units long, and you can orient it in any way.",
             "Configure a collection of pebbles into a cruciform shape, with the length of each limb equally measuring 5 units; the alignment of the cross is up to you.",
@@ -46,7 +46,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_3": {
         "instruction": "Make a cross shape using plants with a side length of 3 units.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Create a plant-based cross with each side being 3 units long.",
             "Construct a cross figure using flora with each arm spanning 3 units",
@@ -59,7 +59,7 @@ easy = {
     },
     "INSTRUCTION_STONE_5_DIAGONAL": {
         "instruction": "Create a cross of stones with side size equal to 5 arranged in a diagonal pattern.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Construct a stone cross where each side length is 5 and in diagonal formation.",
             "I would like you to form a cross using rocks with five units on each side in a diagonal orientation.",
@@ -72,7 +72,7 @@ easy = {
     },
     "INSTRUCTION_STONE_7": {
         "instruction": "Construct a cross of stone of side size 7 and with a diagonal shape.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Create a diagonal cross using rock, with each arm being seven units long.",
             "Use pebbles to form a cross diagonally, ensuring each side measures seven units.",
@@ -85,7 +85,7 @@ easy = {
     },
     "INSTRUCTION_STONE_3": {
         "instruction": "Create a direct cross made of stone with each side measuring 3 blocks.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Craft a straightforward cross shape out of rock with each arm being 3 blocks long.",
             "Please form a rock cross with each of its sides being three units long in a direct shape.",
@@ -98,7 +98,7 @@ easy = {
     },
     "INSTRUCTION_FIRE_TREE_5": {
         "instruction": "Form a cross of torchlights each side having 5 units and in combined form.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Build a blended cross using torches that is five units long on each side.",
             "Use your luminary torches to construct a cross where each side measures five units and the shape is amalgamated.",
@@ -111,7 +111,7 @@ easy = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_3": {
         "instruction": "Make sure you have an enchantment table fire arranged in the form of a cross with a size of 3.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Construct a cross using the fire enchantment table, it should have a length of three.",
             "Place the enchantment table fire units in a direct-shape cross configuration with a size of three.",
@@ -124,7 +124,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_7_COMBINED": {
         "instruction": "Make a cross of plant blocks that is 7 blocks on each side and combined shape around you.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Create a cross shape using the plant blocks with each arm having 7 blocks in a combined formation.",
             "Use plant blocks to form a combined cross shape, with each side made up of 7 blocks.",
@@ -137,7 +137,7 @@ easy = {
     },
     "INSTRUCTION_STONE_3_DIAGONAL": {
         "instruction": "Form a cross made of stone with a side size of 3 in a diagonal shape.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Build a stone cross that has 3 units on each side and is arranged diagonally.",
             "Create a cross using stones, ensure it has 3 blocks on each side and is designed diagonally.",
@@ -150,7 +150,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_5": {
         "instruction": "Arrange the blocks in a cross form of furnaces with a size of 5 blocks in diagonal way in the game",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "I need you to form a cross using furnace blocks, the cross should be diagonal and be made of 5 blocks.",
             "Shape a diagonal cross using 5 blocks, and all blocks should be furnace blocks.",
@@ -163,7 +163,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_3": {
         "instruction": "Form a cross with a furnace having a side size of three and in a direct shape.",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Create a three-sided direct shape cross using the furnace.",
             "With the help of a furnace, could you make a direct cross that has three units on each side?",
@@ -176,7 +176,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_7_DIRECT": {
         "instruction": "Make a cross out of plants with a side length of 7",
-        "scenario_checker": 3,
+        "scenario_checker": 5,
         "instruction_paraphrases": [
             "Form a plant cross of seven units on every side.",
             "Construct a cross using plants with each arm measuring seven units long.",

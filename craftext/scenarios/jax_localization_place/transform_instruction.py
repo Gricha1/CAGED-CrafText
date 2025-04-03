@@ -1,7 +1,7 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
-from craftext.checkers_jax.target_state import Achievements, TargetState, ConditionalPlacingState
+from craftext.checkers_jax.target_state import Achievements, TargetState, LocalizaPlacingState
 import re
 from craftext.checkers_jax.conditional import conditional_placing
 from craftext.scenarios.parce_dataset import update_previous_dict
@@ -29,8 +29,8 @@ def create_check_lambda(gd, ix):
     return Partial(_check_func, gd=gd, ix=ix)
 
 def create_target_state(object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
-    target_achievements = ConditionalPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
-    return TargetState(conditional_placing=target_achievements)
+    target_achievements = LocalizaPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+    return TargetState(Localization_placing=target_achievements)
 
 
 def transform_instruction(instruction, func, args):

@@ -60,7 +60,7 @@ class TargetState:
     building_square: BuildSquareState =  struct.field(default_factory=BuildSquareState)
     building_star: BuildStarState =  struct.field(default_factory=BuildStarState)
     conditional_placing: ConditionalPlacingState = struct.field(default_factory=ConditionalPlacingState)
-    Localiza_placing: LocalizaPlacingState = struct.field(default_factory=LocalizaPlacingState)
+    Localization_placing: LocalizaPlacingState = struct.field(default_factory=LocalizaPlacingState)
     time_placement: TimeCosntrainedPlacmentState = struct.field(default_factory=TimeCosntrainedPlacmentState)
     unified_pattern_state: UnifiedPatternState = struct.field(default_factory=UnifiedPatternState)
 

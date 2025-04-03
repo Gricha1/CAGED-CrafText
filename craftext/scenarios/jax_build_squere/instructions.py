@@ -11,7 +11,7 @@ def create_target_state(block_type:int, size:int):
 easy = {
     "INSTRUCTION_STONE_4": {
         "instruction": "Create a square out of stone, each side of size 4",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Please form a square using rocks, ensuring each side is of length 4",
             "Using stone blocks, assemble a square structure with side length 4",
@@ -24,7 +24,7 @@ easy = {
     },
     "INSTRUCTION_CRAFTING_TABLE_2": {
         "instruction": "Form a square using crafting tables of side length 2.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Make a square with side length 2 using crafting tables.",
             "You need to arrange crafting tables in a square shape with each side being 2 blocks long.",
@@ -37,7 +37,7 @@ easy = {
     },
     "INSTRUCTION_CRAFTING_TABLE_4": {
         "instruction": "Construct a square using crafting tables, with each side of the square being 4 blocks long",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Create a square with crafting benches in each corner, and each side sizing up to 4 blocks",
             "Please make a geometrical square using workstations, and let the length of each side be 4 blocks",
@@ -50,7 +50,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_4": {
         "instruction": "Check for a square of plants with a side size of 4.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Make sure there's a 4x4 square of vegetation.",
             "Look out for a square that consists of plants and measures 4 blocks on each side.",
@@ -63,7 +63,7 @@ easy = {
     },
     "INSTRUCTION_STONE_3": {
         "instruction": "Form a square with sides of 3 blocks using stones",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Create a square block using 3 stones on each side",
             "I want you to assemble a square from rocks, size=3 units long on each side",
@@ -84,7 +84,7 @@ easy = {
 medium = {
     "INSTRUCTION_CRAFTING_TABLE_3": {
         "instruction": "Form a square of crafting tables with each side having a length of 3",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Create a square shape by using work benches where the number of work benches on one side is 3",
             "Layout 3 blocks of builder’s table in a square shape.",
@@ -97,7 +97,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_6": {
         "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Can you confirm if a square with side-length of 6 is made up of furnace blocks?",
             "Tell me, do we have a furnace blocks square with each side 6 blocks long?",
@@ -110,7 +110,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_5": {
         "instruction": "Check if there is a square made of furnace blocks with side length of 5.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Investigate for a square formation of 5x5 using heater blocks.",
             "Look for a quadrant constructed with stove blocks, each side measuring 5 units.",
@@ -123,7 +123,7 @@ medium = {
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
         "instruction": "Check for a distinct square made out of crafting tables with each side having a length of 7 blocks.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Look for a 7x7 crafting block square",
             "Search for a square formation composed of workbenches, with each side consisting of 7 blocks",
@@ -136,7 +136,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
         "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
             "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
@@ -149,7 +149,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_7": {
         "instruction": "Create an enchantment table of ice shaped into a square with each side size 7.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Form a square using an ice enchantment table, each side should be of length 7.",
             "Make a square with sides of 7 units using a table enchanted with ice.",
@@ -162,7 +162,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_7": {
         "instruction": "Build a square using furnaces with each side being 7 blocks long.",
-        "scenario_checker": 3,
+        "scenario_checker": 4,
         "instruction_paraphrases": [
             "Craft a square pattern with smelters that has 7 blocks as the dimension.",
             "Create a geometric square shape using heating devices where each side is 7 blocks long.",

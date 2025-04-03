@@ -44,7 +44,7 @@ def transform_instruction(instruction, func, args):
     template_instruction = {
         f'INSTRUCTION_{instruction_name}':{
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
-            "scenario_checker": Scenarios.BUILD_LINE.value, 
+            "scenario_checker": Scenarios.BUILD_STAR.value, 
             'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
             "arguments": f'create_target_state({block_type}, {size}, {radius}, crossType.STRAIGHT)',
             'str_check_lambda': f'{func}(gd, ix)))'

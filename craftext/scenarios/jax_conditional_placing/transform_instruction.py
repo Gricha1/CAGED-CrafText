@@ -44,7 +44,7 @@ def transform_instruction(instruction, func, args):
     template_instruction = {
         f'INSTRUCTION_{instruction_name}':{
             'instruction': f"{instruction["INSTRUCTION"]['instruction']}", 
-            "scenario_checker": Scenarios.BUILD_LINE.value, 
+            "scenario_checker": Scenarios.CONDITIONAL_PLACING.value, 
             'instruction_paraphrases': instruction["INSTRUCTION"]['instruction_paraphrases'],
             "arguments": f'create_target_state({object_inventory_enum}, {object_to_place}, {count_to_collect}, {count_to_stand})',
             'str_check_lambda': f'{func}(gd, ix)))'
