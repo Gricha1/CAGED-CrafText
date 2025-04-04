@@ -69,7 +69,7 @@ if __name__=="__main__":
         raise ValueError("OPENAI_API_KEY environment variable is not set.")
     client = OpenAI(api_key=api_key.strip())
 
-    tasks = ['jax_time_cosntrained_placment']
+    tasks = ['jax_build_star']
     complecity_lvl = ['easy', 'medium']
     for task in tasks:
         for lvl in complecity_lvl:

@@ -9,7 +9,7 @@ from flax import linen as nn, struct
 from craftax.craftax_env import make_craftax_env_from_name
 from typing import Any, Optional
 
-from craftext.craftext_wrapper import InstructionWrapper
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 
 import numpy as np
 

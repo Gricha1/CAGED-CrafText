@@ -144,7 +144,7 @@
             "Please create an intricate pattern in the shape of a cross around me using the frost charm stations, with each limb of the cross spanning seven blocks and every station positioned within a radius of five blocks from where I am"
         ],
         "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=7, radius=5)",
-        "str_check_lambda": "is_cross_formed(...)"
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.ENCHANTMENT_TABLE_ICE, size=7, radius=5)"
     }
 }
 ----
@@ -223,7 +223,7 @@
 }
 ----
  {
-    "CROSS_FORMATION_OF_FURNACES": {
+    "INSTRUCTION": {
         "instruction": "Create a cross shape using the furnace, the arms of the cross should have a length of 3 blocks.",
         "instruction_paraphrases": [
             "Construct a cross figure using furnace blocks; each arm should be 3 blocks long.",
@@ -238,7 +238,7 @@
 }
 ----
  {
-    "PLACE_CROSS": {
+    "INSTRUCTION": {
         "instruction": "Create a cross made of stone blocks with a side size of three and in direct shape.",
         "instruction_paraphrases": [
             "Construct a cross using stones, each side should be three blocks long in a straight line.",
@@ -263,12 +263,12 @@
             "Craft a direct shape of the cross, utilizing plant materials as the building block. Each side of this formation should be three units in length."
         ],
         "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=3, radius=5)",
-        "str_check_lambda": "check_lambda(game_data)"
+        "str_check_lambda": "check_lambda(game_data, BlockType.PLANT, size=3, radius=5)"
     }
 }
 ----
 {
-    "ENCHANTMENT_FIRE_TABLE_CROSS": {
+    "INSTRUCTION": {
         "instruction": "Create a direct cross of enchantment fire tables with a side length of 3.",
         "instruction_paraphrases": [
             "Form a cross with enchantment fire workbenches, each arm should have a length of 3.",

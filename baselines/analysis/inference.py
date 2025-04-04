@@ -21,7 +21,7 @@ from actor_critic import (ActorCriticConv,
                           ActorCriticConvWithIdxEmbedding,
                           ActorCriticConvWithBERT)
 from craftax.craftax_env import make_craftax_env_from_name
-from craftext.craftext_wrapper import InstructionWrapper
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
 sys.path.append(".")
 from wrappers import (

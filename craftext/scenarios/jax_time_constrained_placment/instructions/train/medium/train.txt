@@ -13,7 +13,7 @@
         "str_check_lambda": "lambda gd, ix: "at_time_block_placed(gd, ix)"
     }
 }
-,
+----
 {
     "INSTRUCTION_FURNACE_EVENING": "{
         "instruction": "Place a furnace during the evening",
@@ -29,7 +29,7 @@
         "str_check_lambda": "lambda gd, ix: "at_time_block_placed(gd, ix)"
     }
 }
-,
+----
 {
     "INSTRUCTION_STONE_STONE": "{
         "instruction": "Place a stone during the morning.
@@ -45,7 +45,7 @@
         "str_check_lambda": "lambda gd, ix: "at_time_block_placed(gd, ix)"
     }
 }
-,
+----
 {
     "INSTRUCTION_STONE_EVENING": "{
         "instruction": "Place a stone in the evening
@@ -61,7 +61,7 @@
         "str_check_lambda": "lambda gd, ix: "at_time_block_placed(gd, ix)"
     }
 }
-,
+----
 {
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_EVENING": "{
         "instruction": "Place a enchantment table of ice during the evening
@@ -77,7 +77,7 @@
         "str_check_lambda": "lambda gd, ix: "at_time_block_placed(gd, ix)
     }
 }
-,
+----
 {
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_EVENING": "{
         "instruction": "Place a Enchantment_Table_Fire during the evening

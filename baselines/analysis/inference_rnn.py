@@ -21,7 +21,7 @@ from orbax.checkpoint import (
 
 sys.path.append("./models")
 from craftax.craftax_env import make_craftax_env_from_name
-from craftext.craftext_wrapper import InstructionWrapper
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 from craftext.craftext_scenarious import create_scenarios_with_dataset
 from craftext.encoders.craftext_base_model_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name

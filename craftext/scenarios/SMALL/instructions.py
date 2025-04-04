@@ -3,13 +3,13 @@ from craftext.scenarios.jax_build_line import instructions as build_line_instruc
 from craftext.scenarios.jax_build_squere import instructions as build_squere_instructions
 from craftext.scenarios.jax_localization_place import instructions as localization_place_instructions
 from craftext.scenarios.jax_conditional_placing import instructions as conditional_place_instructions
-from craftext.scenarios.jax_conditional_achivments import instructions as conditional_achivments_instructions
+from craftext.scenarios.jax_conditional_achievements import instructions as conditional_achievements
 
 # Merging 'easy' dictionaries
 easy = {**build_line_instructions.easy, 
         **build_squere_instructions.easy,
         **localization_place_instructions.easy,
-        **conditional_achivments_instructions.easy,
+        **conditional_achievements.easy,
         **conditional_place_instructions.easy}
 
 # Merging 'medium' dictionaries
@@ -18,7 +18,7 @@ medium = {\
           **build_squere_instructions.medium, 
           **localization_place_instructions.medium,
            **conditional_place_instructions.medium, 
-           **conditional_achivments_instructions.medium
+           **conditional_achievements.medium
           }
 
 

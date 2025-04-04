@@ -86,16 +86,16 @@ def process_instructions_file(input_filepath, output_filepath):
     print(len(data))
     for i, instruction in enumerate(data[:]):
         instruction = instruction.split("\n")
-        print(instruction[-4])
+        # print(instruction[-4])
         func, args = extract_function_call(instruction[-4])
         instruction[-5] = ''
         
-        print(*instruction, sep="\n")
-        
+        # print(*instruction, sep="\n")
         instruction = json.loads("\n".join(instruction))
+        # print(instruction)
         
         instruction = transform_instruction(instruction, func, args)
-        data[i] = json.dumps(instruction, cls=JSONEncoderEx, ensure_ascii=False, indent=4)
+        data[i] = json.dumps(instruction, ensure_ascii=False, indent=4)
 
     transformed_data = "\n----\n".join(data)
     with open(output_filepath, "w", encoding="utf-8") as outfile:
@@ -116,27 +116,27 @@ def process_directory(input_dir, output_dir):
             process_instructions_file(input_filepath, output_filepath)
 
 if __name__ == "__main__":
-    input_easy_dir = os.path.join(".", "instructions/train/easy/")
+    # input_easy_dir = os.path.join(".", "instructions/train/easy/")
     input_medium_dir = os.path.join(".", "instructions/train/medium/")
     
     output_easy_dir = os.path.join(".", "instructions/train/easy_transformed/")
     output_medium_dir = os.path.join(".", "instructions/train/medium_transformed/")
     
-    process_directory(input_easy_dir, output_easy_dir)
-    process_directory(input_medium_dir, output_medium_dir)
+    # process_directory(input_easy_dir, output_easy_dir)
+    # process_directory(input_medium_dir, output_medium_dir)
     
     input_test_easy_other_dir = os.path.join(".", "instructions/test/easy/other_params/")
     input_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy/paraphrases/")
     input_test_medium_other_dir = os.path.join(".", "instructions/test/medium/other_params/")
-    input_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium/paraphrases/")
+    # input_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium/paraphrases/")
     
 
     output_test_easy_other_dir = os.path.join(".", "instructions/test/easy_transformed/other_params/")
     output_test_easy_parapshare_dir = os.path.join(".", "instructions/test/easy_transformed/paraphrases/")
     output_test_medium_other_dir = os.path.join(".", "instructions/test/medium_transformed/other_params/")
-    output_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium_transformed/paraphrases/")
+    # output_test_medium_parapshare_dir = os.path.join(".", "instructions/test/medium_transformed/paraphrases/")
     
     process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
-    process_directory(input_test_easy_other_dir, output_test_easy_other_dir)
+    # process_directory(input_test_easy_parapshare_dir, output_test_easy_parapshare_dir)
     process_directory(input_test_medium_other_dir, output_test_medium_other_dir)
-    process_directory(input_test_medium_parapshare_dir, output_test_medium_parapshare_dir)
+    # process_directory(input_test_medium_parapshare_dir, output_test_medium_parapshare_dir)

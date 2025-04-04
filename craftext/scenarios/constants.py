@@ -9,7 +9,8 @@ plans_path = os.path.join(base_path, "extra_files", "easy_gpt4_action_plans.json
 class AchievementState(Enum):
     NOT_MATTER = 0
     NEED_TO_ACHIEVE = 1
-    AVOID_TO_ACHIEVE = - 1
+    AVOID_TO_ACHIEVE = -1
+    
 @struct.dataclass
 class Scenarios(Enum):
     CONDITIONAL_ACHIEVEMENTS = 0
@@ -193,7 +194,7 @@ class BlockType:
     
 @struct.dataclass
 class TimeState:
-    DAY = 1
     NIGHT = 0
+    DAY = 1
     EVENING = 2
     MORNING = 3

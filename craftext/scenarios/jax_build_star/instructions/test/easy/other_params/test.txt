@@ -1,75 +1,75 @@
 {
     "INSTRUCTION": {
-        "instruction": "Verify if there is a square formed with rock of side length 2 in the game.",
+        "instruction": "Create a cross shape with crafting tables having each arm seven units long.",
         "instruction_paraphrases": [
-            "Check if a 2x2 square made of rock exists in the game.",
-            "Does a block of stone formed as a square with side length of two exist in the game?",
-            "In the game, is there a square shaped block of stone with a size of two present?",
-            "I need confirmation if there's a stone square with a side length of 2 within the game.",
-            "Can you find a square formation of rock with each side of two units in the game environment?"
+            "Form a cross using crafting tables with each of its side being seven blocks long.",
+            "Construct a seven units long per arm crafting table cross.",
+            "With a size of seven units per arm, build a cross using only crafting tables.",
+            "Using crafting tables, create a cross shape where each side measures seven units.",
+            "Craft a cross formation, each of its arm must be seven units long, made up of only crafting tables."
         ],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.STONE, 2),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.STONE, 2)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.CRAFTING_TABLE, size=7, radius=5)"
     }
 }
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Check if there is a square of furnaces that is 4 blocks wide.",
+        "instruction": "Create a cross from plants with sides measuring seven units. The formation should be combined.",
         "instruction_paraphrases": [
-            "Can you see if there exists a grid with a side length of 4 made entirely of furnace blocks?",
-            "Could you verify if a furnace square having a side of 4 blocks exists?",
-            "You need to find if there's a oven square of 4x4 present.",
-            "Locate whether there is a square composed of stoves with a dimension of 4x4 blocks.",
-            "Hinting towards the presence of a square arrangement of 4x4 firebox units in the game area."
+            "Form a cross, seven units long on each side, using plants. This should be in a combined style.",
+            "Make a combined configuration in the shape of a cross, utilizing vegetation. Each side should stretch for a total of seven units.",
+            "Construct a floral cross, with each limb being seven units in length. This should be in an intertwined arrangement.",
+            "Generate a combined pattern in the form of a cross employing greenery where the measurement of each side is seven units.",
+            "Develop a synergistic pattern in the shape of a cross using foliage. Make sure each sides extends seven units long."
         ],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.FURNACE, 4),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.FURNACE, 4)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.PLANT, size=7, radius=5)"
     }
 }
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Can you check if there is a square of plants with a side length of 3?",
+        "instruction": "Form a cross of direct shape using furnaces with each side having 7 blocks.",
         "instruction_paraphrases": [
-            "I need you to verify the presence of a plant patch shaped in a 3x3 square.",
-            "Could you see if there is a square form made of plants measuring 3 by 3 in size?",
-            "You need to ascertain the existence of a square formation of botany, which is 3 units in length and width.",
-            "I require you to confirm the existence of a square-shaped arrangement of flora with a size measuring 3 on each side.",
-            "Is it possible to authenticate the presence of a quadrilateral configuration comprised of vegetation with a dimension of three by three?"
+            "Create a direct cross pattern using 7 blocks of furnaces on each side.",
+            "Using the oven block, build a straight cross with seven units on each arm.",
+            "You need to construct a regular cross with sides measuring seven furnace blocks each.",
+            "Assemble a perpendicular cross employing furnace blocks, ensuring that each arm consists of seven units.",
+            "Make sure to arrange the oven blocks in a direct cross formation with each branch comprising a total of seven units."
         ],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.PLANT, 3),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.PLANT, 3)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=7, radius=5)"
     }
 }
 ----
 {
     "INSTRUCTION": {
-        "instruction": "Check for a square made of furnace blocks with a side length of 3.",
+        "instruction": "Form a cross using stone blocks with the side size 5 in a combined pattern around your position.",
         "instruction_paraphrases": [
-            "Verify the presence of a 3x3 square constructed from furnace blocks.",
-            "Scan the area for a three-sided square structure built exclusively from furnace blocks.",
-            "Examine the vicinity for a furnace block arrangement in the shape of a square with a size of 3.",
-            "Find a configuration designed as a square, that is formed using furnace blocks and measuring a length of three blocks on each side.",
-            "Confirm if there's an arrangement of furnace blocks in a perfect square that measures three units on each of its side."
+            "Create a combined cross made up of rock blocks, each side should have a length of 5.",
+            "Construct a cross in a joined pattern using boulders, with each arm spanning 5 length units.",
+            "Around your current site, prepare a cross using cobblestones, each extending to five units in a matched configuration.",
+            "Use stones to design an interconnected cross shape, with each side extending five units from the center, near your current location.",
+            "Assemble a mixed-style cross composed of pebbles, which will span five units on each side."
         ],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data, ix, BlockType.FURNACE, 3, 5),
-        "str_check_lambda": "is_square_formed(game_data, ix, BlockType.FURNACE, 3, 5)"
+        "check_lambda": "lambda game_data: is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)",
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.STONE, size=5, radius=7)"
     }
 }
 ----
-{
+ {
     "INSTRUCTION": {
-        "instruction": "Make a square of Plants with side size 2.",
+        "instruction": "Build a cross pattern using furnace with side size of 5 in a combined form.",
         "instruction_paraphrases": [
-            "Arrange the Flora into a square formation where each side is two blocks long.",
-            "Organize the Greenery into a 2 by 2 square shape.",
-            "Form a square using the Vegetation with the side length equal to two.",
-            "Create a square block arrangement of Botanical items making sure each side of the square is two units long.",
-            "Construct a square with a 2-block length on each side using the Herbal elements."
+            "Create a combined cross configuration using the furnace, with each of the sides having a length of 5.",
+            "Arrange the furnace to form a combined cross structure where each side has 5 units.",
+            "Set the furnace in such a way to construct a combined cross with every side of 5 units.",
+            "Establish a combined cross form by placing the furnace in a way that each side measures 5 units.",
+            "Design a combined cross shape with a furnace, ensuring each side is 5 units long."
         ],
-         'check_lambda': lambda game_data, ix: is_square_formed(game_data,ix, BlockType.PLANT, 2),
-        "str_check_lambda": "is_square_formed(game_data,ix, BlockType.PLANT, 2)"
+        "check_lambda": lambda game_data: is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=10),
+        "str_check_lambda": "is_cross_formed(game_data, BlockType.FURNACE, size=5, radius=10)"
     }
 }
 ----

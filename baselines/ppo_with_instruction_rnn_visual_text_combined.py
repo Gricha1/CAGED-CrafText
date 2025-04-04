@@ -9,12 +9,7 @@ import numpy as np
 import optax
 import time
 
-from typing import Optional, Any, Tuple
-
-from flax.linen.initializers import (
-    constant, 
-    orthogonal,
-)
+from typing import Optional
 
 import wandb
 from flax.training import (
@@ -28,10 +23,6 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 
-from typing import NamedTuple, Dict
-import distrax
-import functools
-
 from wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
@@ -41,13 +32,69 @@ from wrappers import (
 
 from logz.batch_logging import create_log_dict, batch_log
 
-from craftext.craftext_scenarious import create_scenarios_with_dataset
-from craftext.encoders.craftext_base_model_encoder import make_encoder
+from craftext.encoders.craftext_distilbert_model_encoder import make_encoder
+
+from craftext.instructions.scenarios.loaders.scenarios_loader import create_scenarios_with_dataset
+from craftext.instructions.wrappers.craftext_wrapper import InstructionWrapper
 from craftax.craftax_env import make_craftax_env_from_name
-from craftext.craftext_wrapper import InstructionWrapper
 
 from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 from analysis.inference_rnn import Experiment, ExperimentArgs
+
+
+
+
+from dataclasses import dataclass, asdict
+import argparse
+
+@dataclass
+class BaseConfig:
+    ENV_NAME: str               = "Craftax-Classic-Symbolic-v1"
+    CRAFTEXT_SETTINGS: str      = 'None'
+    EXPAND_EMB: int             = 1
+    NUM_ENVS: int               = 16
+    USE_PLANS: bool             = False
+    TOTAL_TIMESTEPS: int        = 250000000
+    INFERENCE_STEP: int         = 2000
+    LR: float                   = 2e-4
+    NUM_STEPS: int              = 64
+    UPDATE_EPOCHS: int          = 4
+    NUM_MINIBATCHES: int        = 8
+    GAMMA: float                = 0.99
+    GAE_LAMBDA: float           = 0.8
+    CLIP_EPS: float             = 0.2
+    ENT_COEF: float             = 0.01
+    VF_COEF: float              = 0.5
+    MAX_GRAD_NORM: float        = 1.0
+    ACTIVATION: str             = "tanh"
+    ANNEAL_LR: bool             = True
+    DEBUG: bool                 = True
+    JIT: bool                   = True
+    SEED: int                   = -1
+    USE_WANDB: bool             = True
+    SAVE_POLICY: bool           = False
+    NUM_REPEATS: int            = 1
+    LAYER_SIZE: int             = 512
+    WANDB_PROJECT: str          = "None"
+    WANDB_ENTITY: str           = "None"
+    USE_OPTIMISTIC_RESETS: bool = True
+    OPTIMISTIC_RESET_RATIO: int = 16
+
+    PATH_TO_CHECKPOINT: str = 'None'
+    
+    NUM_UPDATES: int = 0
+    MINIBATCH_SIZE: int = 0
+    
+    def update_from_args(self, args: argparse.Namespace):
+        for field in self.__dataclass_fields__:
+            arg_value = getattr(args, field.lower(), None)
+            if arg_value is not None:
+                setattr(self, field, arg_value)
+
+    def update_from_params(self, other_params: dict):
+        for key, value in other_params.items():
+            if key in self.__dataclass_fields__:
+                setattr(self, key, value)
 
 @flax.struct.dataclass
 class TransitionScheme:
@@ -61,53 +108,51 @@ class TransitionScheme:
     instruction : jax.Array
 
 
-def make_train(config, network_params):
-    print(config["CRAFTEXT_SETTINGS"])
-    config["NUM_UPDATES"] = (
-        config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
-    )
-    config["MINIBATCH_SIZE"] = (
-        config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
-    )
-
+def make_train(config: BaseConfig, network_params):
+    
+    config.update_from_params({
+        "NUM_UPDATES": config.TOTAL_TIMESTEPS // config.NUM_STEPS // config.NUM_ENVS,
+        "MINIBATCH_SIZE": config.NUM_ENVS * config.NUM_STEPS // config.NUM_MINIBATCHES,
+    })
+    
     # Create environment
     env = make_craftax_env_from_name(
-        config["ENV_NAME"], not config["USE_OPTIMISTIC_RESETS"]
+        config.ENV_NAME, not config.USE_OPTIMISTIC_RESETS
     )
     env_params = env.default_params
     
-    if config["USE_PLANS"]:
+    if config.USE_PLANS:
         scenarious_loader = create_scenarios_with_dataset(True)
         encoder = make_encoder(n_splits=5)
-        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], 
+        env = InstructionWrapper(env, config.CRAFTEXT_SETTINGS, 
                                  encode_model_class=encoder, 
                                  scenario_handler_class=scenarious_loader)
     else:
-        encoder = make_encoder(n_splits=config["EXPAND_EMB"])
-        env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"], encode_model_class=encoder)
+        encoder = make_encoder(n_splits=config.EXPAND_EMB)
+        env = InstructionWrapper(env, config.CRAFTEXT_SETTINGS, encode_model_class=encoder)
     
     
     # Wrap with some extra logging
     env = LogWrapper(env)
 
     # Wrap with a batcher, maybe using optimistic resets
-    if config["USE_OPTIMISTIC_RESETS"]:
+    if config.USE_OPTIMISTIC_RESETS:
         env = OptimisticResetVecEnvWrapper(
             env,
-            num_envs=config["NUM_ENVS"],
-            reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
+            num_envs=config.NUM_ENVS,
+            reset_ratio=min(config.OPTIMISTIC_RESET_RATIO, config.NUM_ENVS),
         )
     else:
         env = AutoResetEnvWrapper(env)
-        env = BatchEnvWrapper(env, num_envs=config["NUM_ENVS"])
+        env = BatchEnvWrapper(env, num_envs=config.NUM_ENVS )
 
-    def linear_schedule(count):
+    def linear_schedule(count: int) -> float:
         frac = (
             1.0
-            - (count // (config["NUM_MINIBATCHES"] * config["UPDATE_EPOCHS"]))
-            / config["NUM_UPDATES"]
+            - (count // (config.NUM_MINIBATCHES  * config.UPDATE_EPOCHS ))
+            / config.NUM_UPDATES 
         )
-        return config["LR"] * frac
+        return config.LR  * frac
 
     def train(rng):
         # INIT NETWORK
@@ -115,30 +160,30 @@ def make_train(config, network_params):
         rng, _rng = jax.random.split(rng)
         init_x = (
             jnp.zeros(
-                (1, config["NUM_ENVS"], *env.observation_space(env_params).shape)
+                (1, config.NUM_ENVS , *env.observation_space(env_params).shape)
             ),
-            jnp.zeros((1, config["NUM_ENVS"])),
+            jnp.zeros((1, config.NUM_ENVS )),
         )
         
         init_hstate = ScannedRNN.initialize_carry(
-            config["NUM_ENVS"], config["LAYER_SIZE"]
+            config.NUM_ENVS , config.LAYER_SIZE 
         )
 
         
         encoded_input_expanded = jnp.expand_dims(env.encoded_instruction, axis=1)
         print("encoded_input_expanded.shape", encoded_input_expanded.shape)
-        encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config["NUM_ENVS"], 1))
+        encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config.NUM_ENVS , 1))
 
         network_params_alt = network.init(_rng, init_hstate, init_x, encoded_input_tiled)
-        if config["ANNEAL_LR"]:
+        if config.ANNEAL_LR:
             tx = optax.chain(
-                optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
+                optax.clip_by_global_norm(config.MAX_GRAD_NORM ),
                 optax.adam(learning_rate=linear_schedule, eps=1e-5),
             )
         else:
             tx = optax.chain(
-                optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(config["LR"], eps=1e-5),
+                optax.clip_by_global_norm(config.MAX_GRAD_NORM ),
+                optax.adam(config.LR , eps=1e-5),
             )
             
         if network_params is None:
@@ -208,7 +253,7 @@ def make_train(config, network_params):
 
             initial_hstate = runner_state[-3]
             runner_state, traj_batch = jax.lax.scan(
-                _env_step, runner_state, None, config["NUM_STEPS"]
+                _env_step, runner_state, None, config.NUM_STEPS 
             )
 
             # CALCULATE ADVANTAGE
@@ -234,11 +279,11 @@ def make_train(config, network_params):
                         transition.reward,
                     )
                     delta = (
-                        reward + config["GAMMA"] * next_value * (1 - next_done) - value
+                        reward + config.GAMMA  * next_value * (1 - next_done) - value
                     )
                     gae = (
                         delta
-                        + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - next_done) * gae
+                        + config.GAMMA  * config.GAE_LAMBDA  * (1 - next_done) * gae
                     )
                     return (gae, value, done), gae
 
@@ -268,7 +313,8 @@ def make_train(config, network_params):
                         # CALCULATE VALUE LOSS
                         value_pred_clipped = traj_batch.value + (
                             value - traj_batch.value
-                        ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
+                        ).clip(-config.CLIP_EPS, config.CLIP_EPS )
+                        
                         value_losses = jnp.square(value - targets)
                         value_losses_clipped = jnp.square(value_pred_clipped - targets)
                         value_loss = (
@@ -282,8 +328,8 @@ def make_train(config, network_params):
                         loss_actor2 = (
                             jnp.clip(
                                 ratio,
-                                1.0 - config["CLIP_EPS"],
-                                1.0 + config["CLIP_EPS"],
+                                1.0 - config.CLIP_EPS ,
+                                1.0 + config.CLIP_EPS ,
                             )
                             * gae
                         )
@@ -293,8 +339,8 @@ def make_train(config, network_params):
 
                         total_loss = (
                             loss_actor
-                            + config["VF_COEF"] * value_loss
-                            - config["ENT_COEF"] * entropy
+                            + config.VF_COEF  * value_loss
+                            - config.ENT_COEF  * entropy
                         )
                         return total_loss, (value_loss, loss_actor, entropy)
 
@@ -315,7 +361,7 @@ def make_train(config, network_params):
                 ) = update_state
 
                 rng, _rng = jax.random.split(rng)
-                permutation = jax.random.permutation(_rng, config["NUM_ENVS"])
+                permutation = jax.random.permutation(_rng, config.NUM_ENVS)
                 batch = (init_hstate, traj_batch, advantages, targets)
 
                 shuffled_batch = jax.tree.map(
@@ -326,7 +372,7 @@ def make_train(config, network_params):
                     lambda x: jnp.swapaxes(
                         jnp.reshape(
                             x,
-                            [x.shape[0], config["NUM_MINIBATCHES"], -1]
+                            [x.shape[0], config.NUM_MINIBATCHES , -1]
                             + list(x.shape[2:]),
                         ),
                         1,
@@ -358,16 +404,16 @@ def make_train(config, network_params):
                 rng,
             )
             update_state, loss_info = jax.lax.scan(
-                _update_epoch, update_state, None, config["UPDATE_EPOCHS"]
+                _update_epoch, update_state, None, config.UPDATE_EPOCHS 
             )
             train_state = update_state[0]
             metric = jax.tree.map(
-                lambda x: (x * traj_batch.info["returned_episode"]).sum()
-                / traj_batch.info["returned_episode"].sum(),
+                lambda x: (x * traj_batch.info.returned_episode ).sum()
+                / traj_batch.info.returned_episode .sum(),
                 traj_batch.info,
             )
             rng = update_state[-1]
-            if config["DEBUG"] and config["USE_WANDB"]:
+            if config.DEBUG  and config.USE_WANDB :
 
                 def callback(metric, update_step):
                     to_log = create_log_dict(metric, config)
@@ -391,13 +437,13 @@ def make_train(config, network_params):
             train_state,
             env_state,
             obsv,
-            jnp.zeros((config["NUM_ENVS"]), dtype=bool),
+            jnp.zeros((config.NUM_ENVS ), dtype=bool),
             init_hstate,
             _rng,
             0,
         )
         runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
+            _update_step, runner_state, None, config.NUM_UPDATES 
         )
         return {"runner_state": runner_state, "metric": metric}
 
@@ -405,50 +451,49 @@ def make_train(config, network_params):
 
 
 
-def run_ppo(config):
-    config = {k.upper(): v for k, v in config.__dict__.items()}
-    config["PATH_TO_CHECKPOINT"] = 'None'
-    base_timestamps = config['TOTAL_TIMESTEPS']
-    if config["USE_WANDB"]:
+def run_ppo(config: BaseConfig):
+    
+    base_timestamps = config.TOTAL_TIMESTEPS
+    
+    if config.USE_WANDB:
         wandb.init(
-            project=config["WANDB_PROJECT"],
-            entity=config["WANDB_ENTITY"],
-            config=config,
-            name=config["ENV_NAME"]
-            + "-PPO_RNN-"
-            + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
-            + "M",
+            project=config.WANDB_PROJECT ,
+            entity=config.WANDB_ENTITY ,
+            config=asdict(config),
+            name=f'{config.ENV_NAME}-PPO_RNN-{int(config.TOTAL_TIMESTEPS  // 1e6)}M',
         )
 
     num_restarts = 5
     for restart in range(num_restarts):
-        rng = jax.random.PRNGKey(config["SEED"])
+        rng = jax.random.PRNGKey(config.SEED )
         print(f"Starting training iteration {restart + 1}/{num_restarts}")
 
         # Reload weights from the checkpoint
-        if os.path.exists(config["PATH_TO_CHECKPOINT"]):
-            print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
+        if os.path.exists(config.PATH_TO_CHECKPOINT):
+            print(f"Loading weights from checkpoint: {config.PATH_TO_CHECKPOINT}")
             orbax_checkpointer = PyTreeCheckpointer()
             checkpoint_manager = CheckpointManager(
-                config["PATH_TO_CHECKPOINT"],
+                config.PATH_TO_CHECKPOINT ,
                 orbax_checkpointer,
                 CheckpointManagerOptions(max_to_keep=1, create=False),
             )
             with jax.disable_jit():
                 if restart == 0:
                     train_state = checkpoint_manager.restore(60000)
-                    network_params = train_state['runner_state'][0]["params"]
+                    network_params = train_state.runner_state[0].params  #так ли это
                 else:
-                    train_state = checkpoint_manager.restore(int(config['TOTAL_TIMESTEPS']))
-                    network_params = train_state['runner_state'][0]["params"]
+                    train_state = checkpoint_manager.restore(config.TOTAL_TIMESTEPS)
+                    network_params = train_state.runner_state[0].params #так ли это
 
             print("Weights successfully loaded from checkpoint.")
         else:
             print("No valid checkpoint found, using default initialization.")
 
             network_params = None  # Initialize or handle default weights
-        config['TOTAL_TIMESTEPS'] = base_timestamps * (restart + 1)
-
+        
+        # config .TOTAL_TIMESTEPS  = base_timestamps * (restart + 1)
+        config.update_from_params({"TOTAL_TIMESTEPS": base_timestamps * (restart + 1)})
+        
         # Split RNG for this training iteration
         rng, current_rng = jax.random.split(rng)
 
@@ -463,13 +508,13 @@ def run_ppo(config):
         # Print performance metrics
         print(f"Iteration {restart + 1} completed.")
         print("Time to run experiment:", t1 - t0)
-        print("SPS:", config["TOTAL_TIMESTEPS"] / (t1 - t0))
+        print("SPS:", config.TOTAL_TIMESTEPS  / (t1 - t0))
         
         time.sleep(20)
         # Save checkpoint after this iteration
         checkpoint_dir = f"checkpoint_restart_{restart + 1}"
         checkpoint_path = os.path.join(
-            wandb.run.dir if config["USE_WANDB"] else ".", checkpoint_dir
+            wandb.run.dir if config.USE_WANDB  else ".", checkpoint_dir
         )
 
         orbax_checkpointer = PyTreeCheckpointer()
@@ -479,7 +524,7 @@ def run_ppo(config):
         # Save the current train state
         save_args = orbax_utils.save_args_from_target(train_state)
         checkpoint_manager.save(
-            config["TOTAL_TIMESTEPS"],
+            config.TOTAL_TIMESTEPS ,
             train_state,
             save_kwargs={"save_args": save_args},
         )
@@ -489,34 +534,34 @@ def run_ppo(config):
         common_args = {
             "num_envs": 1024,
             "experiment_name": wandb.run.dir,
-            "ratio": min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
+            "ratio": min(config.OPTIMISTIC_RESET_RATIO , config.NUM_ENVS ),
             "checkpoint_num": checkpoint_dir,
-            "env_name": config['ENV_NAME'],
-            "max_grad_norm": config['MAX_GRAD_NORM'],
-            "lr": config['LR'],
-            "layer_size": config['LAYER_SIZE'],
-            "total_timesteps": config['TOTAL_TIMESTEPS'],
+            "env_name": config.ENV_NAME ,
+            "max_grad_norm": config.MAX_GRAD_NORM ,
+            "lr": config.LR ,
+            "layer_size": config.LAYER_SIZE ,
+            "total_timesteps": config.TOTAL_TIMESTEPS ,
             "path": wandb.run.dir,
             "view": False,
-            "use_plans": config["USE_PLANS"],
-            "inference_step":config["INFERENCE_STEP"],
-            "expand_emb": config["EXPAND_EMB"]
+            "use_plans": config.USE_PLANS ,
+            "inference_step":config.INFERENCE_STEP ,
+            "expand_emb": config.EXPAND_EMB 
         }
 
         # INFERENCE ON TRAIN
-        train_args = ExperimentArgs(**common_args, craftext_settings=config['CRAFTEXT_SETTINGS'])
+        train_args = ExperimentArgs(**common_args, craftext_settings=config .CRAFTEXT_SETTINGS )
         train_experiment = Experiment(train_args)
         inference, mean_by_tasks = train_experiment.run()
         wandb.log({"train":mean_by_tasks})
 
         # INFERENCE ON TEST
-        test_args = ExperimentArgs(**common_args, craftext_settings=config['CRAFTEXT_SETTINGS'] + "_test_other_params")
+        test_args = ExperimentArgs(**common_args, craftext_settings=config .CRAFTEXT_SETTINGS  + "_test_other_params")
         test_experiment = Experiment(test_args)
         inference, mean_by_tasks = test_experiment.run()
         wandb.log({"test":mean_by_tasks})
         
         # Update PATH_TO_CHECKPOINT for the next iteration
-        config["PATH_TO_CHECKPOINT"] = checkpoint_path
+        config.PATH_TO_CHECKPOINT  = checkpoint_path
 
     print("All training iterations completed.")
 
@@ -570,11 +615,14 @@ if __name__ == "__main__":
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
-    if args.seed is None:
-        args.seed = np.random.randint(2**31)
+    config = BaseConfig()
+    config.update_from_args(args)
 
-    if args.jit:
-        run_ppo(args)
+    if config.SEED == -1:
+        config. update_from_params({"SEED": np.random.randint(2**31)})
+
+    if config.JIT:
+        run_ppo(config)
     else:
         with jax.disable_jit():
-            run_ppo(args)
+            run_ppo(config)

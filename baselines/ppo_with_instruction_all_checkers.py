@@ -19,25 +19,79 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-from baselines.experiments.super_igor.encoder import QwenModelWrapper
-from craftext.encoders.craftext_base_model_encoder import EncodeForm
-from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
 
-from baselines.logz.batch_logging import batch_log, create_log_dict
-from baselines.models.actor_critic import (
+
+from logz.batch_logging import batch_log, create_log_dict
+from models.actor_critic import (
     ActorCritic,
     ActorCriticConv,
     ActorCriticConvWithBERT,
     ActorCriticConvWithIdxEmbedding
 )
-from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
-from baselines.wrappers import (
+from models.icm import ICMEncoder, ICMForward, ICMInverse
+from wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
     BatchEnvWrapper,
 )
 
-from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
+
+
+from craftext.instructions.wrappers.craftext_wrapper_several_tasks import InstructionWrapperSeveralTasks as InstructionWrapper
+
+
+from dataclasses import dataclass, asdict
+import argparse
+
+@dataclass
+class BaseConfig:
+    ENV_NAME: str               = "Craftax-Classic-Symbolic-v1"
+    CRAFTEXT_SETTINGS: str      = 'None'
+    EXPAND_EMB: int             = 1
+    NUM_ENVS: int               = 16
+    USE_PLANS: bool             = False
+    TOTAL_TIMESTEPS: int        = 250000000
+    INFERENCE_STEP: int         = 2000
+    LR: float                   = 2e-4
+    NUM_STEPS: int              = 64
+    UPDATE_EPOCHS: int          = 4
+    NUM_MINIBATCHES: int        = 8
+    GAMMA: float                = 0.99
+    GAE_LAMBDA: float           = 0.8
+    CLIP_EPS: float             = 0.2
+    ENT_COEF: float             = 0.01
+    VF_COEF: float              = 0.5
+    MAX_GRAD_NORM: float        = 1.0
+    ACTIVATION: str             = "tanh"
+    ANNEAL_LR: bool             = True
+    DEBUG: bool                 = True
+    JIT: bool                   = True
+    SEED: int                   = -1
+    USE_WANDB: bool             = True
+    SAVE_POLICY: bool           = False
+    NUM_REPEATS: int            = 1
+    LAYER_SIZE: int             = 512
+    WANDB_PROJECT: str          = "None"
+    WANDB_ENTITY: str           = "None"
+    USE_OPTIMISTIC_RESETS: bool = True
+    OPTIMISTIC_RESET_RATIO: int = 16
+
+    PATH_TO_CHECKPOINT: str = 'None'
+    
+    NUM_UPDATES: int = 0
+    MINIBATCH_SIZE: int = 0
+    
+    def update_from_args(self, args: argparse.Namespace):
+        for field in self.__dataclass_fields__:
+            arg_value = getattr(args, field.lower(), None)
+            if arg_value is not None:
+                setattr(self, field, arg_value)
+
+    def update_from_params(self, other_params: dict):
+        for key, value in other_params.items():
+            if key in self.__dataclass_fields__:
+                setattr(self, key, value)
+
 
 
 class Transition(NamedTuple):
@@ -67,13 +121,7 @@ def make_train(config, network_params):
         env_name, not config["USE_OPTIMISTIC_RESETS"]
     )
     env_params = env.default_params
-    #REPLACE INTO DATASET
-    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20)
-    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'])
-    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
-                             encode_model_class=EncodeModel,
-                            scenario_handler_class=ScenariosClass,
-                            encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
+    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"])
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -84,6 +132,8 @@ def make_train(config, network_params):
         
     
     
+    # else:
+   # env = BatchEnvWrapper(env, num_envs=config["NUM_ENVS"])
 
     def linear_schedule(count):
         frac = (
@@ -708,12 +758,8 @@ def make_train(config, network_params):
 def run_ppo(config):
     # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
-    if config['start_checkpoint_path'.upper()] != "None":
-        start_checkpoint_path = config['start_checkpoint_path'.upper()] # os.path.abspath("./wandb" + config['start_checkpoint_path'.upper()].split("wandb")[1])
-    else:
-        start_checkpoint_path = "None"
-    base_checkpoint_path = start_checkpoint_path #os.path.abspath("./wandb/achivments_v2/files/checkpoint_restart_1")
-    config["PATH_TO_CHECKPOINT"] = base_checkpoint_path  # Initialize with no checkpoint
+    base_checkpoint_path = os.path.abspath("./wandb/run-20241119_124727-pa1tyfiy/files/checkpoint_restart_1")
+    config["PATH_TO_CHECKPOINT"] = 'None'# base_checkpoint_path  # Initialize with no checkpoint
     base_timestamps = config['TOTAL_TIMESTEPS']
     # Initialize WandB if enabled
     if config["USE_WANDB"]:
@@ -726,30 +772,18 @@ def run_ppo(config):
             + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
             + "M",
         )
-    if config['ENCODE_FORM_NAME'] == 'EMBEDDING':
-        config['ENCODE_FORM'] = EncodeForm.EMBEDDING
-    elif config['ENCODE_FORM_NAME'] == 'WEIGHTED_MEAN':
-        config['ENCODE_FORM'] = EncodeForm.WEIGHTED_MEAN
-    elif config['ENCODE_FORM_NAME'] == 'TOKENS':
-        config['ENCODE_FORM'] = EncodeForm.TOKEN
-    elif config['ENCODE_FORM_NAME'] == 'EMBED_CLS_FOR_SPLITS':
-         config['ENCODE_FORM'] = EncodeForm.EMBED_CLS_FOR_SPLITS
 
     # Initialize random keys
     rng = jax.random.PRNGKey(config["SEED"])
 
     # Define the number of restarts
-    num_restarts = 1  # Hyperparameter for the number of restarts
-    for restart in range(0, num_restarts):
+    num_restarts = 5  # Hyperparameter for the number of restarts
+    for restart in range(num_restarts):
         print(f"Starting training iteration {restart + 1}/{num_restarts}")
 
         # Reload weights from the checkpoint
         if os.path.exists(config["PATH_TO_CHECKPOINT"]):
-            print("---- " * 80)
-            print()
             print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
-            print()
-            print("---- " * 80)
             orbax_checkpointer = PyTreeCheckpointer()
             checkpoint_manager = CheckpointManager(
                 config["PATH_TO_CHECKPOINT"],
@@ -757,32 +791,19 @@ def run_ppo(config):
                 CheckpointManagerOptions(max_to_keep=1, create=False),
             )
             with jax.disable_jit():
-                # if restart == 0:
-                #     train_state = checkpoint_manager.restore(60000)
-                #     network_params = train_state['runner_state'][0]["params"]
-                # else:
+                if restart == 0:
+                    train_state = checkpoint_manager.restore(60000)
+                    network_params = train_state['runner_state'][0]["params"]
+                else:
                     train_state = checkpoint_manager.restore(int(config['TOTAL_TIMESTEPS']))
                     network_params = train_state['runner_state'][0]["params"]
                     #print(train_state.keys())
           #  network_params = train_state["params"]
             print("Weights successfully loaded from checkpoint.")
-        elif config["PATH_TO_CHECKPOINT"]=="None" or config["PATH_TO_CHECKPOINT"] is None:
-            print("---- " * 80)
-            print()
-            print(config["PATH_TO_CHECKPOINT"])
-            print(f"No valid checkpoint found, using default initialization.")
-            print()
-            print("---- " * 80)
-            network_params = None
         else:
-            print("---- " * 80)
-            print()
-            print(config["PATH_TO_CHECKPOINT"])
-            print(f"No valid checkpoint found, using default initialization.")
-            print()
-            print("---- " * 80)
-            exit()
-
+            print("No valid checkpoint found, using default initialization.")
+           # exit()
+            network_params = None  # Initialize or handle default weights
         config['TOTAL_TIMESTEPS'] = base_timestamps * (restart + 1)
 
         # Split RNG for this training iteration
@@ -801,7 +822,7 @@ def run_ppo(config):
         print("Time to run experiment:", t1 - t0)
         print("SPS:", config["TOTAL_TIMESTEPS"] / (t1 - t0))
         
-       # time.sleep(20)
+        time.sleep(20)
         # Save checkpoint after this iteration
         checkpoint_dir = f"checkpoint_restart_{restart + 1}"
         checkpoint_path = os.path.join(
@@ -824,13 +845,7 @@ def run_ppo(config):
         # Update PATH_TO_CHECKPOINT for the next iteration
         config["PATH_TO_CHECKPOINT"] = checkpoint_path
 
-    os.makedirs(config['EXPERIMENT_NAME'], exist_ok=True)
-    with open(f"{config['EXPERIMENT_NAME']}/path_to_last_checkpoint.txt", "w", encoding="utf-8") as file:
-        file.write(checkpoint_path)
-
     print("All training iterations completed.")
-    wandb.finish()
-
 
 
 
@@ -839,12 +854,7 @@ if __name__ == "__main__":
     #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
-    parser.add_argument("--start_checkpoint_path", type=str, default=None)
-    parser.add_argument("--llm_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
-    parser.add_argument("--super_dataset", type=str, default=None)
     parser.add_argument("--craftext_settings", type=str, default=None)
-    parser.add_argument("--experiment_name", type=str, default="experiment")
-    parser.add_argument("--encode_form_name", type=str, default="EMBEDDING")
     parser.add_argument(
         "--num_envs",
         type=int,

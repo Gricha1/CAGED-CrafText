@@ -7,7 +7,7 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
 
-from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios
+from craftext.instructions.scenarios.handlers.craftext_scenarious import ScenariosConfig, ScenariosConfigLoader, load_scenarios
 from craftext.scenarios.constants import plans_path
 
 # Logging configuration

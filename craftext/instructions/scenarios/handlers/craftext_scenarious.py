@@ -6,8 +6,7 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-from craftext.encoders.craftext_base_model_encoder import EncodeModel, EncodeForm
-from craftext.scenarios_loader import ScenariosConfig, ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
+from craftext.instructions.scenarios.loaders.scenarios_loader import ScenariosConfigLoader, load_scenarios #load_scenarios, parse_craftext_settings, load_config_or_env, get_configs_path
 from craftext.scenarios.constants import plans_path
 from dataclasses import dataclass
 from jax import lax

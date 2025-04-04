@@ -7,14 +7,17 @@ import jax.numpy as jnp
 from flax import linen as nn, struct
 from gym import Wrapper
 
-from jax import tree_map
 
-from craftext.encoders.craftext_base_model_encoder import EncodeForm, DistilBertEncode
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
+from craftext.encoders.craftext_distilbert_model_encoder import DistilBertEncode
+
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from craftext.adapters.state_adapter import GameData
+
 from craftext.adapters.state_adapter_classic import GameDataClassic
+
 # from craftext.checkers_jax.time_constrained import at_time_block_placed
-from craftext.checkers_jax.building_star import is_cross_formed
+# from craftext.checkers_jax.building_star import is_cross_formed
 
 @struct.dataclass
 class TextEnvState:
@@ -137,7 +140,7 @@ class InstructionWrapper(Wrapper):
         # print(f'len: {len(self.scenario_arguments)}')
         # at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
         at_time_block_placed_achivment = jax.vmap(is_cross_formed, in_axes=(None, 0))
-
+        # 
         # print(type(self.scenario_arguments))
         # print(self.scenario_arguments.shape)
         results = at_time_block_placed_achivment(game_data_vector, self.scenario_arguments)
@@ -167,3 +170,7 @@ class InstructionWrapper(Wrapper):
         self.steps += 1
         return obs, state, reward, done, info
  
+#TODO:
+# враппер для проверки всех задачь разом.
+# посмотреть trl GRPO trainer -> использовать transformers
+# ONE -> вернуть.

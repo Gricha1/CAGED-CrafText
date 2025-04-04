@@ -2,7 +2,7 @@ from tqdm import tqdm
 import time
 import numpy as np
 
-from craftext.craftext_wrapper import InstructionWrapper
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 from baselines.experiments.super_igor.encoder import QwenEncodeModel, EncodeForm
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 

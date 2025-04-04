@@ -22,7 +22,7 @@ from baselines.wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
 )
-from craftext.craftext_wrapper import InstructionWrapper
+from craftext.instructions.wrappers.craftext_wrapper import InstructionWrapper
 
 
 class Transition(NamedTuple):
