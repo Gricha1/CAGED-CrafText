@@ -20,6 +20,7 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 from baselines.experiments.super_igor.craftext_wrappers.encoder import QwenModelWrapper
+from baselines.experiments.super_igor.craftext_wrappers.encoder_v2 import make_encoder_with_planning
 from craftext.craftext_encoder import EncodeForm
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import create_scenarios_with_super_dataset
 from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
@@ -72,7 +73,11 @@ def make_train(config, network_params):
     )
     env_params = env.default_params
     #REPLACE INTO DATASET
-    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20, split_into_steps=True)
+   # EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20, split_into_steps=True, make_one_hot=True)
+    EncodeModel = make_encoder_with_planning(planer_type = config['PLANER_TYPE'],
+                                             planer_config=config['PLANER_CONFIG'],
+                                             embedding_source=config['EMBEDDING_SOURCE'],
+                                             step_by_step=config['STEP_BY_STEP'])
     ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=False)
     env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
@@ -708,10 +713,30 @@ def make_train(config, network_params):
 
     return train
 
-    
+
+def extract_planer_config(config):
+    planner_config = {'model_config': \
+                {
+                'original_model_path': config['original_model_path'.upper()],
+                'peft_weights_path': config['peft_weights_path'.upper()],
+                },
+              'generation_config':\
+                {
+                'num_paraphrases': config['num_paraphrases'.upper()],
+                'beam_groups': config['beam_groups'.upper()],
+                'beams_count': config['beams_count'.upper()],
+                'max_new_tokens': config['max_new_tokens'.upper()],
+                'prompt_template': config['prompt_template'.upper()],
+                },
+                'super_dataset':None,
+                'augment':config['augment'.upper()]
+             }
+    return planner_config
+
 def run_ppo(config):
     # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
+    config['PLANER_CONFIG'] = extract_planer_config(config)
     if config['start_checkpoint_path'.upper()] != "None":
         start_checkpoint_path = config['start_checkpoint_path'.upper()] # os.path.abspath("./wandb" + config['start_checkpoint_path'.upper()].split("wandb")[1])
     else:
@@ -849,6 +874,21 @@ if __name__ == "__main__":
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--experiment_name", type=str, default="experiment")
     parser.add_argument("--encode_form_name", type=str, default="EMBEDDING")
+    
+    #Plan generation config
+    parser.add_argument("--planer_type", type=str, default="llm")
+    parser.add_argument("--embedding_source", type=int, default=1)
+    parser.add_argument("--step_by_step", type=bool, default=True)
+    parser.add_argument("--original_model_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--peft_weights_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--num_paraphrases", type=int, default=15)
+    parser.add_argument("--beam_groups", type=int, default=15)
+    parser.add_argument("--beams_count", type=int, default=15)
+    parser.add_argument("--max_new_tokens", type=int, default=128)
+    parser.add_argument("--prompt_template", type=int, default=2)
+    parser.add_argument("--augment", type=bool, default=False)
+    
+    
     parser.add_argument(
         "--num_envs",
         type=int,

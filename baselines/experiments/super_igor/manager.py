@@ -1,3 +1,6 @@
+import os 
+os.environ["CRAFTEXT_SCENARIO_PATH"] = "../../../craftext/scenarios/"
+
 import subprocess
 from datetime import datetime
 
@@ -10,7 +13,8 @@ from faker import Faker
 def run_policy_train(craftext_settings, env_name, 
                      llm_path, super_dataset, num_envs,
                      start_checkpoint_path=None, experiment_name="experiment", 
-                     encode_form_name="EMBEDDING", total_timesteps=250000000):
+                     encode_form_name="EMBEDDING", total_timesteps=250000000,
+                     additional_args=None):
     args = [
         "python", "policy_train.py",
         "--craftext_settings", craftext_settings,
@@ -23,7 +27,11 @@ def run_policy_train(craftext_settings, env_name,
         "--start_checkpoint_path", start_checkpoint_path,
         "--total_timesteps", str(total_timesteps)
     ]
-
+    if additional_args:
+        for key, value in additional_args.items():
+            if value is not None:  
+                args.extend([key, str(value)])
+        
     try:
         process = subprocess.Popen(args)
         process.wait()  # Дождаться завершения процесса
@@ -46,7 +54,7 @@ def run_policy_train(craftext_settings, env_name,
 
 
 def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_name, plan_with_llm, 
-                         craftext_settings,num_return_sequences='5', augment="False"):
+                         craftext_settings,num_return_sequences='5', augment="False", additional_args=None):
     args = [
             "python", "policy_inference.py", 
             "--experiment_name", experiment_name,
@@ -60,6 +68,10 @@ def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_n
             "--save_dataset_path", save_dataset_name,
             "--num_return_sequences", num_return_sequences,
         ]
+    if additional_args:
+        for key, value in additional_args.items():
+            if value is not None:  
+                args.extend([key, str(value)])
 
     print(args)
     #exit()
@@ -110,6 +122,32 @@ def get_rl_experiment_name(rl_experiment_path):
     experiment_name = p1.split("/")[0]
     return experiment_name
 
+import yaml
+def planer_config_to_args(config_path):
+    with open(config_path, "r", encoding="utf-8") as file:
+        config = yaml.safe_load(file)
+    planer_config = config["planer_config"]
+
+    model_config = planer_config.get("model_config", {})
+    generation_config = planer_config.get("generation_config", {})
+
+    print(model_config)
+    params = {
+        "--planer_type": "llm",
+        "--embedding_source": 1,
+        "--step_by_step": True,
+        "--original_model_path": model_config.get("original_model_path", ""),
+        "--peft_weights_path": model_config.get("peft_weights_path"),
+        "--num_paraphrases": generation_config.get("num_paraphrases", 15),
+        "--beam_groups": generation_config.get("beam_groups", 15),
+        "--beams_count": generation_config.get("beams_count", 15),
+        "--max_new_tokens": generation_config.get("max_new_tokens", 128),
+        "--prompt_template": generation_config.get("prompt_template", 1),
+        "--augment": planer_config.get("augment", False),
+        "--super_dataset": planer_config.get("super_dataset"),
+    }
+    return params
+
 if __name__=="__main__":
     wandb.init(project="super_igor_cycle_rest")
     os.makedirs("super_experiments", exist_ok=True)
@@ -132,23 +170,24 @@ if __name__=="__main__":
     llm_done = 0
     
     rl_skip = 1 if start_from_checkpoint else 0
-    inference_skip = 0 if start_from_checkpoint else 0
+    inference_skip = 1 if start_from_checkpoint else 0
     llm_skip = 0 if start_from_checkpoint else 0
     
     if start_from_checkpoint:
         
-        experiment_name = "super_experiments/simple_achivements_one_test_llmt_True_Darren_Kelley_20250319_112820"
+        experiment_name = "super_experiments/simple_achivements_one_test_llmt_True_Kenneth_Colon_20250325_155945"
         temp_path = f"{experiment_name}/temp_dataset"
         dataset_name = f"{temp_path}/super_dataset{0}_{0}.json"
     else:
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        experiment_tag = "simple_achivements_one_test"
+        experiment_tag = craftext_settings
         experiment_name = f"super_experiments/{experiment_tag}_llmt_{str(use_llm_tuning)}_{name}_{surname}_{current_time}"
         temp_path = f"{experiment_name}/temp_dataset"
         rl_experiment_path = "None"
         super_dataset_name = "None"
         os.makedirs(temp_path, exist_ok=True)
-        
+    
+    start_planer_config = planer_config_to_args("./configs/qwen_3b_function.yaml")
     for j in range(5):
         
         if rl_skip<= rl_done:
@@ -162,7 +201,8 @@ if __name__=="__main__":
                 start_checkpoint_path=rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=250000000
+                total_timesteps=25000000,
+                additional_args=start_planer_config
             )
         else:
             print("SKIP RL TRAINING!")
@@ -176,7 +216,7 @@ if __name__=="__main__":
             output_dir = f'./{experiment_name}/llm_checkpoints/mix_text_cycle_{j}_{i}'
             plan_with_llm =   i>0 #Generate new plans after LLM training
             if inference_skip <= inference_done:
-                augment = 1 if i<1 else 0
+                augment = 0 if i<1 else 0
                 save_dataset_path = dataset_name
                 # Validation on train with new LLM and SuperDataset generation
                 llm_checkpoint = llm_name
@@ -187,16 +227,18 @@ if __name__=="__main__":
                                     plan_with_llm=plan_with_llm,
                                     craftext_settings=craftext_settings,
                                     augment=augment,
-                                    num_return_sequences='20')
+                                    num_return_sequences='20',
+                                    additional_args=start_planer_config)
                 log_validation(dataset_name, context="train_dataset")
-                #exit()
+             #   exit()
                 save_dataset_path = f"{temp_path}/train_{j}_{i}.json"
                 run_policy_inference(llm_checkpoint, save_dataset_path, save_dataset_path,
                                         plan_with_llm=True,
                                         experiment_name=rl_experiment_name,
                                         craftext_settings=craftext_settings, 
                                         augment=0,
-                                        num_return_sequences='1')
+                                        num_return_sequences='1',
+                                        additional_args=start_planer_config)
                 log_validation(save_dataset_path, context="train_1")
             else:
                 print("SKIP RL INFERECNE!")
@@ -235,6 +277,6 @@ if __name__=="__main__":
                     run_llm_train(dataset_name, llm_checkpoint, output_dir)
                 else:
                     print("SKIP LLM TRAIN!")
-                llm_name = output_dir+"/1_"
+                llm_name = output_dir+"/0_"
                 llm_done += 1
         super_dataset_name = dataset_name

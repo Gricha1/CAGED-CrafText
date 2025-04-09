@@ -15,6 +15,7 @@ import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
+import dataclasses
 import optax
 import torch
 import yaml
@@ -39,6 +40,8 @@ from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 impo
     CrafTextScenariosWithSuperDataset,
     create_scenarios_with_super_dataset
 )
+from baselines.experiments.super_igor.craftext_wrappers.encoder_v2 import make_encoder_with_planning
+
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
@@ -60,6 +63,30 @@ from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIIns
 # torch.manual_seed(seed_value)     # Fix seed for PyTorch
 # torch.cuda.manual_seed_all(seed_value)  # Fix seed for all GPUs in PyTorch
 
+achievement_dict = {
+    0: "COLLECT_WOOD",
+    1: "PLACE_TABLE",
+    2: "EAT_COW",
+    3: "COLLECT_SAPLING",
+    4: "COLLECT_DRINK",
+    5: "MAKE_WOOD_PICKAXE",
+    6: "MAKE_WOOD_SWORD",
+    7: "PLACE_PLANT",
+    8: "DEFEAT_ZOMBIE",
+    9: "COLLECT_STONE",
+    10: "PLACE_STONE",
+    11: "EAT_PLANT",
+    12: "DEFEAT_SKELETON",
+    13: "MAKE_STONE_PICKAXE",
+    14: "MAKE_STONE_SWORD",
+    15: "WAKE_UP",
+    16: "PLACE_FURNACE",
+    17: "COLLECT_COAL",
+    18: "COLLECT_IRON",
+    19: "COLLECT_DIAMOND",
+    20: "MAKE_IRON_PICKAXE",
+    21: "MAKE_IRON_SWORD",
+}
 
 class ResultManager:
     def __init__(self, experiment_name, craftext_settings):
@@ -89,7 +116,61 @@ class ResultManager:
         dataset.to_csv(output_path, index=False)
         print(f"Results saved to {output_path}")
 
-    
+class StepEvaluator:
+    def __init__(self, scenario_data, achievement_dict):
+        self.scenario_data = scenario_data
+        self.achievement_dict = achievement_dict
+        self.steps_made = {}
+
+    def evaluate(self, action, env_state, step_now_implementing, indices_of_instruction_run):
+        steps_str = []
+        for i, j in zip(indices_of_instruction_run, step_now_implementing):
+            full_steps = self.scenario_data.instructions_list[i].split("\n")
+            steps_str.append(full_steps[j] if j < len(full_steps) else " - ")
+
+        # reward[i].item()
+        for i, a in enumerate(action):
+            achievements_on_step = np.array(env_state.env_state.env_state.achievements[i].astype(int))
+            current_step = step_now_implementing[i].item()
+            instruction = self.scenario_data.instructions_list[indices_of_instruction_run[i]]
+
+            if instruction not in self.steps_made:
+                self.steps_made[instruction] = {}
+
+            if current_step not in self.steps_made[instruction]:
+                self.steps_made[instruction][current_step] = [
+                    steps_str[i],
+                    {'run_count': 0},
+                    {self.achievement_dict[k]: 0 for k in range(len(achievements_on_step))}
+                ]
+
+            self.steps_made[instruction][current_step][1]['run_count'] += 1
+            for k, val in enumerate(achievements_on_step):
+                self.steps_made[instruction][current_step][2][self.achievement_dict[k]] += float(val)
+
+    def save(self, path='steps_made.json'):
+        with open(path, 'w') as file:
+            json.dump(self.steps_made, file, indent=4)
+
+def extract_planer_config(config):
+    planner_config = {'model_config': \
+                {
+                'original_model_path': config['original_model_path'.upper()],
+                'peft_weights_path': config['peft_weights_path'.upper()],
+                },
+              'generation_config':\
+                {
+                'num_paraphrases': config['num_paraphrases'.upper()],
+                'beam_groups': config['beam_groups'.upper()],
+                'beams_count': config['beams_count'.upper()],
+                'max_new_tokens': config['max_new_tokens'.upper()],
+                'prompt_template': config['prompt_template'.upper()],
+                },
+                'super_dataset':None,
+                'augment':config['augment'.upper()]
+             }
+    return planner_config
+
 class Experiment:
     def __init__(self, args):
         self.seeds_to_use = 30
@@ -110,11 +191,14 @@ class Experiment:
 
     def _load_config(self):
         config_path = os.path.join(self.args.path, "config.yaml")
+        
         with open(config_path) as f:
             raw_config = yaml.load(f, Loader=yaml.Loader)
 
         config = {key: value["value"] if isinstance(value, dict) and "value" in value else value
                   for key, value in raw_config.items()}
+        planner_config = extract_planer_config(config)
+        config['PLANER_CONFIG'] = planner_config
         config["NUM_ENVS"] = self.args.num_envs
         config["RATIO"] = self.args.ratio
         config['INFERENCE'] = self.args.inference
@@ -150,16 +234,29 @@ class Experiment:
 
         if not self.config['PLAN_WITH_LLM']:
             print("Use previos plans")
-         #   exit()
             super_dataset = SuperDataset.load_from_json(self.config["DATASET_PATH"])
-            EncodeModel = SuperEncoder(super_dataset, form_to_use=EncodeForm.EMBEDDING,
-                                       num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], n_splits=5,  augment=self.config['AUGMENT'])
+            self.config['PLANER_CONFIG']['super_dataset'] = super_dataset
+            self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
+            EncodeModel = make_encoder_with_planning(planer_type = "sd",
+                                             planer_config=self.config['PLANER_CONFIG'],
+                                             embedding_source=self.config['EMBEDDING_SOURCE'],
+                                             step_by_step=self.config['STEP_BY_STEP'])
+
+            
+            # EncodeModel = SuperEncoder(super_dataset, form_to_use=EncodeForm.EMBEDDING,
+            #                            num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], n_splits=1,  augment=self.config['AUGMENT'], split_into_steps=True, make_one_hot=True)
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
         elif self.config['CUSTOM_COMMAND']:
+            #TODO: Need to Fix
             EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=1, augment=self.config['AUGMENT'], split_into_steps=True, do_plan=False)
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
         else:
-            EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'], n_splits=1)
+            #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'], split_into_steps=True, make_one_hot=True)
+            EncodeModel = make_encoder_with_planning(planer_type = "llm",
+                                             planer_config=self.config['PLANER_CONFIG'],
+                                             embedding_source=self.config['EMBEDDING_SOURCE'],
+                                             step_by_step=self.config['STEP_BY_STEP'])
+            self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
         
         env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
@@ -186,7 +283,7 @@ class Experiment:
         return self.checkpoint_manager.restore(int(self.config["TOTAL_TIMESTEPS"]))
 
     def view(self):
-        rng = jax.random.PRNGKey(45)
+        rng = jax.random.PRNGKey(38)
         obs, env_state = self.env.reset(rng, self.env.default_params)
         step_fn = jax.jit(self.env.step)
         done = False
@@ -287,16 +384,83 @@ class Experiment:
         agent_rng, _rng_ = jax.random.split(rng)
         
         # Variables for track experiment progress
-        remain_steps = 50000
+        remain_steps = 20000
         progress_bar = tqdm(total= N_INSTRUCTIONS * self.seeds_to_use, desc="Steps")
         steps = 0
+        
+        # Per step evaluator
+        step_evaluator = StepEvaluator(
+            scenario_data=self.env.scenario_handler.scenario_data,
+            achievement_dict=achievement_dict  
+        )
 
+       # steps_made = dict()
         while steps < remain_steps:
             pi, _ = self.network.apply(params, obs, env_state.env_state.instruction)
             agent_rng, _rng_ = jax.random.split(agent_rng)
             action = pi.sample(seed=agent_rng)
+            
+            ### Per-step init
+            indices_of_instruction_run = env_state.env_state.idx
+            step_now_implementing = env_state.env_state.step_idx
+            self.env.scenario_handler.scenario_data.instructions_list += ["df \n" * 30]
+            
+            
+            # self.env.scenario_handler.scenario_data.instructions_list += ["df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df\n df \n df \n df \n df \n df \n df \n df \n df \n df \n df"]
+            
+            # steps_str = []
+            # for i, j in  zip(indices_of_instruction_run,step_now_implementing):
+               
+            #     full_steps = self.env.scenario_handler.scenario_data.instructions_list[i].split("\n")
+
+            #     if j<len(full_steps):
+            #         steps_str.append(full_steps[j])
+            #     else:
+            #         steps_str.append(" - ")
+            # steps_str = [self.env.scenario_handler.scenario_data.instructions_list[i].split("\n")[j] for i,j in zip(indices_of_instruction_run,step_now_implementing)]
+            # ####
+            
             if action is not None:
+                
+                ##### Per-step variables manipulation
+                # new_achievements = np.full_like(env_state.env_state.env_state.achievements, False)
+                # new_inner = dataclasses.replace(env_state.env_state.env_state, achievements=new_achievements)
+                # new_middle = dataclasses.replace(env_state.env_state, env_state=new_inner)
+                # new_state = dataclasses.replace(env_state, env_state=new_middle)
+                ##### 
+                
                 obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
+                # print(env_state.env_state.env_state.achievements)
+                
+                # step_evaluator.evaluate(
+                #     action=action,
+                #     env_state=env_state,
+                #     step_now_implementing=step_now_implementing,
+                #     indices_of_instruction_run=indices_of_instruction_run
+                # )
+                
+                ##### Per-step evaluation
+                # for i, a in enumerate(action):
+                #     achievments_on_step = np.array(env_state.env_state.env_state.achievements[i].astype(int)):
+                        
+                #     current_step = step_now_implementing[i].item()
+                #     instruction = self.env.scenario_handler.scenario_data.instructions_list[indices_of_instruction_run[i]]
+                    
+                #     if instruction not in steps_made:
+                #         steps_made[instruction] = {}
+                    
+
+                #     if current_step not in steps_made[instruction]:
+                #         steps_made[instruction][current_step] = [steps_str[i],{'run_count':0}, {achievement_dict[i]:0 for i in range(len(achievments_on_step))}] # [steps_str[i], reward[i].item()]
+                    
+                #     for i, achivment_count in enumerate(achievments_on_step):
+                #         steps_made[instruction][current_step][1]['run_count'] += 0
+                #         steps_made[instruction][current_step][2][achievement_dict[i]] += float(achievments_on_step[i]) #reward[i].item()
+                            
+                # with open('steps_made.json', 'w') as file:
+                #     json.dump(steps_made, file, indent=4) 
+                    
+                #### 
                 steps += 1
                 progress_bar.n = np.sum(done_count)
                 progress_bar.refresh()
@@ -425,8 +589,21 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--save_dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--num_return_sequences", type=int, default=5)
-    parser.add_argument("--augment", type=int, default=0)
+  #  parser.add_argument("--augment", type=int, default=0)
     parser.add_argument("--custom_command", type=str, default=None)
+    
+    parser.add_argument("--planer_type", type=str, default="llm")
+    parser.add_argument("--embedding_source", type=int, default=1)
+    parser.add_argument("--step_by_step", type=bool, default=True)
+    parser.add_argument("--original_model_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--peft_weights_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--num_paraphrases", type=int, default=15)
+    parser.add_argument("--beam_groups", type=int, default=15)
+    parser.add_argument("--beams_count", type=int, default=15)
+    parser.add_argument("--max_new_tokens", type=int, default=128)
+    parser.add_argument("--prompt_template", type=int, default=2)
+    parser.add_argument("--augment", type=bool, default=False)
+    
 
   
     args, rest_args = parser.parse_known_args(sys.argv[1:])
