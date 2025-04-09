@@ -161,16 +161,20 @@ import distrax
 class ActorCriticConvWithFiLMonehot(nn.Module):
     action_dim: int
     layer_width: int
-    embed_dim: int = 64  # Размер выходного эмбеддинга после обработки one-hot
+    embed_dim: int = 64 
 
     def setup(self):
-        # MLP для обработки one-hot-вектора в плотное представление
-        self.text_processor = nn.Sequential([
-            nn.Dense(self.embed_dim), 
-            nn.relu, 
-            nn.Dense(self.embed_dim), 
-            nn.relu
-        ])
+        self.dense1 = nn.Dense(self.embed_dim)
+        self.dense2 = nn.Dense(self.embed_dim)
+        self.norm = nn.LayerNorm()
+
+    def process_text_embedding(self, text_embedding):
+        x = self.dense1(text_embedding)
+        x = nn.relu(x)
+        x = self.dense2(x)
+        x = nn.relu(x)
+        x = self.norm(x) 
+        return x
 
     def compute_film_params(self, processed_embedding, num_channels):
         gamma = nn.Dense(num_channels)(processed_embedding)
@@ -181,8 +185,9 @@ class ActorCriticConvWithFiLMonehot(nn.Module):
     
     @nn.compact
     def __call__(self, obs, text_embedding):
-        # Преобразуем one-hot в плотное представление через MLP
-        processed_embedding = self.text_processor(text_embedding)
+
+        print("text_embedding.shape:", text_embedding.shape)
+        processed_embedding = self.process_text_embedding(text_embedding)
 
         # Первый свёрточный FiLM-блок
         x_conv = nn.Conv(features=32, kernel_size=(5, 5))(obs)
