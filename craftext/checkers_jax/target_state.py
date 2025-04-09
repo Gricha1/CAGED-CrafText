@@ -5,59 +5,68 @@ import jax
 
 @struct.dataclass
 class BuildLineState:
+    need_to_achieve: bool = False
     block_type: int = BlockType.INVALID
-    size:int = -1
-    radius: int = -1
+    size:int = 3
+    radius: int = 3
     is_diagonal:bool = False
 
 @struct.dataclass
 class BuildSquareState:
+    need_to_achieve: bool = False
     block_type: int = BlockType.INVALID
-    size: int = -1
-    radius: int = -1
+    size: int = 3
+    radius: int = 5
     
 @struct.dataclass
 class BuildStarState:
+    need_to_achieve: bool = False
     block_type: int = BlockType.INVALID
-    size: int = -1
-    radius: int = -1
+    size: int = 3
+    radius: int = 3
     cross_type: int = -1
 
 @struct.dataclass
 class ConditionalPlacingState:
-    object_to_place: int = -1
-    count_to_collect: int = -1
-    count_to_stand: int = -1
+    need_to_achieve: bool = False
+    object_inventory_enum: int = -1
+    object_to_place: int = 0
+    count_to_collect: int = 0
+    count_to_stand: int = 1
     
 @struct.dataclass
 class LocalizaPlacingState:
+    need_to_achieve: bool = False
     object_name: int = -1
     target_object_name: int = -1
     side: int = -1
-    distance: int = -1
+    distance: int = 5
 
 @struct.dataclass
 class Achievements:
-    achievement_mask: jnp.ndarray = struct.field(default_factory=lambda: jnp.array([AchievementState.NOT_MATTER.value for i in range(Achievement.MAKE_IRON_SWORD.value + 1)]))
+    need_to_achieve: bool = False
+    achievement_mask: tuple = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
 
 @struct.dataclass
 class TimeCosntrainedPlacmentState:
+    need_to_achieve: bool = False
     block_type: int = BlockType.INVALID
     time_state: int = TimeState.DAY
     radius: int = 5
 
 @struct.dataclass
 class UnifiedPatternState:
+    need_to_achieve: bool = False
     block_type: int = BlockType.INVALID
     pattern_type: jax.Array = struct.field(default_factory=lambda: jnp.zeros(1))
-    size: int = -1
-    radius: int = -1
+    size: int = 3
+    radius: int = 3
 
 @struct.dataclass
 class TargetState:
     achievements: Achievements = struct.field(default_factory=Achievements)
     building_line: BuildLineState =  struct.field(default_factory=BuildLineState)
-    building_square: BuildSquareState =  struct.field(default_factory=BuildSquareState)
+    building_square: BuildSquareState = struct.field(default_factory=BuildSquareState)
     building_star: BuildStarState =  struct.field(default_factory=BuildStarState)
     conditional_placing: ConditionalPlacingState = struct.field(default_factory=ConditionalPlacingState)
     Localization_placing: LocalizaPlacingState = struct.field(default_factory=LocalizaPlacingState)

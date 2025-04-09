@@ -8,7 +8,7 @@ from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState, BuildStarState
 
 def create_target_state(block_type:int, size:int, radius:int, cross_type:int):
-    target_achievements = BuildStarState(block_type=block_type, size=size, radius=radius, cross_type=cross_type)
+    target_achievements = BuildStarState(True, block_type=block_type, size=size, radius=radius, cross_type=cross_type)
     return TargetState(building_star=target_achievements)
 
 @dataclass

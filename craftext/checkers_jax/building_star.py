@@ -5,6 +5,8 @@ from flax.struct import dataclass
 
 from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState
+from functools import partial
+
 # Blocks list as an example
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
@@ -104,49 +106,63 @@ class Carry:
 def scan_cross_function(carry: Carry, x):
     i, j = x // carry.region_size, x % carry.region_size
     
-    if i + carry.size > carry.region_size or j + carry.size > carry.region_size:
-        return carry, False 
     
-    sub_region = carry.region[i:i+carry.size, j:j+carry.size]
-    is_cross = check_cross(sub_region, carry.stone_index, carry.size, carry.cross_type)
+    condition = jnp.logical_or(i + carry.size > carry.region_size,
+                               j + carry.size > carry.region_size)
     
-    return carry, is_cross
+    def branch_true(_):
+        sub_region = safe_dynamic_slice(carry.region, i, j, carry.size, 10)
+        is_cross = check_cross(sub_region, carry.stone_index, carry.size, carry.cross_type)
+        
+        return is_cross
+
+    return carry, lax.cond(condition, branch_true, lambda _: False, operand=None)
+
 
 def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array:
-    block_name = target_state.building_star.block_type
-    radius = target_state.building_star.radius
-    size = target_state.building_star.size 
-    cross_type = target_state.building_star.cross_type
-    
-    stone_index = block_name
-    
-    if game_data is None or game_data.states is None:
-        return jnp.array(False)
-    
-    game_map = game_data.states[0].map.game_map
-    if game_map is None:
-        return jnp.array(False)
-    
-    player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return jnp.array(False)
-    
-    x, y = player_position
-    region_size = 2 * radius + 1
-    
-    region = safe_dynamic_slice(
-        game_map,
-        x,
-        y,
-        radius,
-        10
-    )
-    print(radius)
-    indices = jnp.arange(region_size * region_size)
-    carry = Carry(region, stone_index, region_size, size, cross_type)
-    _, crosses = lax.scan(scan_cross_function, carry, indices)
-    
-    return jnp.any(crosses)
+
+    condition = jnp.all(target_state.building_line.need_to_achieve == False)
+
+    def proceed(_):
+        block_name = target_state.building_star.block_type
+        radius = target_state.building_star.radius
+        size = target_state.building_star.size 
+        cross_type = target_state.building_star.cross_type
+        
+        stone_index = block_name
+        
+        if game_data is None or game_data.states is None:
+            return jnp.array(False)
+        
+        game_map = game_data.states[0].map.game_map
+        if game_map is None:
+            return jnp.array(False)
+        
+        player_position = game_data.states[0].variables.player_position
+        if player_position is None:
+            return jnp.array(False)
+        
+        x, y = player_position
+        region_size = 2 * 10 + 1
+        print(f"region_size: {region_size}")
+        region = safe_dynamic_slice(
+            game_map,
+            x,
+            y,
+            radius,
+            10
+        )
+        print(radius)
+        indices = jnp.arange(0, region_size * region_size)
+        carry = Carry(region=region,
+              stone_index=stone_index,
+              region_size=region_size,
+              size=size,
+              cross_type=cross_type)
+        _, crosses = lax.scan(scan_cross_function, carry, indices)
+        
+        return jnp.any(crosses)
+    return lax.cond(condition, proceed, lambda _: False, operand=None)   
 
 # 89.169.171.236
 

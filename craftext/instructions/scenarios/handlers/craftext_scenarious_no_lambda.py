@@ -6,10 +6,10 @@ import logging
 from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
-
-from craftext.instructions.scenarios.handlers.craftext_scenarious import ScenariosConfig, ScenariosConfigLoader, load_scenarios
+from typing import List
+from craftext.instructions.scenarios.handlers.craftext_scenarious import ScenariosConfigLoader, load_scenarios
 from craftext.scenarios.constants import plans_path
-
+from craftext.checkers_jax.target_state import TargetState
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -32,8 +32,8 @@ SCENARIO_SCHEMA = {
 @dataclass
 class ScenarioData:
     instructions_list: list
-    scenario_checker: list
-    arguments: list
+    scenario_checker: int
+    arguments: TargetState
     str_check_lambda_list: list
     indices_list: list
     scenario_names: list
@@ -42,8 +42,8 @@ class ScenarioData:
 @dataclass
 class ScenarioDataJAX:
     embeddings_list: jax.Array
-    scenario_checker: list
-    arguments: list
+    scenario_checker: int
+    arguments: List[TargetState]
 
 class ScenariosNoLambda:
     def __init__(self, encode_model, config_name=None, use_plans=False):
@@ -60,6 +60,7 @@ class ScenariosNoLambda:
         self.all_scenario = self._load_scenarios(self.config)
         self.scenario_data = self._prepare_scenarios()
         self.scenario_data_jax = self.scenarios_to_jax()
+        print(f'scenario_data_jax: {self.scenario_data_jax}')
 
     @property
     def initial_instruction(self):

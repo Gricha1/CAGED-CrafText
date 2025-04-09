@@ -11,13 +11,15 @@ from gym import Wrapper
 from craftext.encoders.craftext_base_model_encoder import EncodeForm
 from craftext.encoders.craftext_distilbert_model_encoder import DistilBertEncode
 
-from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
+from craftext.instructions.scenarios.handlers.craftext_scenarious_no_lambda import ScenariosNoLambda
 from craftext.adapters.state_adapter import GameData
 
 from craftext.adapters.state_adapter_classic import GameDataClassic
 
-# from craftext.checkers_jax.time_constrained import at_time_block_placed
-# from craftext.checkers_jax.building_star import is_cross_formed
+from craftext.checkers_jax.time_constrained import at_time_block_placed
+from craftext.checkers_jax.building_star import is_cross_formed
+
+from jax import tree_util
 
 @struct.dataclass
 class TextEnvState:
@@ -77,7 +79,11 @@ class InstructionWrapper(Wrapper):
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
-        self.scenario_arguments = list_to_array(self.scenario_handler.scenario_data_jax.arguments)
+        self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
+        self.batched_scenario_args = tree_util.tree_map(
+            lambda *xs: jnp.stack(xs),
+            *self.scenario_arguments
+        )
         self.env = env
         self.steps = 0
 
@@ -143,7 +149,7 @@ class InstructionWrapper(Wrapper):
         # 
         # print(type(self.scenario_arguments))
         # print(self.scenario_arguments.shape)
-        results = at_time_block_placed_achivment(game_data_vector, self.scenario_arguments)
+        results = at_time_block_placed_achivment(game_data_vector, self.batched_scenario_args)
         # Choose result releted instructions in current env
         instruction_done = results[env_state.idx]
 

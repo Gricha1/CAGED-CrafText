@@ -13,7 +13,7 @@ from craftext.checkers_jax.target_state import TimeCosntrainedPlacmentState as A
 # print(tg_test)
 
 def create_target_state_by_contrained_class(block_type: int, time_state: int):
-    target_achievements = AchievmentClass(block_type, time_state)
+    target_achievements = AchievmentClass(True, block_type, time_state)
     tg = TargetState(time_placement=target_achievements)
     # tg.time_placement = target_achievements
     return tg
@@ -21,7 +21,7 @@ def create_target_state_by_contrained_class(block_type: int, time_state: int):
 easy = {
     "INSTRUCTION_FURNACE_DAY": {
         "instruction": "Place a furnace during the day",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "In the daytime, put down a furnace",
             "When it's bright out, install a heating device",
@@ -35,7 +35,7 @@ easy = {
 
     "INSTRUCTION_STONE_DAY": {
         "instruction": "Place a stone during the day",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Put down a rock when it's daytime",
             "During the sunlight hours, set up a stone",
@@ -49,7 +49,7 @@ easy = {
 
     "INSTRUCTION_FURNACE_NIGHT": {
         "instruction": "Place a furnace during the night",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Set up the furnace at nightfall",
             "Establish the kiln during the evening",
@@ -63,7 +63,7 @@ easy = {
 
     "INSTRUCTION_PLANT_DAY": {
         "instruction": "Place a plant during the day.",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "During daytime, set a plant.",
             "When it's light out, put down a flora.",
@@ -77,7 +77,7 @@ easy = {
 
     "INSTRUCTION_PLANT_NIGHT": {
         "instruction": "Please place a plant when it's dark outside.",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Could you position the herb during the night?",
             "At nightfall, I'd like you to set down a flora.",
@@ -91,7 +91,7 @@ easy = {
 
     "INSTRUCTION_CRAFTING_TABLE_DAY": {
         "instruction": "Place a crafting table during the daytime",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Set a workbench when it's daytime",
             "Put a carpenter's bench out in the daylight",
@@ -109,7 +109,7 @@ medium = {
     **easy,
     "INSTRUCTION_FURNACE_MORNING": {
         "instruction": "Place a furnace in the morning",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "During the early hours, set a heater",
             "At sunrise, position a stove",
@@ -123,7 +123,7 @@ medium = {
 ,
     "INSTRUCTION_FURNACE_EVENING": {
         "instruction": "Place a furnace during the evening",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Set the furnace when it's nighttime.",
             "Position the heating appliance as the sun is setting.",
@@ -137,7 +137,7 @@ medium = {
 ,
     "INSTRUCTION_STONE_MORNING": {
         "instruction": "Place a stone during the morning.",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "Set a rock at sunrise.",
             "Position the pebble when it's daytime.",
@@ -151,7 +151,7 @@ medium = {
 ,
     "INSTRUCTION_STONE_EVENING": {
         "instruction": "Place a stone in the evening",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "During dusk, put a rock down.",
             "Please set a cobble in the nightfall.",
@@ -165,7 +165,7 @@ medium = {
 ,
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_EVENING": {
         "instruction": "Place a enchantment table of ice during the evening",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "At dusk, set down an ice enchantment table",
             "Position a frosty enchanting bench when the sun goes down",
@@ -179,7 +179,7 @@ medium = {
 ,
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_EVENING": {
         "instruction": "Place a Enchantment_Table_Fire during the evening",
-        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT.value,
+        "scenario_checker": Scenarios.TIME_CONSTRAINED_PLACEMENT ,
         "instruction_paraphrases": [
             "During the evening, set an Enchantment Table of Fire.",
             "When it gets dark, position a Fire Enchantment Table.",

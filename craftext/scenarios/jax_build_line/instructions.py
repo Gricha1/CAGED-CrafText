@@ -1,6 +1,7 @@
-from craftext.checkers_jax.building import is_line_formed
 from craftext.scenarios.constants import BlockType
-from craftext.scenarios.parce_dataset import update_previous_dict
+from craftext.checkers_jax.building import is_line_formed as is_complete_instr
+from craftext.checkers_jax.target_state import BuildLineState as AchievmentClass
+from craftext.checkers_jax.target_state import TargetState
 # one = {
 #     'line_one_1': {
 #         'instruction': "Make a line of 2 blocks using table.",
@@ -11,8 +12,8 @@ from craftext.scenarios.parce_dataset import update_previous_dict
 #             "Arrange a sequence of 2 blocks with the crafting platform.",
 #             create a straight formation of 2 blocks with the crafting table."
 #         ],
-#         'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
-#         'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
+#         'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, is_diagonal=False),
+#         'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, is_diagonal=False)"
 #     },
     
 #     'line_one_2': {
@@ -24,10 +25,15 @@ from craftext.scenarios.parce_dataset import update_previous_dict
 #             "Arrange a sequence of 2 blocks with the crafting platform.",
 #             create a straight formation of 2 blocks with the crafting table."
 #         ],
-#         'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
-#         'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
+#         'check_lambda': lambda game_data, ix: is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, is_diagonal=False),
+#         'str_check_lambda': "is_line_formed(game_data,ix, BlockType.CRAFTING_TABLE, 2, is_diagonal=False)"
 #     },
 # }
+
+def create_target_state(block_type:int, size:int, is_diagonal:bool):
+    target_achievements = AchievmentClass(True, block_type, size, is_diagonal)
+    return TargetState(building_line=target_achievements)
+
 easy = {
     "INSTRUCTION_CRAFTING_TABLE_3": {
         "instruction": "Form a square of crafting tables with each side having a length of 3",
@@ -39,7 +45,7 @@ easy = {
             "Kindly arrange three Crafting platforms on each side to form a square configuration.",
             "I want you to position the construction desks in such a way that they form a square structure with each side containing three desks"
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_6": {
@@ -52,7 +58,7 @@ easy = {
             "Do assess if we have a square, each side 6 blocks long, made completely from furnace blocks.",
             "Inspect and confirm whether there is a square structure constituted of furnace blocks, six blocks long per side."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 6),
+        "arguments": create_target_state(BlockType.FURNACE, 6, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_5": {
@@ -65,7 +71,7 @@ easy = {
             "Make sure a form of square having dimensions 5 by 5, built using forge blocks is in position?",
             "Inspect for any presence of a geometric configuration resembling a square with side length of 5, created using smelter blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 5),
+        "arguments": create_target_state(BlockType.FURNACE, 5, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
@@ -78,7 +84,7 @@ easy = {
             "Verify the presence of a 7-blocks-wide square of crafting station",
             "Ensure the existence of a perfect square shape made up of 7 blocks per side of crafting tables"
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
@@ -91,7 +97,7 @@ easy = {
             "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
             "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 3),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 3, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_size=7": {
@@ -104,7 +110,7 @@ easy = {
             "Shape an ice enchantment table into a square with a side length of 7.",
             "With the ice enchantment table, assemble a square where each side measures 7 units."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 7),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 7, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_7": {
@@ -117,7 +123,7 @@ easy = {
             "Form a furnace square that each edge has a length of 7 blocks.",
             "Construct a four-sided figure using 7 furnaces on each side."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 7),
+        "arguments": create_target_state(BlockType.FURNACE, 7, is_diagonal=False),
         "str_check_lambda": "is_square_formed(gd, ix)"
     }
 }
@@ -135,7 +141,7 @@ medium = {
             "I want to see two rocks positioned in a slanting line",
             "Could you please arrange a pair of stones diagonally to form a line?"
         ],
-        "arguments":create_target_state(BlockType.STONE, 2, check_diagonal=True),
+        "arguments":create_target_state(BlockType.STONE, 2, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_CRAFTING_TABLE_2": {
@@ -148,7 +154,7 @@ medium = {
             "Is there a succession of Crafting Tables in at least a duet formation?",
             "Would it be possible to identify a progression of Crafting Tables having a minimum length of two?"
         ],
-        "arguments":create_target_state(BlockType.CRAFTING_TABLE, 2, check_diagonal=False),
+        "arguments":create_target_state(BlockType.CRAFTING_TABLE, 2, is_diagonal=False),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_3": {
@@ -161,7 +167,7 @@ medium = {
             "Diagonally, set up a sequence of three furnaces.",
             "Set about diagonally placing three furnaces in a linear pattern."
         ],
-        "arguments":create_target_state(BlockType.FURNACE, 3, check_diagonal=True),
+        "arguments":create_target_state(BlockType.FURNACE, 3, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_2": {
@@ -174,7 +180,7 @@ medium = {
             "Establish a slanted sequence of two enchantment tables made of ice.",
             "Place two ice enchantment tables in an angular line."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 2, check_diagonal=True),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 2, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_7": {
@@ -187,7 +193,7 @@ medium = {
             "I need you to ascertain if a slanting linear arrangement of seven fire enchantment tables exists in the given location.",
             "Confirm whether there exists an unbroken diagonal chain comprising of seven blocks, each comprised of an enchantment table engulfed in flame."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, 7, check_diagonal=True),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, 7, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_2": {
@@ -200,7 +206,7 @@ medium = {
             "Affirm the existence of a linear arrangement of two furnaces",
             "Ascertain the alignment of pair of furnaces into a straight pattern"
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 2, check_diagonal=False),
+        "arguments": create_target_state(BlockType.FURNACE, 2, is_diagonal=False),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_7": {
@@ -213,7 +219,7 @@ medium = {
             "You need to arrange a span of seven plants in a diagonal layout.",
             "Could you design a sequence of vegetation displayed diagonally that extends for seven units?"
         ],
-        "arguments": create_target_state(BlockType.PLANT, 7, check_diagonal=True),
+        "arguments": create_target_state(BlockType.PLANT, 7, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_7": {
@@ -226,7 +232,7 @@ medium = {
             "In a diagonal manner, set up a line of 7 Furnace blocks.",
             "Establish a line at an angle using Furnace blocks and ensure this line includes exactly 7 blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 7, check_diagonal=True),
+        "arguments": create_target_state(BlockType.FURNACE, 7, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_2_2": {
@@ -239,7 +245,7 @@ medium = {
             "Authenticate if a pair of stone blocks are found in a direct line sequence in the game domain.",
             "Can you substantiate whether a duo of boulders exist in a line formation within the gaming zone?"
         ],
-        "arguments": create_target_state(BlockType.STONE, 2, check_diagonal=False),
+        "arguments": create_target_state(BlockType.STONE, 2, is_diagonal=False),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_6": {
@@ -252,7 +258,7 @@ medium = {
             "Organize six Enchantment Fire Tables into a diagonal row.",
             "Construct a diagonal line by using six Fire Enchantment Tables."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, 6, check_diagonal=True),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, 6, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_6": {
@@ -265,7 +271,7 @@ medium = {
             "Place 6 blocks of rock in a diagonal direction, forming a straight line.",
             "Arrange a line with 6 stones diagonally."
         ],
-        "arguments": create_target_state(BlockType.STONE, 6, check_diagonal=True),
+        "arguments": create_target_state(BlockType.STONE, 6, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_4": {
@@ -278,7 +284,7 @@ medium = {
             "Could you diagonally organize four blocks of enchantment table ice in a row?",
             "Craft a diagonal chain using four pieces of ice enchantment table."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 4, check_diagonal=True),
+        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 4, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_3_2": {
@@ -291,7 +297,7 @@ medium = {
             "Sequentially place three furnace units in a row.",
             "Erect a horizontally straight sequence of three furnace blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 3, check_diagonal=False),
+        "arguments": create_target_state(BlockType.FURNACE, 3, is_diagonal=False),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_7_2": {
@@ -304,7 +310,7 @@ medium = {
             "Establish a succession of botanical items that provides a stretch of seven blocks.",
             "Set up an arrangement of flora, creating a steady line of seven constituents."
         ],
-        "arguments": create_target_state(BlockType.PLANT, 7, check_diagonal=False),
+        "arguments": create_target_state(BlockType.PLANT, 7, is_diagonal=False),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_4": {
@@ -317,7 +323,7 @@ medium = {
             "Construct a diagonal arrangement of four stones.",
             "Fabricate a tilted line composed of four rocks."
         ],
-        "arguments": create_target_state(BlockType.STONE, 4, check_diagonal=True),
+        "arguments": create_target_state(BlockType.STONE, 4, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
@@ -330,7 +336,7 @@ medium = {
             "Confirm if a diagonal line made up of the BlockType.CRAFTING_TABLE and with a length of 7 units can be found.",
             "Check for the existence of a Crafting Desk diagonal series with seven items in its sequence."
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7, check_diagonal=True),
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7, is_diagonal=True),
         "str_check_lambda": "str_check_lambda: is_line_formed(gd, ix)"
     }
 }

@@ -9,7 +9,6 @@ import numpy as np
 import optax
 import time
 
-from typing import Optional
 
 import wandb
 from flax.training import (
@@ -35,13 +34,13 @@ from logz.batch_logging import create_log_dict, batch_log
 from craftext.encoders.craftext_distilbert_model_encoder import make_encoder
 
 from craftext.instructions.scenarios.handlers.craftext_scenarious import create_scenarios_with_dataset
-from craftext.instructions.wrappers.craftext_wrapper import InstructionWrapper
+from craftext.instructions.wrappers.craftext_wrapper_all_dataset_checker_choice import InstructionWrapperSeveralTasks as InstructionWrapper
 from craftax.craftax_env import make_craftax_env_from_name
 
 from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 from analysis.inference_rnn import Experiment, ExperimentArgs
 
-
+from typing import Optional
 
 
 from dataclasses import dataclass, asdict
@@ -88,7 +87,6 @@ class BaseConfig:
     
     USE_RND: Optional[bool] = False
     TRAIN_ICM: bool = False
-    
     
     def update_from_args(self, args: argparse.Namespace):
         for field in self.__dataclass_fields__:
@@ -176,7 +174,7 @@ def make_train(config: BaseConfig, network_params):
 
         
         encoded_input_expanded = jnp.expand_dims(env.encoded_instruction, axis=1)
-        print("encoded_input_expanded.shape", encoded_input_expanded.shape)
+        # print("encoded_input_expanded.shape", encoded_input_expanded.shape)
         encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config.NUM_ENVS , 1))
 
         network_params_alt = network.init(_rng, init_hstate, init_x, encoded_input_tiled)
@@ -413,8 +411,8 @@ def make_train(config: BaseConfig, network_params):
             )
             train_state = update_state[0]
             metric = jax.tree.map(
-                lambda x: (x * traj_batch.info['returned_episode'] ).sum()
-                / traj_batch.info['returned_episode'] .sum(),
+                lambda x: (x * traj_batch.info["returned_episode"]).sum()
+                / traj_batch.info["returned_episode"].sum(),
                 traj_batch.info,
             )
             rng = update_state[-1]
@@ -462,8 +460,8 @@ def run_ppo(config: BaseConfig):
     
     if config.USE_WANDB:
         wandb.init(
-            project=config.WANDB_PROJECT ,
-            entity=config.WANDB_ENTITY ,
+            project=config.WANDB_PROJECT,
+            entity=config.WANDB_ENTITY,
             config=asdict(config),
             name=f'{config.ENV_NAME}-PPO_RNN-{int(config.TOTAL_TIMESTEPS  // 1e6)}M',
         )
@@ -539,12 +537,12 @@ def run_ppo(config: BaseConfig):
         common_args = {
             "num_envs": 1024,
             "experiment_name": wandb.run.dir,
-            "ratio": min(config.OPTIMISTIC_RESET_RATIO , config.NUM_ENVS ),
+            "ratio": min(config.OPTIMISTIC_RESET_RATIO, config.NUM_ENVS ),
             "checkpoint_num": checkpoint_dir,
-            "env_name": config.ENV_NAME ,
+            "env_name": config.ENV_NAME,
             "max_grad_norm": config.MAX_GRAD_NORM ,
             "lr": config.LR ,
-            "layer_size": config.LAYER_SIZE ,
+            "layer_size": config.LAYER_SIZE,
             "total_timesteps": config.TOTAL_TIMESTEPS ,
             "path": wandb.run.dir,
             "view": False,
@@ -605,7 +603,7 @@ if __name__ == "__main__":
         "--use_wandb", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument(
-        "--save_policy", action=argparse.BooleanOptionalAction, default=True
+        "--save_policy", action=argparse.BooleanOptionalAction, default=False
     )
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)
@@ -624,7 +622,7 @@ if __name__ == "__main__":
     config.update_from_args(args)
 
     if config.SEED == -1:
-        config. update_from_params({"SEED": np.random.randint(2**31)})
+        config.update_from_params({"SEED": np.random.randint(2**31)})
 
     if config.JIT:
         run_ppo(config)

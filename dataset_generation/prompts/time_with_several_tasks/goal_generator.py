@@ -19,24 +19,20 @@ def generate_example_goals(num_goals: int, difficulty="EASY", existing_task_gene
     else:
         times_of_day = ['night', 'day']  # Варианты для Easy
     
-    tasks = ['place_block']  # Основное действие – поставить блок
     
     combinations = set()
     make_synonyms_to = []
     
     while len(combinations) < num_goals:
         time_of_day = random.choice(times_of_day)
-        task = random.choice(tasks)
         
-        # Добавляем задание из существующего генератора, если он передан
-        existing_task = existing_task_generator() if existing_task_generator else "PERFORM A RANDOM TASK"
-        
+
         # Формируем цель с каскадным временем
-        goal = f"DURING THE {time_of_day.upper()}, PERFORM THE TASK. TEXT OF THIS TASK IS: {existing_task}."
+        goal = f"DURING THE {time_of_day.upper()}, PERFORM THE TASK. TEXT OF THIS TASK IS: [TASK]."
         
         if goal not in combinations:
             # Синонимы для времени суток и действия
-            synonyms_to = f"WHEN GENERATING PARAPHRASES, USE VARIED SYNONYMS OR ALTERNATIVE EXPRESSIONS FOR THE TASK '{task}', " \
+            synonyms_to = f"WHEN GENERATING PARAPHRASES, USE VARIED SYNONYMS OR ALTERNATIVE EXPRESSIONS FOR THE TASK [TASK], " \
                           f"AND EXPLORE DIFFERENT WAYS TO EXPRESS THE TIME '{time_of_day}', SUCH AS 'IN THE EVENING', 'AT SUNRISE', " \
                           f"'DURING THE NIGHT', 'WHEN IT'S DAYTIME'. INCLUDE VARIANTS FOR THE ACTION, SUCH AS 'PLACE', 'SET', 'POSITION'."
             make_synonyms_to.append(synonyms_to)

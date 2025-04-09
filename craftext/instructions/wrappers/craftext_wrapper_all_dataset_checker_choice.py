@@ -33,6 +33,7 @@ class TextEnvState:
     rng: int
     
 def get_checker_functions():
+    from craftext.checkers_jax.achivments import conditional_achivments
     from craftext.checkers_jax.time_constrained import at_time_block_placed
     from craftext.checkers_jax.building_star import is_cross_formed
     from craftext.checkers_jax.building import is_line_formed
@@ -41,6 +42,7 @@ def get_checker_functions():
     from craftext.checkers_jax.relevant import place_object_relevant_to
     
     return [
+        conditional_achivments,
         conditional_placing,
         place_object_relevant_to,
         is_line_formed,
@@ -48,6 +50,18 @@ def get_checker_functions():
         is_cross_formed,
         at_time_block_placed
     ]
+
+# @struct.dataclass
+# class Scenarios(Enum):
+#     CONDITIONAL_ACHIEVEMENTS = 0
+#     CONDITIONAL_PLACING = 1
+#     LOCALIZATION_PLACE = 2
+    
+#     BUILD_LINE = 3
+#     BUILD_SQUARE = 4
+#     BUILD_STAR = 5
+    
+#     TIME_CONSTRAINED_PLACEMENT = 6
 class InstructionWrapperSeveralTasks(Wrapper):
     def __init__(self, env , config_name=None, scenario_handler_class=ScenariosNoLambda,
                   encode_model_class=DistilBertEncode, encode_form=EncodeForm.EMBEDDING):
@@ -69,10 +83,9 @@ class InstructionWrapperSeveralTasks(Wrapper):
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
         self.scenario_arguments = (self.scenario_handler.scenario_data_jax.arguments)
-        self.batched_scenario_args = tree_util.tree_map(
-            lambda *xs: jnp.stack(xs),
-            *self.scenario_arguments
-        )
+        self.checker_id = -1
+
+        
         self.env = env
         self.steps = 0
 
@@ -81,14 +94,21 @@ class InstructionWrapperSeveralTasks(Wrapper):
         self.StateStructure = GameData if self.environment_key == 1 else GameDataClassic
 
         print("Initialized Instruction Wrapper with environment key:", self.environment_key)
-        print(self.StateStructure)
+        # print(self.StateStructure)
         self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
-        print(self.scenario_handler.scenario_data.instructions_list)
-        print(len(self.scenario_handler.scenario_data.instructions_list))
+        # print(self.scenario_handler.scenario_data.instructions_list)
+        # print(len(self.scenario_handler.scenario_data.instructions_list))
         
         
         self.checkers = list(map(lambda x:  jax.vmap(x, in_axes=(None, 0)), get_checker_functions()))
-        
+        self.wrapped_checkers = [
+            lambda operand, ck=ck: ck(*operand)  # распаковываем операнд (tuple) в два аргумента
+            for ck in self.checkers
+        ]
+        self.batched_scenario_args = tree_util.tree_map(
+            lambda *xs: jnp.stack(xs),
+            *self.scenario_arguments
+        )
         #print(self.scenario_handler.scenario_data_jax.arguments)
         #exit()
     
@@ -105,7 +125,8 @@ class InstructionWrapperSeveralTasks(Wrapper):
                 lambda: instruction_idx
             )
         instructions_emb = self.scenario_handler.scenario_data_jax.embeddings_list[idx]
-
+        # self.checker_id =  self.scenario_handler.scenario_data_jax.scenario_checker[idx]
+        # print(f'checker_id: {self.checker_id}')
         # Initialize the state with the selected instruction embedding/token and set success rates to zero
         state = TextEnvState(
             env_state=state,
@@ -126,22 +147,22 @@ class InstructionWrapperSeveralTasks(Wrapper):
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
-
-        results = jnp.array(
-            [func(game_data_vector, self.batched_scenario_args) for func in self.checkers]
+        results = jax.lax.switch(
+            self.scenario_handler.scenario_data_jax.scenario_checker[env_state.idx],
+            self.wrapped_checkers,
+            (game_data_vector, self.batched_scenario_args)
         )
         print(results)
         print(env_state.idx)
         print(done)
-        instructions_done = jax.lax.dynamic_slice(results, (0, env_state.idx), (results.shape[0], 1))
+        instructions_done = results[env_state.idx]
         print(instructions_done)
-        any_instruction_done = jnp.any(instructions_done)
         
         reward /= 50
-        reward = jax.lax.cond(any_instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
-        done = any_instruction_done | done
+        reward = jax.lax.cond(instructions_done, lambda _: reward + 1, lambda _: reward, operand=None)
+        done = instructions_done | done
    
-        new_episode_sr = env_state.success_rate + jnp.float32(any_instruction_done)
+        new_episode_sr = env_state.success_rate + jnp.float32(instructions_done)
 
         # Update state with the new success rates
         state = TextEnvState(
