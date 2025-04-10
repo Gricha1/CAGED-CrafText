@@ -9,6 +9,13 @@ class PlanExtractor():
             return BasePlanExtractor.extract(model_answer)
         else:
             return FunctionPlanExtractor.extract(model_answer)
+    @staticmethod    
+    def extract_prompt(prompt_with_answer, prompt_template):
+        if prompt_template == 0: #base prompt
+            return BasePlanExtractor.extract_prompt(prompt_with_answer)
+        else:
+            return FunctionPlanExtractor.extract_prompt(prompt_with_answer)
+        
         
 class BasePlanExtractor():
     @staticmethod
