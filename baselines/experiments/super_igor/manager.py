@@ -82,10 +82,12 @@ def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_n
         print(f"Error message: {e}")
         exit()
 
-def run_llm_train(dataset_name, llm_name, output_dir):
+def run_llm_train(dataset_name, base_model_name, llm_name,plans_type, output_dir):
     args = ["python", "llm_train.py",
+        "--base_model_name",base_model_name,
         "--dataset_name", dataset_name,
         "--llm_name", llm_name,
+        "--plans_type", str(plans_type),
         "--output_dir", output_dir]
 
     try:
@@ -162,7 +164,7 @@ if __name__=="__main__":
     
     craftext_settings = "SI_simplified_set"
     use_llm_tuning = True
-    start_from_checkpoint= False
+    start_from_checkpoint= True
     validate = False
     
     rl_done = 0
@@ -175,7 +177,7 @@ if __name__=="__main__":
     
     if start_from_checkpoint:
         
-        experiment_name = "super_experiments/simple_achivements_one_test_llmt_True_Kenneth_Colon_20250325_155945"
+        experiment_name = "super_experiments/SI_simplified_set_llmt_True_Eric_Olson_20250409_133601"
         temp_path = f"{experiment_name}/temp_dataset"
         dataset_name = f"{temp_path}/super_dataset{0}_{0}.json"
     else:
@@ -188,6 +190,9 @@ if __name__=="__main__":
         os.makedirs(temp_path, exist_ok=True)
     
     start_planer_config = planer_config_to_args("./configs/qwen_3b_function.yaml")
+    base_model_name = start_planer_config["--original_model_path"]
+    plans_type = start_planer_config["--prompt_template"]
+    
     for j in range(5):
         
         if rl_skip<= rl_done:
@@ -201,7 +206,7 @@ if __name__=="__main__":
                 start_checkpoint_path=rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=25000000,
+                total_timesteps=250000000,
                 additional_args=start_planer_config
             )
         else:
@@ -274,7 +279,7 @@ if __name__=="__main__":
             if use_llm_tuning:
                 if llm_skip <= llm_done:
                     llm_checkpoint = llm_name
-                    run_llm_train(dataset_name, llm_checkpoint, output_dir)
+                    run_llm_train(dataset_name, base_model_name, llm_checkpoint, plans_type, output_dir)
                 else:
                     print("SKIP LLM TRAIN!")
                 llm_name = output_dir+"/0_"

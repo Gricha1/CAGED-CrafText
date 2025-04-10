@@ -19,7 +19,6 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-from baselines.experiments.super_igor.craftext_wrappers.encoder import QwenModelWrapper
 from baselines.experiments.super_igor.craftext_wrappers.encoder_v2 import make_encoder_with_planning
 from craftext.craftext_encoder import EncodeForm
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import create_scenarios_with_super_dataset
@@ -30,19 +29,13 @@ from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic import (
     ActorCritic,
     ActorCriticConv,
-    ActorCriticConvWithBERT,
-    ActorCriticConvWithFiLM,
     ActorCriticConvWithFiLMonehot,
-    ActorCriticConvWithIdxEmbedding
 )
 from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
 from baselines.wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
-    BatchEnvWrapper,
 )
-
-from craftext.craftext_wrapper import InstructionWrapper
 
 
 class Transition(NamedTuple):

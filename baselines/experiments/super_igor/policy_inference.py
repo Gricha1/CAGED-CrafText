@@ -34,7 +34,7 @@ from orbax.checkpoint import (
 # ========= Local Modules =========
 # Imports from the baselines package
 from baselines.experiments.super_igor.craftext_wrappers.deterministic_inference import DetermOptimisticResetVecEnvWrapper
-from baselines.experiments.super_igor.craftext_wrappers.encoder import QwenEncodeModel, QwenModelWrapper, SuperEncoder
+from baselines.experiments.super_igor.craftext_wrappers.old_encode_code import QwenEncodeModel, QwenModelWrapper, SuperEncoder
 from baselines.experiments.super_igor.expert import PlansExpert
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import (
     CrafTextScenariosWithSuperDataset,

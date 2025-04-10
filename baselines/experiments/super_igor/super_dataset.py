@@ -1,12 +1,57 @@
 import json
 import numpy as np
 from datasets import Dataset
-from baselines.experiments.super_igor.prompts import promt_instruction
+from baselines.experiments.super_igor.prompts import promt_instruction, PROMPTS
 from scipy.signal import find_peaks
 from sklearn.neighbors import KernelDensity
 
 import warnings
 
+plan_config = {
+    'max_plan_steps': 12,
+    'max_step_words_count': 5,
+    'end_command': "Finish!", 
+    'remove_symbols': [',', ".", "-", ":", "_", ";", "Step"]
+}
+def check_plan(plan, plan_config):
+    steps = plan.split("\n")
+    if len(steps) > plan_config['max_plan_steps']:
+          return False
+    return True
+
+def prepare_plan(plan, plan_config):
+    # steps = plan.split("\n")
+    
+    # # Add end command if not present
+    # if plan_config['end_command'] not in steps:
+    #     steps.append(plan_config['end_command'])
+
+    # cleaned_steps = []
+    # for step in steps:
+    #     # Remove specified symbols
+    #     for symbol in plan_config['remove_symbols']:
+    #         step = step.replace(symbol, "")
+        
+    #     step = step.strip()
+    #     if not step:
+    #         continue
+
+    #     # Split step into words
+    #     words = step.split()
+    #     # Remove the first word if it's a number
+    #     if words and words[0].isdigit():
+    #         words = words[1:]
+
+    #     # Skip step if it exceeds max word count
+    #     if len(words) > plan_config['max_step_words_count']:
+    #         continue
+
+    #     cleaned_steps.append(" ".join(words))
+    
+    return f"[{plan}]"
+
+    
+            
 class Instruction:
     def __init__(self, instruction, plan_options, rewards=None):
         """
@@ -43,8 +88,15 @@ class Instruction:
     def clear_scores(self):
         self.rewards = [-1 for _ in range(len(self.rewards))]
     
-    
-    def kde_treshold(self):
+    def return_best_plans(self):
+        t = self.kde_treshold()
+        plans = []
+        for rewards, option in zip(self.rewards, self.plan_options):
+            if rewards > t:
+                plans.append((option, rewards))
+        return plans
+                
+    def kde_treshold(self, return_peaks=False):
         rewards = np.array(self.rewards)
         
         good_idx = [idx for idx in range(len(self.plan_options)) if self.plan_options[idx] not in self.bad_list]
@@ -62,10 +114,20 @@ class Instruction:
         minima, _ = find_peaks(-log_density)
         
         boundaries = x_vals[peaks].flatten()
+        boundaries_v2 = x_vals[minima].flatten()
         if len(boundaries) == 0:
-            boundaries = [1,1.1]
+            boundaries = [1.0,1.1]
+        if len(boundaries_v2) == 0:
+            boundaries_v2 = [1.0,1.1]
+        
+        max_peaks = np.max(boundaries)
+        max_minima = np.max(boundaries_v2)
+        
+        treshold = np.max([max_peaks,max_minima]) 
+        if return_peaks:
+            return treshold, peaks, minima
 
-        return np.max(boundaries)
+        return treshold
     
     def update_mean_reward(self):
         np_rewards = np.array(self.rewards)
@@ -346,7 +408,7 @@ class SuperDataset:
         self.mapping_plan_to_instruction = new_mapping
         
         
-    def llm_dataset(self, eos_token=None, use_kde=True, return_poor_plans=False):
+    def llm_dataset(self, plans_type, eos_token=None, use_kde=True,  return_poor_plans=False):
         prompts = []
         answers = []
         treshold =  self._treshold()
@@ -356,16 +418,21 @@ class SuperDataset:
         for instruction in self.instructions.keys():
             instruction_obj = self.instructions[instruction]
             if use_kde:
-                treshold = instruction_obj.kde_treshold()
+                try:
+                    treshold = instruction_obj.kde_treshold()
+                except Exception as e:
+                    print(e)
+                    treshold = 2
             for i in range(len(instruction_obj.rewards)):
                 reward = instruction_obj.rewards[i]
                 if self.is_plan_correct_rule(instruction_obj.plan_options[i]):
                     if reward >= treshold and reward is not np.nan:
-                        prompts.append(promt_instruction(instruction))
-                        answers.append(instruction_obj.plan_options[i])
+                        if check_plan(instruction_obj.plan_options[i], plan_config=plan_config):
+                            prompts.append(promt_instruction(instruction, PROMPTS[plans_type]))
+                            answers.append(prepare_plan(instruction_obj.plan_options[i], plan_config=plan_config))
 
                     else:
-                        bad_examples_prompts.append(promt_instruction(instruction))
+                        bad_examples_prompts.append(promt_instruction(instruction, PROMPTS[plans_type]))
                         bad_example_answer.append(instruction_obj.plan_options[i])
             
         text = SuperDataset.formatting(prompts, answers, eos_token)
