@@ -19,9 +19,9 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-from baselines.experiments.super_igor.craftext_wrappers.encoder_v2 import make_encoder_with_planning
+from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
 from craftext.craftext_encoder import EncodeForm
-from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader_v2 import create_scenarios_with_super_dataset
+from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
 from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
 
 
