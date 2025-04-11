@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import pandas as pd
 from datasets import Dataset
 from baselines.experiments.super_igor.prompts import promt_instruction, PROMPTS
 from scipy.signal import find_peaks
@@ -50,7 +51,39 @@ def prepare_plan(plan, plan_config):
     
     return f"[{plan}]"
 
-    
+
+achievement_dict = {
+    0: "COLLECT_WOOD",
+    1: "PLACE_TABLE",
+    2: "EAT_COW",
+    3: "COLLECT_SAPLING",
+    4: "COLLECT_DRINK",
+    5: "MAKE_WOOD_PICKAXE",
+    6: "MAKE_WOOD_SWORD",
+    7: "PLACE_PLANT",
+    8: "DEFEAT_ZOMBIE",
+    9: "COLLECT_STONE",
+    10: "PLACE_STONE",
+    11: "EAT_PLANT",
+    12: "DEFEAT_SKELETON",
+    13: "MAKE_STONE_PICKAXE",
+    14: "MAKE_STONE_SWORD",
+    15: "WAKE_UP",
+    16: "PLACE_FURNACE",
+    17: "COLLECT_COAL",
+    18: "COLLECT_IRON",
+    19: "COLLECT_DIAMOND",
+    20: "MAKE_IRON_PICKAXE",
+    21: "MAKE_IRON_SWORD",
+}
+
+def achievments_vector_to_dict(vector, devision=1):
+    acievments_dict_v= dict()
+    devision = 1 if devision == 0 else devision.item()
+    for i in range(len(vector)):
+        acievments_dict_v[achievement_dict[i]] = vector[i].item()/devision
+    str_result = str(acievments_dict_v).replace(",", "\n")
+    return str_result
             
 class Instruction:
     def __init__(self, instruction, plan_options, rewards=None):
@@ -302,6 +335,49 @@ class SuperDataset:
         for plan, reward in zip(plans, rewards):
             #print(reward)
             self.update(plan, reward)
+    
+    def per_subtask_table(self, plans, rewards, matrix_count, matrix_reward,per_achivment_sum, output_path):
+        matrix = matrix_reward/matrix_count
+        
+        counts = []
+        sum_reward = []
+        instructions = []
+        subtasks_ = []
+        sr = []
+        full_plan = []
+        ps_rewards = []
+        achievments_vector = [] 
+        for i in range(len(plans)):
+            plan, reward = plans[i], rewards[i]
+            instruction = self.mapping_plan_to_instruction[plan][0] #This wrong, need to fix
+            subtask_values = matrix[i]
+            counts_values = matrix_count[i]
+            reward_values = matrix_reward[i]
+            per_plan_achievments = per_achivment_sum[i]
+            
+            subtasks = plan.split("\n")
+            for j,subtask in enumerate(subtasks):
+                instructions.append(instruction)
+                subtasks_.append(subtask)
+                counts.append(counts_values[j])
+                sum_reward.append(reward_values[j])
+                ps_rewards.append(subtask_values[j])
+                achievments_vector.append(achievments_vector_to_dict(per_plan_achievments[j],counts_values[j] ))
+                full_plan.append(plan)
+                sr.append(reward)
+        
+        df = pd.DataFrame({"instruction": instructions,
+                           "plan": full_plan,
+                           "subtask":subtasks_,
+                           "run_count": counts,
+                           "sum_reward":sum_reward,
+                           "per_step_score": ps_rewards,
+                           "achievments":achievments_vector,
+                           "sr": sr,
+                           
+                           })
+        df.to_csv(f"{output_path}/per_step_evaluation.csv")
+                
 
     def save_to_json(self, filepath):
         data = {
