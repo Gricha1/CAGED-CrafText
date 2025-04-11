@@ -59,8 +59,8 @@ def at_time_block_placed(game_data: GameData, target_state: ATS) -> jax.Array:
 
     x, y = player_position
     region = safe_dynamic_slice(game_map, x, y, radius, 5)
-    in_range = jnp.abs(game_data.states[0].variables.light_level - target_state.time_placement.time_state) <= 0.2
-    return in_range & (region == target_state.time_placement.block_type).any()
+    in_range = jnp.abs(game_data.states[0].variables.light_level - jax.lax.clamp(0, target_state.time_placement.time_state, 1)) <= 0.2
+    return in_range & (region == block_name).any()
 
 
 

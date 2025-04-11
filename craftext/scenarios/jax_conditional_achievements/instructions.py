@@ -17,7 +17,7 @@ def create_target_state(required=[], forbidden=[]):
             base_vector[i] = AchievementState.NEED_TO_ACHIEVE
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
-    target_achievements = Achievements(True, tuple(base_vector))
+    target_achievements = Achievements(tuple(base_vector))
     return TargetState(achievements=target_achievements)
 
 

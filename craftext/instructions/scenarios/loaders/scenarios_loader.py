@@ -97,6 +97,6 @@ def load_scenarios(scenarious_config):
             if hasattr(scenario_module, data_key):
                 scenarios.update(getattr(scenario_module, data_key))
     
-    print(scenarios)
+    # print(scenarios)
    
     return scenarios

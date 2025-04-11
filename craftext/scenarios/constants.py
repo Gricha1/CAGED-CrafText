@@ -197,6 +197,7 @@ class BlockType:
 @struct.dataclass
 class TimeState:
     NIGHT = 0
-    DAY = 1
+    MORNING = 1
     EVENING = 2
-    MORNING = 3
+    DAY = 3
+    #check instructions

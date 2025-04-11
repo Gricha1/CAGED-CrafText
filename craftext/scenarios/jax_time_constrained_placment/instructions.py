@@ -13,7 +13,7 @@ from craftext.checkers_jax.target_state import TimeCosntrainedPlacmentState as A
 # print(tg_test)
 
 def create_target_state_by_contrained_class(block_type: int, time_state: int):
-    target_achievements = AchievmentClass(True, block_type, time_state)
+    target_achievements = AchievmentClass(block_type, time_state)
     tg = TargetState(time_placement=target_achievements)
     # tg.time_placement = target_achievements
     return tg

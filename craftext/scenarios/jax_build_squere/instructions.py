@@ -3,7 +3,7 @@ from craftext.scenarios.constants import BlockType
 from craftext.checkers_jax.target_state import TargetState, BuildSquareState
 
 def create_target_state(block_type:int, size:int):
-    target_achievements = BuildSquareState(True, block_type=block_type, size=size, radius=11)
+    target_achievements = BuildSquareState(block_type=block_type, size=size, radius=11)
     return TargetState(building_square=target_achievements)
 
 

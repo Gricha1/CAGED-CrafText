@@ -16,20 +16,17 @@ def conditional_achivments(gd: GameData, target_state: TargetState) -> jax.Array
     Returns:
         bool - True if all conditions are met, False otherwise
     """
-    condition = jnp.all(target_state.building_line.need_to_achieve == False)
-    def proceed(_):
-        current_state = gd.states[1]
-        state_achievements = current_state.achievements.achievements 
-        vector_to_achieve = target_state.achievements.achievement_mask
-        # Conditions for must-achieve (1) and must-not-achieve (-1)
-        must_achieve = jnp.logical_and(vector_to_achieve == 1, state_achievements != 1)
-        must_not_achieve = jnp.logical_and(vector_to_achieve == -1, state_achievements!= 0)
+    current_state = gd.states[1]
+    state_achievements = current_state.achievements.achievements 
+    vector_to_achieve = target_state.achievements.achievement_mask
+    # Conditions for must-achieve (1) and must-not-achieve (-1)
+    must_achieve = jnp.logical_and(vector_to_achieve == 1, state_achievements != 1)
+    must_not_achieve = jnp.logical_and(vector_to_achieve == -1, state_achievements!= 0)
 
-        # If any must_achieve or must_not_achieve fails, return False
-        fail_condition = jnp.any(must_achieve) | jnp.any(must_not_achieve)
+    # If any must_achieve or must_not_achieve fails, return False
+    fail_condition = jnp.any(must_achieve) | jnp.any(must_not_achieve)
 
-        return jnp.logical_not(fail_condition)
-    return lax.cond(condition, proceed, lambda _: jnp.array(False), operand=None)   
+    return jnp.logical_not(fail_condition)
 
 
 # def conditional_achivments(gd: GameData, vector_to_achieve: jax.Array) -> jax.Array:

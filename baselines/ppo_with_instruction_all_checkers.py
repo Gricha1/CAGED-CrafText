@@ -117,7 +117,8 @@ def make_train(config: BaseConfig, network_params):
         "NUM_UPDATES": config.TOTAL_TIMESTEPS // config.NUM_STEPS // config.NUM_ENVS,
         "MINIBATCH_SIZE": config.NUM_ENVS * config.NUM_STEPS // config.NUM_MINIBATCHES,
     })
-    
+    print(config.NUM_UPDATES)
+    print(config.MINIBATCH_SIZE)
     # Create environment
     env = make_craftax_env_from_name(
         config.ENV_NAME, not config.USE_OPTIMISTIC_RESETS

@@ -31,7 +31,7 @@ from craftext.checkers_jax.target_state import TargetState
 # }
 
 def create_target_state(block_type:int, size:int, is_diagonal:bool):
-    target_achievements = AchievmentClass(True, block_type, size, is_diagonal)
+    target_achievements = AchievmentClass(block_type, size, is_diagonal)
     return TargetState(building_line=target_achievements)
 
 easy = {

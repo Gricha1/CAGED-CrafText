@@ -47,62 +47,57 @@ def place_object_relevant_to(game_data: GameData, target_state: TargetState) -> 
     """
 
     # Если условие не нужно достигать, возвращаем False
-    condition = jnp.all(target_state.Localization_placing.need_to_achieve == False)
+    object_name = target_state.Localization_placing.object_name
+    target_object_name = target_state.Localization_placing.target_object_name
+    side = target_state.Localization_placing.side
+    distance = target_state.Localization_placing.distance
     
-    def proceed(_):
-        object_name = target_state.Localization_placing.object_name
-        target_object_name = target_state.Localization_placing.target_object_name
-        side = target_state.Localization_placing.side
-        distance = target_state.Localization_placing.distance
-        
-        game_map = game_data.states[0].map.game_map
-        player_position = game_data.states[0].variables.player_position
-        x, y = player_position
+    game_map = game_data.states[0].map.game_map
+    player_position = game_data.states[0].variables.player_position
+    x, y = player_position
 
-        # Фиксированный радиус области вокруг игрока
-        radius = 5
-        region_size = 2 * 20 + 1
+    # Фиксированный радиус области вокруг игрока
+    radius = 5
+    region_size = 2 * 20 + 1
 
-        # Извлекаем область карты вокруг игрока через lax.dynamic_slice
-        region = safe_dynamic_slice(game_map, x, y, radius, region_size)
-        
-        # Размер квадрата для проверки; +2 для проверки краёв
-        square_size = 10 * 2 + 1
-        
-        # Определяем сканирование по всем квадратам внутри region:
-        n_rows = region.shape[0] - square_size + 1
-        n_cols = region.shape[1] - square_size + 1
+    # Извлекаем область карты вокруг игрока через lax.dynamic_slice
+    region = safe_dynamic_slice(game_map, x, y, radius, region_size)
+    
+    # Размер квадрата для проверки; +2 для проверки краёв
+    square_size = 10 * 2 + 1
+    
+    # Определяем сканирование по всем квадратам внутри region:
+    n_rows = region.shape[0] - square_size + 1
+    n_cols = region.shape[1] - square_size + 1
 
-        def check_square(i, j):
-            # Извлекаем квадрат размером (square_size, square_size)
-            square = lax.dynamic_slice(
-                region,
-                start_indices=(i, j),
-                slice_sizes=(square_size, square_size)
-            )
-            center = 10  # поскольку square_size = 2*distance+1, центр = distance
-            target_mask = square[center, center] == target_object_name
-            object_mask = lax.switch(side,
-                [
-                    lambda: square[center, -1] == object_name,  # Справа
-                    lambda: square[center,  0] == object_name,  # Слева
-                    lambda: square[-1, center] == object_name,  # Сверху
-                    lambda: square[0, center]  == object_name   # Снизу
-                ]
-            )
-            return target_mask & object_mask
+    def check_square(i, j):
+        # Извлекаем квадрат размером (square_size, square_size)
+        square = lax.dynamic_slice(
+            region,
+            start_indices=(i, j),
+            slice_sizes=(square_size, square_size)
+        )
+        center = 10  # поскольку square_size = 2*distance+1, центр = distance
+        target_mask = square[center, center] == target_object_name
+        object_mask = lax.switch(side,
+            [
+                lambda: square[center, -1] == object_name,  # Справа
+                lambda: square[center,  0] == object_name,  # Слева
+                lambda: square[-1, center] == object_name,  # Сверху
+                lambda: square[0, center]  == object_name   # Снизу
+            ]
+        )
+        return target_mask & object_mask
 
-        def row_loop(i, carry):
-            def col_loop(j, inner):
-                valid = check_square(i, j)
-                return jnp.logical_or(inner, valid)
-            row_result = jax.lax.fori_loop(0, n_cols, col_loop, False)
-            return jnp.logical_or(carry, row_result)
+    def row_loop(i, carry):
+        def col_loop(j, inner):
+            valid = check_square(i, j)
+            return jnp.logical_or(inner, valid)
+        row_result = jax.lax.fori_loop(0, n_cols, col_loop, False)
+        return jnp.logical_or(carry, row_result)
 
-        overall_result = jax.lax.fori_loop(0, n_rows, row_loop, False)
-        return overall_result
-
-    return jax.lax.cond(condition, proceed, lambda _: False, operand=None)   
+    overall_result = jax.lax.fori_loop(0, n_rows, row_loop, False)
+    return overall_result
 
 def move_to(game_data, side) -> jax.Array:
     """

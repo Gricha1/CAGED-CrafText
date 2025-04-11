@@ -90,29 +90,26 @@ def conditional_placing(gd, target_state: TargetState):
     :return: Returns True if both conditions are satisfied in sequence, 
              otherwise False.
     """
-    condition = jnp.all(target_state.conditional_placing.need_to_achieve == False)
-    def proceed(_):
-        object_inventory_enum = target_state.conditional_placing.object_inventory_enum
-        object_to_place = target_state.conditional_placing.object_to_place
-        count_to_collect = target_state.conditional_placing.count_to_collect
-        count_to_stand = target_state.conditional_placing.count_to_stand
-        
-        previous_state = gd.states[0]
-        current_state = gd.states[1]
-        
-        # Check inventory in the previous state
-        prev_inventory_check = check_inventory(previous_state.inventory, object_inventory_enum, count_to_collect)
-        
-        # Check inventory in the current state
-        curr_inventory_check = check_inventory(current_state.inventory, object_inventory_enum, count_to_collect)
-        
-        # Check map (same as before)
-        placed_check = check_map(current_state.map.game_map, object_to_place, count_to_stand)
-        
-        # Ensure that the sequence is correct:
-        # 1) The required amount of items were NOT collected in the previous state
-        # 2) The required amount of items WERE collected in the current state
-        # 3) The required number of objects was placed on the map
-        return jnp.logical_and(jnp.logical_and(jnp.logical_not(prev_inventory_check), curr_inventory_check), placed_check)
+    object_inventory_enum = target_state.conditional_placing.object_inventory_enum
+    object_to_place = target_state.conditional_placing.object_to_place
+    count_to_collect = target_state.conditional_placing.count_to_collect
+    count_to_stand = target_state.conditional_placing.count_to_stand
     
-    return lax.cond(condition, proceed, lambda _: False, operand=None)   
+    previous_state = gd.states[0]
+    current_state = gd.states[1]
+    
+    # Check inventory in the previous state
+    prev_inventory_check = check_inventory(previous_state.inventory, object_inventory_enum, count_to_collect)
+    
+    # Check inventory in the current state
+    curr_inventory_check = check_inventory(current_state.inventory, object_inventory_enum, count_to_collect)
+    
+    # Check map (same as before)
+    placed_check = check_map(current_state.map.game_map, object_to_place, count_to_stand)
+    
+    # Ensure that the sequence is correct:
+    # 1) The required amount of items were NOT collected in the previous state
+    # 2) The required amount of items WERE collected in the current state
+    # 3) The required number of objects was placed on the map
+    return jnp.logical_and(jnp.logical_and(jnp.logical_not(prev_inventory_check), curr_inventory_check), placed_check)
+    

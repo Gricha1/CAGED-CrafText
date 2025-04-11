@@ -78,12 +78,12 @@ class BaseConfig:
     USE_OPTIMISTIC_RESETS: bool = True
     OPTIMISTIC_RESET_RATIO: int = 16
 
-    PATH_TO_CHECKPOINT: str = 'None'
+    PATH_TO_CHECKPOINT: str = ''
     
     NUM_UPDATES: int = 0
     MINIBATCH_SIZE: int = 0
     
-    WANDB_PROJECT: str = ""
+    WANDB_PROJECT: str = "craftext"
     
     USE_RND: Optional[bool] = False
     TRAIN_ICM: bool = False
@@ -219,40 +219,41 @@ def make_train(config: BaseConfig, network_params):
                     rng,
                     update_step,
                 ) = runner_state
-                rng, _rng = jax.random.split(rng)
+                with jax.profiler.trace("/tmp/jax-trace", create_perfetto_link=True):
+                    rng, _rng = jax.random.split(rng)
 
-                # SELECT ACTION
-                ac_in = (last_obs[np.newaxis, :], last_done[np.newaxis, :])
-                print("-->", env_state.env_state.instruction.shape)
-                print("->", last_obs[np.newaxis, :].shape)
-                print("->", ac_in[0].shape)
-                hstate, pi, value = network.apply(train_state.params, hstate, ac_in, env_state.env_state.instruction[np.newaxis, :])
-                action = pi.sample(seed=_rng)
-                log_prob = pi.log_prob(action)
-                value, action, log_prob = (
-                    value.squeeze(0),
-                    action.squeeze(0),
-                    log_prob.squeeze(0),
-                )
-
-                # STEP ENV
-                rng, _rng = jax.random.split(rng)
-                obsv, env_state, reward, done, info = env.step(
-                    _rng, env_state, action, env_params
-                )
-                transition = TransitionScheme(
-                    last_done, action, value, reward, log_prob, last_obs, info,  instruction=env_state.env_state.instruction
-                )
-                runner_state = (
-                    train_state,
-                    env_state,
-                    obsv,
-                    done,
-                    hstate,
-                    rng,
-                    update_step,
-                )
-                return runner_state, transition
+                    # SELECT ACTION
+                    ac_in = (last_obs[np.newaxis, :], last_done[np.newaxis, :])
+                    print("-->", env_state.env_state.instruction.shape)
+                    print("->", last_obs[np.newaxis, :].shape)
+                    print("->", ac_in[0].shape)
+                    hstate, pi, value = network.apply(train_state.params, hstate, ac_in, env_state.env_state.instruction[np.newaxis, :])
+                    action = pi.sample(seed=_rng)
+                    log_prob = pi.log_prob(action)
+                    value, action, log_prob = (
+                        value.squeeze(0),
+                        action.squeeze(0),
+                        log_prob.squeeze(0),
+                    )
+                    
+                    # STEP ENV
+                    rng, _rng = jax.random.split(rng)
+                    obsv, env_state, reward, done, info = env.step(
+                        _rng, env_state, action, env_params
+                    )
+                    transition = TransitionScheme(
+                        last_done, action, value, reward, log_prob, last_obs, info,  instruction=env_state.env_state.instruction
+                    )
+                    runner_state = (
+                        train_state,
+                        env_state,
+                        obsv,
+                        done,
+                        hstate,
+                        rng,
+                        update_step,
+                    )
+                    return runner_state, transition
 
             initial_hstate = runner_state[-3]
             runner_state, traj_batch = jax.lax.scan(
@@ -459,9 +460,8 @@ def run_ppo(config: BaseConfig):
     base_timestamps = config.TOTAL_TIMESTEPS
     
     if config.USE_WANDB:
+        print(wandb.login(key='c6717d7102e8b630d1c3c4e7c210d401bc8ec8f4'))
         wandb.init(
-            project=config.WANDB_PROJECT,
-            entity=config.WANDB_ENTITY,
             config=asdict(config),
             name=f'{config.ENV_NAME}-PPO_RNN-{int(config.TOTAL_TIMESTEPS  // 1e6)}M',
         )
