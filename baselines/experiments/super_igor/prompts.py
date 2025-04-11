@@ -36,15 +36,24 @@ class BasePlanExtractor():
     @staticmethod
     def extract_prompt(prompt_with_answer):
         return "Plan: ".join(prompt_with_answer.split("Plan: ")[:2])+"Plan: "
-    
+
+import re
 class FunctionPlanExtractor():
+    @staticmethod
+    def clean_subtask(text: str) -> str:
+        text_no_quotes = re.sub(r'[\'"“”‘’«»]', '', text)
+        cleaned = ' '.join(text_no_quotes.split())
+        return cleaned
+
     @staticmethod
     def extract(model_answer):
         try:
             print(model_answer)
             list_starts = model_answer.split("[",)[2]
             list_end = list_starts.split("]",)[0]
-            return "\n".join(list_end.split("\n"))
+            subtasks = list_end.split("\n")
+            subtasks_clear = [FunctionPlanExtractor.clean_subtask(s) for s in subtasks]
+            return "\n".join(subtasks_clear)
         except Exception as e:
             raise PlanFormatError(f"Incorrect plan format: {e}")
     @staticmethod
@@ -98,11 +107,12 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         You must include all the preliminary steps that it needs to complete.
 
         For doing this each step descrbe in format of subgoals:
-        {{'gather_resource': "'resource_type'", "count"}}, 
+        {{'gather_resource': "'resource_type'"}}, 
         {{'place_item': "'item_type'}},
         {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
         {{'create_item': "'item_type'"}},
         {{'defeat_enemy': "'enemy_type'"}},
+        {{'eat': "'food_type'"}},
         {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
 
         Possible arguments:
@@ -112,6 +122,7 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         figure_type: line, diagonal_line, square
         item_type: table, wooden sword, wooden pickaxe, stone sword, stone pickaxe, iron sword, iron pickaxe
         enemy_type: zombie, skeleton, cow
+        food_type: cow, plant
         item_type_to_place: stone, table, plant, furnace
         item_type_reference: stone, table, plant, furnace, water, tree, stone, coal, diamond, iron, plant
         direction: left, right, bottom, top
@@ -119,9 +130,11 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         Send your answer as a python list.
         Instruction: Make a pickaxe from wood
         Answer: 
-        ["gather_resource(resource_type = wood, count = 2)",
+        ["gather_resource(resource_type = wood)",
+        "gather_resource(resource_type = wood)",
         "create_item(table)", 
-        "gather_resource(resource_type = wood, count = 2)", 
+        "gather_resource(resource_type = wood", 
+        "gather_resource(resource_type = wood", 
         "create_item(wooden pickaxe)"]
 
         Send your answer as a python list.
