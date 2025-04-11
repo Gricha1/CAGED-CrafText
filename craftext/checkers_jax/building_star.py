@@ -57,14 +57,14 @@ def check_cross(region: jax.Array, stone_index: int, size: int, cross_type: int)
 
 
     def compute_size3(_):
-        straight = compute_straight(None)
+        straight = compute_straight()
         diagonal = compute_diagonal(None)
         return straight | diagonal
 
 
     def compute_size5_7(_):
-        straight = compute_straight(None)
-        diagonal = compute_diagonal(None)
+        straight = compute_straight()
+        diagonal = compute_diagonal()
         return straight | diagonal | (straight & diagonal)
 
     base_result = jax.lax.cond(
@@ -142,7 +142,7 @@ def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array
     
     x, y = player_position
     region_size = 2 * 10 + 1
-    print(f"region_size: {region_size}")
+    # print(f"region_size: {region_size}")
     region = safe_dynamic_slice(
         game_map,
         x,

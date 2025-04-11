@@ -23,14 +23,14 @@ def create_log_dict(info, config):
 
     to_log["achievements"] = sum_achievements
 
-    if config.TRAIN_ICM or config.USE_RND:
+    if config.get("TRAIN_ICM") or config.get("USE_RND"):
         to_log["intrinsic_reward"] = info["reward_i"]
         to_log["extrinsic_reward"] = info["reward_e"]
 
-        if config.TRAIN_ICM:
+        if config.get("TRAIN_ICM"):
             to_log["icm_inverse_loss"] = info["icm_inverse_loss"]
             to_log["icm_forward_loss"] = info["icm_forward_loss"]
-        elif config.USE_RND:
+        elif config.get("USE_RND"):
             to_log["rnd_loss"] = info["rnd_loss"]
 
     return to_log
@@ -43,14 +43,14 @@ def batch_log(update_step, log, config):
 
     batch_logs[update_step].append(log)
 
-    if len(batch_logs[update_step]) == config.NUM_REPEATS:
+    if len(batch_logs[update_step]) == config['NUM_REPEATS']:
         agg_logs = {}
         for key in batch_logs[update_step][0]:
             agg = []
             if key in ["goal_heatmap"]:
                 agg = [batch_logs[update_step][0][key]]
             else:
-                for i in range(config.NUM_REPEATS):
+                for i in range(config['NUM_REPEATS']):
                     val = batch_logs[update_step][i][key]
                     if not jnp.isnan(val):
                         agg.append(val)
@@ -71,13 +71,13 @@ def batch_log(update_step, log, config):
 
         log_times.append(time.time())
 
-        if config.DEBUG:
+        if config['DEBUG']:
             if len(log_times) == 1:
                 print("Started logging")
             elif len(log_times) > 1:
                 dt = log_times[-1] - log_times[-2]
                 steps_between_updates = (
-                    config.NUM_STEPS * config.NUM_ENVS * config.NUM_REPEATS
+                    config['NUM_STEPS'] * config['NUM_ENVS'] * config['NUM_REPEATS']
                 )
                 sps = steps_between_updates / dt
                 agg_logs["sps"] = sps

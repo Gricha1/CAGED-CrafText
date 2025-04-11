@@ -50,7 +50,7 @@ class ActorCriticTextVisualRNN(nn.Module):
     @nn.compact
     def __call__(self, hidden, x, encoded_input):
         # Используем layer_size из параметра или конфигурации
-        layer_size = self.layer_size if self.layer_size is not None else self.config.LAYER_SIZE
+        layer_size = self.layer_size if self.layer_size is not None else self.config['LAYER_SIZE']
         if layer_size is None:
             raise ValueError("LAYER_SIZE must be specified either in config or as a parameter.")
 

@@ -16,8 +16,13 @@ from craftext.adapters.state_adapter import GameData
 
 from craftext.adapters.state_adapter_classic import GameDataClassic
 
+from craftext.checkers_jax.achivments import conditional_achivments
 from craftext.checkers_jax.time_constrained import at_time_block_placed
 from craftext.checkers_jax.building_star import is_cross_formed
+from craftext.checkers_jax.building import is_line_formed
+from craftext.checkers_jax.building import is_square_formed
+from craftext.checkers_jax.conditional import conditional_placing
+from craftext.checkers_jax.relevant import place_object_relevant_to
 
 from jax import tree_util
 
@@ -31,6 +36,7 @@ class TextEnvState:
     total_success_rate: float
     environment_key: int
     rng: int
+    checker_id: int
     
 import jax.numpy as jnp
 from typing import List, TypeVar, Type
@@ -123,7 +129,8 @@ class InstructionWrapper(Wrapper):
             environment_key=self.environment_key,
             success_rate=0.0,
             total_success_rate=0.0,
-            rng=_rng
+            rng=_rng,
+            checker_id=self.scenario_handler.scenario_data_jax.scenario_checker[idx]
         )
         return obs, state
 
@@ -135,6 +142,30 @@ class InstructionWrapper(Wrapper):
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
+        results = jax.lax.switch(5,
+                                (
+                                    jax.vmap(conditional_achivments, in_axes=(None, 0)),
+                                    jax.vmap(conditional_placing, in_axes=(None, 0)),
+                                    jax.vmap(place_object_relevant_to, in_axes=(None, 0)),
+                                    jax.vmap(is_line_formed, in_axes=(None, 0)),
+                                    jax.vmap(is_square_formed, in_axes=(None, 0)),
+                                    jax.vmap(is_cross_formed, in_axes=(None, 0)),
+                                    jax.vmap(at_time_block_placed, in_axes=(None, 0))
+                                ),
+                                game_data_vector, self.batched_scenario_args
+        )
+        #                                 )
+        #         @struct.dataclass
+        # class Scenarios:
+        #     CONDITIONAL_ACHIEVEMENTS = 0
+        #     CONDITIONAL_PLACING = 1
+        #     LOCALIZATION_PLACE = 2
+            
+        #     BUILD_LINE = 3
+        #     BUILD_SQUARE = 4
+        #     BUILD_STAR = 5
+            
+        #     TIME_CONSTRAINED_PLACEMENT = 6
         # light_dinamic_batched = jnp.expand_dims(light_dinamic, env_state.num_envs)
 
         # print(f'game_data_vector.states[0].variables: {game_data_vector.states[0].variables}')
@@ -145,11 +176,9 @@ class InstructionWrapper(Wrapper):
         # print(f'shape:{self.scenario_arguments}')
         # print(f'len: {len(self.scenario_arguments)}')
         # at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
-        at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
         # 
         # print(type(self.scenario_arguments))
         # print(self.scenario_arguments.shape)
-        results = at_time_block_placed_achivment(game_data_vector, self.batched_scenario_args)
         # Choose result releted instructions in current env
         instruction_done = results[env_state.idx]
 
@@ -168,7 +197,8 @@ class InstructionWrapper(Wrapper):
             environment_key=env_state.environment_key,
             success_rate=new_episode_sr * (1 - done),
             total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done,
-            rng=env_state.rng
+            rng=env_state.rng,
+            checker_id=env_state.checker_id
         )
         
         # Update step information in info dictionary
