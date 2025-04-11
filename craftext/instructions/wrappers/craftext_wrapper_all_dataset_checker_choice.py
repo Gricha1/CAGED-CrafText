@@ -83,7 +83,6 @@ class InstructionWrapperSeveralTasks(Wrapper):
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
-        self.scenario_arguments = (self.scenario_handler.scenario_data_jax.arguments)
 
         
         self.env = env
@@ -94,32 +93,16 @@ class InstructionWrapperSeveralTasks(Wrapper):
         self.StateStructure = GameData if self.environment_key == 1 else GameDataClassic
 
         print("Initialized Instruction Wrapper with environment key:", self.environment_key)
-        # print(self.StateStructure)
         self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
-        # print(self.scenario_handler.scenario_data.instructions_list)
-        # print(len(self.scenario_handler.scenario_data.instructions_list))
         
         
         self.checkers = list(map(lambda x:  jax.vmap(x, in_axes=(None, 0)), get_checker_functions()))
         
         self.batched_scenario_args = tree_util.tree_map(
             lambda *xs: jnp.stack(xs),
-            *self.scenario_arguments
+            *self.scenario_handler.scenario_data_jax.arguments
         )
-        #print(self.scenario_handler.scenario_data_jax.arguments)
-        #exit()
-    def scenario_switch(self, index, data, scenario_args):
-        """
-        index: an int (or array of ints if batched) telling switch which function to call.
-        data: the input data (or one item from the batch).
-        scenario_args: additional arguments (or one item from the batch).
-        """
-        return jax.lax.switch(
-            index,
-            self.checkers,   # tuple/list of candidate functions
-            data,
-            scenario_args
-        )
+        
     
     def reset(self, _rng, env_params, instruction_idx=-1):
         """
@@ -172,7 +155,7 @@ class InstructionWrapperSeveralTasks(Wrapper):
         # print(instructions_done)
         
         reward /= 50
-        reward += (jnp.int32(instructions_done) & 2)
+        reward +=  jax.lax.cond(instructions_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instructions_done | done
    
         new_episode_sr = env_state.success_rate + jnp.float32(instructions_done)
