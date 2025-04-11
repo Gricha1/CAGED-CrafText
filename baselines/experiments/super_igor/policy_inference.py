@@ -41,7 +41,7 @@ from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import 
     create_scenarios_with_super_dataset
 )
 from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
-
+from baselines.experiments.super_igor.persubtask_update import initialize_reward_tracking, update_reward_sum_matrix_simple, get_update_mask,update_reward_sum_matrix_vectorized
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
@@ -153,6 +153,7 @@ class StepEvaluator:
             json.dump(self.steps_made, file, indent=4)
 
 def extract_planer_config(config):
+
     planner_config = {'model_config': \
                 {
                 'original_model_path': config['original_model_path'.upper()],
@@ -167,7 +168,7 @@ def extract_planer_config(config):
                 'prompt_template': config['prompt_template'.upper()],
                 },
                 'super_dataset':None,
-                'augment':config['augment'.upper()]
+                'augment': False #config['augment'.upper()]
              }
     return planner_config
 
@@ -207,7 +208,7 @@ class Experiment:
         config['SAVE_DATASET_PATH'] = self.args.save_dataset_path
         config['NUM_RETURN_SEQUENCES'] = self.args.num_return_sequences
         config['PLAN_WITH_LLM'] = self.args.plan_with_llm
-        config['AUGMENT'] = self.args.augment
+        config['AUGMENT'] = False #self.args.augment
         config['CUSTOM_COMMAND'] = self.args.custom_command
         # print("Planning?: ",  config['PLAN_WITH_LLM'])
         # exit()
@@ -237,6 +238,8 @@ class Experiment:
             super_dataset = SuperDataset.load_from_json(self.config["DATASET_PATH"])
             self.config['PLANER_CONFIG']['super_dataset'] = super_dataset
             self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
+            print(self.config['PLANER_CONFIG'])
+          #  exit()
             EncodeModel = make_encoder_with_planning(planer_type = "sd",
                                              planer_config=self.config['PLANER_CONFIG'],
                                              embedding_source=self.config['EMBEDDING_SOURCE'],
@@ -252,11 +255,14 @@ class Experiment:
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
         else:
             #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], augment=self.config['AUGMENT'], split_into_steps=True, make_one_hot=True)
+            self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
+            # print(self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'])
+            # exit()
             EncodeModel = make_encoder_with_planning(planer_type = "llm",
                                              planer_config=self.config['PLANER_CONFIG'],
                                              embedding_source=self.config['EMBEDDING_SOURCE'],
                                              step_by_step=self.config['STEP_BY_STEP'])
-            self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
+            
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
         
         env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
@@ -394,73 +400,38 @@ class Experiment:
             achievement_dict=achievement_dict  
         )
 
-       # steps_made = dict()
+        num_goals = len(self.env.scenario_handler.scenario_data_jax.embeddings_list)
+        max_subgoals = 30
+        achievments_dim = 22
+        reward_sum, episode_count = initialize_reward_tracking(num_goals, max_subgoals)
+        per_achivment_sum = jnp.zeros((num_goals, max_subgoals, achievments_dim))
+
+        prev_goals = env_state.env_state.idx
+        prev_subgoals = env_state.env_state.step_idx
+        
         while steps < remain_steps:
             pi, _ = self.network.apply(params, obs, env_state.env_state.instruction)
             agent_rng, _rng_ = jax.random.split(agent_rng)
             action = pi.sample(seed=agent_rng)
             
-            ### Per-step init
-            indices_of_instruction_run = env_state.env_state.idx
-            step_now_implementing = env_state.env_state.step_idx
-            self.env.scenario_handler.scenario_data.instructions_list += ["df \n" * 30]
-            
-            
-            # self.env.scenario_handler.scenario_data.instructions_list += ["df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df \n df\n df \n df \n df \n df \n df \n df \n df \n df \n df \n df"]
-            
-            # steps_str = []
-            # for i, j in  zip(indices_of_instruction_run,step_now_implementing):
-               
-            #     full_steps = self.env.scenario_handler.scenario_data.instructions_list[i].split("\n")
-
-            #     if j<len(full_steps):
-            #         steps_str.append(full_steps[j])
-            #     else:
-            #         steps_str.append(" - ")
-            # steps_str = [self.env.scenario_handler.scenario_data.instructions_list[i].split("\n")[j] for i,j in zip(indices_of_instruction_run,step_now_implementing)]
-            # ####
-            
             if action is not None:
-                
-                ##### Per-step variables manipulation
-                # new_achievements = np.full_like(env_state.env_state.env_state.achievements, False)
-                # new_inner = dataclasses.replace(env_state.env_state.env_state, achievements=new_achievements)
-                # new_middle = dataclasses.replace(env_state.env_state, env_state=new_inner)
-                # new_state = dataclasses.replace(env_state, env_state=new_middle)
-                ##### 
-                
                 obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
-                # print(env_state.env_state.env_state.achievements)
+                binary_reward = (reward > 0).astype(jnp.float32)
+                achievments_done = env_state.env_state.env_state.achievements.astype(jnp.float32)
                 
-                # step_evaluator.evaluate(
-                #     action=action,
-                #     env_state=env_state,
-                #     step_now_implementing=step_now_implementing,
-                #     indices_of_instruction_run=indices_of_instruction_run
-                # )
+                #calculate per-sub-goal reward
+                curr_subgoals = env_state.env_state.step_idx
+                curr_goals =  env_state.env_state.idx
+                mask = get_update_mask(prev_subgoals, curr_subgoals, prev_goals, num_goals, max_subgoals)
+                reward_sum = update_reward_sum_matrix_simple(reward_sum, binary_reward, prev_goals, curr_subgoals)
+                per_achivment_sum = update_reward_sum_matrix_vectorized(reward_sum_matrix=per_achivment_sum,
+                                        rewards=achievments_done,
+                                        curr_goals=prev_goals,
+                                        curr_subgoals=curr_subgoals)
+                prev_goals = curr_goals
+                prev_subgoals = curr_subgoals
+                episode_count = episode_count + mask.astype(jnp.int32)
                 
-                ##### Per-step evaluation
-                # for i, a in enumerate(action):
-                #     achievments_on_step = np.array(env_state.env_state.env_state.achievements[i].astype(int)):
-                        
-                #     current_step = step_now_implementing[i].item()
-                #     instruction = self.env.scenario_handler.scenario_data.instructions_list[indices_of_instruction_run[i]]
-                    
-                #     if instruction not in steps_made:
-                #         steps_made[instruction] = {}
-                    
-
-                #     if current_step not in steps_made[instruction]:
-                #         steps_made[instruction][current_step] = [steps_str[i],{'run_count':0}, {achievement_dict[i]:0 for i in range(len(achievments_on_step))}] # [steps_str[i], reward[i].item()]
-                    
-                #     for i, achivment_count in enumerate(achievments_on_step):
-                #         steps_made[instruction][current_step][1]['run_count'] += 0
-                #         steps_made[instruction][current_step][2][achievement_dict[i]] += float(achievments_on_step[i]) #reward[i].item()
-                            
-                # with open('steps_made.json', 'w') as file:
-                #     json.dump(steps_made, file, indent=4) 
-                    
-                #### 
                 steps += 1
                 progress_bar.n = np.sum(done_count)
                 progress_bar.refresh()
@@ -493,7 +464,8 @@ class Experiment:
             total_score =  mean_sr[:len(self.env.scenario_handler.scenario_data.instructions_list)] * np.array(scores) 
         else:
             total_score =  mean_sr[:len(self.env.scenario_handler.scenario_data.instructions_list)] 
-        self._update_super_dataset(total_score)
+        per_subtaks_score = reward_sum/episode_count
+        self._update_super_dataset(total_score, reward_sum, episode_count,per_achivment_sum )
     
         
     def _init_rendering(self):
@@ -562,12 +534,20 @@ class Experiment:
         return scores
 
 
-    def _update_super_dataset(self, total_score):
+    def _update_super_dataset(self, total_score, reward_sum, episode_count,per_achivment_sum):
         self.super_dataset.super_print()
         self.super_dataset.clear_scores()
         self.super_dataset.rebuild_mapping()
         self.super_dataset.batch_update(self.env.scenario_handler.scenario_data.instructions_list, total_score)
         self.super_dataset.save_to_json(self.config["DATASET_PATH"])
+        directory = os.path.dirname(self.config["DATASET_PATH"])
+        per_subtask_score = reward_sum / episode_count
+        self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.instructions_list, 
+                                             total_score,
+                                             episode_count,
+                                             reward_sum,
+                                             per_achivment_sum,
+                                             directory)
 
 
 
@@ -608,6 +588,7 @@ if __name__ == "__main__":
   
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     args.plan_with_llm = False if args.plan_with_llm=="False" else True
+    args.augment = False #False if args.augment==0 else True
     # print(args.plan_with_llm)
     # exit()
     if args.path is None:
