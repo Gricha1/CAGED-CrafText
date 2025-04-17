@@ -73,14 +73,16 @@ class SDPlanner:
         self.num_return_sequences = num_return_sequences
         self.augment = augment
         self.default_plan = DEFAULT_PLAN
-
+    
     def return_plans(self, instructions: List[str]) -> List[str]:
         plans = self.extract_plans(instructions)
+        print("Did Plan")
         if self.augment:
             augmented = []
             for plan in plans:
                 augmented.extend(plan_augmentations(plan))
             plans = augmented
+            print("Augment Plan")
         return plans
 
     def extract_plans(self, instructions: List[str]) -> List[str]:
@@ -91,14 +93,16 @@ class SDPlanner:
                 plans = self.super_dataset.instructions[instruction].plan_options
             else:
                 plans = []
+                
             if len(plans) != self.num_return_sequences:
                 # If the number of plans is less than necessary, we add masking plans.
                 # This is necessary for correct comparison of plans and instructions in ScenariosLoader
                 plans += [self.default_plan] * (self.num_return_sequences - len(plans))
             collected.extend(plans)
-        return collected
+        print("shul be", "count" , self.num_return_sequences, len(plans))
+        return collected[:self.num_return_sequences]
 
-
+import gc
 class LLMPlanner:
     """
     Generate plans with LLM models
@@ -111,7 +115,7 @@ class LLMPlanner:
     def _init_model_and_tokenizer(self, model_config: ModelConfig):
         base_model = AutoModelForCausalLM.from_pretrained(
             model_config.original_model_path,
-            torch_dtype=torch.float16,
+            torch_dtype="auto",
             device_map="auto",
             trust_remote_code=True
         ).eval()
@@ -157,13 +161,13 @@ class LLMPlanner:
             "do_sample": False,
             "early_stopping": True,
             "num_return_sequences": self.generation_config.num_paraphrases,
-            "return_dict_in_generate": True
+            "return_dict_in_generate": False
         }
 
         with torch.no_grad():
             outputs = self.plan_model.generate(**inputs, **generation_params)
 
-        raw_responses = self.plan_tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
+        raw_responses = self.plan_tokenizer.batch_decode(outputs, skip_special_tokens=True)
         prompt_type = self.generation_config.prompt_template
         
         formatted = []
@@ -173,10 +177,14 @@ class LLMPlanner:
             except:
                 plan = DEFAULT_PLAN
             formatted.append(plan)
+        del inputs, outputs 
+        torch.cuda.empty_cache() 
+        gc.collect() 
         return formatted #, outputs.sequences
 
 
 def make_planer(planer_type: str, config: dict):
+    
     if planer_type == "llm":
         model_cfg = ModelConfig(**config["model_config"])
         generation_cfg = GenerationConfig(**config["generation_config"])
