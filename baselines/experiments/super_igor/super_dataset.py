@@ -82,8 +82,15 @@ def achievments_vector_to_dict(vector, devision=1):
     devision = 1 if devision == 0 else devision.item()
     for i in range(len(vector)):
         acievments_dict_v[achievement_dict[i]] = vector[i].item()/devision
+    
+    cleaned_achievments = dict()
+    for achievment in acievments_dict_v:
+        if achievment == 'WAKE_UP': continue
+        if acievments_dict_v[achievment] > 0.1:
+            cleaned_achievments[achievment] = acievments_dict_v[achievment] 
     str_result = str(acievments_dict_v).replace(",", "\n")
-    return str_result
+    str_result_clean =  str(cleaned_achievments).replace(",", "\n")
+    return str_result, str_result_clean
             
 class Instruction:
     def __init__(self, instruction, plan_options, rewards=None):
@@ -347,6 +354,7 @@ class SuperDataset:
         full_plan = []
         ps_rewards = []
         achievments_vector = [] 
+        clean_achievments_vector = [] 
         for i in range(len(plans)):
             plan, reward = plans[i], rewards[i]
             instruction = self.mapping_plan_to_instruction[plan][0] #This wrong, need to fix
@@ -362,7 +370,9 @@ class SuperDataset:
                 counts.append(counts_values[j])
                 sum_reward.append(reward_values[j])
                 ps_rewards.append(subtask_values[j])
-                achievments_vector.append(achievments_vector_to_dict(per_plan_achievments[j],counts_values[j] ))
+                _achievments_vector, _cleaned_achievments_vector = achievments_vector_to_dict(per_plan_achievments[j],counts_values[j] )
+                achievments_vector.append(_achievments_vector)
+                clean_achievments_vector.append(_cleaned_achievments_vector)
                 full_plan.append(plan)
                 sr.append(reward)
         
@@ -372,6 +382,7 @@ class SuperDataset:
                            "run_count": counts,
                            "sum_reward":sum_reward,
                            "per_step_score": ps_rewards,
+                           "clean_achievments": clean_achievments_vector,
                            "achievments":achievments_vector,
                            "sr": sr,
                            
