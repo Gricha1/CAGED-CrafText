@@ -14,7 +14,7 @@ from craftext.adapters.state_adapter import GameData
 from typing import Tuple 
 from craftext.scenarios.constants import BlockType
 from craftext.checkers_jax.target_state import TargetState
-
+from functools import partial
 
 # Blocks list as an example
 blocks_list = [
@@ -55,8 +55,8 @@ def check_cross(center: Tuple[int, int], game_map: jax.Array, stone_index: int) 
     
     return cross_check & diagonal_check
 
-
-class Building(NamedTuple):
+@struct.dataclass
+class Building:
     game_map: jax.Array
     stone_index: int
     region_size: int
@@ -71,7 +71,7 @@ def scan_function(carry: Building, x: int) -> Tuple[Building, jax.Array]:
     return carry, is_cross
 
 def is_cross_formed(game_data: GameData, block_index: int, radius: int = 5) -> jax.Array:
-    stone_index = jnp.array(block_index)
+    stone_index = block_index
     
     game_data_states = game_data.states
     game_data_states_map = game_data_states[0].map
@@ -115,7 +115,6 @@ def scan_square_function(carry, x):
     is_square = check_square_by_size((i, j), region, stone_index, size)
     return carry, is_square
 
-
 def is_square_formed(game_data: GameData, target_state: TargetState) -> jax.Array:
     """
     Проверка на образование квадрата указанного размера из блоков в радиусе вокруг позиции игрока.
@@ -127,39 +126,21 @@ def is_square_formed(game_data: GameData, target_state: TargetState) -> jax.Arra
     
     stone_index = block_name
 
-    
-    if game_data is None:
-        return jnp.array(False)
-    
     game_data_states = game_data.states
     
-    if game_data_states is None:
-        return jnp.array(False)
-    
     game_data_states_map = game_data_states[0].map
-
-    if game_data_states_map is None:
-        return jnp.array(False)
-    
-    if game_data_states_map.game_map is None:
-        return jnp.array(False)
     
     game_map = game_data_states_map.game_map
     
     # Получаем карту
-    
-    if game_map is None:
-        return False
 
     # Получаем позицию игрока
     player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return False
 
     x, y = player_position
 
     # Определяем размеры области вокруг игрока
-    region_size = 2 * 10 + 1
+    region_size = 2 * 9 + 1
 
     # Используем lax.dynamic_slice для извлечения области карты вокруг игрока
     region = lax.dynamic_slice(
@@ -223,13 +204,9 @@ def is_line_formed(game_data, target_state: TargetState) -> jax.Array:
     game_map =  game_data.states[0].map.game_map
     
     binary_map = (game_map == stone_index).astype(jnp.int32)
-    if game_map is None:
-        return jnp.array([False])
-
+    
     # Получаем позицию игрока
     player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return jnp.array([False])
     
     x, y = player_position
 

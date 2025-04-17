@@ -120,3 +120,7 @@ def check_line_4(center: Tuple[int, int], region: jax.Array, check_diagonal=Fals
                (jnp.sum(region) == 4) & jnp.all(horizontal == 1)
 
     return jax.lax.cond(check_diagonal, check_diagonal_lines, check_straight_lines, None)
+
+
+
+    

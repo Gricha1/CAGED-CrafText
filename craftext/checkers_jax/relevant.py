@@ -37,7 +37,7 @@ def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     mask_y = mask_x[:, None]
     mask = mask_x & mask_y
 
-    region_masked = jnp.where(mask, region, 0)
+    region_masked = jnp.where(mask, region, -1)
     return region_masked
 
 def place_object_relevant_to(game_data: GameData, target_state: TargetState) -> jax.Array:

@@ -2,6 +2,7 @@ from craftext.scenarios.constants import BlockType
 from craftext.checkers_jax.building import is_line_formed as is_complete_instr
 from craftext.checkers_jax.target_state import BuildLineState as AchievmentClass
 from craftext.checkers_jax.target_state import TargetState
+from craftext.scenarios.constants import Scenarios
 # one = {
 #     'line_one_1': {
 #         'instruction': "Make a line of 2 blocks using table.",
@@ -37,7 +38,7 @@ def create_target_state(block_type:int, size:int, is_diagonal:bool):
 easy = {
     "INSTRUCTION_CRAFTING_TABLE_3": {
         "instruction": "Form a square of crafting tables with each side having a length of 3",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "create a square shape by using work benches where the number of work benches on one side is 3",
             "Layout 3 blocks of builder’s table in a square shape.",
@@ -50,7 +51,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_6": {
         "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Can you confirm if a square with side-length of 6 is made up of furnace blocks?",
             "Tell me, do we have a furnace blocks square with each side 6 blocks long?",
@@ -63,7 +64,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_5": {
         "instruction": "Check if there is a square made of furnace blocks with side length of 5.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Investigate for a square formation of 5x5 using heater blocks.",
             "Look for a quadrant constructed with stove blocks, each side measuring 5 units.",
@@ -76,7 +77,7 @@ easy = {
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
         "instruction": "Check for a distinct square made out of crafting tables with each side having a length of 7 blocks.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Look for a 7x7 crafting block square",
             "Search for a square formation composed of workbenches, with each side consisting of 7 blocks",
@@ -89,7 +90,7 @@ easy = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
         "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
             "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
@@ -102,7 +103,7 @@ easy = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_size=7": {
         "instruction": "create an enchantment table of ice shaped into a square with each side size 7.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Form a square using an ice enchantment table, each side should be of length 7.",
             "Make a square with sides of 7 units using a table enchanted with ice.",
@@ -115,7 +116,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_7": {
         "instruction": "Build a square using furnaces with each side being 7 blocks long.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Craft a square pattern with smelters that has 7 blocks as the dimension.",
             "create a geometric square shape using heating devices where each side is 7 blocks long.",
@@ -133,7 +134,7 @@ easy = {
 medium = {
     "INSTRUCTION_STONE_2": {
         "instruction": "create a diagonal line of stones of size two.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Can you make a diagonal line with two rocks?",
             "Arrange two stones in a diagonal manner",
@@ -146,7 +147,7 @@ medium = {
     },
     "INSTRUCTION_CRAFTING_TABLE_2": {
         "instruction": "Check if there is a line of Crafting Tables, at least two in size.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Verify if a sequence of at least two Crafting Tables has formed.",
             "Could you see if there's a chain of two or more Crafting Tables?",
@@ -159,7 +160,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_3": {
         "instruction": "Form a diagonal line of furnaces of length 3.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Arrange furnaces in a slant line with 3 in total.",
             "Assemble a line of 3 furnaces angled diagonally.",
@@ -172,7 +173,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_2": {
         "instruction": "Form a diagonal line of enchantment ice tables of length 2.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "create a line of two enchantment ice tables slanted diagonally.",
             "Arrange two ice enchantment tables in a sloped arrangement.",
@@ -185,7 +186,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_7": {
         "instruction": "Check a diagonal line of enchantment table fire blocks of size 7",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Make sure there's a diagonal line of 7 fiery enchantment tables.",
             "Verify the existence of an inclined row consisting of seven blocks of enchantment table on fire.",
@@ -198,7 +199,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_2": {
         "instruction": "Check if there is a line of two furnaces",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Inspect if there are two furnaces in row",
             "Verify if two furnaces were established in a line",
@@ -211,7 +212,7 @@ medium = {
     },
     "INSTRUCTION_PLANT_7": {
         "instruction": "create a diagonal line of plants that is seven units long.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Please, make a seven unit long diagonal line with flora.",
             "Can you construct a slanted line using plants that measures seven units?",
@@ -224,7 +225,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_7": {
         "instruction": "create a diagonal line of Furnace with 7 blocks.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Construct a diagonal row of seven Furnaces.",
             "Put together a sequence of Furnace blocks in a bent line, make sure this sequence is 7 blocks long.",
@@ -237,7 +238,7 @@ medium = {
     },
     "INSTRUCTION_STONE_2_2": {
         "instruction": "Verify a 2-block line of stone arranged linearly in the game space.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Confirm if there is a linear alignment of stone blocks, each of size two, in the current game area.",
             "Check the game for a straight line configuration of two blocks of rocks.",
@@ -250,7 +251,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_6": {
         "instruction": "Form a line containing six Enchantment Fire Tables arranged diagonally.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Compose a diagonal sequence incorporating six Enchantment Fire Tables.",
             "Creatively arrange six Enchantment Fire Tables in a straight line at an angle.",
@@ -263,7 +264,7 @@ medium = {
     },
     "INSTRUCTION_STONE_6": {
         "instruction": "Form a diagonal line of stone blocks with length 6.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Make a diagonal sequence of 6 rock blocks.",
             "I need you to construct a line, on the diagonal axis, using 6 blocks of stone.",
@@ -276,7 +277,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_4": {
         "instruction": "Make a diagonal line of enchantment table ice blocks with a size of four.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Can you create a line of enchantment table ice with four blocks diagonally?",
             "Can you place four enchantment table ice blocks in a diagonal arrangement?",
@@ -289,7 +290,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE_3_2": {
         "instruction": "Form a line of furnace blocks, 3 blocks in length.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Arrange three furnace blocks in a straight line.",
             "Position a series of three furnace blocks linearly.",
@@ -302,7 +303,7 @@ medium = {
     },
     "INSTRUCTION_PLANT_7_2": {
         "instruction": "create a line of plants with a length of 7 blocks.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Form a sequence of vegetation with a span of seven units.",
             "Make a linear progression of foliage that spans over seven blocks.",
@@ -315,7 +316,7 @@ medium = {
     },
     "INSTRUCTION_STONE_4": {
         "instruction": "Form a diagonal line of four rocks.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Draw a line of four stones at an angle.",
             "llace four stones so that they make a diagonal line.",
@@ -328,7 +329,7 @@ medium = {
     },
     "INSTRUCTION_CRAFTING_TABLE_7": {
         "instruction": "Check if there is a diagonal line of Crafting Tables of size 7.",
-        "scenario_checker": 3,
+        "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
             "Verify the presence of a diagonal sequence of Workbenches of length 7.",
             "Investigate if there exists a diagonal row of Crafting Stations that is 7 units long.",

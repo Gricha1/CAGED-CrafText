@@ -38,7 +38,7 @@ def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     mask_y = mask_x[:, None]
     mask = mask_x & mask_y
 
-    region_masked = jnp.where(mask, region, 0)
+    region_masked = jnp.where(mask, region, -1)
     return region_masked
 
 import jax
@@ -57,14 +57,14 @@ def check_cross(region: jax.Array, stone_index: int, size: int, cross_type: int)
 
 
     def compute_size3(_):
-        straight = compute_straight()
+        straight = compute_straight(None)
         diagonal = compute_diagonal(None)
         return straight | diagonal
 
 
     def compute_size5_7(_):
-        straight = compute_straight()
-        diagonal = compute_diagonal()
+        straight = compute_straight(None)
+        diagonal = compute_diagonal(None)
         return straight | diagonal | (straight & diagonal)
 
     base_result = jax.lax.cond(
@@ -111,7 +111,7 @@ def scan_cross_function(carry: Carry, x):
                                j + carry.size > carry.region_size)
     
     def branch_true(_):
-        sub_region = safe_dynamic_slice(carry.region, i, j, carry.size, 10)
+        sub_region = safe_dynamic_slice(carry.region, i, j, carry.size, carry.region_size)
         is_cross = check_cross(sub_region, carry.stone_index, carry.size, carry.cross_type)
         
         return is_cross
@@ -129,27 +129,22 @@ def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array
     
     stone_index = block_name
     
-    if game_data is None or game_data.states is None:
-        return jnp.array(False)
     
     game_map = game_data.states[0].map.game_map
-    if game_map is None:
-        return jnp.array(False)
     
     player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return jnp.array(False)
     
     x, y = player_position
-    region_size = 2 * 10 + 1
-    # print(f"region_size: {region_size}")
+    region_size = 2 * 9 + 1
     region = safe_dynamic_slice(
         game_map,
         x,
         y,
         radius,
-        10
+        region_size
     )
+    #todo: как пробрасывать shared array to jnp arange
+    # indices = jax.lax.iota(size=region_size * region_size, dtype=jnp.int32)
     indices = jnp.arange(0, region_size * region_size)
     carry = Carry(region=region,
             stone_index=stone_index,

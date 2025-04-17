@@ -6,7 +6,7 @@ from craftext.scenarios.parce_dataset import update_previous_dict
 
 from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState, BuildStarState
-
+from craftext.scenarios.constants import Scenarios
 def create_target_state(block_type:int, size:int, radius:int, cross_type:int):
     target_achievements = BuildStarState(block_type=block_type, size=size, radius=radius, cross_type=cross_type)
     return TargetState(building_star=target_achievements)
@@ -20,7 +20,7 @@ class CrossType:
 easy = {
     "INSTRUCTION_PLANT_5": {
         "instruction": "Form a cross with Plant elements, each side should be 5 units long and in diagonal shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Use Plant elements to construct a diagonal cross with each side consisting of 5 units.",
             "Make a cross that is diagonally oriented using Plant items, ensuring each arm of the cross is 5 units in length.",
@@ -33,7 +33,7 @@ easy = {
     },
     "INSTRUCTION_STONE_5": {
         "instruction": "Create a cross of stones with arms of length 5 in any direction.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Form a cross using rocks, ensuring each arm extends 5 units long, and you can orient it in any way.",
             "Configure a collection of pebbles into a cruciform shape, with the length of each limb equally measuring 5 units; the alignment of the cross is up to you.",
@@ -46,7 +46,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_3": {
         "instruction": "Make a cross shape using plants with a side length of 3 units.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a plant-based cross with each side being 3 units long.",
             "Construct a cross figure using flora with each arm spanning 3 units",
@@ -59,7 +59,7 @@ easy = {
     },
     "INSTRUCTION_STONE_5_DIAGONAL": {
         "instruction": "Create a cross of stones with side size equal to 5 arranged in a diagonal pattern.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Construct a stone cross where each side length is 5 and in diagonal formation.",
             "I would like you to form a cross using rocks with five units on each side in a diagonal orientation.",
@@ -72,7 +72,7 @@ easy = {
     },
     "INSTRUCTION_STONE_7": {
         "instruction": "Construct a cross of stone of side size 7 and with a diagonal shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a diagonal cross using rock, with each arm being seven units long.",
             "Use pebbles to form a cross diagonally, ensuring each side measures seven units.",
@@ -85,7 +85,7 @@ easy = {
     },
     "INSTRUCTION_STONE_3": {
         "instruction": "Create a direct cross made of stone with each side measuring 3 blocks.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Craft a straightforward cross shape out of rock with each arm being 3 blocks long.",
             "Please form a rock cross with each of its sides being three units long in a direct shape.",
@@ -98,7 +98,7 @@ easy = {
     },
     "INSTRUCTION_FIRE_TREE_5": {
         "instruction": "Form a cross of torchlights each side having 5 units and in combined form.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Build a blended cross using torches that is five units long on each side.",
             "Use your luminary torches to construct a cross where each side measures five units and the shape is amalgamated.",
@@ -111,7 +111,7 @@ easy = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_3": {
         "instruction": "Make sure you have an enchantment table fire arranged in the form of a cross with a size of 3.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Construct a cross using the fire enchantment table, it should have a length of three.",
             "Place the enchantment table fire units in a direct-shape cross configuration with a size of three.",
@@ -124,7 +124,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_7_COMBINED": {
         "instruction": "Make a cross of plant blocks that is 7 blocks on each side and combined shape around you.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a cross shape using the plant blocks with each arm having 7 blocks in a combined formation.",
             "Use plant blocks to form a combined cross shape, with each side made up of 7 blocks.",
@@ -137,7 +137,7 @@ easy = {
     },
     "INSTRUCTION_STONE_3_DIAGONAL": {
         "instruction": "Form a cross made of stone with a side size of 3 in a diagonal shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Build a stone cross that has 3 units on each side and is arranged diagonally.",
             "Create a cross using stones, ensure it has 3 blocks on each side and is designed diagonally.",
@@ -150,7 +150,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_5": {
         "instruction": "Arrange the blocks in a cross form of furnaces with a size of 5 blocks in diagonal way in the game",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "I need you to form a cross using furnace blocks, the cross should be diagonal and be made of 5 blocks.",
             "Shape a diagonal cross using 5 blocks, and all blocks should be furnace blocks.",
@@ -163,7 +163,7 @@ easy = {
     },
     "INSTRUCTION_FURNACE_3": {
         "instruction": "Form a cross with a furnace having a side size of three and in a direct shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a three-sided direct shape cross using the furnace.",
             "With the help of a furnace, could you make a direct cross that has three units on each side?",
@@ -176,7 +176,7 @@ easy = {
     },
     "INSTRUCTION_PLANT_7_DIRECT": {
         "instruction": "Make a cross out of plants with a side length of 7",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Form a plant cross of seven units on every side.",
             "Construct a cross using plants with each arm measuring seven units long.",
@@ -192,7 +192,7 @@ easy = {
 medium = {
     "INSTRUCTION_PLANT3": {
         "instruction": "Can you verify if there is a cross made up of plants with a side length of 3 and forms a diagonal shape?",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Confirm if you can find a plant cross of side length 3 arranged diagonally",
             "Do see a diagonal cross structure made up of flora, each side having 3 units?",
@@ -205,7 +205,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE5": {
         "instruction": "Arrange a cross of Enchantment Table Ice blocks with a side size of 5 in a combined shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "In a combined layout, fashion a cross with Enchantment Table Ice blocks, each side being five units long",
             "Create a combined cross from Enchantment Table Ice cubes with all sides measuring five units",
@@ -218,7 +218,7 @@ medium = {
     },
     "INSTRUCTION_STONE5_1": {
         "instruction": "Form a cross with the stone, where the side is of size five and the total shape itself stands combined.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Can you devise a cross constructed of rock, where each side has five units and the complete sketch amalgamates?",
             "Could you fashion a cross with a pebble ensuring that every side has a total of five units and the general design is comprehensive?",
@@ -231,7 +231,7 @@ medium = {
     },
     "INSTRUCTION_CRAFTING_TABLE3": {
         "instruction": "Form a cross of crafting tables, each side should be 3 blocks long and it should be directly shaped",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Make a straight cross using crafting tables, each arm should be 3 blocks long",
             "Create a cross shape directly with crafting benches, each one containing 3 blocks",
@@ -244,7 +244,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE3_1": {
         "instruction": "Make a cross of furnace blocks, each side should contain 3 blocks.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a cross-structure using forge-like blocks, with each stem having a length of 3 units.",
             "Construct a cross form, where each side has 3 units, using blocks of furnace.",
@@ -257,7 +257,7 @@ medium = {
     },
     "INSTRUCTION_STONE5_2": {
         "instruction": "Form a cross shape with rocks, each side should have a length of 5",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a diagonal cross using stones, each arm of the cross should have 5 units length",
             "Shape an arrangement in the form of a cross made up of boulders, with every side being 5 units long",
@@ -270,7 +270,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE5": {
         "instruction": "Create a cross composed of Fire Enchantment Tables with a side length of 5.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Build a cross shape using Fire Enchant Spruce Boards, and ensure each arm of the cross is 5 units in length.",
             "Start crafting a Fire Magic Desk in a cross pattern where each branch of the cross measures 5 units long.",
@@ -283,7 +283,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE7": {
         "instruction": "Create a cross structure on the map using the Enchantment of Fire table, with each side containing 7 units.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Make a cross pattern using fire enchantment tables, with each arm consisting of seven units.",
             "I need you to form a cross with Fire Enchanting Tables, each arm should contain a total of seven pieces.",
@@ -296,7 +296,7 @@ medium = {
     },
     "INSTRUCTION_TORCH7": {
         "instruction": "Form a combined cross shape with a torch, sides should be 7 units long.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Make a torch pattern in the shape of a 7 unit per side combined cross.",
             "Create an aggregate cross pattern using torch, each side should be seven units.",
@@ -309,7 +309,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE7": {
         "instruction": "Create a cross design using enchanted ice tables. The cross should have 7 blocks on each limb and it should be a combined shape within a radius of 5 blocks from my position",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Fashion a combined shape cross with enchantment ice tables, each arm should have seven blocks and it should be within a five block distance of me",
             "I want you to arrange seven enchanted frost workbenches in a cross formation around me, five blocks as the furthest distance within the radius",
@@ -322,7 +322,7 @@ medium = {
     },
     "INSTRUCTION_FIRE_GRASS3": {
         "instruction": "Form a cross with fire grass, that is 3 blocks in size.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Make a cross shape with fire grass of a total of 3 units.",
             "Create a flame grass cross 3 blocks big.",
@@ -334,7 +334,7 @@ medium = {
     },
     "INSTRUCTION_PLANT3_2": {
         "instruction": "Construct a cross out of vegetation with a side size of 3 in a diagonal pattern.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Create a cross shape from plants, having each of its side measure 3 units, arranged diagonally.",
             "Assemble a diagonal plant cross whose sides are 3 blocks long.",
@@ -347,7 +347,7 @@ medium = {
     },
     "INSTRUCTION_STONE7": {
         "instruction": "Create a direct cross made of stone blocks, each side should have a length of seven.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Build a cross of rock, make sure each side has a total of seven units.",
             "Can you form a seven units long cross with boulders directly?",
@@ -360,7 +360,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE5": {
         "instruction": "Make a combined cross pattern of 5x5 blocks using a furnace",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Using furnaces, assemble a merged cross configuration that spans five blocks on each side.",
             "Create a 5x5 cruciform pattern using the furnace object.",
@@ -373,7 +373,7 @@ medium = {
     },
     "INSTRUCTION_PLANT7": {
         "instruction": "Create a cross of plant blocks with a side size of 7 in the given region.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Arrange some plants in a cross pattern, making sure each side is 7 units long.",
             "I want you to construct a cross using vegetation, where each arm extends 7 units.",
@@ -386,7 +386,7 @@ medium = {
     },
     "INSTRUCTION_FURNACE3": {
         "instruction": "Create a cross shape using the furnace, the arms of the cross should have a length of 3 blocks.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Construct a cross figure using furnace blocks; each arm should be 3 blocks long.",
             "I need you to make a cross using furnaces, each arm extending three blocks.",
@@ -399,7 +399,7 @@ medium = {
     },
     "INSTRUCTION_STONE3": {
         "instruction": "Create a cross made of stone blocks with a side size of three and in direct shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Construct a cross using stones, each side should be three blocks long in a straight line.",
             "I need you to form a cross using rocks, with each of the four sides measuring three units in length, placed upright.",
@@ -412,7 +412,7 @@ medium = {
     },
     "INSTRUCTION_PLANT3_3": {
         "instruction": "Form a cross with the plant having each side of size 3 and it should be in a direct shape.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Construct a cross using plant-based materials. Make sure each side of the cross is 3 units and it's directly positioned.",
             "Using the plant, create a cross with each side measuring 3 units and ensure it maintains a direct formation.",
@@ -425,7 +425,7 @@ medium = {
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE3": {
         "instruction": "Create a direct cross of enchantment fire tables with a side length of 3.",
-        "scenario_checker": 5,
+        "scenario_checker": Scenarios.BUILD_STAR,
         "instruction_paraphrases": [
             "Form a cross with enchantment fire workbenches, each arm should have a length of 3.",
             "Build a symmetrical cross with a side size of 3 using enchantment fire tables.",

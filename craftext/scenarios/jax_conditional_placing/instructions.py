@@ -1,7 +1,7 @@
 from craftext.checkers_jax.conditional import conditional_placing
 from craftext.scenarios.constants import InventoryItems, BlockType, MediumInventoryItems
 from craftext.checkers_jax.target_state import TargetState, ConditionalPlacingState
-
+from craftext.scenarios.constants import Scenarios
 # one = {
 #     'simple_conditional_placing_001': {
 #         'instruction': "Place a furnace on the ground after collecting 3 pieces of wood",
@@ -34,7 +34,7 @@ def create_target_state(object_inventory_enum, object_to_place, count_to_collect
 easy = {
     "INSTRUCTION_PLACE_IRON_FURNACE_4_3": {
         "instruction": "Collect 4 iron and place 3 furnace",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather four pieces of iron and set down three furnaces",
             "Acquire and hold onto four irons, then create three heating places.",
@@ -47,7 +47,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_DIAMOND_STONE_3_1": {
         "instruction": "Collect three diamonds and place one rock on the map.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Procure a trio of diamonds and subsequently install a single stone on the terrain.",
             "Accumulate enough diamonds to number three and deposit a lone boulder on the landscape.",
@@ -60,7 +60,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_WOOD_CRAFTING_TABLE_3_1": {
         "instruction": "Collect 3 pieces of wood and then place 1 crafting table.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather three logs and place a single workbench.",
             "Procure a trio of timber and set down one builder's desk.",
@@ -73,7 +73,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_STONE_CRAFTING_TABLE_2_5": {
         "instruction": "Collect 2 stones and place 5 crafting tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Acquire two rocks and set up five workstations.",
             "Obtain a duo of pebbles and establish quintuple functioning desks.",
@@ -86,7 +86,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_COAL_FURNACE_4_3": {
         "instruction": "Pick up 4 pieces of coal and place down 3 furnaces",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Grab 4 coal blocks and deploy 3 heating furnaces",
             "Collect 4 amounts of coal and put down 3 of those furnaces",
@@ -99,7 +99,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_IRON_STONE_4_3": {
         "instruction": "Gather four pieces of iron and place three stones in your environment",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Please collect four iron objects and then put three stones in place",
             "Secure four units of iron and lay down three units of stone",
@@ -112,7 +112,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_STONE_STONE_1_4": {
         "instruction": "Collect one piece of stone and then place four of them.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather a single rock and then position four rocks.",
             "Scavenge for a single piece of stone, afterwards, lay four of them.",
@@ -125,7 +125,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_STONE_FURNACE_1_4": {
         "instruction": "Collect one rock and place four furnaces.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Get a hold of one stone and put down four ovens.",
             "Accumulate a single piece of rock and establish four furnaces.",
@@ -137,7 +137,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_WOOD_PLANT_5_1": {
         "instruction": "Collect 5 pieces of wood and place 1 plant",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather 5 logs and put down 1 vegetation",
             "You need to collect five wooden logs and then place a single shrub",
@@ -150,7 +150,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_COAL_FURNACE_2_1": {
         "instruction": "Collect 2 pieces of coal and place 1 furnace.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Find and pick up 2 coals then put down 1 furnace.",
             "Acquire a couple of coal then put a furnace in place.",
@@ -163,7 +163,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_DIAMOND_STONE_5_1": {
         "instruction": "Collect 5 diamonds and place 1 stone",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather a group of five diamonds and position a stone",
             "Amass five sparklers and set one rock",
@@ -176,7 +176,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_COAL_PLANT_4_4": {
         "instruction": "Collect 4 pieces of coal and place 4 plants down.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather 4 units of coal and deploy 4 shrubs.",
             "Acquire four lumps of coal and carefully position four flora.",
@@ -189,7 +189,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_COAL_CRAFTING_TABLE_3_3": {
         "instruction": "Gather 3 pieces of coal and set up 3 crafting tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Collect 3 units of coal and place 3 workbenches.",
             "Pick up a trio of coals and establish 3 craft stations.",
@@ -202,7 +202,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_DIAMOND_PLANT_5_3": {
         "instruction": "Collect five diamonds and plant three saplings.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather five pieces of diamond and put three saplings into the ground.",
             "Go and find five diamonds, then ensure you plant three seedlings.",
@@ -215,7 +215,7 @@ easy = {
     },
     "INSTRUCTION_PLACE_SAPLING_PLANT_3_1": {
         "instruction": "Collect 3 saplings and place 1 plant.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Pick up three small trees and then place a plant.",
             "Gather three saplings and place one vegetation.",
@@ -232,7 +232,7 @@ easy = {
 medium = {
     "INSTRUCTION_PLACE_SAPPHIRE_FURNACE_3_5": {
         "instruction": "[MEDIUM] COLLECT 3 SAPPHIRE AND PLACE 5 FURNACE",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "[MEDIUM] Gather 3 gems and setup 5 heaters",
             "[MEDIUM] Need you to pick up 3 jewels and put down 5 ovens",
@@ -245,7 +245,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_IRON_ENCHANTMENT_TABLE_ICE_5_1": {
         "instruction": "Collect 5 iron ores and place down 1 Ice Enchantment Table.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather five pieces of iron, then situate a Frost Conjuration Workbench.",
             "Pick up five iron minerals and install one Freezing Spell Desk.",
@@ -258,7 +258,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_RUBY_ENCHANTMENT_TABLE_ICE_1_2": {
         "instruction": "Collect one ruby and place two ice enchantment tables",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather one of rubies and put down two ice mage's desks",
             "Acquire a single precious stone and establish a pair of frost wizard's workbenches",
@@ -271,7 +271,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_SAPLING_TORCHES_5_5": {
         "instruction": "Collect five saplings and place five torches.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather five saplings and set up five torches.",
             "You need to obtain a quantity of five saplings and establish five torches.",
@@ -284,7 +284,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_RUBY_STONE_5_2": {
         "instruction": "Collect 5 rubies from the inventory and then place 2 stones on the map.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "From your inventory, gather 5 gems and subsequently position 2 rocks on the map.",
             "Secure 5 red stones from your collection and then arrange 2 pebbles on the terrain.",
@@ -297,7 +297,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_DIAMOND_STONE_3_1": {
         "instruction": "Collect three diamonds and place one stone block.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather a total of three diamond gems and position a single block of stone.",
             "Accumulate three glittering diamonds and set one solid stone into place.",
@@ -310,7 +310,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_STONE_ENCHANTMENT_TABLE_ICE_2_4": {
         "instruction": "Collect two stones and place four Ice Tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Pick up two chunks of rock and then set down four Enchantment Icy Workbenches.",
             "Secure two pieces of stone and then position four Magic Icy Tables.",
@@ -323,7 +323,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_WOOD_ENCHANTMENT_TABLE_ICE_4_2": {
         "instruction": "Collect 4 pieces of wood and then place 2 ice enchantment tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather four logs and subsequently set down two tables of ice enchantment.",
             "Pick up quartet of wood logs for the purpose to erect duo of ice-enchanted desks afterwards.",
@@ -336,7 +336,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_SAPPHIRE_FURNACE_5_4": {
         "instruction": "Collect 5 sapphires and place 4 furnaces.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Please gather 5 of sapphires and then place down 4 furnaces.",
             "I would like you to acquire 5 sapphires and then, subsequently, install 4 heating systems.",
@@ -349,7 +349,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_RUBY_PLANT_2_1": {
         "instruction": "For your task, gather two rubies and plant a seed.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "I need you to gather a pair of rubies and sow a seed.",
             "Could you please collect a couple of rubies and place a sprout?",
@@ -362,7 +362,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_COAL_TORCHES_4_3": {
         "instruction": "Collect four coals and then place three torches.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "The first task for you is to gather four coals, and afterward, put down three lights.",
             "Begin by picking up four pieces of coal, and once you've done that, place three torches.",
@@ -375,7 +375,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_WOOD_FURNACE_3_5": {
         "instruction": "Collect 3 wood and place 5 furnaces.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather a total of three logs at your disposal and litter the field with five of our best burners.",
             "Amass three portions of timber then establish five heating systems.",
@@ -388,7 +388,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_DIAMOND_CRAFTING_TABLE_1_2": {
         "instruction": "Collect 1 diamond and place down 2 crafting tables",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather 1 gem and set up 2 workbenches",
             "Procure a single gemstone and install a pair of construction platforms",
@@ -401,7 +401,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_COAL_STONE_2_1": {
         "instruction": "Collect 2 pieces of coal from the inventory and place 1 stone on the map.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Fetch two coal items from your storage and put a piece of rock on the map.",
             "Get a couple of coal items from your inventory and position a single stone in the game map.",
@@ -414,7 +414,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_SAPPHIRE_ENCHANTMENT_TABLE_FIRE_4_2": {
         "instruction": "Collect 4 sapphires and place 2 enchantment table fire",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather four sapphires and put up two fire enchantment tables",
             "Retrieve four pieces of sapphire and establish two tables with fire enchantments",
@@ -427,7 +427,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_DIAMOND_ENCHANTMENT_TABLE_FIRE_4_2": {
         "instruction": "Collect 4 diamonds and place 2 fire enchantment tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather 4 gems and set up 2 fire imbuing stations.",
             "Amass a total of four diamonds and install a couple of enchantment tables of fire.",
@@ -440,7 +440,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_SAPLING_PLANT_3_5": {
         "instruction": "Collect 3 saplings and place 5 plants.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "You need to gather three saplings and then put down five plants.",
             "Make sure to amass a total of three small trees and subsequently situate a handful of five green plants.",
@@ -453,7 +453,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_COAL_ENCHANTMENT_TABLE_FIRE_3_3": {
         "instruction": "Collect 3 coal and place 3 fire enchantment tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Obtain three pieces of coal and set down three fire enchanting tables.",
             "Harvest trio of coals and establish a trio of enchantment tables of fire.",
@@ -466,7 +466,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_COAL_FURNACE_2_1": {
         "instruction": "Collect 2 coal pieces and place 1 furnace",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Prepare 2 units of coal and establish 1 hearth",
             "Retreive two chunks of coal and put down a single furnace",
@@ -479,7 +479,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_RUBY_ENCHANTMENT_TABLE_FIRE_3_4": {
         "instruction": "Collect 3 rubies and place 4 enchantment fire tables.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Gather 3 set of rubies and place four fire enchantment stations.",
             "Accumulate three red gems and install four enchantment desks with fire enchantment.",
@@ -492,7 +492,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_COAL_FURNACE_1_2": {
         "instruction": "Gather 1 Coal and then place 2 furnaces.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Pick 1 lump of coal and then build 2 heating furnaces.",
             "Procure 1 piece of coal and afterwards lay down a pair of furnaces.",
@@ -505,7 +505,7 @@ medium = {
     },
     "INSTRUCTION_PLACE_SAPLING_ENCHANTMENT_TABLE_FIRE_1_1": {
         "instruction": "Collect a sapling and place an enchantment table of fire.",
-        "scenario_checker": 1,
+        "scenario_checker": Scenarios.CONDITIONAL_PLACING,
         "instruction_paraphrases": [
             "Find a sapling and then position a fire enchantment table.",
             "Firstly, acquire a sapling and afterwards, establish a table for fire enchantment.",

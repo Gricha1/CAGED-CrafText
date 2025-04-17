@@ -27,7 +27,24 @@ medium = {\
         **conditional_place_instructions.medium
         #    **conditional_achievements.medium
           }
-
+easy_without_building = {
+        # **build_line_instructions.easy, 
+        # **build_squere_instructions.easy,
+        **localization_place_instructions.easy,
+        **conditional_achievements.easy,
+        # **build_star_instructions.easy,
+        # **time_constrained_placment.easy,
+        **conditional_place_instructions.easy
+        }# **conditional_place_instructions.easy}
+easy_only_building = {
+        **build_line_instructions.easy, 
+        **build_squere_instructions.easy,
+        # **localization_place_instructions.easy,
+        # **conditional_achievements.easy,
+        **build_star_instructions.easy
+        # **time_constrained_placment.easy,
+        # **conditional_place_instructions.easy
+}
 
 # medium_ = {
 #     'make_line_2': {

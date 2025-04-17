@@ -25,6 +25,7 @@ from craftext.checkers_jax.conditional import conditional_placing
 from craftext.checkers_jax.relevant import place_object_relevant_to
 
 from jax import tree_util
+from collections import UserList
 
 @struct.dataclass
 class TextEnvState:
@@ -63,6 +64,9 @@ def list_to_array(lst: List[T]) -> T:
             converted_data[k] = list_to_array(values)  # Рекурсивный вызов для вложенных датаклассов
 
     return cls(**converted_data)
+
+# @dataclass
+# class checkers:
 
 
 class InstructionWrapper(Wrapper):
@@ -142,7 +146,7 @@ class InstructionWrapper(Wrapper):
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
-        results = jax.lax.switch(5,
+        results = jax.lax.switch(env_state.checker_id, # сразу правильное проикидывать. 
                                 (
                                     jax.vmap(conditional_achivments, in_axes=(None, 0)),
                                     jax.vmap(conditional_placing, in_axes=(None, 0)),
@@ -154,6 +158,9 @@ class InstructionWrapper(Wrapper):
                                 ),
                                 game_data_vector, self.batched_scenario_args
         )
+        
+        # проверить строительство все таки предметно
+        # делаем конфиг где нет строительства, и только строительство
         #                                 )
         #         @struct.dataclass
         # class Scenarios:
@@ -203,6 +210,7 @@ class InstructionWrapper(Wrapper):
         
         # Update step information in info dictionary
         info.update({"SR": state.total_success_rate, "steps": self.steps})
+        info.update({"Cheker_id": env_state.checker_id})
         self.steps += 1
         return obs, state, reward, done, info
  
