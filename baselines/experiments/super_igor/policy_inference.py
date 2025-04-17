@@ -45,7 +45,8 @@ from baselines.experiments.super_igor.persubtask_update import initialize_reward
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
-from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM, ActorCriticConvWithFiLMonehot
+#from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM, ActorCriticConvWithFiLMonehot
+from baselines.models.actor_critic_with_text import create_actor_critic
 
 # Imports from other local packages
 from craftax.craftax_env import make_craftax_env_from_name
@@ -198,6 +199,7 @@ class Experiment:
 
         config = {key: value["value"] if isinstance(value, dict) and "value" in value else value
                   for key, value in raw_config.items()}
+        
         planner_config = extract_planer_config(config)
         config['PLANER_CONFIG'] = planner_config
         config["NUM_ENVS"] = self.args.num_envs
@@ -208,10 +210,10 @@ class Experiment:
         config['SAVE_DATASET_PATH'] = self.args.save_dataset_path
         config['NUM_RETURN_SEQUENCES'] = self.args.num_return_sequences
         config['PLAN_WITH_LLM'] = self.args.plan_with_llm
-        config['AUGMENT'] = False #self.args.augment
+        config['AUGMENT'] = bool(self.args.augment)
         config['CUSTOM_COMMAND'] = self.args.custom_command
-        # print("Planning?: ",  config['PLAN_WITH_LLM'])
-        # exit()
+        print("Planning?: ",  config['PLAN_WITH_LLM'])
+       # exit()
         return config
 
     def _initialize_checkpoint_manager(self):
@@ -227,16 +229,26 @@ class Experiment:
 
         env = make_craftax_env_from_name(env_name, False)
         actions_count = 18 if "Classic" in env_name else 43
-        network_class = ActorCriticConvWithFiLMonehot
-        network = network_class(actions_count, self.config["LAYER_SIZE"])
+       # network_class = ActorCriticConvWithFiLMonehot
+       # network = create_actor_critic(actions_count, self.config["LAYER_SIZE"])
+        network = create_actor_critic(ac_type=self.config["AC_TYPE"],
+                                     vision_type=self.config["AC_VISION_TYPE"],
+                                     text_encoder_type=self.config["AC_TEXT_ENCODER_TYPE"],
+                                     text_mlp_sizes=self.config['AC_TEXT_MLP_SIZES'],
+                                     nonlinearity=self.config['AC_NONLINEARITY'],
+                                     vision_mlp_sizes=self.config['AC_VISION_MLP_SIZES'],
+                                     layer_width=self.config["LAYER_SIZE"],
+                                     action_dim=actions_count)
 
         #EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=self.config['NUM_RETURN_SEQUENCES'])
         
 
         if not self.config['PLAN_WITH_LLM']:
             print("Use previos plans")
+          #  exit()
             super_dataset = SuperDataset.load_from_json(self.config["DATASET_PATH"])
             self.config['PLANER_CONFIG']['super_dataset'] = super_dataset
+            self.config['PLANER_CONFIG']['augment'] = self.config['AUGMENT']
             self.config['PLANER_CONFIG']['generation_config']['num_paraphrases'] = self.config['NUM_RETURN_SEQUENCES']
             print(self.config['PLANER_CONFIG'])
           #  exit()
@@ -267,7 +279,7 @@ class Experiment:
         
         env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
                                   encode_model_class=EncodeModel,
-                                  encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
+                                  encode_form=EncodeForm.EMBEDDING)
 
         if self.config['CUSTOM_COMMAND']:
            env = CustomInstructionWrapper(env, instruction=self.config['CUSTOM_COMMAND'].replace("\\n", "\n") )
@@ -408,7 +420,9 @@ class Experiment:
 
         prev_goals = env_state.env_state.idx
         prev_subgoals = env_state.env_state.step_idx
+        old_achievments_done = env_state.env_state.env_state.achievements.astype(jnp.float32)
         
+        done_in_step = dict()
         while steps < remain_steps:
             pi, _ = self.network.apply(params, obs, env_state.env_state.instruction)
             agent_rng, _rng_ = jax.random.split(agent_rng)
@@ -416,24 +430,36 @@ class Experiment:
             
             if action is not None:
                 obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
+                
+                # --- calculate per-sub-goal reward
                 binary_reward = (reward > 0).astype(jnp.float32)
                 achievments_done = env_state.env_state.env_state.achievements.astype(jnp.float32)
-                
-                #calculate per-sub-goal reward
                 curr_subgoals = env_state.env_state.step_idx
                 curr_goals =  env_state.env_state.idx
+                goals_changed = (curr_goals==prev_goals).astype(jnp.float32)
                 mask = get_update_mask(prev_subgoals, curr_subgoals, prev_goals, num_goals, max_subgoals)
                 reward_sum = update_reward_sum_matrix_simple(reward_sum, binary_reward, prev_goals, curr_subgoals)
                 per_achivment_sum = update_reward_sum_matrix_vectorized(reward_sum_matrix=per_achivment_sum,
-                                        rewards=achievments_done,
+                                        rewards=achievments_done - (old_achievments_done*goals_changed[:, None]),
                                         curr_goals=prev_goals,
                                         curr_subgoals=curr_subgoals)
                 prev_goals = curr_goals
                 prev_subgoals = curr_subgoals
                 episode_count = episode_count + mask.astype(jnp.int32)
+                old_achievments_done = achievments_done
+                # --- 
                 
                 steps += 1
                 progress_bar.n = np.sum(done_count)
+                
+                # If it is hard to finish episodes
+                if np.sum(done_count) not in done_in_step:
+                    done_in_step = {np.sum(done_count):0}
+                else:
+                    done_in_step[np.sum(done_count)] += 1
+                if done_in_step[np.sum(done_count)] > 5:
+                    break
+                
                 progress_bar.refresh()
 
                 if render_obs:
@@ -541,7 +567,7 @@ class Experiment:
         self.super_dataset.batch_update(self.env.scenario_handler.scenario_data.instructions_list, total_score)
         self.super_dataset.save_to_json(self.config["DATASET_PATH"])
         directory = os.path.dirname(self.config["DATASET_PATH"])
-        per_subtask_score = reward_sum / episode_count
+      #  per_subtask_score = reward_sum / episode_count
         self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.instructions_list, 
                                              total_score,
                                              episode_count,
@@ -569,7 +595,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--save_dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--num_return_sequences", type=int, default=5)
-  #  parser.add_argument("--augment", type=int, default=0)
+    parser.add_argument("--augment", type=int, default=0)
     parser.add_argument("--custom_command", type=str, default=None)
     
     parser.add_argument("--planer_type", type=str, default="llm")
@@ -582,14 +608,26 @@ if __name__ == "__main__":
     parser.add_argument("--beams_count", type=int, default=15)
     parser.add_argument("--max_new_tokens", type=int, default=128)
     parser.add_argument("--prompt_template", type=int, default=2)
-    parser.add_argument("--augment", type=bool, default=False)
+  #  parser.add_argument("--augment", type=bool, default=False)
     
+        #Observation Encoder config
+    parser.add_argument("--ac_type", type=str, default="ac_model")
+    parser.add_argument("--ac_vision_type", type=str, default="resnet_impala")
+    parser.add_argument("--ac_text_encoder_type", type=str, default="mlp")
+    parser.add_argument("--ac_text_mlp_sizes", type=int, nargs="+", default=[128, 128])
+    parser.add_argument("--ac_nonlinearity", type=str, default="relu")
+    parser.add_argument("--ac_vision_mlp_sizes",type=int, nargs="+", default=[256,])
 
-  
+    
     args, rest_args = parser.parse_known_args(sys.argv[1:])
+    
+    
+    
     args.plan_with_llm = False if args.plan_with_llm=="False" else True
-    args.augment = False #False if args.augment==0 else True
-    # print(args.plan_with_llm)
+
+  #  args.augment = False #False if args.augment==0 else True
+    
+    print(args.plan_with_llm)
     # exit()
     if args.path is None:
         args.path = f"./wandb/{args.experiment_name}/files/"
