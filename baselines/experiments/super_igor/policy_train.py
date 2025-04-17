@@ -26,11 +26,8 @@ from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIIns
 
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
-from baselines.models.actor_critic import (
-    ActorCritic,
-    ActorCriticConv,
-    ActorCriticConvWithFiLMonehot,
-)
+from baselines.models.actor_critic_with_text import create_actor_critic
+
 from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
 from baselines.wrappers import (
     LogWrapper,
@@ -75,7 +72,7 @@ def make_train(config, network_params):
     env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
-                            encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
+                            encode_form=EncodeForm.EMBEDDING)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -97,16 +94,14 @@ def make_train(config, network_params):
 
     def train(rng):
         # INIT NETWORK
-        if "Symbolic" in config["ENV_NAME"]:
-            network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
-        elif "Text" in config["ENV_NAME"]:
-            network = ActorCriticConvWithFiLMonehot(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
-        else:
-            network = ActorCriticConv(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
+        network = create_actor_critic(ac_type=config["AC_TYPE"],
+                                     vision_type=config["AC_VISION_TYPE"],
+                                     text_encoder_type=config["AC_TEXT_ENCODER_TYPE"],
+                                     text_mlp_sizes=config['AC_TEXT_MLP_SIZES'],
+                                     nonlinearity=config['AC_NONLINEARITY'],
+                                     vision_mlp_sizes=config['AC_VISION_MLP_SIZES'],
+                                     layer_width=config["LAYER_SIZE"],
+                                     action_dim=env.action_space(env_params).n)
 
         rng, _rng = jax.random.split(rng)
         init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
@@ -134,46 +129,6 @@ def make_train(config, network_params):
                 params=network_params,
                 tx=tx,
             )
-
-        
-
-        # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
-        # if config.get("PATH_TO_CHECKPOINT"):
-        #     print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
-        #     # Prepare checkpoint manager
-        #     orbax_checkpointer = PyTreeCheckpointer()
-        #     checkpoint_manager = CheckpointManager(
-        #         config["PATH_TO_CHECKPOINT"],
-        #         orbax_checkpointer,
-        #         CheckpointManagerOptions(max_to_keep=1, create=False),
-        #     )
-        #     # Restore parameters from checkpoint
-        #     # train_state = TrainState.create(
-        #     #     apply_fn=network.apply,
-        #     #     params=network_params,
-        #     #     tx=tx,  # Optimizer will be set later
-        #     # )
-        #    # train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
-        #     with jax.disable_jit():
-        #         train_state_dict = checkpoint_manager.restore(int(config["TOTAL_TIMESTEPS"]))
-        #     network_params = train_state['params']  #train_state.params
-        #     print("Weights successfully loaded from checkpoint.")
-        # else:
-        #     print("No checkpoint specified, using default initialization.")
-
-        # Set up the optimizer
-        # if config["ANNEAL_LR"]:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(learning_rate=linear_schedule, eps=1e-5),
-        #     )
-        # else:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(config["LR"], eps=1e-5),
-            # )
-        # MAKE TRAIN STATE
-        
 
         # Exploration state
         ex_state = {
@@ -881,7 +836,15 @@ if __name__ == "__main__":
     parser.add_argument("--prompt_template", type=int, default=2)
     parser.add_argument("--augment", type=bool, default=False)
     
-    
+    #Observation Encoder config
+    parser.add_argument("--ac_type", type=str, default="ac_model")
+    parser.add_argument("--ac_vision_type", type=str, default="resnet_impala")
+    parser.add_argument("--ac_text_encoder_type", type=str, default="mlp")
+    parser.add_argument("--ac_text_mlp_sizes", type=int, nargs="+", default=[128, 128])
+    parser.add_argument("--ac_nonlinearity", type=str, default="relu")
+    parser.add_argument("--ac_vision_mlp_sizes",type=int, nargs="+", default=[256,])
+
+
     parser.add_argument(
         "--num_envs",
         type=int,
