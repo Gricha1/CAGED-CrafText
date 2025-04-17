@@ -43,17 +43,47 @@ class FunctionPlanExtractor():
     def clean_subtask(text: str) -> str:
         text_no_quotes = re.sub(r'[\'"“”‘’«»]', '', text)
         cleaned = ' '.join(text_no_quotes.split())
+        cleaned = cleaned.replace("),", ")")
         return cleaned
+    
+    @staticmethod
+    def check_subtask(text: str) -> bool:
+        cleaned = text
+        count_arguments = len(cleaned.split(","))
+        count_arguments_eq = cleaned.count("=")
+
+        count_squares_1 = cleaned.count("(")
+        count_squares_2 = cleaned.count(")")
+
+        first_check = count_arguments == count_arguments_eq
+        second_check = count_squares_1 == count_squares_2
+        third_check = count_squares_2 > 0 and count_arguments_eq > 0
+        four_check = cleaned.endswith(")")
+
+        return first_check and second_check and third_check and four_check
+
 
     @staticmethod
     def extract(model_answer):
         try:
-            print(model_answer)
             list_starts = model_answer.split("[",)[2]
             list_end = list_starts.split("]",)[0]
+            if list_end.count("\n")<2:
+                list_end = list_end.replace("\",", "\",\n")
+                list_end = list_end.replace("\n \n,", "\n")
+                list_end = list_end.replace("\n\n,", "\n")
             subtasks = list_end.split("\n")
             subtasks_clear = [FunctionPlanExtractor.clean_subtask(s) for s in subtasks]
-            return "\n".join(subtasks_clear)
+            remove_bad_subtasks = [s for s in subtasks_clear if FunctionPlanExtractor.check_subtask(s)]
+            
+            if len(remove_bad_subtasks)==0:
+                remove_bad_subtasks = ["[MASK]"]
+            print(remove_bad_subtasks)
+           # print("cleared subtasks: ")
+           # print(remove_bad_subtasks)
+           # print("- - - - - - - - - - ")
+            upd_plan = "\n".join(remove_bad_subtasks)
+            return upd_plan
         except Exception as e:
             raise PlanFormatError(f"Incorrect plan format: {e}")
     @staticmethod
@@ -88,14 +118,36 @@ BASE_PROMPT = """
 """
 
 
-
 PROMPT_WITH_FUNCTIONS = f"""
-        You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
-        You must include all the preliminary steps that it needs to complete.
+        You are controlling an agent in a 2D game set within a simplified Minecraft-like environment. 
+        The agent starts from scratch with an empty inventory and no gathered resources. 
+        Your task is to generate a step-by-step plan that enables the agent to follow a given user instruction.
 
-        Send your answer as a python list.
+        What you must do:
+        - Break down the instruction into atomic actions the agent needs to perform.
+        - Include all necessary preliminary steps, such as gathering or crafting resources.
+        - Assume the agent has nothing at the beginning — you must plan from the ground up.
+        - Output your answer as a Python list of strings.
+        - Each string must represent one atomic skill invocation, written on a separate line.
+
+        Format for each step:
+        "skill_name(arg1 = value1, arg2 = value2, ...)"
+        - skill_name: the name of the primitive skill or action the agent will execute.
+        - Inside the parentheses, list all required arguments with their names and corresponding values.
+
+        Example:
+        gather_resource(resource_type = wood)
+        make_figure(block_type=stone, figure=square, side_size=2)
+        
+        Each of the step agents will be implemented without knowledge of what it did before, so it can only rely on observation and the current step. Therefore, each step must be self-sufficient and not require knowledge of past steps.
+       
         Instruction: Make a pickaxe from wood
-        Answer: ["gather_resource(resource_type = wood, count = 2)", "create_item(table)", "gather_resource(resource_type = wood, count = 2)", "create_item(wooden pickaxe)"]
+        Answer: 
+        ["gather_resource(resource_type = wood)",
+        "gather_resource(resource_type = wood)",
+        "create_item(item_type = table)",
+        "gather_resource(resource_type = wood)",
+        "create_item(item_type = wooden pickaxe)"]
 
         Send your answer as a python list.
         Instruction: $INSTRUCTION$  
@@ -105,8 +157,29 @@ PROMPT_WITH_FUNCTIONS = f"""
 PROMPT_WITH_FUCNTIONS_HINTS = f"""
         You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
         You must include all the preliminary steps that it needs to complete.
+        
+        You are controlling an agent in a 2D game set within a simplified Minecraft-like environment. 
+        The agent starts from scratch with an empty inventory and no gathered resources. 
+        Your task is to generate a step-by-step plan that enables the agent to follow a given user instruction.
 
-        For doing this each step descrbe in format of subgoals:
+        What you must do:
+        - Break down the instruction into atomic actions the agent needs to perform.
+        - Include all necessary preliminary steps, such as gathering or crafting resources.
+        - Assume the agent has nothing at the beginning — you must plan from the ground up.
+        - Output your answer as a Python list of strings.
+        - Each string must represent one atomic skill invocation, written on a separate line.
+
+        Format for each step:
+        "skill_name(arg1 = value1, arg2 = value2, ...)"
+        - skill_name: the name of the primitive skill or action the agent will execute.
+        - Inside the parentheses, list all required arguments with their names and corresponding values.
+
+        Example:
+        gather_resource(resource_type = wood)
+        
+        Each of the step agents will be implemented without knowledge of what it did before, so it can only rely on observation and the current step. Therefore, each step must be self-sufficient and not require knowledge of past steps.
+
+        Existed skills:
         {{'gather_resource': "'resource_type'"}}, 
         {{'place_item': "'item_type'}},
         {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
@@ -115,7 +188,7 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         {{'eat': "'food_type'"}},
         {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
 
-        Possible arguments:
+        Existed arguments:
         resource_type: wood, stone, coal, diamond, iron, plant, water
         item_type: stone, table, plant, furnace
         block_name: stone, table, plant, furnace
@@ -132,15 +205,47 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         Answer: 
         ["gather_resource(resource_type = wood)",
         "gather_resource(resource_type = wood)",
-        "create_item(table)", 
+        "create_item(item_type = table)", 
         "gather_resource(resource_type = wood", 
         "gather_resource(resource_type = wood", 
-        "create_item(wooden pickaxe)"]
+        "create_item(item_type = wooden pickaxe)"]
 
         Send your answer as a python list.
         Instruction: $INSTRUCTION$  
         Answer: 
         """
+
+# PROMPT_WITH_FUCNTIONS_HINTS = f"""
+#         You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
+#         You must include all the preliminary steps that it needs to complete.
+
+#         For doing this each step descrbe in format of subgoals:
+#         {{'gather_resource': "'resource_type'", "count"}}, 
+#         {{'place_item': "'item_type'}},
+#         {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
+#         {{'create_item': "'item_type'"}},
+#         {{'defeat_enemy': "'enemy_type'"}},
+#         {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
+
+#         Possible arguments:
+#         resource_type: wood, stone, coal, diamond, iron, plant
+#         item_type: stone, table, plant, furnace
+#         block_name: stone, table, plant, furnace
+#         figure_type: line, diagonal_line, square
+#         item_type: table, wooden sword, wooden pickaxe, stone sword, stone pickaxe, iron sword, iron pickaxe
+#         enemy_type: zombie, skeleton
+#         item_type_to_place: stone, table, plant, furnace
+#         item_type_reference: stone, table, plant, furnace, water, tree, stone, coal, diamond, iron, plant
+#         direction: left, right, bottom, top
+
+#         Send your answer as a python list.
+#         Instruction: Make a smelter and collect 3 plants
+#         Answer: ["gather_resource(resource_type = wood, count = 2)", "create_item(table)", "gather_resource(resource_type = wood, count = 2)", "create_item(wooden pickaxe)"]
+        
+#         Send your answer as a python list.
+#         Instruction: $INSTRUCTION$  
+#         Answer:
+# """
 
 PROMPTS = [BASE_PROMPT, PROMPT_WITH_FUNCTIONS, PROMPT_WITH_FUCNTIONS_HINTS]
 class PromptTemplate:
