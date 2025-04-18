@@ -4,7 +4,7 @@ import jax
 from flax.struct import dataclass
 from functools import partial
 from craftext.adapters.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState as ATS
+from craftext.checkers_jax.target_state import TargetState, TimeCosntrainedPlacmentState
 # Blocks list as an example
 blocks_list = [
     "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
@@ -41,54 +41,50 @@ def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     region_masked = jnp.where(mask, region, 0)
     return region_masked
 
-@jax.jit
-def at_time_block_placed(game_data: GameData, target_state: ATS) -> jax.Array:
-    block_name = target_state.time_placement.block_type
-    radius = target_state.time_placement.radius
+def at_time_block_placed(game_data: GameData,  target_state: TimeCosntrainedPlacmentState) -> jax.Array:
     
-    if game_data is None or game_data.states is None:
-        return False
-
-    game_map = game_data.states[0].map.game_map
-    if game_map is None:
-        return False
-
-    player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return False
-
-    x, y = player_position
-    region = safe_dynamic_slice(game_map, x, y, radius, 5)
-    in_range = jnp.abs(game_data.states[0].variables.light_level - jax.lax.clamp(0, target_state.time_placement.time_state, 1)) <= 0.2
-    return in_range & (region == block_name).any()
+    block_index = target_state.block_type
+    radius = target_state.radius
+    time_state = target_state.time_state
+    return jax.lax.select(target_state.need_to_achieve, 
+                   time_place_checker(game_data, block_index, radius, time_state),
+                   jnp.array(False))
 
 
-
-@jax.jit
-def at_time_block_placed_with_mask(game_data: GameData, target_state: ATS) -> jax.Array:
-    block_name = target_state.time_placement.block_type
-    radius = target_state.time_placement.radius
+def time_place_checker(game_data: GameData, block_index, radius, time_state) -> jax.Array:
     
-    if game_data is None or game_data.states is None:
-        return False
+    x, y = game_data.states[0].variables.player_position
+    region = safe_dynamic_slice(game_data.states[0].map.game_map, x, y, radius, 5)
+    in_range = jnp.abs(game_data.states[0].variables.light_level - jax.lax.clamp(0, time_state, 1)) <= 0.2
+    return in_range & (region == block_index).any()
 
-    game_map = game_data.states[0].map.game_map
-    if game_map is None:
-        return False
 
-    player_position = game_data.states[0].variables.player_position
-    if player_position is None:
-        return False
 
-    map2 = game_data.states[0].map.game_map
-    map1 = game_data.states[1].map.game_map
-    old_values = jnp.unique(map2)
-
-    mask = ~jnp.isin(map1, old_values)
-
-    updated_map2 = jnp.where(mask, map1, map2)
+# @jax.jit
+# def at_time_block_placed_with_mask(game_data: GameData, target_state: ATS) -> jax.Array:
+#     block_name = target_state.time_placement.block_type
+#     radius = target_state.time_placement.radius
     
-    x, y = player_position
-    region = safe_dynamic_slice(updated_map2, x, y, radius, 5)
-    in_range = jnp.abs(game_data.states[0].variables.light_level - target_state.time_placement.time_state) <= 0.2
-    return in_range & (region == target_state.time_placement.block_type).any()
+#     if game_data is None or game_data.states is None:
+#         return False
+
+#     game_map = game_data.states[0].map.game_map
+#     if game_map is None:
+#         return False
+
+#     player_position = game_data.states[0].variables.player_position
+#     if player_position is None:
+#         return False
+
+#     map2 = game_data.states[0].map.game_map
+#     map1 = game_data.states[1].map.game_map
+#     old_values = jnp.unique(map2)
+
+#     mask = ~jnp.isin(map1, old_values)
+
+#     updated_map2 = jnp.where(mask, map1, map2)
+    
+#     x, y = player_position
+#     region = safe_dynamic_slice(updated_map2, x, y, radius, 5)
+#     in_range = jnp.abs(game_data.states[0].variables.light_level - target_state.time_placement.time_state) <= 0.2
+#     return in_range & (region == target_state.time_placement.block_type).any()

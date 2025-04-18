@@ -7,8 +7,8 @@ from craftext.scenarios.parce_dataset import update_previous_dict
 from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState, BuildStarState
 from craftext.scenarios.constants import Scenarios
-def create_target_state(block_type:int, size:int, radius:int, cross_type:int):
-    target_achievements = BuildStarState(block_type=block_type, size=size, radius=radius, cross_type=cross_type)
+def create_target_state(block_type:int, size:int, cross_type:int):
+    target_achievements = BuildStarState(need_to_achieve=True, block_type=block_type, size=size, radius=10, cross_type=cross_type)
     return TargetState(building_star=target_achievements)
 
 @dataclass
@@ -28,7 +28,7 @@ easy = {
             "With a Plant item, form a cross that has a side length of 5 units and is oriented diagonally.",
             "Assemble a 5-unit each side diagonal cross using various Plant components."
         ],
-        "arguments": create_target_state(block_type=BlockType.PLANT, size=5, radius=9, cross_type=CrossType.DIAGONAL),
+        "arguments": create_target_state(block_type=BlockType.PLANT, size=5,  cross_type=CrossType.DIAGONAL),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_5": {
@@ -41,7 +41,7 @@ easy = {
             "In any given direction, erect an equilateral crucifix shaped configuration from chunks of rock, each arm of which should span 5 units.",
             "Fashion a cross of stones of any orientation where each arm's length equals 5 units."
         ],
-        "arguments": create_target_state(block_type=BlockType.STONE, size=5, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.STONE, size=5,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_3": {
@@ -54,7 +54,7 @@ easy = {
             "Design a cruciform structure using plants, with each side having a length of 3 units.",
             "Fabricate a cross-shaped figure with greenery having each side of 3 units."
         ],
-        "arguments": create_target_state(block_type=BlockType.PLANT, size=3, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.PLANT, size=3,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_5_DIAGONAL": {
@@ -67,7 +67,7 @@ easy = {
             "Design a boulder-formed cross utilizing a diagonal layout with each arm having a length of 5.",
             "Using rubble, sketch out a cross in a slanted arrangement where each line is composed of five units."
         ],
-        "arguments": create_target_state(block_type=BlockType.STONE, size=5, radius=7, cross_type=CrossType.DIAGONAL),
+        "arguments": create_target_state(block_type=BlockType.STONE, size=5,  cross_type=CrossType.DIAGONAL),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_7": {
@@ -80,7 +80,7 @@ easy = {
             "Shape a rock into a cross with seven units on each side, ensuring it's laid out diagonally.",
             "Craft a cross-shaped design using small stones diagonally, and it should span seven units on each side."
         ],
-        "arguments": create_target_state(block_type=BlockType.STONE, size=7, radius=7, cross_type=CrossType.DIAGONAL),
+        "arguments": create_target_state(block_type=BlockType.STONE, size=7,  cross_type=CrossType.DIAGONAL),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_3": {
@@ -93,7 +93,7 @@ easy = {
             "I need you to construct a direct cross using stone material, make sure that the length of each of it sides is exactly three blocks.",
             "Make a formation in a direct cross pattern using stone blocks where each branch of the cross is three units long."
         ],
-        "arguments": create_target_state(block_type=BlockType.STONE, size=3, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.STONE, size=3,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FIRE_TREE_5": {
@@ -106,7 +106,7 @@ easy = {
             "Five unit long on each side, design a merged cross symbol, using your light torch.",
             "With a combination approach, construct a five-unit long cross structure using fire sticks."
         ],
-        "arguments": create_target_state(block_type=BlockType.FIRE_TREE, size=5, radius=9, cross_type=CrossType.COMBINED),
+        "arguments": create_target_state(block_type=BlockType.FIRE_TREE, size=5,  cross_type=CrossType.COMBINED),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE_3": {
@@ -119,7 +119,7 @@ easy = {
             "I want you to form a cross with a side length of three using the fire enchantment table.",
             "With a size of three, form a cross from the units of enchantment table fire."
         ],
-        "arguments": create_target_state(block_type=BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.ENCHANTMENT_TABLE_FIRE, size=3,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_7_COMBINED": {
@@ -132,7 +132,7 @@ easy = {
             "I want you to form a combined cross structure using plant blocks, each side should consists of 7 blocks.",
             "Fabricate a combined cross structure using seven blocks of plant on each side."
         ],
-        "arguments": create_target_state(block_type=BlockType.PLANT, size=7, radius=7, cross_type=CrossType.COMBINED),
+        "arguments": create_target_state(block_type=BlockType.PLANT, size=7,  cross_type=CrossType.COMBINED),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE_3_DIAGONAL": {
@@ -145,7 +145,7 @@ easy = {
             "Construct a cross with a side length of three using stones and align it in a diagonal direction.",
             "Arrange a cross made from rocks with each side measuring three units, make sure it's set diagonally."
         ],
-        "arguments": create_target_state(block_type=BlockType.STONE, size=3, radius=9, cross_type=CrossType.DIAGONAL),
+        "arguments": create_target_state(block_type=BlockType.STONE, size=3,  cross_type=CrossType.DIAGONAL),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_5": {
@@ -158,7 +158,7 @@ easy = {
             "In the game, create a diagonal cross composed entirely of furnaces, it should have five blocks",
             "Can you arrange furnace blocks in the form of a cross of 5 units in a diagonal form in the game?"
         ],
-        "arguments": create_target_state(block_type=BlockType.FURNACE, size=5, radius=9, cross_type=CrossType.DIAGONAL),
+        "arguments": create_target_state(block_type=BlockType.FURNACE, size=5,  cross_type=CrossType.DIAGONAL),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE_3": {
@@ -171,7 +171,7 @@ easy = {
             "A direct cross of a three on each side needs to be formed, can you create this using the oven?",
             "Centrally arrange the smelter to create a three-unit direct shaped cross."
         ],
-        "arguments": create_target_state(block_type=BlockType.FURNACE, size=3, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.FURNACE, size=3,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT_7_DIRECT": {
@@ -184,7 +184,7 @@ easy = {
             "Please generate a vegetation cross with each branch having seven units in length.",
             "I would like to see you create a diagonal cross from greenery with the length of each segment equal to seven units."
         ],
-        "arguments": create_target_state(block_type=BlockType.PLANT, size=7, radius=9, cross_type=CrossType.STRAIGHT),
+        "arguments": create_target_state(block_type=BlockType.PLANT, size=7,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "lambda gd, ix: is_cross_formed(gd, ix)"
     }
 }
@@ -200,7 +200,7 @@ medium = {
             "Is there a diagonal cross made from botanical units, each of its arms measuring 3 lengths?",
             "Check to see if a diagonal cross-form of vegetation exists, with each side spanning 3 units in length"
         ],
-        "arguments": "create_target_state(BlockType.PLANT, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": create_target_state(BlockType.PLANT, size=3,  cross_type=CrossType.STRAIGHT),
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE5": {
@@ -213,7 +213,7 @@ medium = {
             "Five units on each side, form a combined type cross with blocks of Enchantment Table Ice",
             "Using five units for each arm, construct a combined cross with blocks of Frost Magic Table"
         ],
-        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=5, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=5,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE5_1": {
@@ -226,7 +226,7 @@ medium = {
             "Please structure a cross composed of boulders, maintaining that every arm expands to five units and the holistic structure is conjoined?",
             "Would you be able to generate a cross using the gravel, where each arm is five units in length and the whole configuration is integrated?"
         ],
-        "arguments": "create_target_state(BlockType.STONE, size=5, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.STONE, size=5,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_CRAFTING_TABLE3": {
@@ -239,7 +239,7 @@ medium = {
             "Craft a direct cross with worktables, ensuring each side measures 3 blocks",
             "Assemble a direct-design cross using 3-block long sides made of workstations"
         ],
-        "arguments": "create_target_state(BlockType.CRAFTING_TABLE, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.CRAFTING_TABLE, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE3_1": {
@@ -252,7 +252,7 @@ medium = {
             "In a four-pronged configuration shaped like a cross, place three stove blocks along each prong.",
             "Form an evenly balanced cross, where each branch is represented by three blocks of the kiln."
         ],
-        "arguments": "create_target_state(BlockType.FURNACE, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.FURNACE, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE5_2": {
@@ -265,7 +265,7 @@ medium = {
             "Construct a cross figure using stones, every side of the cross should have a length of 5 units",
             "Using rocks, fashion out a cross shape where every side measures up to 5 units in length"
         ],
-        "arguments": "create_target_state(BlockType.STONE, size=5, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.STONE, size=5,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE5": {
@@ -278,7 +278,7 @@ medium = {
             "Craft a combined shape resembling a cross with Ignite Spell Tables, making sure each line extends up to 5 units.",
             "I want you to shape a Fire Wizard's Bench into a cross structure with each side measuring a total of five units."
         ],
-        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=5, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=5,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE7": {
@@ -291,7 +291,7 @@ medium = {
             "Please assemble a seven-unit long arm cross shape using the tables of Fire Enchantment on our game map.",
             "On the game map, erect a cross, each arm of which is crafted from seven Fire Enchantment Tables."
         ],
-        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=7, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=7,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_TORCH7": {
@@ -304,7 +304,7 @@ medium = {
             "Shape a torch in such a way that it ends up looking like a mixed cross with each side stretching up to seven units.",
             "Configure a total of seven units on each side of the torch to produce a compound cross shape."
         ],
-        "arguments": "create_target_state(BlockType.TORCH, size=7, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.TORCH, size=7,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_ICE7": {
@@ -317,7 +317,7 @@ medium = {
             "Within my immediate vicinity of five blocks, can you create a combined layout in a cross configuration using seven of the enchanted ice tabletops",
             "Please create an intricate pattern in the shape of a cross around me using the frost charm stations, with each limb of the cross spanning seven blocks and every station positioned within a radius of five blocks from where I am"
         ],
-        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=7, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=7,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FIRE_GRASS3": {
@@ -329,7 +329,7 @@ medium = {
             "I need a cross made out of fire grass that spans 3 blocks.",
             "Craft a 3 block large cross using fire grass."
         ],
-        "arguments": "create_target_state(BlockType.FIRE_GRASS, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.FIRE_GRASS, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT3_2": {
@@ -342,7 +342,7 @@ medium = {
             "Utilizing plants, design a cross shape where each side consists of an arrangement of 3 units in a diagonal pattern.",
             "Form a diagonal cross using a collection of plants which should have a side size of three units."
         ],
-        "arguments": "create_target_state(BlockType.PLANT, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.PLANT, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE7": {
@@ -355,7 +355,7 @@ medium = {
             "Using cobblestones, construct a cross shape directly with each side consisting of seven units.",
             "Form a direct cross design using stone blocks, make certain that each side measures seven units in length."
         ],
-        "arguments": "create_target_state(BlockType.STONE, size=7, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.STONE, size=7,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE5": {
@@ -368,7 +368,7 @@ medium = {
             "Your task is to arrange furnaces in a combined cross shape, with each arm of the cross spanning five blocks.",
             "Use blocks of the furnace type to fabricate a cross shape design where each prong measures five blocks in length."
         ],
-        "arguments": "create_target_state(BlockType.FURNACE, size=5, radius=7, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.FURNACE, size=5,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT7": {
@@ -381,7 +381,7 @@ medium = {
             "Can you build a cross comprised of plants? Each side should span a total of seven units.",
             "Could you please construct a combined cross with flora extending seven units in every direction?"
         ],
-        "arguments": "create_target_state(BlockType.PLANT, size=7, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.PLANT, size=7,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_FURNACE3": {
@@ -394,7 +394,7 @@ medium = {
             "With furnace blocks, I'd like you to create a cross. Ensure the length of each arm is 3 blocks.",
             "Could you arrange the furnace blocks into a cross pattern? Each of the arms should be three blocks in length."
         ],
-        "arguments": "create_target_state(BlockType.FURNACE, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.FURNACE, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_STONE3": {
@@ -407,7 +407,7 @@ medium = {
             "Using boulders, can you arrange them on the ground in the shape of an upright cross with each limb extending to three blocks?",
             "With pebbles at your disposal, could you arrange them in a shape that mimics a standing cross, with a total of three units forming each arm?"
         ],
-        "arguments": "create_target_state(BlockType.STONE, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.STONE, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     },
     "INSTRUCTION_PLANT3_3": {
@@ -420,7 +420,7 @@ medium = {
             "Go ahead and construct a cross from plant elements. Directly position the cross and make each side measure 3 units.",
             "Craft a direct shape of the cross, utilizing plant materials as the building block. Each side of this formation should be three units in length."
         ],
-        "arguments": "create_target_state(BlockType.PLANT, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.PLANT, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "check_lambda(gd, ix)"
     },
     "INSTRUCTION_ENCHANTMENT_TABLE_FIRE3": {
@@ -433,7 +433,7 @@ medium = {
             "Form a straight cross made of enchantment fire tables, with each branch of the cross being 3 units in length.",
             "Construct a symmetrically direct cross using enchantment fire workbenches with each arm of the cross measuring a length of 3 units."
         ],
-        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=3, radius=5, crossType.STRAIGHT)",
+        "arguments": "create_target_state(BlockType.ENCHANTMENT_TABLE_FIRE, size=3,  crossType.STRAIGHT)",
         "str_check_lambda": "is_cross_formed(gd, ix)"
     }
 }

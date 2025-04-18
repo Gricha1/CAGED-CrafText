@@ -10,7 +10,7 @@ from craftext.scenarios.jax_time_constrained_placment import instructions as tim
 easy = {**build_line_instructions.easy, 
         **build_squere_instructions.easy,
         **localization_place_instructions.easy,
-        **conditional_achievements.easy,
+        #**conditional_achievements.easy,
         **build_star_instructions.easy,
         **time_constrained_placment.easy,
         **conditional_place_instructions.easy
@@ -37,8 +37,8 @@ easy_without_building = {
         **conditional_place_instructions.easy
         }# **conditional_place_instructions.easy}
 easy_only_building = {
-        **build_line_instructions.easy, 
-        **build_squere_instructions.easy,
+        # **build_line_instructions.easy, 
+        # **build_squere_instructions.easy,
         # **localization_place_instructions.easy,
         # **conditional_achievements.easy,
         **build_star_instructions.easy

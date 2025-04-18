@@ -4,29 +4,20 @@ from jax import (
     lax
 )
 from craftext.adapters.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState
-
-blocks_list = [
-    "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
-    "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
-    "FURNACE", "SAND", "LAVA", "PLANT", "RIPE_PLANT", "WALL", 
-    "DARKNESS", "WALL_MOSS", "STALAGMITE", "SAPPHIRE", "RUBY", 
-    "CHEST", "FOUNTAIN", "FIRE_GRASS", "ICE_GRASS", "GRAVEL", 
-    "FIRE_TREE", "ICE_SHRUB", "ENCHANTMENT_TABLE_FIRE", 
-    "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
-    "GRAVE3", "NECROMANCER_VULNERABLE"
-]
+from craftext.checkers_jax.target_state import TargetState, LocalizaPlacingState
+from functools import partial
 
 
+@partial(jax.jit, static_argnames=['max_radius'])
 def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     full_region_size = 2 * max_radius + 1
-    padded_map = jnp.pad(game_map, max_radius, mode='constant')
+    # padded_map = jnp.pad(game_map, max_radius, mode='constant')
 
     x_padded = x + max_radius
     y_padded = y + max_radius
 
     region = lax.dynamic_slice(
-        padded_map,
+        game_map,
         start_indices=(x_padded - max_radius, y_padded - max_radius),
         slice_sizes=(full_region_size, full_region_size)
     )
@@ -40,17 +31,25 @@ def safe_dynamic_slice(game_map, x, y, radius, max_radius):
     region_masked = jnp.where(mask, region, -1)
     return region_masked
 
-def place_object_relevant_to(game_data: GameData, target_state: TargetState) -> jax.Array:
+
+def place_object_relevant_to(game_data: GameData,  target_state: LocalizaPlacingState) -> jax.Array:
+    
+    object_name = target_state.object_name
+    target_object_name = target_state.target_object_name 
+    side = target_state.side 
+    distance = target_state.distance
+
+    return jax.lax.select(target_state.need_to_achieve, 
+                   localization_checker(game_data=game_data, object_name=object_name, target_object_name=target_object_name, side=side, distance=distance),
+                   jnp.array(False))
+
+
+def localization_checker(game_data: GameData, object_name: int, target_object_name: int, side: int, distance: int) -> jax.Array:
     """
     Check if the object is placed at a specific side (right, left, top, or bottom) and distance from the target_object_name
     within the area around the player.
     """
 
-    # Если условие не нужно достигать, возвращаем False
-    object_name = target_state.Localization_placing.object_name
-    target_object_name = target_state.Localization_placing.target_object_name
-    side = target_state.Localization_placing.side
-    distance = target_state.Localization_placing.distance
     
     game_map = game_data.states[0].map.game_map
     player_position = game_data.states[0].variables.player_position
@@ -58,13 +57,13 @@ def place_object_relevant_to(game_data: GameData, target_state: TargetState) -> 
 
     # Фиксированный радиус области вокруг игрока
     radius = 5
-    region_size = 2 * 20 + 1
+    region_size = 2 * 5 + 1
 
     # Извлекаем область карты вокруг игрока через lax.dynamic_slice
     region = safe_dynamic_slice(game_map, x, y, radius, region_size)
     
     # Размер квадрата для проверки; +2 для проверки краёв
-    square_size = 10 * 2 + 1
+    square_size = 5 * 2 + 2
     
     # Определяем сканирование по всем квадратам внутри region:
     n_rows = region.shape[0] - square_size + 1
@@ -77,7 +76,7 @@ def place_object_relevant_to(game_data: GameData, target_state: TargetState) -> 
             start_indices=(i, j),
             slice_sizes=(square_size, square_size)
         )
-        center = 10  # поскольку square_size = 2*distance+1, центр = distance
+        center = 5  # поскольку square_size = 2*distance+1, центр = distance
         target_mask = square[center, center] == target_object_name
         object_mask = lax.switch(side,
             [

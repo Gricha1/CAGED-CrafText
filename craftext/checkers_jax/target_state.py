@@ -5,7 +5,8 @@ import jax
 
 @struct.dataclass
 class BuildLineState:
-    
+    need_to_achieve: bool = False
+
     block_type: int = BlockType.INVALID
     size:int = 3
     radius: int = 3
@@ -13,6 +14,7 @@ class BuildLineState:
 
 @struct.dataclass
 class BuildSquareState:
+    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     size: int = 3
@@ -20,6 +22,7 @@ class BuildSquareState:
     
 @struct.dataclass
 class BuildStarState:
+    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     size: int = 3
@@ -28,6 +31,7 @@ class BuildStarState:
 
 @struct.dataclass
 class ConditionalPlacingState:
+    need_to_achieve: bool = False
     
     object_inventory_enum: int = -1
     object_to_place: int = 0
@@ -36,6 +40,7 @@ class ConditionalPlacingState:
     
 @struct.dataclass
 class LocalizaPlacingState:
+    need_to_achieve: bool = False
     
     object_name: int = -1
     target_object_name: int = -1
@@ -44,11 +49,13 @@ class LocalizaPlacingState:
 
 @struct.dataclass
 class Achievements:
+    need_to_achieve: bool = False
     
-    achievement_mask: tuple = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
+    achievement_mask: list = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
 
 @struct.dataclass
 class TimeCosntrainedPlacmentState:
+    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     time_state: int = TimeState.DAY
@@ -56,6 +63,7 @@ class TimeCosntrainedPlacmentState:
 
 @struct.dataclass
 class UnifiedPatternState:
+    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     pattern_type: jax.Array = struct.field(default_factory=lambda: jnp.zeros(1))
@@ -64,6 +72,7 @@ class UnifiedPatternState:
 
 @struct.dataclass
 class TargetState:
+    achievements: Achievements = struct.field(default_factory=Achievements)
     achievements: Achievements = struct.field(default_factory=Achievements)
     building_line: BuildLineState =  struct.field(default_factory=BuildLineState)
     building_square: BuildSquareState = struct.field(default_factory=BuildSquareState)

@@ -28,7 +28,7 @@ from craftext.scenarios.constants import Scenarios
 # }
 
 def create_target_state(object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
-    target_achievements = ConditionalPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+    target_achievements = ConditionalPlacingState(True, object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
     return TargetState(conditional_placing=target_achievements)
 
 easy = {

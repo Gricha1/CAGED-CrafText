@@ -1,12 +1,4 @@
 
-from enum import Enum
-from craftext.checkers_jax.achivments import conditional_achivments
-from craftext.scenarios.constants import Achievement
-import jax
-import jax.numpy as jnp
-from jax import lax
-from enum import Enum
-from craftext.checkers_jax.achivments import conditional_achivments
 from craftext.checkers_jax.target_state import Achievements, TargetState
 from craftext.scenarios.constants import Achievement, Scenarios, AchievementState
 
@@ -17,7 +9,7 @@ def create_target_state(required=[], forbidden=[]):
             base_vector[i] = AchievementState.NEED_TO_ACHIEVE
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
-    target_achievements = Achievements(tuple(base_vector))
+    target_achievements = Achievements(need_to_achieve=True, achievement_mask=tuple(base_vector))
     return TargetState(achievements=target_achievements)
 
 

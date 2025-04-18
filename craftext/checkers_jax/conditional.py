@@ -2,7 +2,10 @@ import jax.numpy as jnp
 from jax import lax
 
 from craftext.adapters.state_adapter import PlayerInventory
-from craftext.checkers_jax.target_state import TargetState
+from craftext.checkers_jax.target_state import TargetState, ConditionalPlacingState
+from craftext.adapters.state_adapter import GameData
+
+import jax 
 def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_collect: int):
     """
     Checks the amount of a specific item in the player's inventory using a switch-based approach.
@@ -63,7 +66,21 @@ def check_map(game_map: jnp.ndarray, object_to_place: int, count_to_stand: int):
     placed_count = jnp.sum(game_map == object_to_place)
     return placed_count >= count_to_stand
 
-def conditional_placing(gd, target_state: TargetState):
+
+
+def conditional_placing(game_data: GameData,  target_state: ConditionalPlacingState) -> jax.Array:
+    
+    
+    object_inventory_enum = target_state.object_inventory_enum
+    object_to_place = target_state.object_to_place
+    count_to_collect = target_state.count_to_collect
+    count_to_stand = target_state.count_to_stand
+
+    return jax.lax.select(target_state.need_to_achieve, 
+                   check_placing(game_data, object_inventory_enum, object_to_place, count_to_collect, count_to_stand),
+                   jnp.array(False))
+
+def check_placing(gd: GameData, object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
     """
     The function that checks if:
     1) The required number of `object_inventory` was collected in the previous 
@@ -90,10 +107,6 @@ def conditional_placing(gd, target_state: TargetState):
     :return: Returns True if both conditions are satisfied in sequence, 
              otherwise False.
     """
-    object_inventory_enum = target_state.conditional_placing.object_inventory_enum
-    object_to_place = target_state.conditional_placing.object_to_place
-    count_to_collect = target_state.conditional_placing.count_to_collect
-    count_to_stand = target_state.conditional_placing.count_to_stand
     
     previous_state = gd.states[0]
     current_state = gd.states[1]

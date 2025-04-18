@@ -6,7 +6,7 @@ import logging
 from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
+from typing import List, Tuple
 from craftext.instructions.scenarios.handlers.craftext_scenarious import ScenariosConfigLoader, load_scenarios
 from craftext.scenarios.constants import plans_path
 from craftext.checkers_jax.target_state import TargetState
@@ -77,7 +77,7 @@ class ScenariosNoLambda:
 
     def encode(self, instruction):
         """Encodes an instruction using the provided encoding model."""
-        return [self.encode_model.encode(instruction)]
+        return Tuple(self.encode_model.encode(instruction))
 
     
     def _prepare_scenarios(self):

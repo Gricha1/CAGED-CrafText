@@ -4,42 +4,9 @@ import jax
 from flax.struct import dataclass
 
 from craftext.adapters.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState
+from craftext.checkers_jax.target_state import TargetState, BuildStarState, BuildStarState
 from functools import partial
 
-# Blocks list as an example
-blocks_list = [
-    "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
-    "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
-    "FURNACE", "SAND", "LAVA", "PLANT", "RIPE_PLANT", "WALL", 
-    "DARKNESS", "WALL_MOSS", "STALAGMITE", "SAPPHIRE", "RUBY", 
-    "CHEST", "FOUNTAIN", "FIRE_GRASS", "ICE_GRASS", "GRAVEL", 
-    "FIRE_TREE", "ICE_SHRUB", "ENCHANTMENT_TABLE_FIRE", 
-    "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
-    "GRAVE3", "NECROMANCER_VULNERABLE"
-]
-
-def safe_dynamic_slice(game_map, x, y, radius, max_radius):
-    full_region_size = 2 * max_radius + 1
-    padded_map = jnp.pad(game_map, max_radius, mode='constant')
-
-    x_padded = x + max_radius
-    y_padded = y + max_radius
-
-    region = lax.dynamic_slice(
-        padded_map,
-        start_indices=(x_padded - max_radius, y_padded - max_radius),
-        slice_sizes=(full_region_size, full_region_size)
-    )
-
-    # Затем обрезаем (маскируем) лишнее, так как radius может быть меньше max_radius
-    coord_range = jnp.arange(full_region_size) - max_radius
-    mask_x = jnp.abs(coord_range) <= radius
-    mask_y = mask_x[:, None]
-    mask = mask_x & mask_y
-
-    region_masked = jnp.where(mask, region, -1)
-    return region_masked
 
 import jax
 import jax.numpy as jnp
@@ -108,52 +75,50 @@ def scan_cross_function(carry: Carry, x):
     
     
     condition = jnp.logical_or(i + carry.size > carry.region_size,
-                               j + carry.size > carry.region_size)
+                            j + carry.size > carry.region_size)
     
     def branch_true(_):
-        sub_region = safe_dynamic_slice(carry.region, i, j, carry.size, carry.region_size)
+        sub_region= carry.region[i:i+carry.size, j:j+carry.size]
         is_cross = check_cross(sub_region, carry.stone_index, carry.size, carry.cross_type)
         
         return is_cross
 
     return carry, lax.cond(condition, branch_true, lambda _: False, operand=None)
 
-
-def is_cross_formed(game_data: GameData, target_state: TargetState) -> jax.Array:
-
-
-    block_name = target_state.building_star.block_type
-    radius = target_state.building_star.radius
-    size = target_state.building_star.size 
-    cross_type = target_state.building_star.cross_type
+def is_cross_formed(game_data: GameData,  target_state: BuildStarState) -> jax.Array:
     
-    stone_index = block_name
+    block_index = target_state.block_type
+    radius = 10
+    size = target_state.size
+    cross_type = target_state.cross_type
+
+    return jax.lax.select(target_state.need_to_achieve, 
+                   cross_checker(game_data, block_index, radius, size, cross_type),
+                   jnp.array(False))
     
-    
+def cross_checker(game_data: GameData, block_index: int, radius: int, size: int, cross_type: int) -> jax.Array:
+
     game_map = game_data.states[0].map.game_map
     
     player_position = game_data.states[0].variables.player_position
     
     x, y = player_position
-    region_size = 2 * 9 + 1
-    region = safe_dynamic_slice(
+    region_size = 2 * radius + 1
+    region = lax.dynamic_slice(
         game_map,
-        x,
-        y,
-        radius,
-        region_size
+        start_indices=(x - radius, y - radius),
+        slice_sizes=(region_size, region_size)
     )
-    #todo: как пробрасывать shared array to jnp arange
-    # indices = jax.lax.iota(size=region_size * region_size, dtype=jnp.int32)
-    indices = jnp.arange(0, region_size * region_size)
+
+    indixes = jnp.arange(region_size*region_size)
     carry = Carry(region=region,
-            stone_index=stone_index,
+            stone_index=block_index,
             region_size=region_size,
             size=size,
             cross_type=cross_type)
-    _, crosses = lax.scan(scan_cross_function, carry, indices)
+    _, crosses = lax.scan(scan_cross_function, carry, indixes)
     
     return jnp.any(crosses)
 
-# 89.169.171.236
+# # 89.169.171.236
 

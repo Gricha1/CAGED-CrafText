@@ -69,6 +69,68 @@ def list_to_array(lst: List[T]) -> T:
 # class checkers:
 
 
+# @partial(jax.jit, static_argnums=(0,))
+# def batch_check_scan(game_data, ts_list):
+#     """
+#     ts_list: python-список или pytree длины N из TargetState,
+#              полностью статический (не трассируется).
+#     game_data: единый объект для всех проверок.
+#     """
+#     def body_fn(idx, carry):
+#         # carry — это массив Bool[N]
+#         results = carry
+#         ts = ts_list[idx]           # это чистый Python-объект
+#         ok = generic_check(game_data, ts)  # ваша единая check-функция
+#         return results.at[idx].set(ok)
+
+#     N = len(ts_list)
+#     init = jnp.zeros((N,), dtype=jnp.bool_)
+#     return lax.fori_loop(0, N, body_fn, init)
+
+from functools import partial
+import jax
+from jax import lax
+import jax.numpy as jnp
+from flax import struct
+from craftext.checkers_jax.target_state import TargetState
+
+# @partial(jax.jit, static_argnums=(0,))
+def generic_check(game_data, target_state: TargetState, cheker_id: int) -> jnp.ndarray:
+    
+
+    def fa(ts: TargetState): return conditional_achivments(game_data,    ts.achievements)
+    def fb(ts: TargetState): return conditional_placing(game_data,       ts.conditional_placing)
+    def fc(ts: TargetState): return place_object_relevant_to(game_data,  ts.Localization_placing)
+    def fd(ts: TargetState): return is_line_formed(game_data,           ts.building_line)
+    def fe(ts: TargetState): return is_square_formed(game_data,         ts.building_square)
+    def ff(ts: TargetState): return is_cross_formed(game_data,          ts.building_star)
+    def fg(ts: TargetState): return at_time_block_placed(game_data,     ts.time_placement)
+
+    fns = (fa, fb, fc, fd, fe, ff, fg)
+
+    return lax.switch(cheker_id, fns, target_state)
+
+
+
+# @partial(jax.jit, static_argnums=(0, 1,))
+def batch_check_scan(game_data, ts_list, id, N):
+    """
+    ts_list: python-список или pytree длины N из TargetState,
+             полностью статический (не трассируется).
+    game_data: единый объект для всех проверок.
+    """
+    def body_fn(idx, carry):
+        # carry — это массив Bool[N]
+        results = carry
+        ts = tree_util.tree_map(lambda arr: arr[idx], ts_list)          # это чистый Python-объект
+        ok = generic_check(game_data, ts, id)  # ваша единая check-функция
+        return results.at[idx].set(ok)
+
+    init = jnp.zeros((N,), dtype=jnp.bool_)
+    return lax.fori_loop(0, N, body_fn, init)
+
+
+
 class InstructionWrapper(Wrapper):
     def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambda,
                   encode_model_class=DistilBertEncode, encode_form=EncodeForm.EMBEDDING):
@@ -104,10 +166,10 @@ class InstructionWrapper(Wrapper):
         print("Initialized Instruction Wrapper with environment key:", self.environment_key)
         print(self.StateStructure)
         self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
-        print(self.scenario_handler.scenario_data.instructions_list)
+        # print(self.scenario_handler.scenario_data.instructions_list)
         print(len(self.scenario_handler.scenario_data.instructions_list))
         
-        #print(self.scenario_handler.scenario_data_jax.arguments)
+        print(len(self.scenario_handler.scenario_data_jax.arguments))
         #exit()
     
     def reset(self, _rng, env_params, instruction_idx=-1):
@@ -146,19 +208,20 @@ class InstructionWrapper(Wrapper):
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
-        results = jax.lax.switch(env_state.checker_id, # сразу правильное проикидывать. 
-                                (
-                                    jax.vmap(conditional_achivments, in_axes=(None, 0)),
-                                    jax.vmap(conditional_placing, in_axes=(None, 0)),
-                                    jax.vmap(place_object_relevant_to, in_axes=(None, 0)),
-                                    jax.vmap(is_line_formed, in_axes=(None, 0)),
-                                    jax.vmap(is_square_formed, in_axes=(None, 0)),
-                                    jax.vmap(is_cross_formed, in_axes=(None, 0)),
-                                    jax.vmap(at_time_block_placed, in_axes=(None, 0))
-                                ),
-                                game_data_vector, self.batched_scenario_args
-        )
-        
+        results = batch_check_scan(game_data_vector, self.batched_scenario_args, env_state.checker_id, self.n_instructions)
+        # results = jax.lax.switch(env_state.checker_id, # сразу правильное проикидывать. 
+        #                         (
+        #                             jax.vmap(conditional_achivments,  in_axes=(None, 0)),
+        #                             jax.vmap(conditional_placing,     in_axes=(None, 0)),
+        #                             jax.vmap(place_object_relevant_to,in_axes=(None, 0)),
+        #                             jax.vmap(is_line_formed,          in_axes=(None, 0)),
+        #                             jax.vmap(is_square_formed,        in_axes=(None, 0)),
+        #                             jax.vmap(is_cross_formed,         in_axes=(None, 0)),
+        #                             jax.vmap(at_time_block_placed,    in_axes=(None, 0))
+        #                         ),
+        #                         game_data_vector, self.batched_scenario_args
+        #     )
+        # results = jax.vmap(is_square_formed, in_axes=(None, 1))(game_data_vector, self.batched_scenario_args)
         # проверить строительство все таки предметно
         # делаем конфиг где нет строительства, и только строительство
         #                                 )

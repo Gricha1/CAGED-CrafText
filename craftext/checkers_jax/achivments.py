@@ -2,10 +2,18 @@ import jax
 import jax.numpy as jnp
 from jax import lax
 from craftext.adapters.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState
+from craftext.checkers_jax.target_state import Achievements
 
-
-def conditional_achivments(gd: GameData, target_state: TargetState) -> jax.Array:
+def conditional_achivments(game_data: GameData,  target_state: Achievements) -> jax.Array:
+    
+    # state_achievements = target_state.
+    achievement_mask  = target_state.achievement_mask
+    
+    return jax.lax.select(target_state.need_to_achieve, 
+                   checker_acvievments(game_data, achievement_mask),
+                   jnp.array(False))
+    
+def checker_acvievments(gd: GameData, achievement_mask) -> jax.Array:
     """
     Parameters:
         gd.state.achievements - jnp.array: Boolean vector (0 = not achieved, 1 = achieved)
@@ -18,10 +26,10 @@ def conditional_achivments(gd: GameData, target_state: TargetState) -> jax.Array
     """
     current_state = gd.states[1]
     state_achievements = current_state.achievements.achievements 
-    vector_to_achieve = target_state.achievements.achievement_mask
+    # vector_to_achieve = target_state.achievements.achievement_mask
     # Conditions for must-achieve (1) and must-not-achieve (-1)
-    must_achieve = jnp.logical_and(vector_to_achieve == 1, state_achievements != 1)
-    must_not_achieve = jnp.logical_and(vector_to_achieve == -1, state_achievements!= 0)
+    must_achieve = jnp.logical_and(achievement_mask == 1, state_achievements != 1)
+    must_not_achieve = jnp.logical_and(achievement_mask == -1, state_achievements!= 0)
 
     # If any must_achieve or must_not_achieve fails, return False
     fail_condition = jnp.any(must_achieve) | jnp.any(must_not_achieve)
