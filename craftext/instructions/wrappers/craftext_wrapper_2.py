@@ -1,10 +1,11 @@
 # instruction_wrapper.py
 
-from dataclasses import dataclass
 from typing import Any, Optional
 import jax
 import jax.numpy as jnp
-from flax import linen as nn, struct
+from jax import lax
+
+from flax import struct
 from gym import Wrapper
 
 
@@ -24,8 +25,7 @@ from craftext.checkers_jax.building import is_square_formed
 from craftext.checkers_jax.conditional import conditional_placing
 from craftext.checkers_jax.relevant import place_object_relevant_to
 
-from jax import tree_util
-from collections import UserList
+from craftext.checkers_jax.target_state import TargetState
 
 @struct.dataclass
 class TextEnvState:
@@ -39,96 +39,22 @@ class TextEnvState:
     rng: int
     checker_id: int
     
-import jax.numpy as jnp
-from typing import List, TypeVar, Type
-from enum import Enum
-T = TypeVar("T")
-
-def list_to_array(lst: List[T]) -> T:
-    """Convert a list of dataclass instances to a batched version with jnp.arrays."""
-    if not lst:
-        raise ValueError("Input list is empty.")
-
-    cls: Type[T] = type(lst[0])  # Определяем класс элементов списка
-    converted_data = {}
-
-    for k, field in cls.__dataclass_fields__.items():
-        values = [getattr(v, k) for v in lst]
-
-        # Если поле уже является jnp.ndarray, то стекуем его вдоль первой оси
-        if isinstance(values[0], jnp.ndarray):
-            converted_data[k] = jnp.stack(values, axis=0)  # Собираем массив массивов
-        elif isinstance(values[0], (int, float, bool)):  
-            converted_data[k] = jnp.array(values)  # Просто массив скаляров
-        else:
-            converted_data[k] = list_to_array(values)  # Рекурсивный вызов для вложенных датаклассов
-
-    return cls(**converted_data)
-
-# @dataclass
-# class checkers:
-
-
-# @partial(jax.jit, static_argnums=(0,))
-# def batch_check_scan(game_data, ts_list):
-#     """
-#     ts_list: python-список или pytree длины N из TargetState,
-#              полностью статический (не трассируется).
-#     game_data: единый объект для всех проверок.
-#     """
-#     def body_fn(idx, carry):
-#         # carry — это массив Bool[N]
-#         results = carry
-#         ts = ts_list[idx]           # это чистый Python-объект
-#         ok = generic_check(game_data, ts)  # ваша единая check-функция
-#         return results.at[idx].set(ok)
-
-#     N = len(ts_list)
-#     init = jnp.zeros((N,), dtype=jnp.bool_)
-#     return lax.fori_loop(0, N, body_fn, init)
-
-from functools import partial
-import jax
-from jax import lax
-import jax.numpy as jnp
-from flax import struct
-from craftext.checkers_jax.target_state import TargetState
 
 # @partial(jax.jit, static_argnums=(0,))
 def generic_check(game_data, target_state: TargetState, cheker_id: int) -> jnp.ndarray:
     
 
-    def fa(ts: TargetState): return conditional_achivments(game_data,    ts.achievements)
-    def fb(ts: TargetState): return conditional_placing(game_data,       ts.conditional_placing)
-    def fc(ts: TargetState): return place_object_relevant_to(game_data,  ts.Localization_placing)
-    def fd(ts: TargetState): return is_line_formed(game_data,           ts.building_line)
-    def fe(ts: TargetState): return is_square_formed(game_data,         ts.building_square)
-    def ff(ts: TargetState): return is_cross_formed(game_data,          ts.building_star)
-    def fg(ts: TargetState): return at_time_block_placed(game_data,     ts.time_placement)
+    def ca(ts: TargetState):  return conditional_achivments(game_data,    ts.achievements)
+    def cp(ts: TargetState):  return conditional_placing(game_data,       ts.conditional_placing)
+    def port(ts: TargetState):return place_object_relevant_to(game_data,  ts.Localization_placing)
+    def ilf(ts: TargetState): return is_line_formed(game_data,            ts.building_line)
+    def isf(ts: TargetState): return is_square_formed(game_data,          ts.building_square)
+    def icf(ts: TargetState): return is_cross_formed(game_data,           ts.building_star)
+    def atp(ts: TargetState): return at_time_block_placed(game_data,      ts.time_placement)
 
-    fns = (fa, fb, fc, fd, fe, ff, fg)
+    fns = (ca, cp, port, ilf, isf, icf, atp)
 
     return lax.switch(cheker_id, fns, target_state)
-
-
-
-# @partial(jax.jit, static_argnums=(0, 1,))
-def batch_check_scan(game_data, ts_list, id, N):
-    """
-    ts_list: python-список или pytree длины N из TargetState,
-             полностью статический (не трассируется).
-    game_data: единый объект для всех проверок.
-    """
-    def body_fn(idx, carry):
-        # carry — это массив Bool[N]
-        results = carry
-        ts = tree_util.tree_map(lambda arr: arr[idx], ts_list)          # это чистый Python-объект
-        ok = generic_check(game_data, ts, id)  # ваша единая check-функция
-        return results.at[idx].set(ok)
-
-    init = jnp.zeros((N,), dtype=jnp.bool_)
-    return lax.fori_loop(0, N, body_fn, init)
-
 
 
 class InstructionWrapper(Wrapper):
@@ -145,17 +71,14 @@ class InstructionWrapper(Wrapper):
         """
         super().__init__(env)
 
-        # Initialize the encoding model using the provided class
         self.encode_model = encode_model_class(form_to_use=encode_form)
 
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
         self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
-        self.batched_scenario_args = tree_util.tree_map(
-            lambda *xs: jnp.stack(xs),
-            *self.scenario_arguments
-        )
+        self.batched_ts: TargetState = TargetState.stack(self.scenario_arguments)
+
         self.env = env
         self.steps = 0
 
@@ -164,14 +87,10 @@ class InstructionWrapper(Wrapper):
         self.StateStructure = GameData if self.environment_key == 1 else GameDataClassic
 
         print("Initialized Instruction Wrapper with environment key:", self.environment_key)
-        print(self.StateStructure)
+        # print(self.StateStructure)
         self.n_instructions = len(self.scenario_handler.scenario_data.instructions_list)
-        # print(self.scenario_handler.scenario_data.instructions_list)
-        print(len(self.scenario_handler.scenario_data.instructions_list))
-        
-        print(len(self.scenario_handler.scenario_data_jax.arguments))
-        #exit()
-    
+
+
     def reset(self, _rng, env_params, instruction_idx=-1):
         """
         Resets the environment and selects a random instruction embedding or token for the new episode.
@@ -207,50 +126,10 @@ class InstructionWrapper(Wrapper):
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
-        
-        results = batch_check_scan(game_data_vector, self.batched_scenario_args, env_state.checker_id, self.n_instructions)
-        # results = jax.lax.switch(env_state.checker_id, # сразу правильное проикидывать. 
-        #                         (
-        #                             jax.vmap(conditional_achivments,  in_axes=(None, 0)),
-        #                             jax.vmap(conditional_placing,     in_axes=(None, 0)),
-        #                             jax.vmap(place_object_relevant_to,in_axes=(None, 0)),
-        #                             jax.vmap(is_line_formed,          in_axes=(None, 0)),
-        #                             jax.vmap(is_square_formed,        in_axes=(None, 0)),
-        #                             jax.vmap(is_cross_formed,         in_axes=(None, 0)),
-        #                             jax.vmap(at_time_block_placed,    in_axes=(None, 0))
-        #                         ),
-        #                         game_data_vector, self.batched_scenario_args
-        #     )
-        # results = jax.vmap(is_square_formed, in_axes=(None, 1))(game_data_vector, self.batched_scenario_args)
-        # проверить строительство все таки предметно
-        # делаем конфиг где нет строительства, и только строительство
-        #                                 )
-        #         @struct.dataclass
-        # class Scenarios:
-        #     CONDITIONAL_ACHIEVEMENTS = 0
-        #     CONDITIONAL_PLACING = 1
-        #     LOCALIZATION_PLACE = 2
-            
-        #     BUILD_LINE = 3
-        #     BUILD_SQUARE = 4
-        #     BUILD_STAR = 5
-            
-        #     TIME_CONSTRAINED_PLACEMENT = 6
-        # light_dinamic_batched = jnp.expand_dims(light_dinamic, env_state.num_envs)
-
-        # print(f'game_data_vector.states[0].variables: {game_data_vector.states[0].variables}')
-        # game_data_vector.states[0].variables.light_level_dinamic.set(light_dinamic)
-        # game_data_vector.states[0].variables = game_data_vector.states[0].variables.replace(light_level_dinamic=light_dinamic)
-        # Run all function over all game_data_vector (now only conditional_achivments) 
-        # print(f'shape: {game_data_vector}')
-        # print(f'shape:{self.scenario_arguments}')
-        # print(f'len: {len(self.scenario_arguments)}')
-        # at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
-        # 
-        # print(type(self.scenario_arguments))
-        # print(self.scenario_arguments.shape)
-        # Choose result releted instructions in current env
-        instruction_done = results[env_state.idx]
+                    
+        ts = self.batched_ts.select(env_state.idx)
+        results = generic_check(game_data_vector, ts, env_state.checker_id)
+        instruction_done = results
 
         reward /= 50
         reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)

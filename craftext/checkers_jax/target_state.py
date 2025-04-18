@@ -73,7 +73,6 @@ class UnifiedPatternState:
 @struct.dataclass
 class TargetState:
     achievements: Achievements = struct.field(default_factory=Achievements)
-    achievements: Achievements = struct.field(default_factory=Achievements)
     building_line: BuildLineState =  struct.field(default_factory=BuildLineState)
     building_square: BuildSquareState = struct.field(default_factory=BuildSquareState)
     building_star: BuildStarState =  struct.field(default_factory=BuildStarState)
@@ -82,6 +81,20 @@ class TargetState:
     time_placement: TimeCosntrainedPlacmentState = struct.field(default_factory=TimeCosntrainedPlacmentState)
     unified_pattern_state: UnifiedPatternState = struct.field(default_factory=UnifiedPatternState)
 
+    @classmethod
+    def stack(cls, lst: list['TargetState']) -> 'TargetState':
+        """
+        Превращает list[TargetState] в один батчевый TargetState,
+        где каждое поле — Array(shape=(N,…),…).
+        """
+        return jax.tree_util.tree_map(lambda *xs: jnp.stack(xs), *lst)
+
+    def select(self, idx: jnp.ndarray) -> 'TargetState':
+        """
+        Из батчевого TargetState берет checker_id-ю «страницу»,
+        возвращает обычный (скалярный) TargetState.
+        """
+        return jax.tree_util.tree_map(lambda arr: arr[idx], self)
     
     #building_line: Tuple[AchievementState, BuildLineAchievement]
     # collect_wood: int = AchievementState.NOT_MATTER.value
