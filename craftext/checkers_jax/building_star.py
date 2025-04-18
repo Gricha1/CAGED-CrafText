@@ -11,79 +11,6 @@ from functools import partial
 import jax
 import jax.numpy as jnp
 
-def check_cross(region: jax.Array, stone_index: int, size: int, cross_type: int) -> jax.Array:
-    center = size // 2
-
-    def compute_straight(_):
-        return (jnp.all(region[center, :] == stone_index) &
-                jnp.all(region[:, center] == stone_index))
-
-    def compute_diagonal(_):
-        return (jnp.all(jnp.diag(region) == stone_index) &
-                jnp.all(jnp.diag(jnp.fliplr(region)) == stone_index))
-
-
-    def compute_size3(_):
-        straight = compute_straight(None)
-        diagonal = compute_diagonal(None)
-        return straight | diagonal
-
-
-    def compute_size5_7(_):
-        straight = compute_straight(None)
-        diagonal = compute_diagonal(None)
-        return straight | diagonal | (straight & diagonal)
-
-    base_result = jax.lax.cond(
-        size == 3,
-        compute_size3,
-        lambda _: jax.lax.cond(
-            (size == 5) | (size == 7),
-            compute_size5_7,
-            lambda _: jnp.array(False), 
-            operand=None
-        ),
-        operand=None
-    )
-
-
-    final_result = jax.lax.cond(
-        cross_type == 0,
-        lambda _: compute_straight(None),
-        lambda _: jax.lax.cond(
-            cross_type == 1,
-            lambda _: compute_diagonal(None),
-            lambda _: base_result,
-            operand=None
-        ),
-        operand=None
-    )
-
-    return final_result
-
-
-@dataclass
-class Carry:
-    region: jax.Array
-    stone_index: int
-    region_size: int
-    size: int
-    cross_type: int
-
-def scan_cross_function(carry: Carry, x):
-    i, j = x // carry.region_size, x % carry.region_size
-    
-    
-    condition = jnp.logical_or(i + carry.size > carry.region_size,
-                            j + carry.size > carry.region_size)
-    
-    def branch_true(_):
-        sub_region= carry.region[i:i+carry.size, j:j+carry.size]
-        is_cross = check_cross(sub_region, carry.stone_index, carry.size, carry.cross_type)
-        
-        return is_cross
-
-    return carry, lax.cond(condition, branch_true, lambda _: False, operand=None)
 
 def is_cross_formed(game_data: GameData,  target_state: BuildStarState) -> jax.Array:
     
@@ -135,13 +62,11 @@ def cross_checker(
     # --- C) бинарная карта для блока ---
     B = (region == block_index).astype(jnp.float32)[None, None, ...]
 
-    # --- D) строим динамические фильтры в пространстве max_size×max_size ---
     S = max_size
     C = S // 2   # центр фильтра
 
     idxs = jnp.arange(S)  # static arange от 0 до S-1
 
-    # 1) маска «раста» вдоль одной оси длины size
     half = size // 2      # tracer
     start = C - half      # tracer
     end   = start + size  # tracer

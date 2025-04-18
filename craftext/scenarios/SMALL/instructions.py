@@ -1,4 +1,3 @@
-from craftext.checkers_jax.building import is_line_formed, is_square_formed
 from craftext.scenarios.jax_build_line import instructions as build_line_instructions
 from craftext.scenarios.jax_build_squere import instructions as build_squere_instructions
 from craftext.scenarios.jax_localization_place import instructions as localization_place_instructions
@@ -10,7 +9,7 @@ from craftext.scenarios.jax_time_constrained_placment import instructions as tim
 easy = {**build_line_instructions.easy, 
         **build_squere_instructions.easy,
         **localization_place_instructions.easy,
-        #**conditional_achievements.easy,
+        **conditional_achievements.easy,
         **build_star_instructions.easy,
         **time_constrained_placment.easy,
         **conditional_place_instructions.easy

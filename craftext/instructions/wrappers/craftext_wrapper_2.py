@@ -40,8 +40,7 @@ class TextEnvState:
     checker_id: int
     
 
-# @partial(jax.jit, static_argnums=(0,))
-def generic_check(game_data, target_state: TargetState, cheker_id: int) -> jnp.ndarray:
+def generic_check(game_data, target_state: TargetState, idx: int) -> jnp.ndarray:
     
 
     def ca(ts: TargetState):  return conditional_achivments(game_data,    ts.achievements)
@@ -54,7 +53,7 @@ def generic_check(game_data, target_state: TargetState, cheker_id: int) -> jnp.n
 
     fns = (ca, cp, port, ilf, isf, icf, atp)
 
-    return lax.switch(cheker_id, fns, target_state)
+    return lax.switch(idx, fns, target_state)
 
 
 class InstructionWrapper(Wrapper):
@@ -156,7 +155,3 @@ class InstructionWrapper(Wrapper):
         self.steps += 1
         return obs, state, reward, done, info
  
-#TODO:
-# враппер для проверки всех задачь разом.
-# посмотреть trl GRPO trainer -> использовать transformers
-# ONE -> вернуть.
