@@ -1,4 +1,3 @@
-# instruction_wrapper.py
 
 from typing import Any, Optional
 import jax
@@ -17,13 +16,13 @@ from craftext.adapters.state_adapter import GameData
 
 from craftext.adapters.state_adapter_classic import GameDataClassic
 
-from craftext.checkers_jax.achivments import conditional_achivments
-from craftext.checkers_jax.time_constrained import at_time_block_placed
-from craftext.checkers_jax.building_star import is_cross_formed
-from craftext.checkers_jax.building import is_line_formed
-from craftext.checkers_jax.building import is_square_formed
-from craftext.checkers_jax.conditional import conditional_placing
-from craftext.checkers_jax.relevant import place_object_relevant_to
+from craftext.checkers_jax.achivments       import checker_acvievments
+from craftext.checkers_jax.time_constrained import checker_time_placement
+from craftext.checkers_jax.building_star    import checker_star
+from craftext.checkers_jax.building_line    import checker_line
+from craftext.checkers_jax.building_square  import checker_square
+from craftext.checkers_jax.conditional      import checker_conditional_placement
+from craftext.checkers_jax.relevant         import cheker_localization
 
 from craftext.checkers_jax.target_state import TargetState
 
@@ -43,13 +42,13 @@ class TextEnvState:
 def generic_check(game_data, target_state: TargetState, idx: int) -> jnp.ndarray:
     
 
-    def ca(ts: TargetState):  return conditional_achivments(game_data,    ts.achievements)
-    def cp(ts: TargetState):  return conditional_placing(game_data,       ts.conditional_placing)
-    def port(ts: TargetState):return place_object_relevant_to(game_data,  ts.Localization_placing)
-    def ilf(ts: TargetState): return is_line_formed(game_data,            ts.building_line)
-    def isf(ts: TargetState): return is_square_formed(game_data,          ts.building_square)
-    def icf(ts: TargetState): return is_cross_formed(game_data,           ts.building_star)
-    def atp(ts: TargetState): return at_time_block_placed(game_data,      ts.time_placement)
+    def ca(ts: TargetState):   return checker_acvievments(game_data, ts.achievements)
+    def cp(ts: TargetState):   return checker_conditional_placement(game_data, ts.conditional_placing)
+    def port(ts: TargetState): return cheker_localization(game_data, ts.Localization_placing)
+    def ilf(ts: TargetState):  return checker_line(game_data, ts.building_line)
+    def isf(ts: TargetState):  return checker_square(game_data, ts.building_square)
+    def icf(ts: TargetState):  return checker_star(game_data, ts.building_star)
+    def atp(ts: TargetState):  return checker_time_placement(game_data, ts.time_placement)
 
     fns = (ca, cp, port, ilf, isf, icf, atp)
 
@@ -76,7 +75,7 @@ class InstructionWrapper(Wrapper):
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
         self.encoded_instruction = self.scenario_handler.initial_instruction
         self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
-        self.batched_ts: TargetState = TargetState.stack(self.scenario_arguments)
+        self.batched_ts = TargetState.stack(self.scenario_arguments)
 
         self.env = env
         self.steps = 0

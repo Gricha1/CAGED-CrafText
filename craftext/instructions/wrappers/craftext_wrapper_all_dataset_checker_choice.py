@@ -37,8 +37,8 @@ def get_checker_functions():
     from craftext.checkers_jax.achivments import conditional_achivments
     from craftext.checkers_jax.time_constrained import at_time_block_placed
     from craftext.checkers_jax.building_star import is_cross_formed
-    from craftext.checkers_jax.building import is_line_formed
-    from craftext.checkers_jax.building import is_square_formed
+    from craftext.checkers_jax.building_line import is_line_formed
+    from craftext.checkers_jax.building_line import is_square_formed
     from craftext.checkers_jax.conditional import conditional_placing
     from craftext.checkers_jax.relevant import place_object_relevant_to
     

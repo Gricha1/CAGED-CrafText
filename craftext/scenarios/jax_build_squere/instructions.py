@@ -1,9 +1,8 @@
-from craftext.checkers_jax.building import is_square_formed
 from craftext.scenarios.constants import BlockType
 from craftext.checkers_jax.target_state import TargetState, BuildSquareState
 from craftext.scenarios.constants import Scenarios
 def create_target_state(block_type:int, size:int):
-    target_achievements = BuildSquareState(need_to_achieve=True, block_type=block_type, size=size, radius=10)
+    target_achievements = BuildSquareState(block_type=block_type, size=size, radius=10)
     return TargetState(building_square=target_achievements)
 
 

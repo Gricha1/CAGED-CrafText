@@ -1,4 +1,4 @@
-from typing import List, Tuple 
+from typing import List
 import jax.numpy as jnp
 from flax import struct
 import jax

@@ -5,7 +5,6 @@ import jax
 
 @struct.dataclass
 class BuildLineState:
-    need_to_achieve: bool = False
 
     block_type: int = BlockType.INVALID
     size:int = 3
@@ -14,7 +13,6 @@ class BuildLineState:
 
 @struct.dataclass
 class BuildSquareState:
-    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     size: int = 3
@@ -22,7 +20,6 @@ class BuildSquareState:
     
 @struct.dataclass
 class BuildStarState:
-    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     size: int = 3
@@ -31,7 +28,6 @@ class BuildStarState:
 
 @struct.dataclass
 class ConditionalPlacingState:
-    need_to_achieve: bool = False
     
     object_inventory_enum: int = -1
     object_to_place: int = 0
@@ -40,7 +36,6 @@ class ConditionalPlacingState:
     
 @struct.dataclass
 class LocalizaPlacingState:
-    need_to_achieve: bool = False
     
     object_name: int = -1
     target_object_name: int = -1
@@ -49,13 +44,11 @@ class LocalizaPlacingState:
 
 @struct.dataclass
 class Achievements:
-    need_to_achieve: bool = False
     
     achievement_mask: list = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
 
 @struct.dataclass
 class TimeCosntrainedPlacmentState:
-    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     time_state: int = TimeState.DAY
@@ -63,7 +56,6 @@ class TimeCosntrainedPlacmentState:
 
 @struct.dataclass
 class UnifiedPatternState:
-    need_to_achieve: bool = False
     
     block_type: int = BlockType.INVALID
     pattern_type: jax.Array = struct.field(default_factory=lambda: jnp.zeros(1))
@@ -83,17 +75,9 @@ class TargetState:
 
     @classmethod
     def stack(cls, lst: list['TargetState']) -> 'TargetState':
-        """
-        Превращает list[TargetState] в один батчевый TargetState,
-        где каждое поле — Array(shape=(N,…),…).
-        """
         return jax.tree_util.tree_map(lambda *xs: jnp.stack(xs), *lst)
 
     def select(self, idx: jnp.ndarray) -> 'TargetState':
-        """
-        Из батчевого TargetState берет checker_id-ю «страницу»,
-        возвращает обычный (скалярный) TargetState.
-        """
         return jax.tree_util.tree_map(lambda arr: arr[idx], self)
     
     #building_line: Tuple[AchievementState, BuildLineAchievement]
@@ -166,40 +150,3 @@ class TargetState:
     # enchant_armour: int = AchievementState.NOT_MATTER.value
     # smth: int = AchievementState.NOT_MATTER.value
     # end: int = AchievementState.NOT_MATTER.value
-
-# @struct.dataclass
-# class TargetState:
-#     achievements: Achievements
-
-
-# --- Запуск тестов ---
-if __name__ == "__main__":
-    existing_achievements = Achievements()
-    target_state = create_target_state()
-
-    N = 100000  # Количество повторов
-
-    # Тест 1: Создание нового объекта Achievements
-    start = time.time()
-    for _ in range(N):
-        create_new_achievements()
-    print(f"New Achievements: {time.time() - start:.6f} sec")
-
-    # Тест 2: Использование replace()
-    start = time.time()
-    for _ in range(N):
-        replace_achievements(existing_achievements)
-    print(f"Replace Achievements: {time.time() - start:.6f} sec")
-
-    # Тест 3: Создание нового TargetState
-    start = time.time()
-    for _ in range(N):
-        create_target_state()
-    print(f"New TargetState: {time.time() - start:.6f} sec")
-
-    # Тест 4: JIT-компилированная проверка
-    check_achievements(target_state, target_state)  # Прогрев JIT
-    start = time.time()
-    for _ in range(N):
-        check_achievements(target_state, target_state)
-    print(f"JIT check Achievements: {time.time() - start:.6f} sec")

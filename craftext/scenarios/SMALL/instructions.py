@@ -5,13 +5,14 @@ from craftext.scenarios.jax_conditional_placing import instructions as condition
 from craftext.scenarios.jax_conditional_achievements import instructions as conditional_achievements
 from craftext.scenarios.jax_build_star import instructions as build_star_instructions
 from craftext.scenarios.jax_time_constrained_placment import instructions as time_constrained_placment
+
 # Merging 'easy' dictionaries
 easy = {**build_line_instructions.easy, 
         **build_squere_instructions.easy,
         **localization_place_instructions.easy,
         **conditional_achievements.easy,
-        **build_star_instructions.easy,
-        **time_constrained_placment.easy,
+        # **build_star_instructions.easy,
+        # **time_constrained_placment.easy,
         **conditional_place_instructions.easy
         }# **conditional_place_instructions.easy}
 
@@ -21,19 +22,19 @@ medium = {\
         **build_squere_instructions.medium, 
         **localization_place_instructions.medium,
         **conditional_achievements.medium,
-        **build_star_instructions.medium,
-        **time_constrained_placment.medium,
+        # **build_star_instructions.medium,
+        # **time_constrained_placment.medium,
         **conditional_place_instructions.medium
         #    **conditional_achievements.medium
           }
 easy_without_building = {
         # **build_line_instructions.easy, 
         # **build_squere_instructions.easy,
-        **localization_place_instructions.easy,
-        **conditional_achievements.easy,
+        # **localization_place_instructions.easy,
+        # **conditional_achievements.easy,
         # **build_star_instructions.easy,
         # **time_constrained_placment.easy,
-        **conditional_place_instructions.easy
+        # **conditional_place_instructions.easy
         }# **conditional_place_instructions.easy}
 easy_only_building = {
         # **build_line_instructions.easy, 

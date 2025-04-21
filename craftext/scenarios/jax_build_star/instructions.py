@@ -1,14 +1,10 @@
-from craftext.checkers_jax.building import is_square_formed
-# from craftext.checkers_jax.building_star import
 from flax.struct import dataclass
 from craftext.scenarios.constants import BlockType
-from craftext.scenarios.parce_dataset import update_previous_dict
 
-from craftext.adapters.state_adapter import GameData
 from craftext.checkers_jax.target_state import TargetState, BuildStarState
 from craftext.scenarios.constants import Scenarios
 def create_target_state(block_type:int, size:int, cross_type:int):
-    target_achievements = BuildStarState(need_to_achieve=True, block_type=block_type, size=size, radius=10, cross_type=cross_type)
+    target_achievements = BuildStarState(block_type=block_type, size=size, radius=10, cross_type=cross_type)
     return TargetState(building_star=target_achievements)
 
 @dataclass

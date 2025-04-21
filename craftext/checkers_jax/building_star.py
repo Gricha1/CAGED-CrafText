@@ -1,48 +1,38 @@
 import jax.numpy as jnp
 import jax.lax as lax
 import jax
-from flax.struct import dataclass
 
 from craftext.adapters.state_adapter import GameData
-from craftext.checkers_jax.target_state import TargetState, BuildStarState, BuildStarState
+from craftext.checkers_jax.target_state import BuildStarState
 from functools import partial
 
 
 import jax
 import jax.numpy as jnp
 
-
-def is_cross_formed(game_data: GameData,  target_state: BuildStarState) -> jax.Array:
+def checker_star(game_data: GameData,  target_state: BuildStarState) -> jax.Array:
     
     block_index = target_state.block_type
     radius = target_state.radius
     size = target_state.size
     cross_type = target_state.cross_type
 
-    return jax.lax.select(target_state.need_to_achieve, 
-                   cross_checker(10, 7, game_data, block_index, radius, size, cross_type),
-                   jnp.array(False))
-
-# # Пределы (выберите по самому большому сценарию)
-# MAX_RADIUS = 10
-# MAX_SIZE   = 7  # поддерживаем крестики вплоть до size=7
+    # return jax.lax.select(target_state.need_to_achieve, 
+                #    is_cross_formed(10, 7, game_data, block_index, radius, size, cross_type),
+                #    jnp.array(False))
+    return is_cross_formed(10, 7, game_data, block_index, radius, size, cross_type)
 
 @partial(jax.jit, static_argnums=(0,1))
-def cross_checker(
+def is_cross_formed(
     max_radius: int,
     max_size:   int,
     game_data,
-    block_index: int,    # tracer-скаляр
-    cross_type:  int,    # tracer-скаляр
-    radius:      int,    # tracer-скаляр, <= max_radius
-    size:        int     # tracer-скаляр, <= max_size и нечётное
+    block_index: int,    
+    cross_type:  int,    
+    radius:      int,
+    size:        int     
 ):
-    """
-    Ищет крестик типа cross_type и длины size
-    из блоков block_index в области radius вокруг игрока.
-    """
 
-    # --- A) вырезаем всегда фиксированный регион (2*max_radius+1)^2 вокруг игрока ---
     x, y = game_data.states[0].variables.player_position
     R   = max_radius
     FULL = 2*R + 1
@@ -51,62 +41,51 @@ def cross_checker(
         ((R, R), (R, R)),
         constant_values=-1
     )
-    region_full = lax.dynamic_slice(padded, (x, y), (FULL, FULL))  # [FULL, FULL]
+    region_full = lax.dynamic_slice(padded, (x, y), (FULL, FULL))  
 
-    # --- B) маскируем вне реального radius ---
-    coords = jnp.arange(-R, R+1)                         # shape [FULL]
-    mask1d = jnp.abs(coords) <= radius                   # tracer → shape [FULL]
-    mask2d = mask1d[:, None] & mask1d[None, :]           # [FULL, FULL]
+    coords = jnp.arange(-R, R+1)                         
+    mask1d = jnp.abs(coords) <= radius                   
+    mask2d = mask1d[:, None] & mask1d[None, :]           
     region = jnp.where(mask2d, region_full, -1)
 
-    # --- C) бинарная карта для блока ---
     B = (region == block_index).astype(jnp.float32)[None, None, ...]
 
     S = max_size
-    C = S // 2   # центр фильтра
+    C = S // 2  
 
-    idxs = jnp.arange(S)  # static arange от 0 до S-1
+    idxs = jnp.arange(S)  
 
-    half = size // 2      # tracer
-    start = C - half      # tracer
-    end   = start + size  # tracer
+    half = size // 2      
+    start = C - half      
+    end   = start + size  
 
-    # mask_range[p] = True iff start <= p < end
-    mask_range = (idxs >= start) & (idxs < end)  # shape [S], tracer
+    mask_range = (idxs >= start) & (idxs < end) 
 
-    # строим фильтры
-    # горизонтальный: строка = C, столбцы ∈ mask_range
-    row_idx = idxs[:, None]      # [S,1]
-    col_idx = idxs[None, :]      # [1,S]
-    filt_h = (row_idx == C) & mask_range[None, :]  # [S,S]
-    # вертикальный: столбец = C, строки ∈ mask_range
-    filt_v = (col_idx == C) & mask_range[:, None]  # [S,S]
-    # диагонали:
+    row_idx = idxs[:, None]      
+    col_idx = idxs[None, :]      
+    filt_h = (row_idx == C) & mask_range[None, :]  
+    filt_v = (col_idx == C) & mask_range[:, None]  
     filt_d1 = (row_idx == col_idx) & mask_range[:, None] & mask_range[None, :]
     filt_d2 = (row_idx + col_idx == 2*C) & mask_range[:, None] & mask_range[None, :]
 
-    # приводим к float
     kh = filt_h.astype(jnp.float32)
     kv = filt_v.astype(jnp.float32)
     kd1 = filt_d1.astype(jnp.float32)
     kd2 = filt_d2.astype(jnp.float32)
 
-    # --- E) свёртки (без изменения формы) ---
     conv = partial(lax.conv_general_dilated,
                    window_strides=(1,1),
                    padding="VALID",
                    dimension_numbers=("NCHW","OIHW","NCHW"))
 
-    h_out  = conv(B, kh [None, None])[0,0]  # [FULL-S+1, FULL-S+1]
+    h_out  = conv(B, kh [None, None])[0,0]  
     v_out  = conv(B, kv [None, None])[0,0]
     d1_out = conv(B, kd1[None, None])[0,0]
     d2_out = conv(B, kd2[None, None])[0,0]
 
-    # --- F) проверяем полные совпадения длины size ---
     straight = (h_out  == size) & (v_out  == size)
     diagonal = (d1_out == size) & (d2_out == size)
 
-    # --- G) выбор по cross_type ---
     mask = lax.cond(
         cross_type == 0,
         lambda _: straight,
@@ -119,32 +98,6 @@ def cross_checker(
         operand=None
     )
 
-    # --- H) есть ли True? ---
     return jnp.any(mask)
 
-# def cross_checker(game_data: GameData, block_index: int, radius: int, size: int, cross_type: int) -> jax.Array:
-
-#     game_map = game_data.states[0].map.game_map
-    
-#     player_position = game_data.states[0].variables.player_position
-    
-#     x, y = player_position
-#     region_size = 2 * radius + 1
-#     region = lax.dynamic_slice(
-#         game_map,
-#         start_indices=(x - radius, y - radius),
-#         slice_sizes=(region_size, region_size)
-#     )
-
-#     indixes = jnp.arange(region_size*region_size)
-#     carry = Carry(region=region,
-#             stone_index=block_index,
-#             region_size=region_size,
-#             size=size,
-#             cross_type=cross_type)
-#     _, crosses = lax.scan(scan_cross_function, carry, indixes)
-    
-#     return jnp.any(crosses)
-
-# # 89.169.171.236
 

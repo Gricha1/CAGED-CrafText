@@ -2,11 +2,8 @@ import jax
 import jax.numpy as jnp
 from typing import Tuple
 
-def check_line_2(center: Tuple[int, int], region: jax.Array, check_diagonal: bool=False):
-    """
-    Проверка наличия линии размера 2.
-    Если check_diagonal=True, проверяется диагональная линия.
-    """
+def check_line_2(center: Tuple[int, int], region: jax.Array, check_diagonal: bool = False, stone_index: int = 0):
+
     i, j = center
 
     def check_diagonal_lines(_):
@@ -19,8 +16,8 @@ def check_line_2(center: Tuple[int, int], region: jax.Array, check_diagonal: boo
             region[i + 1, j - 1]
         ])
 
-        return (jnp.sum(region) == 2) & jnp.all(diagonal_1 == 1) | \
-               (jnp.sum(region) == 2) & jnp.all(diagonal_2 == 1)
+        return (jnp.sum(region) == 3) & jnp.all(diagonal_1 == stone_index) | \
+               (jnp.sum(region) == 3) & jnp.all(diagonal_2 == stone_index)
 
     def check_straight_lines(_):
         vertical = jnp.array([
@@ -32,17 +29,14 @@ def check_line_2(center: Tuple[int, int], region: jax.Array, check_diagonal: boo
             region[i, j + 1]
         ])
 
-        return (jnp.sum(region) == 2) & jnp.all(vertical == 1) | \
-               (jnp.sum(region) == 2) & jnp.all(horizontal == 1)
+        return (jnp.sum(region) == stone_index) & jnp.all(vertical == stone_index) | \
+               (jnp.sum(region) == stone_index) & jnp.all(horizontal == stone_index)
 
     return jax.lax.cond(check_diagonal, check_diagonal_lines, check_straight_lines, None)
 
 
-def check_line_3(center: Tuple[int, int], region: jax.Array, check_diagonal=False):
-    """
-    Проверка наличия линии размера 3.
-    Если check_diagonal=True, проверяется диагональная линия.
-    """
+def check_line_3(center: Tuple[int, int], region: jax.Array, check_diagonal: bool = False, stone_index: int = 0):
+
     i, j = center
 
     def check_diagonal_lines(_):
@@ -78,11 +72,8 @@ def check_line_3(center: Tuple[int, int], region: jax.Array, check_diagonal=Fals
     return jax.lax.cond(check_diagonal, check_diagonal_lines, check_straight_lines, None)
 
 
-def check_line_4(center: Tuple[int, int], region: jax.Array, check_diagonal=False):
-    """
-    Проверка наличия линии размера 4.
-    Если check_diagonal=True, проверяется диагональная линия.
-    """
+def check_line_4(center: Tuple[int, int], region: jax.Array, check_diagonal=False, stone_index: int = 0):
+
     i, j = center
 
     def check_diagonal_lines(_):

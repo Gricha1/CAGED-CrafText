@@ -1,7 +1,7 @@
 import os
 import json
 from craftext.scenarios.constants import base_path, BlockType
-from craftext.checkers_jax.building import is_line_formed
+from craftext.checkers_jax.building_line import is_line_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
 
 def transform_instruction(instruction: json):

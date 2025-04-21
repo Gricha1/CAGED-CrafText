@@ -1,4 +1,4 @@
-from craftext.checkers_jax.building import is_cross_formed
+from craftext.checkers_jax.building_line import is_cross_formed
 
 
 medium = {

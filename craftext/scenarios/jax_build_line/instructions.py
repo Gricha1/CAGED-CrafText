@@ -31,7 +31,7 @@ from craftext.scenarios.constants import Scenarios
 # }
 
 def create_target_state(block_type:int, size:int, is_diagonal:bool):
-    target_achievements = AchievmentClass(need_to_achieve=True, block_type=block_type, size=size, is_diagonal=is_diagonal, radius=10)
+    target_achievements = AchievmentClass(block_type=block_type, size=size, is_diagonal=is_diagonal, radius=10)
     return TargetState(building_line=target_achievements)
 
 easy = {

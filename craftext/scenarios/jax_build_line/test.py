@@ -1,4 +1,4 @@
-from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.checkers_jax.building_line import is_line_formed, is_square_formed
 from craftext.scenarios.constants import BlockType
 
 easy_test_parafrased = {}

@@ -1,12 +1,10 @@
 # instruction_wrapper.py
 
-from dataclasses import dataclass
 from typing import Any, Optional
 import jax
 import jax.numpy as jnp
-from flax import linen as nn, struct
+from flax import linen as struct
 from gym import Wrapper
-from gym import Env
 
 from craftext.encoders.craftext_base_model_encoder import EncodeForm
 from craftext.encoders.craftext_distilbert_model_encoder import DistilBertEncode
@@ -16,7 +14,6 @@ from craftext.adapters.state_adapter import GameData
 
 from craftext.adapters.state_adapter_classic import GameDataClassic
 
-from craftext.instructions.wrappers.utils import list_to_array
 # from craftext.checkers_jax.time_constrained import at_time_block_placed
 # from craftext.checkers_jax.building_star import is_cross_formed
 from jax import tree_util
@@ -35,8 +32,8 @@ class TextEnvState:
 def get_checker_functions():
     from craftext.checkers_jax.time_constrained import at_time_block_placed
     from craftext.checkers_jax.building_star import is_cross_formed
-    from craftext.checkers_jax.building import is_line_formed
-    from craftext.checkers_jax.building import is_square_formed
+    from craftext.checkers_jax.building_line import is_line_formed
+    from craftext.checkers_jax.building_line import is_square_formed
     from craftext.checkers_jax.conditional import conditional_placing
     from craftext.checkers_jax.relevant import place_object_relevant_to
     

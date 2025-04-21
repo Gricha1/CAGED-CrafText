@@ -1,4 +1,4 @@
-from craftext.checkers_jax.building import is_square_formed
+from craftext.checkers_jax.building_line import is_square_formed
 from craftext.scenarios.constants import BlockType
 from craftext.scenarios.parce_dataset import update_previous_dict
 

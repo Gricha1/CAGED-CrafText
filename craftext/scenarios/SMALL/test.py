@@ -1,4 +1,4 @@
-from craftext.checkers_jax.building import is_line_formed, is_square_formed
+from craftext.checkers_jax.building_line import is_line_formed, is_square_formed
 from craftext.scenarios.jax_build_line import test as build_line_instructions
 from craftext.scenarios.jax_build_squere import test as build_squere_instructions
 from craftext.scenarios.jax_localization_place import test as localization_place_instructions

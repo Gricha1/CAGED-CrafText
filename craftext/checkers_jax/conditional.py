@@ -1,20 +1,36 @@
 import jax.numpy as jnp
+import jax 
 from jax import lax
 
 from craftext.adapters.state_adapter import PlayerInventory
-from craftext.checkers_jax.target_state import TargetState, ConditionalPlacingState
+from craftext.checkers_jax.target_state import ConditionalPlacingState
 from craftext.adapters.state_adapter import GameData
 
-import jax 
-def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_collect: int):
-    """
-    Checks the amount of a specific item in the player's inventory using a switch-based approach.
+
+def checker_conditional_placement(game_data: GameData,  target_state: ConditionalPlacingState) -> jax.Array:
     
-    :param inventory: Player's inventory (PlayerInventory).
-    :param object_inventory_enum: Enum corresponding to the inventory item.
-    :param count_to_collect: Required amount of the item.
-    :return: Boolean indicating if the required amount was collected.
-    """
+    object_inventory_enum = target_state.object_inventory_enum
+    object_to_place = target_state.object_to_place
+    count_to_collect = target_state.count_to_collect
+    count_to_stand = target_state.count_to_stand
+
+    return conditional_placing(game_data, object_inventory_enum, object_to_place, count_to_collect, count_to_stand)
+
+def conditional_placing(gd: GameData, object_inventory_enum: int, object_to_place: int, count_to_collect: int, count_to_stand: int) -> jax.Array:
+
+    previous_state = gd.states[0]
+    current_state = gd.states[1]
+    
+    prev_inventory_check = check_inventory(previous_state.inventory, object_inventory_enum, count_to_collect)
+    
+    curr_inventory_check = check_inventory(current_state.inventory, object_inventory_enum, count_to_collect)
+    
+    placed_check = check_map(current_state.map.game_map, object_to_place, count_to_stand)
+    
+    return jnp.logical_and(jnp.logical_and(jnp.logical_not(prev_inventory_check), curr_inventory_check), placed_check)
+    
+    
+def check_inventory(inventory: PlayerInventory, object_inventory_id: int, count_to_collect: int):
     
     def get_item(index, inventory):
         return lax.switch(index,
@@ -26,7 +42,6 @@ def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_
                 lambda: inventory.diamond,
                 lambda: inventory.sapling,
                 
-                # In instructions, don't use pickaxes or swords. Instead, use a constant, such as diamond. These variables have different sizes in Craftax, so their usage leads to errors.
                 lambda: inventory.diamond,
                 lambda: inventory.diamond,
                 lambda: inventory.diamond,
@@ -44,85 +59,16 @@ def check_inventory(inventory: PlayerInventory, object_inventory_enum, count_to_
                 lambda: inventory.ruby,
                 lambda: inventory.sapphire,
                 
-                ####
                 lambda: inventory.diamond, #lambda: inventory.potions
                 lambda: inventory.diamond, #lambda: inventory.books
             ]
         )
         
-    collected_count = get_item(object_inventory_enum, inventory)
+    collected_count = get_item(object_inventory_id, inventory)
     return collected_count >= count_to_collect
 
 
-def check_map(game_map: jnp.ndarray, object_to_place: int, count_to_stand: int):
-    """
-    Checks if the required number of `object_to_place` has been placed on the map.
-    
-    :param game_map: The game map.
-    :param object_to_place: The index of the object to check.
-    :param count_to_stand: Required number of placed objects.
-    :return: Boolean indicating if the required amount of objects were placed on the map.
-    """
+def check_map(game_map: jax.Array, object_to_place: int, count_to_stand: int):
+
     placed_count = jnp.sum(game_map == object_to_place)
     return placed_count >= count_to_stand
-
-
-
-def conditional_placing(game_data: GameData,  target_state: ConditionalPlacingState) -> jax.Array:
-    
-    
-    object_inventory_enum = target_state.object_inventory_enum
-    object_to_place = target_state.object_to_place
-    count_to_collect = target_state.count_to_collect
-    count_to_stand = target_state.count_to_stand
-
-    return jax.lax.select(target_state.need_to_achieve, 
-                   check_placing(game_data, object_inventory_enum, object_to_place, count_to_collect, count_to_stand),
-                   jnp.array(False))
-
-def check_placing(gd: GameData, object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
-    """
-    The function that checks if:
-    1) The required number of `object_inventory` was collected in the previous 
-       state.
-    2) The required number was collected in the current state.
-    3) The required number of `object_to_place` was placed on the map in the 
-       current state.
-    
-    :param gd: Game state history (GameDataClassic).
-    :param object_inventory_enum: Numeric value corresponding to an inventory 
-       item. Possible values correspond to items in the inventory: 
-       WOOD (simple), STONE (simple), COAL (simple), 
-       IRON (simple), DIAMOND (medium),SAPLING (simple), 
-       WOOD_PICKAXE (simple), STONE_PICKAXE (simple), 
-       IRON_PICKAXE (medium), WOOD_SWORD (simple), 
-       STONE_SWORD (simple), IRON_SWORD (medium).
-       
-    :param object_to_place: Index of the object on the map. Possible values for 
-       blocks that can be placed: "STONE"(simple), "CRAFTING_TABLE"(simple), "FURNACE"(simple), "CHEST"(medium), 
-       "FOUNTAIN"(medium), "ENCHANTMENT_TABLE_FIRE"(medium), "ENCHANTMENT_TABLE_ICE"(medium), "PLANT"(simple).
-       
-    :param count_to_collect: Required number of objects in the inventory.
-    :param count_to_stand: Required number of objects placed on the map.
-    :return: Returns True if both conditions are satisfied in sequence, 
-             otherwise False.
-    """
-    
-    previous_state = gd.states[0]
-    current_state = gd.states[1]
-    
-    # Check inventory in the previous state
-    prev_inventory_check = check_inventory(previous_state.inventory, object_inventory_enum, count_to_collect)
-    
-    # Check inventory in the current state
-    curr_inventory_check = check_inventory(current_state.inventory, object_inventory_enum, count_to_collect)
-    
-    # Check map (same as before)
-    placed_check = check_map(current_state.map.game_map, object_to_place, count_to_stand)
-    
-    # Ensure that the sequence is correct:
-    # 1) The required amount of items were NOT collected in the previous state
-    # 2) The required amount of items WERE collected in the current state
-    # 3) The required number of objects was placed on the map
-    return jnp.logical_and(jnp.logical_and(jnp.logical_not(prev_inventory_check), curr_inventory_check), placed_check)
-    

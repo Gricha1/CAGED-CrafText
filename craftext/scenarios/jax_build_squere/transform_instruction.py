@@ -3,7 +3,7 @@ import json
 from craftext.scenarios.constants import base_path, BlockType, Scenarios, Achievement, AchievementState#, create_target_state
 from craftext.checkers_jax.target_state import Achievements, TargetState, BuildSquareState
 import re
-from craftext.checkers_jax.building import is_line_formed
+from craftext.checkers_jax.building_line import is_line_formed
 from craftext.scenarios.parce_dataset import update_previous_dict
 import jax
 from jax import numpy as jnp

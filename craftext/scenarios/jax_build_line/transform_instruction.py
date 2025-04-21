@@ -10,7 +10,7 @@ from jax import numpy as jnp
 from jax.tree_util import Partial  # Используем jax.tree_util.Partial
 
 
-from craftext.checkers_jax.building import is_line_formed as is_complete_instr
+from craftext.checkers_jax.building_line import is_line_formed as is_complete_instr
 from craftext.checkers_jax.target_state import BuildLineState as AchievmentClass
 
 
