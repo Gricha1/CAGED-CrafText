@@ -25,6 +25,7 @@ from craftext.checkers_jax.conditional      import checker_conditional_placement
 from craftext.checkers_jax.relevant         import cheker_localization
 
 from craftext.checkers_jax.target_state import TargetState
+from typing import Union
 
 @struct.dataclass
 class TextEnvState:
@@ -39,7 +40,7 @@ class TextEnvState:
     checker_id: int
     
 
-def generic_check(game_data, target_state: TargetState, idx: int) -> jnp.ndarray:
+def generic_check(game_data: Union[GameData, GameDataClassic], target_state: TargetState, idx: int) -> jnp.ndarray:
     
 
     def ca(ts: TargetState):   return checker_acvievments(game_data, ts.achievements)
@@ -128,7 +129,6 @@ class InstructionWrapper(Wrapper):
         ts = self.batched_ts.select(env_state.idx)
         results = generic_check(game_data_vector, ts, env_state.checker_id)
         instruction_done = results
-
         reward /= 50
         reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instruction_done | done
