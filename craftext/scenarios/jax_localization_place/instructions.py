@@ -1,7 +1,6 @@
-from craftext.checkers_jax.relevant import place_object_relevant_to
 from craftext.scenarios.constants import BlockType
 
-from craftext.checkers_jax.target_state import Achievements, TargetState, LocalizaPlacingState
+from craftext.checkers_jax.target_state import TargetState, LocalizaPlacingState
 from craftext.scenarios.constants import Scenarios
 def create_target_state(object_inventory_enum, object_to_place, count_to_collect, count_to_stand):
     target_achievements = LocalizaPlacingState(object_inventory_enum, object_to_place, count_to_collect, count_to_stand)

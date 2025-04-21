@@ -7,13 +7,13 @@ from craftext.scenarios.jax_build_star import instructions as build_star_instruc
 from craftext.scenarios.jax_time_constrained_placment import instructions as time_constrained_placment
 
 # Merging 'easy' dictionaries
-easy = { **build_line_instructions.easy, # + 2200 SPS + 0.015 - 0.045
-         **build_squere_instructions.easy,
+easy = { #**build_line_instructions.easy, # + 2200 SPS + 0.015 - 0.045
+        #  **build_squere_instructions.easy,
          **localization_place_instructions.easy,
-         **conditional_achievements.easy,
+        #  **conditional_achievements.easy,
         # **build_star_instructions.easy,
         # **time_constrained_placment.easy,
-        **conditional_place_instructions.easy
+        # **conditional_place_instructions.easy
         }# **conditional_place_instructions.easy}
 
 # Merging 'medium' dictionaries
