@@ -127,8 +127,8 @@ class InstructionWrapper(Wrapper):
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
                     
         ts = self.batched_ts.select(env_state.idx)
-        results = generic_check(game_data_vector, ts, env_state.checker_id)
-        instruction_done = results
+        print(ts)
+        instruction_done = generic_check(game_data_vector, ts, env_state.checker_id)
         reward /= 50
         reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instruction_done | done
