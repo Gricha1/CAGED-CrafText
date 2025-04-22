@@ -52,6 +52,9 @@ class CrafTextScenariosWithSuperDataset(ScenariosNoLambda):
             self.super_dataset.save_to_json(filepath=name)
 
         return encoded_instructions, responses, num_variants
+    
+    def _prepare_scenarios(self):
+        return super()._prepare_scenarios(add_original_instructions=True)
         
 def create_scenarios_with_super_dataset(super_dataset_name=None, load_preinited=False, update_sd=False):
     class CustomCrafTextScenariosWithSuperDataset(CrafTextScenariosWithSuperDataset):
