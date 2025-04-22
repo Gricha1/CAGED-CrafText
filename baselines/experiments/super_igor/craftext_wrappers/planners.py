@@ -98,9 +98,14 @@ class SDPlanner:
                 # If the number of plans is less than necessary, we add masking plans.
                 # This is necessary for correct comparison of plans and instructions in ScenariosLoader
                 plans += [self.default_plan] * (self.num_return_sequences - len(plans))
+                plans = plans[:self.num_return_sequences]
+            
+
+            
+            
             collected.extend(plans)
-        print("shul be", "count" , self.num_return_sequences, len(plans))
-        return collected[:self.num_return_sequences]
+    
+        return collected
 
 import gc
 class LLMPlanner:
