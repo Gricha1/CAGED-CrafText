@@ -5,7 +5,7 @@ from datasets import Dataset
 from baselines.experiments.super_igor.prompts import promt_instruction, PROMPTS
 from scipy.signal import find_peaks
 from sklearn.neighbors import KernelDensity
-
+import os
 import warnings
 
 plan_config = {
@@ -21,36 +21,72 @@ def check_plan(plan, plan_config):
     return True
 
 def prepare_plan(plan, plan_config):
-    # steps = plan.split("\n")
-    
-    # # Add end command if not present
-    # if plan_config['end_command'] not in steps:
-    #     steps.append(plan_config['end_command'])
-
-    # cleaned_steps = []
-    # for step in steps:
-    #     # Remove specified symbols
-    #     for symbol in plan_config['remove_symbols']:
-    #         step = step.replace(symbol, "")
-        
-    #     step = step.strip()
-    #     if not step:
-    #         continue
-
-    #     # Split step into words
-    #     words = step.split()
-    #     # Remove the first word if it's a number
-    #     if words and words[0].isdigit():
-    #         words = words[1:]
-
-    #     # Skip step if it exceeds max word count
-    #     if len(words) > plan_config['max_step_words_count']:
-    #         continue
-
-    #     cleaned_steps.append(" ".join(words))
-    
     return f"[{plan}]"
 
+
+def generate_sd_from_subtasks(path, new_path):
+    df = pd.read_csv(path)
+    count_new_plans = [2, 5, 10]
+    bad_step = "Deafault_plans"
+    directory = os.path.dirname(path)
+    optimized_sd_path = os.path.join(directory, new_path)
+
+    sd_optimized = SuperDataset()
+    instructions = list(set(df["instruction"].values))
+
+    for i_ix, instruction in enumerate(instructions):
+        mask = df["instruction"] == instruction
+
+        # Get all plans for the instruction
+        plans_for_instructions = df[mask]
+        clear_plans = list(
+            set(plans_for_instructions["plan"].tolist())
+        )
+
+        for i, plan in enumerate(clear_plans):
+            mask = plans_for_instructions["plan"] == plan
+            subtasks_for_plan = plans_for_instructions[mask][
+                ["subtask", "per_step_score"]
+            ]
+            subtasks = subtasks_for_plan["subtask"]
+            scores = subtasks_for_plan["per_step_score"]
+
+            min_score = scores.min()
+            max_score = scores.max()
+            norm_scores = (scores - min_score) / (max_score - min_score)
+            norm_scores = norm_scores.values
+
+            old_plan_sr = plans_for_instructions[mask]["sr"].values[0]
+
+            if old_plan_sr < 0.2:
+                new_plans = count_new_plans[0]
+            elif 0.2 <= old_plan_sr < 0.7:
+                new_plans = count_new_plans[1]
+            else:
+                new_plans = count_new_plans[2]
+
+            optimized_plans = []
+
+            for j in range(new_plans):
+                random_values = np.random.rand(len(norm_scores))
+                random_mask = random_values < norm_scores
+
+                filtered_subtasks = subtasks[random_mask].reset_index(
+                    drop=True
+                ).tolist()
+
+                if filtered_subtasks and bad_step not in filtered_subtasks[0]:
+                    optimized_plan = "\n".join(filtered_subtasks)
+                    optimized_plans.append(optimized_plan)
+
+            if optimized_plans:
+                sd_optimized.add_instruction(
+                    instruction=instruction, plans=optimized_plans
+                )
+
+    sd_optimized.save_to_json(optimized_sd_path)
+  
+    
 
 achievement_dict = {
     0: "COLLECT_WOOD",
@@ -343,12 +379,26 @@ class SuperDataset:
             #print(reward)
             self.update(plan, reward)
     
-    def per_subtask_table(self, plans, rewards, matrix_count, matrix_reward,per_achivment_sum, output_path):
+    def batch_update_instruction(self,instructions, plans, rewards):
+        for i, instruction in enumerate(instructions):
+            print("instruction -- plan -- reward")
+            print(instruction, [plans[i]], [rewards[i]])
+            self.instructions[instruction].update([plans[i]], [rewards[i]])
+
+    
+    def per_subtask_table(self, instructions,
+                                plans,
+                                rewards,
+                                matrix_count, 
+                                matrix_reward, 
+                                per_achivment_sum,
+                                output_path):
+        
         matrix = matrix_reward/matrix_count
         
         counts = []
         sum_reward = []
-        instructions = []
+        instructions_ = []
         subtasks_ = []
         sr = []
         full_plan = []
@@ -357,7 +407,7 @@ class SuperDataset:
         clean_achievments_vector = [] 
         for i in range(len(plans)):
             plan, reward = plans[i], rewards[i]
-            instruction = self.mapping_plan_to_instruction[plan][0] #This wrong, need to fix
+            instruction = instructions[i] #self.mapping_plan_to_instruction[plan][0] #This wrong, need to fix
             subtask_values = matrix[i]
             counts_values = matrix_count[i]
             reward_values = matrix_reward[i]
@@ -365,7 +415,7 @@ class SuperDataset:
             
             subtasks = plan.split("\n")
             for j,subtask in enumerate(subtasks):
-                instructions.append(instruction)
+                instructions_.append(instruction)
                 subtasks_.append(subtask)
                 counts.append(counts_values[j])
                 sum_reward.append(reward_values[j])
@@ -376,7 +426,7 @@ class SuperDataset:
                 full_plan.append(plan)
                 sr.append(reward)
         
-        df = pd.DataFrame({"instruction": instructions,
+        df = pd.DataFrame({"instruction": instructions_,
                            "plan": full_plan,
                            "subtask":subtasks_,
                            "run_count": counts,
