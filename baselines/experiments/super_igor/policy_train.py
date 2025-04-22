@@ -23,7 +23,7 @@ from baselines.experiments.super_igor.craftext_wrappers.encoder import make_enco
 from craftext.craftext_encoder import EncodeForm
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
 from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
-
+from baselines.experiments.super_igor.super_dataset import SuperDataset
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic_with_text import create_actor_critic
@@ -64,11 +64,18 @@ def make_train(config, network_params):
     env_params = env.default_params
     #REPLACE INTO DATASET
    # EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20, split_into_steps=True, make_one_hot=True)
+    load_preinited = False
+    if config['PLANER_TYPE']=="sd":
+        super_dataset = SuperDataset.load_from_json(config["SUPER_DATASET"])
+        config['PLANER_CONFIG']['super_dataset'] = super_dataset
+        load_preinited = True
+            
     EncodeModel = make_encoder_with_planning(planer_type = config['PLANER_TYPE'],
                                              planer_config=config['PLANER_CONFIG'],
                                              embedding_source=config['EMBEDDING_SOURCE'],
                                              step_by_step=config['STEP_BY_STEP'])
-    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=False)
+    
+    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=load_preinited)
     env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
@@ -828,7 +835,7 @@ if __name__ == "__main__":
     parser.add_argument("--embedding_source", type=int, default=1)
     parser.add_argument("--step_by_step", type=bool, default=True)
     parser.add_argument("--original_model_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
-    parser.add_argument("--peft_weights_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--peft_weights_path", type=str, default=None)
     parser.add_argument("--num_paraphrases", type=int, default=15)
     parser.add_argument("--beam_groups", type=int, default=15)
     parser.add_argument("--beams_count", type=int, default=15)

@@ -402,7 +402,7 @@ class Experiment:
         agent_rng, _rng_ = jax.random.split(rng)
         
         # Variables for track experiment progress
-        remain_steps = 20000
+        remain_steps = 40000
         progress_bar = tqdm(total= N_INSTRUCTIONS * self.seeds_to_use, desc="Steps")
         steps = 0
         
@@ -457,7 +457,7 @@ class Experiment:
                     done_in_step = {np.sum(done_count):0}
                 else:
                     done_in_step[np.sum(done_count)] += 1
-                if done_in_step[np.sum(done_count)] > 5:
+                if done_in_step[np.sum(done_count)] > 20000:
                     break
                 
                 progress_bar.refresh()
@@ -468,7 +468,7 @@ class Experiment:
                 prev_indx = self._update_success_metrics(prev_indx, env_state, done, info,
                                                         done_count, total_success_rate)
 
-                if np.sum(done_count) >= self.env.n_instructions * self.seeds_to_use:
+                if (np.sum(done_count)+5) >= self.env.n_instructions * self.seeds_to_use:
                     break
 
                 if log_rngs:
@@ -564,11 +564,15 @@ class Experiment:
         self.super_dataset.super_print()
         self.super_dataset.clear_scores()
         self.super_dataset.rebuild_mapping()
-        self.super_dataset.batch_update(self.env.scenario_handler.scenario_data.instructions_list, total_score)
+        self.super_dataset.batch_update_instruction(self.env.scenario_handler.scenario_data.original_instructions,
+                                                    self.env.scenario_handler.scenario_data.instructions_list,
+                                                    total_score)
         self.super_dataset.save_to_json(self.config["DATASET_PATH"])
         directory = os.path.dirname(self.config["DATASET_PATH"])
+        
       #  per_subtask_score = reward_sum / episode_count
-        self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.instructions_list, 
+        self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.original_instructions,
+                                             self.env.scenario_handler.scenario_data.instructions_list, 
                                              total_score,
                                              episode_count,
                                              reward_sum,
