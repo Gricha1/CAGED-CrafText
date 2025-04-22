@@ -59,6 +59,7 @@ class FunctionPlanExtractor():
         second_check = count_squares_1 == count_squares_2
         third_check = count_squares_2 > 0 and count_arguments_eq > 0
         four_check = cleaned.endswith(")")
+        
 
         return first_check and second_check and third_check and four_check
 
@@ -78,7 +79,6 @@ class FunctionPlanExtractor():
             
             if len(remove_bad_subtasks)==0:
                 remove_bad_subtasks = ["[MASK]"]
-            print(remove_bad_subtasks)
            # print("cleared subtasks: ")
            # print(remove_bad_subtasks)
            # print("- - - - - - - - - - ")
@@ -154,6 +154,69 @@ PROMPT_WITH_FUNCTIONS = f"""
         Answer: 
         """
         
+# PROMPT_WITH_FUCNTIONS_HINTS = f"""
+#         You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
+#         You must include all the preliminary steps that it needs to complete.
+        
+#         You are controlling an agent in a 2D game set within a simplified Minecraft-like environment. 
+#         The agent starts from scratch with an empty inventory and no gathered resources. 
+#         Your task is to generate a step-by-step plan that enables the agent to follow a given user instruction.
+
+#         What you must do:
+#         - Break down the instruction into atomic actions the agent needs to perform.
+#         - Include all necessary preliminary steps, such as gathering or crafting resources.
+#         - Assume the agent has nothing at the beginning — you must plan from the ground up.
+#         - Output your answer as a Python list of strings.
+#         - Each string must represent one atomic skill invocation, written on a separate line.
+
+#         Format for each step:
+#         "skill_name(arg1 = value1, arg2 = value2, ...)"
+#         - skill_name: the name of the primitive skill or action the agent will execute.
+#         - Inside the parentheses, list all required arguments with their names and corresponding values.
+
+#         Example:
+#         gather_resource(resource_type = wood)
+        
+#         Each of the step agents will be implemented without knowledge of what it did before, so it can only rely on observation and the current step. Therefore, each step must be self-sufficient and not require knowledge of past steps.
+
+#         Existed skills:
+#         {{'gather_resource': "'resource_type'"}}, 
+#         {{'place_item': "'item_type'}},
+#         {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
+#         {{'create_item': "'item_type'"}},
+#         {{'defeat_enemy': "'enemy_type'"}},
+#         {{'eat': "'food_type'"}},
+#         {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
+
+#         Existed arguments:
+#         resource_type: wood, stone, coal, diamond, iron, plant, water
+#         item_type: stone, table, plant, furnace
+#         block_name: stone, table, plant, furnace
+#         figure_type: line, diagonal_line, square
+#         item_type: table, wooden sword, wooden pickaxe, stone sword, stone pickaxe, iron sword, iron pickaxe
+#         enemy_type: zombie, skeleton, cow
+#         food_type: cow, plant
+#         item_type_to_place: stone, table, plant, furnace
+#         item_type_reference: stone, table, plant, furnace, water, tree, stone, coal, diamond, iron, plant
+#         direction: left, right, bottom, top
+
+#         Send your answer as a python list.
+#         Instruction: Make a pickaxe from wood
+#         Answer: 
+#         ["gather_resource(resource_type = wood)",
+#         "gather_resource(resource_type = wood)",
+#         "create_item(item_type = table)", 
+#         "gather_resource(resource_type = wood", 
+#         "gather_resource(resource_type = wood", 
+#         "create_item(item_type = wooden pickaxe)"]
+
+#         Send your answer as a python list.
+#         Instruction: $INSTRUCTION$  
+#         Answer: 
+#         """
+
+
+       
 PROMPT_WITH_FUCNTIONS_HINTS = f"""
         You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
         You must include all the preliminary steps that it needs to complete.
@@ -182,23 +245,17 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         Existed skills:
         {{'gather_resource': "'resource_type'"}}, 
         {{'place_item': "'item_type'}},
-        {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
-        {{'create_item': "'item_type'"}},
+        {{'create_item': "'item_type_to_craft'"}},
         {{'defeat_enemy': "'enemy_type'"}},
         {{'eat': "'food_type'"}},
-        {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
+
 
         Existed arguments:
         resource_type: wood, stone, coal, diamond, iron, plant, water
         item_type: stone, table, plant, furnace
-        block_name: stone, table, plant, furnace
-        figure_type: line, diagonal_line, square
-        item_type: table, wooden sword, wooden pickaxe, stone sword, stone pickaxe, iron sword, iron pickaxe
+        item_type_to_craft: table, wooden sword, wooden_pickaxe, stone_sword, stone_pickaxe, iron_sword, iron_pickaxe
         enemy_type: zombie, skeleton, cow
-        food_type: cow, plant
-        item_type_to_place: stone, table, plant, furnace
-        item_type_reference: stone, table, plant, furnace, water, tree, stone, coal, diamond, iron, plant
-        direction: left, right, bottom, top
+        food_type: cow, plant, water
 
         Send your answer as a python list.
         Instruction: Make a pickaxe from wood
@@ -208,51 +265,65 @@ PROMPT_WITH_FUCNTIONS_HINTS = f"""
         "create_item(item_type = table)", 
         "gather_resource(resource_type = wood", 
         "gather_resource(resource_type = wood", 
-        "create_item(item_type = wooden pickaxe)"]
+        "create_item(item_type = wooden_pickaxe)"]
 
         Send your answer as a python list.
         Instruction: $INSTRUCTION$  
         Answer: 
         """
 
-# PROMPT_WITH_FUCNTIONS_HINTS = f"""
-#         You control an agent in a 2D game with siplified Minecraft environment. You will need to provide a detailed step-by-step plan for following the user's instructions. 
-#         You must include all the preliminary steps that it needs to complete.
+INTERACTIVE_PROMPT_WITH_FUNCTIONS = f"""
+        You are controlling an agent in a 2D game set within a simplified Minecraft-like environment. 
+        The agent starts from scratch with an empty inventory and no gathered resources. 
+        Your task is to generate a step-by-step plan that enables the agent to follow a given user instruction.
 
-#         For doing this each step descrbe in format of subgoals:
-#         {{'gather_resource': "'resource_type'", "count"}}, 
-#         {{'place_item': "'item_type'}},
-#         {{construct_figure: 'block_name', 'figure_type', 'side_size'}},
-#         {{'create_item': "'item_type'"}},
-#         {{'defeat_enemy': "'enemy_type'"}},
-#         {{'place_item_relative_to_another': "'item_type_to_place', 'item_type_reference', 'direction', 'distance'"}},
+        What you must do:
+        - Break down the instruction into atomic actions the agent needs to perform.
+        - Include all necessary preliminary steps, such as gathering or crafting resources.
+        - Assume the agent has nothing at the beginning — you must plan from the ground up.
+        - Output your answer as a Python list of strings.
+        - Each string must represent one atomic skill invocation, written on a separate line.
 
-#         Possible arguments:
-#         resource_type: wood, stone, coal, diamond, iron, plant
-#         item_type: stone, table, plant, furnace
-#         block_name: stone, table, plant, furnace
-#         figure_type: line, diagonal_line, square
-#         item_type: table, wooden sword, wooden pickaxe, stone sword, stone pickaxe, iron sword, iron pickaxe
-#         enemy_type: zombie, skeleton
-#         item_type_to_place: stone, table, plant, furnace
-#         item_type_reference: stone, table, plant, furnace, water, tree, stone, coal, diamond, iron, plant
-#         direction: left, right, bottom, top
+        Format for each step:
+        "skill_name(arg1 = value1, arg2 = value2, ...)"
+        - skill_name: the name of the primitive skill or action the agent will execute.
+        - Inside the parentheses, list all required arguments with their names and corresponding values.
 
-#         Send your answer as a python list.
-#         Instruction: Make a smelter and collect 3 plants
-#         Answer: ["gather_resource(resource_type = wood, count = 2)", "create_item(table)", "gather_resource(resource_type = wood, count = 2)", "create_item(wooden pickaxe)"]
+        Example:
+        gather_resource(resource_type = wood)
+        make_figure(block_type=stone, figure=square, side_size=2)
         
-#         Send your answer as a python list.
-#         Instruction: $INSTRUCTION$  
-#         Answer:
-# """
+        Each of the step agents will be implemented without knowledge of what it did before, so it can only rely on observation and the current step. Therefore, each step must be self-sufficient and not require knowledge of past steps.
+        
+        Existed skills:
+        $SKILLS$  
+        
+        Existed arguments:
+        $ARGS$ 
+        
+        Instruction: Make a pickaxe from wood
+        Reflections: 
+        - Wood pickaxe making needed a resorce gathering, spicifically wood - ADD NEW SKILL 'gather_resource'
+        - Wood pickaxe making needed a table for craft - ADD NEW SKILL'create_item'
+        'create_item' also might be used for  wood pickaxe crafting.
+        Answer: 
+        ["gather_resource(resource_type = wood)",
+        "gather_resource(resource_type = wood)",
+        "create_item(item_type = table)",
+        "gather_resource(resource_type = wood)",
+        "create_item(item_type = wooden pickaxe)"]
 
-PROMPTS = [BASE_PROMPT, PROMPT_WITH_FUNCTIONS, PROMPT_WITH_FUCNTIONS_HINTS]
+        Send your answer as a python list.
+        Instruction: $INSTRUCTION$ 
+        Reflections: 
+        """
+
+PROMPTS = [BASE_PROMPT, PROMPT_WITH_FUNCTIONS, PROMPT_WITH_FUCNTIONS_HINTS, INTERACTIVE_PROMPT_WITH_FUNCTIONS]
 class PromptTemplate:
     def __init__(self, template: str):
         self.template = template
 
-    def render(self, **kwargs) -> str:
+    def render(self, kwargs) -> str:
         rendered_prompt = self.template
         for key, value in kwargs.items():
             placeholder = f"${key.upper()}$"
@@ -262,5 +333,11 @@ class PromptTemplate:
 def promt_instruction(instruction, prompt=BASE_PROMPT):
     prompt_template = PromptTemplate(prompt)
     instruction = instruction
-    full_prompt = prompt_template.render(INSTRUCTION=instruction)
+    full_prompt = prompt_template.render({'INSTRUCTION':instruction})
+    return full_prompt
+
+
+def adwanced_promt_instruction(keys_values, prompt=BASE_PROMPT):
+    prompt_template = PromptTemplate(prompt)
+    full_prompt = prompt_template.render(keys_values)
     return full_prompt
