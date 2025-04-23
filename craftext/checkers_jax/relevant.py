@@ -3,135 +3,183 @@ from jax import (
     numpy as jnp,
     lax
 )
-from craftext.checkers.base_functions.state_adapter import GameData
-blocks_list = [
-    "INVALID", "OUT_OF_BOUNDS", "GRASS", "WATER", "STONE", "TREE", 
-    "WOOD", "PATH", "COAL", "IRON", "DIAMOND", "CRAFTING_TABLE", 
-    "FURNACE", "SAND", "LAVA", "PLANT", "RIPE_PLANT", "WALL", 
-    "DARKNESS", "WALL_MOSS", "STALAGMITE", "SAPPHIRE", "RUBY", 
-    "CHEST", "FOUNTAIN", "FIRE_GRASS", "ICE_GRASS", "GRAVEL", 
-    "FIRE_TREE", "ICE_SHRUB", "ENCHANTMENT_TABLE_FIRE", 
-    "ENCHANTMENT_TABLE_ICE", "NECROMANCER", "GRAVE", "GRAVE2", 
-    "GRAVE3", "NECROMANCER_VULNERABLE"
-]
+from craftext.adapters.state_adapter import GameData
+from craftext.checkers_jax.target_state import TargetState, LocalizaPlacingState
+from functools import partial
 
 
-def place_object_relevant_to(game_data: GameData, object_name: str, target_object_name: str, side: int, distance: int) -> jax.Array:
-    """
-    Check if the object is placed at a specific side (right, left, top, or bottom) and distance from the target_object_name
-    within the area around the player (with a fixed radius of 15).
+@partial(jax.jit, static_argnames=['max_radius'])
+def safe_dynamic_slice(game_map, x, y, radius, max_radius):
+    full_region_size = 2 * max_radius + 1
 
-    Args:
-    - game_data (GameData): The game data object containing the player's positions and map information.
-    - object_name (str): The name of the block to check. Possible items: "STONE", "CRAFTING_TABLE", "FURNACE", "CHEST", "FOUNTAIN", "ENCHANTMENT_TABLE_FIRE", "ENCHANTMENT_TABLE_ICE", "PLANT".
-    - target_object_name (str): The name of the target object.
-    - side (int): The side on which the object should be placed. Encoded as:
-                  0 = Right, 1 = Left, 2 = Top, 3 = Bottom.
-    - distance (int): The distance at which the object should be placed from the target object.
+    x_padded = x + max_radius
+    y_padded = y + max_radius
 
-    Returns:
-    - jax.Array[bool]: True if the object is placed at the specified side and distance relative to the target object, otherwise False.
-    """
-    game_map = game_data.states[0].map.game_map
-
-    player_position = game_data.states[0].variables.player_position
-
-    x, y = player_position
-
-    # Фиксированный радиус
-    radius = 5
-
-    # Определяем размеры области вокруг игрока
-    region_size = 2 * radius + 1
-
-    # Извлекаем область карты вокруг игрока с помощью lax.dynamic_slice
     region = lax.dynamic_slice(
         game_map,
-        start_indices=(x - radius, y - radius),
-        slice_sizes=(region_size, region_size)
+        start_indices=(x_padded - max_radius, y_padded - max_radius),
+        slice_sizes=(full_region_size, full_region_size)
     )
 
-    print(region)
+    coord_range = jnp.arange(full_region_size) - max_radius
+    mask_x = jnp.abs(coord_range) <= radius
+    mask_y = mask_x[:, None]
+    mask = mask_x & mask_y
 
-    # Размер квадрата, добавляем +2 для проверки краёв
-    square_size = distance*2 + 1
+    region_masked = jnp.where(mask, region, -1)
+    return region_masked
 
-    def check_square(i, j):
-    # Извлекаем текущий квадрат с помощью lax.dynamic_slice
-        square = lax.dynamic_slice(
-            region,
-            start_indices=(i, j),
-            slice_sizes=(square_size, square_size)
-        )
 
-       
-        center = distance #jnp.round(square_size / 2).astype(int)
-        # Находится ли target в центре?
-        target_mask = square[center, center] == target_object_name.value
-#         print(target_mask)
-#         print(target_object_name.)
-       
-        
-        # Маска для object_name (в зависимости от стороны на расстоянии distance)
-        object_mask = lax.switch(side,
-            [
-                lambda: square[center, -1] == object_name.value,  # Справа
-                lambda: square[center, 0] == object_name.value,  # Слева
-                lambda: square[-1, center] == object_name.value,  # Сверху
-                lambda: square[0, center] == object_name.value  # Снизу
-            ]
-        )
-        # Проверка, что и target, и объект находятся на своих местах
-        # return jnp.any(target_mask & object_mask)
-        return target_mask & object_mask
+def cheker_localization(game_data: GameData,  target_state: LocalizaPlacingState) -> jax.Array:
+    
+    object_name = target_state.object_name
+    target_object_name = target_state.target_object_name 
+    side = target_state.side 
+    distance = target_state.distance
 
-    result = jnp.any(jax.vmap(lambda i: jax.vmap(
-                    lambda j: check_square(i, j)
-                )(jnp.arange(0, region.shape[1] - square_size + 1))
-            )(jnp.arange(0, region.shape[0] - square_size + 1))
-        )
+    # return jax.lax.select(target_state.need_to_achieve, 
+    #                localization_checker(game_data=game_data, object_name=object_name, target_object_name=target_object_name, side=side, distance=distance),
+    #                jnp.array(False))
+    return place_object_relevant_to(game_data=game_data, object_name=object_name, target_object_name=target_object_name, side=side, distance=distance)
 
-    return result
 
-def move_to(game_data, side) -> jax.Array:
-    """
-    Check if the player is significantly on one of the sides (North, West, East, South) of the map.
-    A player is considered to be on a side if they are at least 20 units away from the center of the map
-    in the respective direction.
+from functools import partial
+# Фиксированный радиус, которым мы захватываем все возможные distance ≤ MAX_RADIUS
+MAX_RADIUS = 5
+REGION_SIZE = 2 * MAX_RADIUS + 1  # статичный
 
-    Args:
-    - game_data (GameData): The game data object containing the player's positions and map information.
-    - side (int): The side to check. Encoded as:
-                  0 = North, 1 = West, 2 = East, 3 = South.
+@jax.jit
+def place_object_relevant_to(
+    game_data, 
+    object_name: str, 
+    target_object_name: str, 
+    side: int,      # tracer-скаляр: 0=Right,1=Left,2=Top,3=Bottom
+    distance: int   # tracer-скаляр, ≤ MAX_RADIUS
+) -> jax.Array:
+    # 1) Собираем единый REGION вокруг игрока размером REGION_SIZE×REGION_SIZE
+    x, y = game_data.states[0].variables.player_position
+    padded_map = jnp.pad(
+        game_data.states[0].map.game_map,
+        ((MAX_RADIUS, MAX_RADIUS), (MAX_RADIUS, MAX_RADIUS)),
+        constant_values=-1  # любая метка за границей
+    )
+    region = lax.dynamic_slice(
+        padded_map,
+        (x, y),
+        (REGION_SIZE, REGION_SIZE)
+    )  # → shape [REGION_SIZE, REGION_SIZE]
 
-    Returns:
-    - bool: True if the player is significantly on the specified side of the map, False otherwise.
-    """
+    # 2) Делаем булевы карты для цели и объекта
+    #    (можно сразу сравнить с .value, или если у вас int-коды — без .value)
+    tgt_mask = (region == target_object_name)
+    obj_mask = (region == object_name)
 
-    game_map = game_data.states[0].map.game_map[0]  # Assume 100x100 JAX array
-    player_position = game_data.states[0].variables.player_position
+    # 3) Чтобы сдвинуть obj_mask на (side, distance), ещё раз паддим region/obj_mask
+    #    на MAX_RADIUS ║ MAX_RADIUS, и будем «секурно» брать кусок REGION_SIZE×REGION_SIZE
+    padded_obj = jnp.pad(
+        obj_mask,
+        ((MAX_RADIUS, MAX_RADIUS), (MAX_RADIUS, MAX_RADIUS)),
+        constant_values=False
+    )
 
-    if player_position is None:
-        return jnp.array(False)
+    # 4) Вычисляем динамический сдвиг в координатах padded_obj
+    #    Право  (0):  di= 0, dj=+distance
+    #    Лево  (1):  di= 0, dj=-distance
+    #    Верх  (2):  di=-distance, dj=0
+    #    Низ   (3):  di=+distance, dj=0
+    di = jnp.where(side==2, -distance,
+         jnp.where(side==3,  distance, 0))
+    dj = jnp.where(side==0,  distance,
+         jnp.where(side==1, -distance, 0))
 
-    x, y = player_position
-    center_x, center_y = game_map.shape[0] // 2, game_map.shape[1] // 2  # Center of the map
+    # Стартовый индекс в padded_obj: центр + (di,dj)
+    start_i = MAX_RADIUS + di
+    start_j = MAX_RADIUS + dj
 
-    def check_position_in_side(side, x, y, center_x, center_y):
-        # Check if the player is significantly on one of the sides (20 units away from the center)
-        return lax.cond(
-            side == 0, lambda _: (x < center_x - 20),  # North
-            lambda _: lax.cond(
-                side == 1, lambda _: (y < center_y - 20),  # West
-                lambda _: lax.cond(
-                    side == 2, lambda _: (y > center_y + 20),  # East
-                    lambda _: (x > center_x + 20)  # South
-                )
-            ),
-            operand=None
-        )
+    # 5) Единичный dynamic_slice, **фиксированный** REGION_SIZE×REGION_SIZE
+    shifted_obj = lax.dynamic_slice(
+        padded_obj,
+        (start_i, start_j),
+        (REGION_SIZE, REGION_SIZE)
+    )
 
-    # Check if the player's position is in the specified side of the map
-    is_in_side = check_position_in_side(side, x, y, center_x, center_y)
+    # 6) Проверяем, есть ли позиция (i,j), где одновременно tgt_mask[i,j] и shifted_obj[i,j]
+    hit = tgt_mask & shifted_obj
 
-    return is_in_side
+    # 7) Нужен ли `need_to_achieve`? Если да, поднимайте его снаружи через select()  
+    return jnp.any(hit)
+
+
+# def place_object_relevant_to(game_data: GameData, object_name: int, target_object_name: int, side: int, distance: int) -> jax.Array:
+
+    
+#     game_map = game_data.states[0].map.game_map
+#     player_position = game_data.states[0].variables.player_position
+#     x, y = player_position
+
+#     radius = 5
+#     region_size = 2 * 5 + 1
+
+#     region = safe_dynamic_slice(game_map, x, y, radius, region_size)
+    
+#     square_size = 5 * 2 + 2
+    
+#     n_rows = region.shape[0] - square_size + 1
+#     n_cols = region.shape[1] - square_size + 1
+
+#     def check_square(i, j):
+#         square = lax.dynamic_slice(
+#             region,
+#             start_indices=(i, j),
+#             slice_sizes=(square_size, square_size)
+#         )
+#         center = 5  
+#         target_mask = square[center, center] == target_object_name
+#         object_mask = lax.switch(side,
+#             [
+#                 lambda: square[center, -1] == object_name,  
+#                 lambda: square[center,  0] == object_name,  
+#                 lambda: square[-1, center] == object_name,  
+#                 lambda: square[0, center]  == object_name   
+#             ]
+#         )
+#         return target_mask & object_mask
+
+#     def row_loop(i, carry):
+#         def col_loop(j, inner):
+#             valid = check_square(i, j)
+#             return jnp.logical_or(inner, valid)
+#         row_result = jax.lax.fori_loop(0, n_cols, col_loop, False)
+#         return jnp.logical_or(carry, row_result)
+
+#     overall_result = jax.lax.fori_loop(0, n_rows, row_loop, False)
+#     return overall_result
+
+# def move_to(game_data, side) -> jax.Array:
+
+
+#     game_map = game_data.states[0].map.game_map[0]  
+#     player_position = game_data.states[0].variables.player_position
+
+#     if player_position is None:
+#         return jnp.array(False)
+
+#     x, y = player_position
+#     center_x, center_y = game_map.shape[0] // 2, game_map.shape[1] // 2  
+
+#     def check_position_in_side(side, x, y, center_x, center_y):
+#         return lax.cond(
+#             side == 0, lambda _: (x < center_x - 20),  
+#             lambda _: lax.cond(
+#                 side == 1, lambda _: (y < center_y - 20),  
+#                 lambda _: lax.cond(
+#                     side == 2, lambda _: (y > center_y + 20),  
+#                     lambda _: (x > center_x + 20)  
+#                 )
+#             ),
+#             operand=None
+#         )
+
+#     is_in_side = check_position_in_side(side, x, y, center_x, center_y)
+
+#     return is_in_side

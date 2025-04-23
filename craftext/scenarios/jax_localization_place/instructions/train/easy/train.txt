@@ -39,7 +39,7 @@
             "In relation to the iron, a rock needs to be placed in a position which is two blocks height above."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.STONE, BlockType.IRON, 2, 2),
-        "str_check_lambda": "place_object_relevant_to(BlockType.STONE, BlockType.IRON, 2, 2)"
+        "str_check_lambda": "place_object_relevant_to(game_data, BlockType.STONE, BlockType.IRON, 2, 2)"
     }
 }
 ----
@@ -234,7 +234,7 @@
             "Carefully set the stone so that it is positioned two blocks down from the workbench."
         ],
         'check_lambda': lambda game_data, ix: place_object_relevant_to(game_data, BlockType.STONE, BlockType.CRAFTING_TABLE, 3, 2),
-        "str_check_lambda": "place_object_relevant_to(BlockType.STONE, BlockType.CRAFTING_TABLE, 3, 2)"
+        "str_check_lambda": "place_object_relevant_to((game_data, BlockType.STONE, BlockType.CRAFTING_TABLE, 3, 2)"
     }
 }
 ----

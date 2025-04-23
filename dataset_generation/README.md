@@ -27,7 +27,7 @@ python script.py --count_goals <number_of_goals> \
 ### Arguments:
 - `--count_goals` *(int, required)*: Number of goals to generate instructions for.
 - `--instructions_class` *(str, required)*: Class of instructions to generate.
-  - Options: `achivments`, `building_line`, `building_squere`, `conditonal_placing`, `localization_placing`
+  - Options: `achivments`, `building_line`, `building_squere`, `conditonal_placing`, `localization_placing`, `building_star`
 - `--output_file` *(str, required)*: File to save the generated instructions.
 - `--difficulty` *(str, optional, default='EASY')*: Difficulty level (`EASY`, `MEDIUM`, `HARD`).
 
