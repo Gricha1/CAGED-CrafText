@@ -40,6 +40,17 @@ class ScenarioData:
     embeddings_list: list
 
 @dataclass
+class ScenarioDataO:
+    instructions_list: list
+    scenario_checker: list
+    arguments: list
+    str_check_lambda_list: list
+    indices_list: list
+    scenario_names: list
+    embeddings_list: list
+    original_instructions: list
+
+@dataclass
 class ScenarioDataJAX:
     embeddings_list: jax.Array
     scenario_checker: int
@@ -66,6 +77,11 @@ class ScenariosNoLambda:
     def initial_instruction(self):
         """Generates the default encoded instruction for initializing network parameters."""
         return self.encode_model.encode(["None"])[:1]
+    
+
+    def castom_initial_instruction(self, instruction):
+        """Generates the default encoded instruction for initializing network parameters."""
+        return self.encode_model.encode([instruction])[:1]
 
     def _load_scenarios(self, config):
         """Loads scenarios from a specified configuration file."""
@@ -80,7 +96,7 @@ class ScenariosNoLambda:
         return Tuple(self.encode_model.encode(instruction))
 
     
-    def _prepare_scenarios(self):
+    def _prepare_scenarios(self, add_original_instructions=False):
         """
         Prepares and encodes scenarios while considering paraphrases.
         """
@@ -91,7 +107,7 @@ class ScenariosNoLambda:
         print(f"Initial number of instructions: {len(instructions_list)}")
         logger.info(f"Initial number of instructions: {len(instructions_list)}")
 
-        instructions_f, indices_f, embeddings_f = [], [], []
+        instructions_f, indices_f, embeddings_f, o_instruction_f = [], [], [], []
 
         for i in tqdm(range(0, len(instructions_list), batch_size)):
             batch_instructions = instructions_list[i:i + batch_size]
@@ -101,20 +117,40 @@ class ScenariosNoLambda:
             instructions_f.extend(batch_results["instructions"])
             indices_f.extend(batch_results["indices"])
             embeddings_f.extend(batch_results["embeddings"])
+            o_instruction_f.extend(batch_results["o_instructions"])
 
             for key in checkers_data_f.keys():
                 checkers_data_f[key].extend(batch_results["checkers_data"][key])
+<<<<<<< HEAD:craftext/instructions/scenarios/handlers/craftext_scenarious_no_lambda.py
         # print("instruction", instructions_f)
         self.scenario_data = ScenarioData(
+=======
+                
+        # with open("instructions_new_obj.json", 'w', encoding='utf-8') as f:
+        #          json.dump(instructions_f, f, ensure_ascii=False, indent=4)
+        # exit()
+        if add_original_instructions:
+            self.scenario_data = ScenarioDataO(
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064:craftext/craftext_scenarious_no_lambda.py
             instructions_list=instructions_f,
             scenario_checker=checkers_data_f["scenario_checker"],
             arguments=checkers_data_f["arguments"],
             str_check_lambda_list=checkers_data_f["str_check_lambda"],
             scenario_names=[str(i) for i in indices_f],
             indices_list=np.array(indices_f).reshape(-1, 1),
-            embeddings_list=np.array(embeddings_f).reshape(len(embeddings_f), -1) if embeddings_f else None
+            embeddings_list=np.array(embeddings_f) if embeddings_f else None,
+            original_instructions=o_instruction_f
+            )
+        else:
+            self.scenario_data = ScenarioData(
+            instructions_list=instructions_f,
+            scenario_checker=checkers_data_f["scenario_checker"],
+            arguments=checkers_data_f["arguments"],
+            str_check_lambda_list=checkers_data_f["str_check_lambda"],
+            scenario_names=[str(i) for i in indices_f],
+            indices_list=np.array(indices_f).reshape(-1, 1),
+            embeddings_list=np.array(embeddings_f) if embeddings_f else None
         )
-
         return self.scenario_data
 
 
@@ -138,6 +174,7 @@ class ScenariosNoLambda:
             "instructions": [],
             "indices": [],
             "embeddings": [],
+            "o_instructions": [],
             "checkers_data": {key: [] for key in checkers_data_dict.keys()}
         }
 
@@ -145,6 +182,7 @@ class ScenariosNoLambda:
             for k in range(num_variants):
                 variant_index = j * num_variants + k
                 batch_results["indices"].append(batch_indices[j])
+                batch_results["o_instructions"].append(instruction)
                 batch_results["instructions"].append(batch_instructions[variant_index])
                 batch_results["embeddings"].append(encoded_instructions[variant_index])
 

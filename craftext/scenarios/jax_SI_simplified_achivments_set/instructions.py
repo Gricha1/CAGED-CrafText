@@ -74,11 +74,32 @@ def create_target_state(required=[], forbidden=[]):
         if i in required:
             base_vector[i] = AchievementState.NEED_TO_ACHIEVE
         elif i in forbidden:
+<<<<<<< HEAD
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(tuple(base_vector))
+=======
+            base_vector[i] = AchievementState.AVOID_TO_ACHIEVE.value
+        elif i > max(required):
+            base_vector[i] = AchievementState.AVOID_TO_ACHIEVE.value
+    base_vector[Achievement.WAKE_UP.value]=AchievementState.NOT_MATTER.value
+    target_achievements = Achievements(jnp.array(base_vector))
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
     return TargetState(achievements=target_achievements)
 
-add =  {
+add =  [{
+        "instruction": "Collect wood.",
+        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "instruction_paraphrases": [
+            "Harvest logs from nearby trees.",
+            "Chop down some timber to gather wood.",
+            "Cut a tree to obtain wooden resources.",
+            "Retrieve lumber from a fallen tree.",
+            "Procure wood by felling trees in the area."
+        ],
+        "str_check_lambda": "",
+        "arguments": create_target_state([Achievement.COLLECT_WOOD.value])
+    },
+   {
         "instruction": "Chop some wood and install a workbench.",
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS, 
         "instruction_paraphrases": [
@@ -89,10 +110,29 @@ add =  {
             "Procure wood and place a crafting table in the area."
         ],
         "str_check_lambda": "",
+<<<<<<< HEAD
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS, 
         "arguments": create_target_state(required=[Achievement.COLLECT_WOOD , Achievement.PLACE_TABLE ]),
       #  "arguments": create_target_state([Achievement.COLLECT_WOOD , Achievement.PLACE_TABLE ])
     }
+=======
+        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "arguments": create_target_state(required=[Achievement.COLLECT_WOOD.value, Achievement.PLACE_TABLE.value]),  
+    },
+   {
+        "instruction": "Collect a drink.",
+        "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+        "instruction_paraphrases": [
+            "Retrieve a liquid for hydration.",
+            "Acquire a beverage to quench thirst.",
+            "Find and collect a drinkable resource.",
+            "Gather a liquid item suitable for drinking.",
+            "Procure a refreshing drink from nearby."
+        ],
+        "str_check_lambda":"",
+        "arguments": create_target_state([Achievement.COLLECT_DRINK.value])
+    }]
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 # one = {
 #     "1. collect_wood_place_table": {
@@ -127,7 +167,7 @@ add =  {
 #     },
 # }
 
-one = {str(i):add for i in range(20)}
+one = {str(i):add[i] for i in range(3)}
 
         
 easy = {
@@ -157,6 +197,7 @@ easy = {
         "str_check_lambda": "",
         "arguments": create_target_state([Achievement.PLACE_TABLE ])
     },
+<<<<<<< HEAD
     "make_stone_pickaxe": {
         "instruction": "Craft a stone pickaxe.",
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS, 
@@ -170,6 +211,21 @@ easy = {
         "str_check_lambda": "",
         "arguments": create_target_state([Achievement.MAKE_STONE_PICKAXE ])
     },
+=======
+#     "make_stone_pickaxe": {
+#         "instruction": "Craft a stone pickaxe.",
+#         "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS.value, 
+#         "instruction_paraphrases": [
+#             "Forge a sturdy pickaxe from stone.",
+#             "Construct a durable mining tool using rocks.",
+#             "Create a pickaxe built from stone materials.",
+#             "Carve a reliable pickaxe from stone.",
+#             "Assemble a heavy-duty stone pickaxe."
+#         ],
+#         "str_check_lambda": "",
+#         "arguments": create_target_state([Achievement.MAKE_STONE_PICKAXE.value])
+#     },
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
       "collect_drink": {
         "instruction": "Collect a drink.",
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS, 
@@ -378,6 +434,7 @@ easy = {
     'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_STONE_SWORD  else 1 if a == Achievement.DEFEAT_ZOMBIE  else 1 if a == Achievement.DEFEAT_SKELETON  else 0 for a in range(Achievement.MAKE_IRON_SWORD +1)]))'
 }
 
+<<<<<<< HEAD
 # 'INSTRUCTION_STONE_SWORD_NO_KILLS': {
 #     'instruction': "Craft a stone sword but do not kill anyone.",
 #     "scenario_checker": Scenarios.CONDITIONAL_ACIEVEMENTS , 
@@ -397,6 +454,77 @@ easy = {
 #         create_check_lambda([Achievement.MAKE_STONE_SWORD ],[Achievement.DEFEAT_ZOMBIE , Achievement.DEFEAT_SKELETON ]),
 #     'str_check_lambda': 'conditional_achivments(gd, jnp.array([1 if a == Achievement.MAKE_STONE_SWORD  else -1 if a in [Achievement.DEFEAT_ZOMBIE , Achievement.DEFEAT_SKELETON , Achievement.EAT_COW ] else 0 for a in range(Achievement.MAKE_IRON_SWORD +1)]))'
 # },
+=======
+    "collect_stone": {
+            "instruction": "Collect stone.",
+            "instruction_paraphrases": [
+                "Mine stone blocks from a rocky surface.",
+                "Break apart rocks to gather stone.",
+                "Harvest stone materials from the ground.",
+                "Retrieve stone fragments from nearby boulders.",
+                "Extract useful stone for crafting purposes."
+            ],
+            "str_check_lambda":"""lambda gd, ix: conditional_achivments(gd, jnp.array([
+                1 if a == Achievement.COLLECT_STONE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+            ]))""",
+            "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
+                1 if a == Achievement.COLLECT_STONE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+            ]))
+        },
+    "make_stone_pickaxe": {
+            "instruction": "Craft a stone pickaxe.",
+            "instruction_paraphrases": [
+                "Forge a sturdy pickaxe from stone.",
+                "Construct a durable mining tool using rocks.",
+                "Create a pickaxe built from stone materials.",
+                "Carve a reliable pickaxe from stone.",
+                "Assemble a heavy-duty stone pickaxe."
+            ],
+            "str_check_lambda":"""lambda gd, ix: conditional_achivments(gd, jnp.array([
+                1 if a == Achievement.MAKE_STONE_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+            ]))""",
+            "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
+                1 if a == Achievement.MAKE_STONE_PICKAXE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+            ]))
+        },
+    "make_stone_sword": {
+    "instruction": "Craft a stone sword.",
+    "instruction_paraphrases": [
+        "Forge a sharp and balanced stone sword for effective combat.",
+        "Construct a durable weapon from stone, designed for battle.",
+        "Create a precise stone blade, well-balanced for quick strikes.",
+        "Craft a fighting tool made of stone, ensuring resilience and sharpness.",
+        "Assemble a stone-crafted combat instrument with a cutting edge.",
+        "Fashion a reliable stone weapon, ideal for close-quarters combat.",
+        "Build a versatile cutting implement from stone, suitable for defense.",
+        "Forge a battle-ready stone weapon with a finely shaped edge.",
+        "Create a tactical stone instrument, balanced for swift strikes.",
+        "Construct a heavy-duty stone blade, perfect for strategic battles."
+    ],
+    "str_check_lambda": """lambda gd, ix: conditional_achivments(gd, jnp.array([
+        1 if a == Achievement.MAKE_STONE_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    ]))""",
+    "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
+        1 if a == Achievement.MAKE_STONE_SWORD.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+    ]))
+},
+    "place_stone": {
+        "instruction": "Place a stone block.",
+        "instruction_paraphrases": [
+            "Set a block of stone in its place.",
+            "Position a solid stone block on the ground.",
+            "Install a stone cube where needed.",
+            "Arrange a block of stone in the area.",
+            "Place a stone slab in the desired spot."
+        ],
+        "str_check_lambda":"""lambda gd, ix: conditional_achivments(gd, jnp.array([
+            1 if a == Achievement.PLACE_STONE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+        ]))""",
+        "check_lambda": lambda gd, ix: conditional_achivments(gd, jnp.array([
+            1 if a == Achievement.PLACE_STONE.value else 0 for a in range(Achievement.MAKE_IRON_SWORD.value+1)
+        ]))
+    },
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 }
 

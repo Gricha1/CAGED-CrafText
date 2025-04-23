@@ -12,8 +12,10 @@ class DistilBertEncode:
         self.form_to_use = form_to_use
         model_name = "distilbert-base-uncased"
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=".")
-        self.model = AutoModel.from_pretrained(model_name, cache_dir=".")
+        self.model = AutoModel.from_pretrained(model_name, cache_dir=".").cuda()
         self.n_splits=n_splits
+        if self.n_splits>1:
+            exit()
         self.stopwords = {"a", "an", "the", "in", "on", "at", "by", "to", "for", "of", "with", "and", "or", "but", "so"}  # Пример списка предлогов
 
     def encode(self, instruction):
@@ -22,7 +24,7 @@ class DistilBertEncode:
         :param instruction: Text instruction.
         :param n_splits: Number of splits (used in EMBED_CLS_FOR_SPLITS mode).
         """
-        n_splits=self.n_splits
+        n_splits=self.n_splits 
         if self.form_to_use == EncodeForm.TOKEN:
             return self.get_tokens(instruction)
         elif self.form_to_use == EncodeForm.EMBED_CONCAT_ALL:
@@ -32,8 +34,7 @@ class DistilBertEncode:
         elif self.form_to_use == EncodeForm.EMBED_CLS_FOR_SPLITS:
             return self.get_cls_embeddings_for_splits(instruction, n_splits)
         else:
-            
-            return self.get_cls_embeddings_for_splits(instruction, n_splits)
+            return self.get_cls_embeddings(instruction)
         
             #raise ValueError(f"Unsupported form: {self.form_to_use}")
 
@@ -58,6 +59,23 @@ class DistilBertEncode:
             outputs = self.model(**inputs)
         token_embeddings = outputs.last_hidden_state
         return token_embeddings.view(-1).numpy()
+    
+    def get_cls_embeddings(self, instructions):
+        batch_embeddings = []
+        print("Encode...")
+        inputs = self.tokenizer(
+                instructions, 
+                return_tensors='pt', 
+                truncation=True, 
+                padding=True, 
+                max_length=50
+            ).to("cuda")
+        with torch.no_grad():
+                outputs = self.model(**inputs)
+        print("Finish.")
+        cls_embeddings = outputs.last_hidden_state[:, 0, :]  
+        concatenated_embedding = cls_embeddings.cpu().numpy() 
+        return concatenated_embedding
 
     def get_cls_embeddings_for_splits(self, instructions, n_splits):
         batch_embeddings = []
@@ -66,7 +84,7 @@ class DistilBertEncode:
             # 1. Разделяем инструкцию на N частей
             if instruction is None:
                 instruction = 'None'
-            words = instruction.split()
+            words = instruction.split("\n")
             split_size = max(1, len(words) // n_splits)
             splits = [' '.join(words[i:i + split_size]) for i in range(0, len(words), split_size)]
 
@@ -82,10 +100,11 @@ class DistilBertEncode:
                 padding=True, 
                 max_length=50
             )
-
+            print("Start")
             # 3. Обрабатываем все части батчем
             with torch.no_grad():
                 outputs = self.model(**inputs)
+            print("End")
 
             # 4. Извлекаем CLS-векторы для всех частей
             cls_embeddings = outputs.last_hidden_state[:, 0, :]  # CLS токен каждой части

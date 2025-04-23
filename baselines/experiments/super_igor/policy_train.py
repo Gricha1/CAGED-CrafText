@@ -19,26 +19,32 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
+<<<<<<< HEAD
 from baselines.experiments.super_igor.encoder import QwenModelWrapper
 from craftext.encoders.craftext_base_model_encoder import EncodeForm
 from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
+=======
+from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
+from craftext.craftext_encoder import EncodeForm
+from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
+from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
+from baselines.experiments.super_igor.super_dataset import SuperDataset
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
-from baselines.models.actor_critic import (
-    ActorCritic,
-    ActorCriticConv,
-    ActorCriticConvWithBERT,
-    ActorCriticConvWithIdxEmbedding
-)
+from baselines.models.actor_critic_with_text import create_actor_critic
+
 from baselines.models.icm import ICMEncoder, ICMForward, ICMInverse
 from baselines.wrappers import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
-    BatchEnvWrapper,
 )
 
+<<<<<<< HEAD
 from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 
+=======
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 class Transition(NamedTuple):
     done: jnp.ndarray
@@ -68,12 +74,23 @@ def make_train(config, network_params):
     )
     env_params = env.default_params
     #REPLACE INTO DATASET
-    EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20)
-    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'])
-    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
+   # EncodeModel = QwenModelWrapper(config["LLM_PATH"], num_return_sequences=20, split_into_steps=True, make_one_hot=True)
+    load_preinited = False
+    if config['PLANER_TYPE']=="sd":
+        super_dataset = SuperDataset.load_from_json(config["SUPER_DATASET"])
+        config['PLANER_CONFIG']['super_dataset'] = super_dataset
+        load_preinited = True
+            
+    EncodeModel = make_encoder_with_planning(planer_type = config['PLANER_TYPE'],
+                                             planer_config=config['PLANER_CONFIG'],
+                                             embedding_source=config['EMBEDDING_SOURCE'],
+                                             step_by_step=config['STEP_BY_STEP'])
+    
+    ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=load_preinited)
+    env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
-                            encode_form=EncodeForm.EMBED_CLS_FOR_SPLITS)
+                            encode_form=EncodeForm.EMBEDDING)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -95,16 +112,14 @@ def make_train(config, network_params):
 
     def train(rng):
         # INIT NETWORK
-        if "Symbolic" in config["ENV_NAME"]:
-            network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
-        elif "Text" in config["ENV_NAME"]:
-            network = ActorCriticConvWithBERT(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
-        else:
-            network = ActorCriticConv(
-                env.action_space(env_params).n, config["LAYER_SIZE"]
-            )
+        network = create_actor_critic(ac_type=config["AC_TYPE"],
+                                     vision_type=config["AC_VISION_TYPE"],
+                                     text_encoder_type=config["AC_TEXT_ENCODER_TYPE"],
+                                     text_mlp_sizes=config['AC_TEXT_MLP_SIZES'],
+                                     nonlinearity=config['AC_NONLINEARITY'],
+                                     vision_mlp_sizes=config['AC_VISION_MLP_SIZES'],
+                                     layer_width=config["LAYER_SIZE"],
+                                     action_dim=env.action_space(env_params).n)
 
         rng, _rng = jax.random.split(rng)
         init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
@@ -132,46 +147,6 @@ def make_train(config, network_params):
                 params=network_params,
                 tx=tx,
             )
-
-        
-
-        # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
-        # if config.get("PATH_TO_CHECKPOINT"):
-        #     print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
-        #     # Prepare checkpoint manager
-        #     orbax_checkpointer = PyTreeCheckpointer()
-        #     checkpoint_manager = CheckpointManager(
-        #         config["PATH_TO_CHECKPOINT"],
-        #         orbax_checkpointer,
-        #         CheckpointManagerOptions(max_to_keep=1, create=False),
-        #     )
-        #     # Restore parameters from checkpoint
-        #     # train_state = TrainState.create(
-        #     #     apply_fn=network.apply,
-        #     #     params=network_params,
-        #     #     tx=tx,  # Optimizer will be set later
-        #     # )
-        #    # train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
-        #     with jax.disable_jit():
-        #         train_state_dict = checkpoint_manager.restore(int(config["TOTAL_TIMESTEPS"]))
-        #     network_params = train_state['params']  #train_state.params
-        #     print("Weights successfully loaded from checkpoint.")
-        # else:
-        #     print("No checkpoint specified, using default initialization.")
-
-        # Set up the optimizer
-        # if config["ANNEAL_LR"]:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(learning_rate=linear_schedule, eps=1e-5),
-        #     )
-        # else:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(config["LR"], eps=1e-5),
-            # )
-        # MAKE TRAIN STATE
-        
 
         # Exploration state
         ex_state = {
@@ -704,10 +679,30 @@ def make_train(config, network_params):
 
     return train
 
-    
+
+def extract_planer_config(config):
+    planner_config = {'model_config': \
+                {
+                'original_model_path': config['original_model_path'.upper()],
+                'peft_weights_path': config['peft_weights_path'.upper()],
+                },
+              'generation_config':\
+                {
+                'num_paraphrases': config['num_paraphrases'.upper()],
+                'beam_groups': config['beam_groups'.upper()],
+                'beams_count': config['beams_count'.upper()],
+                'max_new_tokens': config['max_new_tokens'.upper()],
+                'prompt_template': config['prompt_template'.upper()],
+                },
+                'super_dataset':None,
+                'augment':config['augment'.upper()]
+             }
+    return planner_config
+
 def run_ppo(config):
     # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
+    config['PLANER_CONFIG'] = extract_planer_config(config)
     if config['start_checkpoint_path'.upper()] != "None":
         start_checkpoint_path = config['start_checkpoint_path'.upper()] # os.path.abspath("./wandb" + config['start_checkpoint_path'.upper()].split("wandb")[1])
     else:
@@ -845,10 +840,33 @@ if __name__ == "__main__":
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--experiment_name", type=str, default="experiment")
     parser.add_argument("--encode_form_name", type=str, default="EMBEDDING")
+    
+    #Plan generation config
+    parser.add_argument("--planer_type", type=str, default="llm")
+    parser.add_argument("--embedding_source", type=int, default=1)
+    parser.add_argument("--step_by_step", type=bool, default=True)
+    parser.add_argument("--original_model_path", type=str, default="Qwen/Qwen2.5-3B-Instruct")
+    parser.add_argument("--peft_weights_path", type=str, default=None)
+    parser.add_argument("--num_paraphrases", type=int, default=15)
+    parser.add_argument("--beam_groups", type=int, default=15)
+    parser.add_argument("--beams_count", type=int, default=15)
+    parser.add_argument("--max_new_tokens", type=int, default=128)
+    parser.add_argument("--prompt_template", type=int, default=2)
+    parser.add_argument("--augment", type=bool, default=False)
+    
+    #Observation Encoder config
+    parser.add_argument("--ac_type", type=str, default="ac_model")
+    parser.add_argument("--ac_vision_type", type=str, default="resnet_impala")
+    parser.add_argument("--ac_text_encoder_type", type=str, default="mlp")
+    parser.add_argument("--ac_text_mlp_sizes", type=int, nargs="+", default=[128, 128])
+    parser.add_argument("--ac_nonlinearity", type=str, default="relu")
+    parser.add_argument("--ac_vision_mlp_sizes",type=int, nargs="+", default=[256,])
+
+
     parser.add_argument(
         "--num_envs",
         type=int,
-        default=256,#1024,
+        default=1024,#1024,
     )
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
@@ -860,7 +878,7 @@ if __name__ == "__main__":
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)
     parser.add_argument("--clip_eps", type=float, default=0.2)
-    parser.add_argument("--ent_coef", type=float, default=0.01)
+    parser.add_argument("--ent_coef", type=float, default=0.1) #0.01
     parser.add_argument("--vf_coef", type=float, default=0.5)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
     parser.add_argument("--activation", type=str, default="tanh")
@@ -881,7 +899,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--use_optimistic_resets", action=argparse.BooleanOptionalAction, default=True
     )
-    parser.add_argument("--optimistic_reset_ratio", type=int, default=16)
+    parser.add_argument("--optimistic_reset_ratio", type=int, default=1) #16
 
     # EXPLORATION
     parser.add_argument("--exploration_update_epochs", type=int, default=4)
@@ -906,7 +924,7 @@ if __name__ == "__main__":
         assert args.train_icm
         assert args.icm_reward_coeff == 0
     if args.seed is None:
-        args.seed = np.random.randint(2**31)
+        args.seed = 42
 
     if args.jit:
         run_ppo(args)
