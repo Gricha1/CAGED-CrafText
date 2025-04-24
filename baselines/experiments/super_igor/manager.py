@@ -54,7 +54,7 @@ def run_policy_train(craftext_settings, env_name,
 
 
 def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_name, plan_with_llm, 
-                         craftext_settings,num_return_sequences='5', augment="False", additional_args=None):
+                         craftext_settings,num_return_sequences='5', augment="False", additional_args=None, per_step_scoring=1):
     args = [
             "python", "policy_inference.py", 
             "--experiment_name", experiment_name,
@@ -67,6 +67,7 @@ def run_policy_inference(llm_name, dataset_name, save_dataset_name, experiment_n
             "--dataset_path", dataset_name,
             "--save_dataset_path", save_dataset_name,
             "--num_return_sequences", num_return_sequences,
+            "--per_step_scoring", str(per_step_scoring),
         ]
     if additional_args:
         for key, value in additional_args.items():
@@ -173,15 +174,15 @@ def ac_config_to_args(config_path):
 if __name__=="__main__":
     # - checkpoint
     start_from_checkpoint= True 
-    restart_checkpoint_name = "./super_experiments/testbet_for_new_pipe"
+    restart_checkpoint_name = "./super_experiments/SI_simplified_set_one_llmt_True_Heather_Campbell_20250423_112253"
     rl_skip = 1 if start_from_checkpoint else 0
     inference_skip = 1 if start_from_checkpoint else 0
     llm_skip = 0 if start_from_checkpoint else 0
     
     # ------- Experiment args
-    craftext_settings = "SI_simplified_set"
+    craftext_settings = "SI_simplified_set_one"
     start_planer_config = planer_config_to_args("./configs/qwen_3b_function.yaml", start_from_checkpoint)
-    start_ac_config = ac_config_to_args("./configs/policy_impala.yaml")
+    start_ac_config = ac_config_to_args("./configs/policy_base.yaml")
     llm_name =  "./pretrained_plan_llm/3_" #"Qwen/Qwen2.5-3B-Instruct" 
     
     use_llm_tuning = True
@@ -234,7 +235,7 @@ if __name__=="__main__":
                 start_checkpoint_path=rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=250000000,
+                total_timesteps=25000000,
                 additional_args=additional_args
             )
         else:
@@ -264,6 +265,7 @@ if __name__=="__main__":
                                     craftext_settings=craftext_settings,
                                     augment=augment,
                                     num_return_sequences='10',
+                                    per_step_scoring=1,
                                     additional_args=additional_args)
                 log_validation(dataset_name, context="train_dataset")
                 
@@ -274,6 +276,7 @@ if __name__=="__main__":
                                         craftext_settings=craftext_settings, 
                                         augment=0,
                                         num_return_sequences='1',
+                                        per_step_scoring=0,
                                         additional_args=additional_args)
                 log_validation(save_dataset_path, context="train_1")
             else:
@@ -281,20 +284,36 @@ if __name__=="__main__":
         
             inference_done += 1
             
-            generate_sd_from_subtasks(path=persubtasks_res, new_path=f"optim_super_dataset{j}_{i}.json") 
+           # generate_sd_from_subtasks(path=persubtasks_res, new_path=f"optim_super_dataset{j}_{i}.json") 
             dataset_name = f"{temp_path}/optim_super_dataset{j}_{i}.json"  
-            save_dataset_path = f"{temp_path}/optim_super_dataset{j}_{i}.json"    
-            run_policy_inference(llm_checkpoint,
-                                    dataset_name, 
-                                    save_dataset_path,
-                                    experiment_name=rl_experiment_name,
-                                    plan_with_llm=False,
-                                    craftext_settings=craftext_settings,
-                                    augment=0,
-                                    num_return_sequences='20',
-                                    additional_args=additional_args)
-            log_validation(dataset_name, context="optim_train_dataset")
+            # save_dataset_path = f"{temp_path}/optim_super_dataset{j}_{i}.json"    
+            # run_policy_inference(llm_checkpoint,
+            #                         dataset_name, 
+            #                         save_dataset_path,
+            #                         experiment_name=rl_experiment_name,
+            #                         plan_with_llm=False,
+            #                         craftext_settings=craftext_settings,
+            #                         augment=0,
+            #                         num_return_sequences='20',
+            #                         per_step_scoring=0,
+            #                         additional_args=additional_args)
+            # log_validation(dataset_name, context="optim_train_dataset")
 
+            # generated_data =f"{temp_path}/super_dataset{j}_{i}.json"
+            # merger_last_datasets(generated_data, dataset_name) 
+            
+            run_policy_train(
+                craftext_settings=craftext_settings,
+                env_name="Craftax-Classic-Pixels-v1-Text",
+                llm_path=llm_name,
+                super_dataset=dataset_name,
+                num_envs=1024,
+                start_checkpoint_path=rl_experiment_path,
+                experiment_name=experiment_name,
+                encode_form_name="EMBED_CLS_FOR_SPLITS",
+                total_timesteps=25000000,
+                additional_args=additional_args
+            )
             exit()
            
             
