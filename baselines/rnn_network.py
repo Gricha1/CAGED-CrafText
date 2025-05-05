@@ -25,15 +25,13 @@ class ScannedRNN(nn.Module):
         """Applies the module."""
         rnn_state = carry
         ins, resets = x
-       # print(ins.shape)
-      #  print(resets.shape)
+
         rnn_state = jnp.where(
             resets[:, np.newaxis],
             self.initialize_carry(ins.shape[0], ins.shape[1]),
             rnn_state,
         )
         
-       # print("!!!")
         new_rnn_state, y = nn.GRUCell(features=ins.shape[1])(rnn_state, ins)
         return new_rnn_state, y
 
@@ -52,7 +50,7 @@ class ActorCriticTextVisualRNN(nn.Module):
     @nn.compact
     def __call__(self, hidden, x, encoded_input):
         # Используем layer_size из параметра или конфигурации
-        layer_size = self.layer_size if self.layer_size is not None else self.config.get("LAYER_SIZE")
+        layer_size = self.layer_size if self.layer_size is not None else self.config['LAYER_SIZE']
         if layer_size is None:
             raise ValueError("LAYER_SIZE must be specified either in config or as a parameter.")
 

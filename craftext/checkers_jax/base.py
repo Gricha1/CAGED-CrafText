@@ -1,6 +1,6 @@
 import jax
 import jax.numpy as jnp
-from craftext.checkers.base_functions.state_adapter import GameData, PlayerInventory
+from craftext.adapters.state_adapter import GameData, PlayerInventory
 
 def was_item_collected_after_another(game_data: GameData, first_item: str, second_item: str) -> jax.Array:
     """

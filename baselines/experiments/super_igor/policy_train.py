@@ -19,11 +19,17 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
+<<<<<<< HEAD
+from baselines.experiments.super_igor.encoder import QwenModelWrapper
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
+from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
+=======
 from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
 from craftext.craftext_encoder import EncodeForm
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
 from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
 from baselines.experiments.super_igor.super_dataset import SuperDataset
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic_with_text import create_actor_critic
@@ -34,6 +40,11 @@ from baselines.wrappers import (
     OptimisticResetVecEnvWrapper,
 )
 
+<<<<<<< HEAD
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
+
+=======
+>>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 class Transition(NamedTuple):
     done: jnp.ndarray

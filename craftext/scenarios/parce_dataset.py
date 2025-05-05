@@ -1,15 +1,15 @@
 import os
-from typing import List
+from typing import List, Tuple
 ### Imports for correct lambda-function parsing, dont remove! 
 import jax.numpy as jnp
 
-from craftext.checkers_jax.building import is_line_formed, is_square_formed
-from craftext.checkers_jax.achivments import conditional_achivments
-from craftext.checkers_jax.conditional import conditional_placing
-from craftext.checkers_jax.relevant import place_object_relevant_to
-from craftext.scenarios.constants import Achievement, MediumInventoryItems,InventoryItems,BlockType
+# from craftext.checkers_jax.building import is_line_formed, is_square_formed
+# from craftext.checkers_jax.achivments import conditional_achivments
+# from craftext.checkers_jax.conditional import conditional_placing
+# from craftext.checkers_jax.relevant import place_object_relevant_to
+# from craftext.scenarios.constants import Achievement, MediumInventoryItems,InventoryItems,BlockType
 
-def parse_instructions(file_name_txt: str) -> List[str]:
+def parse_instructions(file_name_txt: str) -> Tuple[List[str], List[str]]:
     with open(file_name_txt, 'r') as file:
         content = file.read()
     # Split the content into separate dictionaries by '----'
@@ -27,9 +27,9 @@ def parse_instructions(file_name_txt: str) -> List[str]:
         except Exception as e:
             pass
 
-    return instructions_list,correct_chunks
+    return instructions_list, correct_chunks
 
-def parse_instructions_from_folder(folder_path, return_chunks=False):
+def parse_instructions_from_folder(folder_path, return_chunks=False) -> List[str] | Tuple[List[str], List[str]]:
     instructions_list = []
     correct_chunks = []
     print(os.listdir(folder_path))
@@ -43,7 +43,7 @@ def parse_instructions_from_folder(folder_path, return_chunks=False):
         return instructions_list, correct_chunks
     return instructions_list
 
-def update_previous_dict(previous_dict, folder_path, TASK_NAME='relevant_placement'):
+def update_previous_dict(previous_dict, folder_path, TASK_NAME='relevant_placement') -> dict[str, List[str] | Tuple[List[str], List[str]]]:
     instructions_list = parse_instructions_from_folder(folder_path)
 
     for i, parsed_dict in enumerate(instructions_list):
