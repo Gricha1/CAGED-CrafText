@@ -13,7 +13,7 @@ from craftext.craftext_encoder import EncodeForm, DistilBertEncode
 from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from craftext.checkers.base_functions.state_adapter import GameData
 from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.checkers_jax.achivments import conditional_achivments
+from craftext.scenarious_checkers.achivments import conditional_achivments
 
 import jax.numpy as jnp
 from typing import List, TypeVar, Type

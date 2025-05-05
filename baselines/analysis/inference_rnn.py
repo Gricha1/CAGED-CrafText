@@ -21,9 +21,9 @@ from orbax.checkpoint import (
 
 sys.path.append("./models")
 from craftax.craftax_env import make_craftax_env_from_name
-from craftext.instructions.wrappers.craftext_wrapper import InstructionWrapper
-from craftext.instructions.scenarios.handlers.craftext_scenarious import create_scenarios_with_dataset
-from craftext.encoders.craftext_distilbert_model_encoder import make_encoder
+from craftext.enviroment.craftext_wrapper import InstructionWrapper
+from craftext.enviroment.scenarious.manager import create_scenarios_with_dataset
+from craftext.enviroment.encoders.craftext_distilbert_model_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
 #from baselines.analysis.view_ppo_agent import CraftaxRenderer, add_text_to_image
 from rnn_network import ScannedRNN, ActorCriticTextVisualRNN

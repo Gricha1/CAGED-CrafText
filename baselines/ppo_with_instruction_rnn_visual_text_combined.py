@@ -4,17 +4,10 @@ import sys
 
 import jax
 import jax.numpy as jnp
-import flax.linen as nn
 import numpy as np
 import optax
 import time
 
-from typing import Optional, Any, Tuple
-
-from flax.linen.initializers import (
-    constant, 
-    orthogonal,
-)
 
 import wandb
 from flax.training import (
@@ -28,9 +21,6 @@ from orbax.checkpoint import (
     CheckpointManager,
 )
 
-from typing import NamedTuple, Dict
-import distrax
-import functools
 
 from wrappers import (
     LogWrapper,
@@ -41,10 +31,11 @@ from wrappers import (
 
 from logz.batch_logging import create_log_dict, batch_log
 
-from craftext.instructions.scenarios.handlers.craftext_scenarious import create_scenarios_with_dataset
-from craftext.encoders.craftext_distilbert_model_encoder import make_encoder
+from craftext.enviroment.scenarious.manager import create_scenarios_with_dataset
+from craftext.enviroment.encoders.craftext_distilbert_model_encoder import make_encoder
 from craftax.craftax_env import make_craftax_env_from_name
-from craftext.instructions.wrappers.craftext_wrapper_2 import InstructionWrapper as InstructionWrapper
+
+from craftext.enviroment.craftext_wrapper import InstructionWrapper
 
 from rnn_network import ScannedRNN, ActorCriticTextVisualRNN
 from analysis.inference_rnn import Experiment, ExperimentArgs
