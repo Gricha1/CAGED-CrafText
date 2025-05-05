@@ -7,17 +7,34 @@ import jax.numpy as jnp
 from flax import linen as nn, struct
 from gym import Wrapper
 
-from jax import tree_map
 
-from craftext.craftext_encoder import EncodeForm, DistilBertEncode
-from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
-from craftext.checkers.base_functions.state_adapter import GameData
-from craftext.checkers.base_functions.state_adapter_craftax_classic import GameDataClassic
-from craftext.checkers_jax.achivments import conditional_achivments
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
+from craftext.encoders.craftext_distilbert_model_encoder import DistilBertEncode
 
+from craftext.instructions.scenarios.handlers.craftext_scenarious_no_lambda import ScenariosNoLambda
+from craftext.adapters.state_adapter import GameData
+
+from craftext.adapters.state_adapter_classic import GameDataClassic
+
+from craftext.checkers_jax.time_constrained import at_time_block_placed
+from craftext.checkers_jax.building_star import is_cross_formed
+
+from jax import tree_util
+
+@struct.dataclass
+class TextEnvState:
+    env_state: Any
+    timestep: int
+    instruction: Optional[jax.Array]
+    idx: int
+    success_rate: float
+    total_success_rate: float
+    environment_key: int
+    rng: int
+    
 import jax.numpy as jnp
 from typing import List, TypeVar, Type
-
+from enum import Enum
 T = TypeVar("T")
 
 def list_to_array(lst: List[T]) -> T:
@@ -25,47 +42,27 @@ def list_to_array(lst: List[T]) -> T:
     if not lst:
         raise ValueError("Input list is empty.")
 
-    cls: Type[T] = type(lst[0])  
+    cls: Type[T] = type(lst[0])  # Определяем класс элементов списка
     converted_data = {}
 
     for k, field in cls.__dataclass_fields__.items():
         values = [getattr(v, k) for v in lst]
 
+        # Если поле уже является jnp.ndarray, то стекуем его вдоль первой оси
         if isinstance(values[0], jnp.ndarray):
-            converted_data[k] = jnp.stack(values, axis=0)  
+            converted_data[k] = jnp.stack(values, axis=0)  # Собираем массив массивов
         elif isinstance(values[0], (int, float, bool)):  
-            converted_data[k] = jnp.array(values) 
+            converted_data[k] = jnp.array(values)  # Просто массив скаляров
         else:
-            converted_data[k] = list_to_array(values) 
+            converted_data[k] = list_to_array(values)  # Рекурсивный вызов для вложенных датаклассов
+
     return cls(**converted_data)
 
-@struct.dataclass
-class TextEnvState:
-    env_state: Any
-    timestep: int
-    full_instruction: Optional[jax.Array]
-    instruction: Optional[jax.Array]
-    step_idx: int
-    idx: int
-    success_rate: float
-    total_success_rate: float
-    environment_key: int
-    rng: int
-
-from gymnax.environments import spaces, environment
-from craftax.craftax_classic.envs.craftax_state import (
-    EnvState,
-    EnvParams,
-)
-
-def check_subvector(x, y):
-    return jnp.all(x == y)
 
 class CustomInstructionWrapper(Wrapper):
     def __init__(self, env, instruction):
         self.env = env
-        self.castom_initial_instruction = jnp.array(self.env.scenario_handler.castom_initial_instruction(instruction)[0])
-        print("CASTOM INSTRUCTION SHAPE: ", self.castom_initial_instruction.shape)
+        self.castom_initial_instruction = self.env.scenario_handler.castom_initial_instruction(instruction)
     
     def reset(self, _rng, env_params, instruction_idx=-1):
         """
@@ -73,20 +70,6 @@ class CustomInstructionWrapper(Wrapper):
         """
 
         obs, state = self.env.reset(_rng, env_params)
-        
-        state = TextEnvState(
-            env_state=state.env_state,
-            timestep=state.timestep,
-            full_instruction=self.castom_initial_instruction,
-            instruction=self.castom_initial_instruction[0],
-            step_idx=0,
-            idx=state.idx,
-            environment_key=state.environment_key,
-            success_rate=state.success_rate,
-            total_success_rate=0.0,
-            rng=_rng
-        )
-         
         return obs, state
     
     def step(self, _rng, env_state, action, env_params):
@@ -94,7 +77,7 @@ class CustomInstructionWrapper(Wrapper):
          return obs, state, reward, done, info
         
         
-class SIInstructionWrapper(Wrapper):
+class InstructionWrapper(Wrapper):
     def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambda,
                   encode_model_class=DistilBertEncode, encode_form=EncodeForm.EMBEDDING):
         """
@@ -113,14 +96,14 @@ class SIInstructionWrapper(Wrapper):
 
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
-        self.encoded_instruction = self.scenario_handler.scenario_data_jax.embeddings_list[0][0].reshape(1, -1)
-        
-        #print(self.encoded_instruction)
-       # exit()
-        self.scenario_arguments =list_to_array(self.scenario_handler.scenario_data_jax.arguments)
+        self.encoded_instruction = self.scenario_handler.initial_instruction
+        self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
+        self.batched_scenario_args = tree_util.tree_map(
+            lambda *xs: jnp.stack(xs),
+            *self.scenario_arguments
+        )
         self.env = env
         self.steps = 0
-        self.end_embedding = self.scenario_handler.scenario_data_jax.embeddings_list[-1][-1]
 
         # Determine the environment key and state structure
         self.environment_key = self.scenario_handler.environment_key
@@ -134,13 +117,6 @@ class SIInstructionWrapper(Wrapper):
         
         #print(self.scenario_handler.scenario_data_jax.arguments)
         #exit()
-    
-    @property
-    def num_actions(self) -> int:
-        return 18
-
-    def action_space(self, params: Optional[EnvParams] = None) -> spaces.Discrete:
-        return spaces.Discrete(18)
     
     def reset(self, _rng, env_params, instruction_idx=-1):
         """
@@ -160,9 +136,7 @@ class SIInstructionWrapper(Wrapper):
         state = TextEnvState(
             env_state=state,
             timestep=state.timestep,
-            full_instruction=instructions_emb,
-            instruction=instructions_emb[0],
-            step_idx=0,
+            instruction=instructions_emb,
             idx=idx,
             environment_key=self.environment_key,
             success_rate=0.0,
@@ -175,38 +149,39 @@ class SIInstructionWrapper(Wrapper):
         """
         Takes a step in the environment, checking if the instruction is done, updating success rate and rewards.
         """
-        step_idx = env_state.step_idx
-        mask = jnp.where(action == 17, True, False)
-        actions_plans = action
-        new_step_idx =  jax.lax.cond(mask, lambda _: step_idx+1, lambda _: step_idx, operand=None)
-        action = jax.lax.cond(mask, lambda _: 0, lambda _: action, operand=None)
-        
         obs, state, reward, done, info = self.env.step(_rng, env_state.env_state, action, env_params)
         # Obtain the game data vector for the current state and check instruction completion
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
         
+        # light_dinamic_batched = jnp.expand_dims(light_dinamic, env_state.num_envs)
+
+        # print(f'game_data_vector.states[0].variables: {game_data_vector.states[0].variables}')
+        # game_data_vector.states[0].variables.light_level_dinamic.set(light_dinamic)
+        # game_data_vector.states[0].variables = game_data_vector.states[0].variables.replace(light_level_dinamic=light_dinamic)
         # Run all function over all game_data_vector (now only conditional_achivments) 
-        conditional_achivments_vmap = jax.vmap(conditional_achivments, in_axes=(None, 0))
-        results = conditional_achivments_vmap(game_data_vector, self.scenario_arguments)
+        # print(f'shape: {game_data_vector}')
+        # print(f'shape:{self.scenario_arguments}')
+        # print(f'len: {len(self.scenario_arguments)}')
+        # at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
+        at_time_block_placed_achivment = jax.vmap(at_time_block_placed, in_axes=(None, 0))
+        # 
+        # print(type(self.scenario_arguments))
+        # print(self.scenario_arguments.shape)
+        results = at_time_block_placed_achivment(game_data_vector, self.batched_scenario_args)
         # Choose result releted instructions in current env
-        instruction_done_on_step = results[env_state.idx]
-        plans_ends = jnp.all(env_state.full_instruction[step_idx] == self.end_embedding)# jax.vmap(check_subvector, in_axes=(0, None))(env_state.full_instruction[step_idx], self.end_embedding)
-        
-        need_give_reward = instruction_done_on_step & plans_ends # Give reward only if instruction done and plan ends
-        
+        instruction_done = results[env_state.idx]
+
         reward /= 50
-        reward = jax.lax.cond(need_give_reward, lambda _: reward + 1, lambda _: reward, operand=None)
-        done = plans_ends | done # End only with agent motivation or if it died
+        reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
+        done = instruction_done | done
    
-        new_episode_sr = env_state.success_rate + jnp.float32(need_give_reward)
+        new_episode_sr = env_state.success_rate + jnp.float32(instruction_done)
 
         # Update state with the new success rates
         state = TextEnvState(
             env_state=state,
             timestep=state.timestep,
-            full_instruction=env_state.full_instruction,
-            instruction=env_state.full_instruction[step_idx],
-            step_idx = new_step_idx, 
+            instruction=env_state.instruction,
             idx=env_state.idx,
             environment_key=env_state.environment_key,
             success_rate=new_episode_sr * (1 - done),
@@ -219,3 +194,7 @@ class SIInstructionWrapper(Wrapper):
         self.steps += 1
         return obs, state, reward, done, info
  
+#TODO:
+# враппер для проверки всех задачь разом.
+# посмотреть trl GRPO trainer -> использовать transformers
+# ONE -> вернуть.
