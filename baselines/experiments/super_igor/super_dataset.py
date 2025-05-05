@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from datasets import Dataset
 from baselines.experiments.super_igor.prompts import promt_instruction, PROMPTS
+from collections import defaultdict
+import time
 from scipy.signal import find_peaks
 from sklearn.neighbors import KernelDensity
 import os
@@ -45,16 +47,32 @@ def generate_sd_from_subtasks(path, new_path):
 
         for i, plan in enumerate(clear_plans):
             mask = plans_for_instructions["plan"] == plan
+            instruction = plans_for_instructions["instruction"][mask].values[0]
+
+            
+            mask_per_instruction = plans_for_instructions["instruction"] == instruction
+
+            join_mask = mask & mask_per_instruction
+
+            
+            mask = join_mask
             subtasks_for_plan = plans_for_instructions[mask][
                 ["subtask", "per_step_score"]
             ]
-            subtasks = subtasks_for_plan["subtask"]
-            scores = subtasks_for_plan["per_step_score"]
+            count_subtaks_in_plan = len(plan.split("\n"))
+            subtasks = subtasks_for_plan["subtask"].values[:count_subtaks_in_plan]
+            scores = subtasks_for_plan["per_step_score"].values[:count_subtaks_in_plan]
+            
+            max_scores = defaultdict(float)
+            for subtask, score in zip(subtasks, scores):
+                max_scores[subtask] = max(max_scores[subtask], score)
 
-            min_score = scores.min()
-            max_score = scores.max()
-            norm_scores = (scores - min_score) / (max_score - min_score)
-            norm_scores = norm_scores.values
+            scores = np.array([max_scores[subtask] for subtask in subtasks])
+
+           # min_score = scores.min()
+         #   max_score = scores.max()
+            norm_scores = scores / scores.sum()
+          #  norm_scores = norm_scores
 
             old_plan_sr = plans_for_instructions[mask]["sr"].values[0]
 
@@ -66,23 +84,39 @@ def generate_sd_from_subtasks(path, new_path):
                 new_plans = count_new_plans[2]
 
             optimized_plans = []
-
+            print("Subtasks: ", subtasks)
+            print("Scores: ", norm_scores)
+            print("- - - - - - - - - - - - - -  -")
+            
             for j in range(new_plans):
-                random_values = np.random.rand(len(norm_scores))
-                random_mask = random_values < norm_scores
-
-                filtered_subtasks = subtasks[random_mask].reset_index(
-                    drop=True
-                ).tolist()
-
-                if filtered_subtasks and bad_step not in filtered_subtasks[0]:
+                optimized_plan = None
+  
+                for _ in range(10):
+                    
+                    # Sample subtasks
+                    random_values = np.random.rand(len(norm_scores))
+                    random_mask = random_values < norm_scores
+                    filtered_subtasks = subtasks[random_mask].tolist()
                     optimized_plan = "\n".join(filtered_subtasks)
-                    optimized_plans.append(optimized_plan)
+                    
+                    print("F-Subtasks: ", filtered_subtasks)
+                    
+                    if len(filtered_subtasks)==0:
+                        continue
+                    if optimized_plan not in optimized_plans:
+                        optimized_plans.append(optimized_plan)
+                        break
+
 
             if optimized_plans:
                 sd_optimized.add_instruction(
                     instruction=instruction, plans=optimized_plans
                 )
+            else:
+                sd_optimized.add_instruction(
+                    instruction=instruction, plans=[plan]
+                )
+                
 
     sd_optimized.save_to_json(optimized_sd_path)
   
@@ -244,7 +278,7 @@ class Instruction:
         for i, plan_option in enumerate(plan_options):
             
            # Fetermine what reward to use
-            if rewards is None:
+            if rewards is None or rewards[0] is None:
                  # if ther no reward and no options yet
                 reward_to_add = self.NOT_MEAURED
                 warnings.warn("For some reason, the added plan during the 'update()' \
@@ -260,7 +294,7 @@ class Instruction:
 
                  # CASE - 1.1: WE ALREADY HAVE PLAN BUT IT IS NOT MEASURED
                 for i in indices:
-                    if self.rewards[i]==self.NOT_MEAURED:
+                    if self.rewards[i]==self.NOT_MEAURED or reward_to_add>self.rewards[i]:
                         new_reward = reward_to_add
                         self.rewards[i] = new_reward 
                         updated = True
@@ -298,11 +332,22 @@ class Instruction:
     
     @staticmethod
     def from_dict(data):
+        rewards = []
+        for reward in (data["rewards"]):
+            if np.isnan(reward):
+                rewards.append(0.1)
+            else:
+                rewards.append(reward)
         instruction = Instruction(
             instruction=data["instruction"],
             plan_options=data["plan_options"],
-            rewards=data["rewards"]
+            rewards=rewards
         )
+        
+        print(data)
+        print("- - - - - ")
+        #time.sleep(1)
+        
         return instruction
         
 
@@ -509,22 +554,25 @@ class SuperDataset:
 
     def merge_and_optimize(self, other_dataset):
         for instruction, instr_obj in other_dataset.instructions.items():
-            if instruction in self.instructions:
-                current_instr = self.instructions[instruction]
-                combined_plans = current_instr.plan_options + instr_obj.plan_options
-                combined_rewards = current_instr.rewards + instr_obj.rewards
-            else:
-                combined_plans = instr_obj.plan_options
-                combined_rewards = instr_obj.rewards
-            if combined_rewards is not None:
-                sorted_data = sorted(zip(combined_plans, combined_rewards), key=lambda x: x[1], reverse=True)
-                top_5_plans, top_5_rewards = zip(*sorted_data[:self.PLANS_STORE_SIZE])
-            else:
-                top_5_plans = combined_plans[:self.PLANS_STORE_SIZE]
-                top_5_rewards = [None] * len(top_5_plans)
-            self.instructions[instruction] = Instruction(instruction=instruction, 
-                                                         plan_options=list(top_5_plans),
-                                                         rewards=list(top_5_rewards))
+            for i, plan in enumerate(other_dataset.instructions[instruction].plan_options):
+                self.instructions[instruction].update([plan], [other_dataset.instructions[instruction].rewards[i]])
+                    
+            # if instruction in self.instructions:
+            #     current_instr = self.instructions[instruction]
+            #     combined_plans = current_instr.plan_options + instr_obj.plan_options
+            #     combined_rewards = current_instr.rewards + instr_obj.rewards
+            # else:
+            #     combined_plans = instr_obj.plan_options
+            #     combined_rewards = instr_obj.rewards
+            # if combined_rewards is not None:
+            #     sorted_data = sorted(zip(combined_plans, combined_rewards), key=lambda x: x[1], reverse=True)
+            #     top_5_plans, top_5_rewards = zip(*sorted_data[:self.PLANS_STORE_SIZE])
+            # else:
+            #     top_5_plans = combined_plans[:self.PLANS_STORE_SIZE]
+            #     top_5_rewards = [None] * len(top_5_plans)
+            # self.instructions[instruction] = Instruction(instruction=instruction, 
+            #                                              plan_options=list(top_5_plans),
+            #                                              rewards=list(top_5_rewards))
             #self.add_instruction(instruction, list(top_5_plans), list(top_5_rewards))
 
     def remove_unecessary_keys(self):

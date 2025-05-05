@@ -177,6 +177,7 @@ class Experiment:
     def __init__(self, args):
         self.seeds_to_use = 30
         self.args = args
+        self.calculate_per_step_score = args.per_step_scoring
         self.config = self._load_config()
         self.checkpoint_manager = self._initialize_checkpoint_manager()
         self.env, self.network = self._initialize_environment_and_network()
@@ -255,12 +256,13 @@ class Experiment:
             EncodeModel = make_encoder_with_planning(planer_type = "sd",
                                              planer_config=self.config['PLANER_CONFIG'],
                                              embedding_source=self.config['EMBEDDING_SOURCE'],
-                                             step_by_step=self.config['STEP_BY_STEP'])
+                                             step_by_step=self.config['STEP_BY_STEP'],
+                                             full_sampled=False)
 
             
             # EncodeModel = SuperEncoder(super_dataset, form_to_use=EncodeForm.EMBEDDING,
             #                            num_return_sequences=self.config['NUM_RETURN_SEQUENCES'], n_splits=1,  augment=self.config['AUGMENT'], split_into_steps=True, make_one_hot=True)
-            ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=True)
+            ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=True, update_sd=False)
         elif self.config['CUSTOM_COMMAND']:
             #TODO: Need to Fix
             EncodeModel = QwenModelWrapper(self.config["LLM_PATH"], num_return_sequences=1, augment=self.config['AUGMENT'], split_into_steps=True, do_plan=False)
@@ -273,13 +275,26 @@ class Experiment:
             EncodeModel = make_encoder_with_planning(planer_type = "llm",
                                              planer_config=self.config['PLANER_CONFIG'],
                                              embedding_source=self.config['EMBEDDING_SOURCE'],
-                                             step_by_step=self.config['STEP_BY_STEP'])
+                                             step_by_step=self.config['STEP_BY_STEP'],
+                                             full_sampled=False)
             
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
         
         env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
                                   encode_model_class=EncodeModel,
                                   encode_form=EncodeForm.EMBEDDING)
+        
+        
+        checkers = env.scenario_handler.scenario_data.arguments
+        plans = env.scenario_handler.scenario_data.instructions_list
+        instructions = env.scenario_handler.scenario_data.original_instructions
+        arguments = env.scenario_arguments
+        for checker, args, plan, instruction in zip(checkers, arguments.achievements.achievement_mask, plans, instructions):
+            print("+ + + "*10)
+            print(instruction)
+            print(args)
+            print(plan)
+            print(checker)
 
         if self.config['CUSTOM_COMMAND']:
            env = CustomInstructionWrapper(env, instruction=self.config['CUSTOM_COMMAND'].replace("\\n", "\n") )
@@ -431,23 +446,24 @@ class Experiment:
             if action is not None:
                 obs, env_state, reward, done, info = step_fn(rng, env_state, action, self.env.default_params)
                 
-                # --- calculate per-sub-goal reward
-                binary_reward = (reward > 0).astype(jnp.float32)
-                achievments_done = env_state.env_state.env_state.achievements.astype(jnp.float32)
-                curr_subgoals = env_state.env_state.step_idx
-                curr_goals =  env_state.env_state.idx
-                goals_changed = (curr_goals==prev_goals).astype(jnp.float32)
-                mask = get_update_mask(prev_subgoals, curr_subgoals, prev_goals, num_goals, max_subgoals)
-                reward_sum = update_reward_sum_matrix_simple(reward_sum, binary_reward, prev_goals, curr_subgoals)
-                per_achivment_sum = update_reward_sum_matrix_vectorized(reward_sum_matrix=per_achivment_sum,
-                                        rewards=achievments_done - (old_achievments_done*goals_changed[:, None]),
-                                        curr_goals=prev_goals,
-                                        curr_subgoals=curr_subgoals)
-                prev_goals = curr_goals
-                prev_subgoals = curr_subgoals
-                episode_count = episode_count + mask.astype(jnp.int32)
-                old_achievments_done = achievments_done
-                # --- 
+                if self.calculate_per_step_score:
+                    # --- calculate per-sub-goal reward
+                    binary_reward = (reward > 0).astype(jnp.float32)
+                    achievments_done = env_state.env_state.env_state.achievements.astype(jnp.float32)
+                    curr_subgoals = env_state.env_state.step_idx
+                    curr_goals =  env_state.env_state.idx
+                    goals_changed = (curr_goals==prev_goals).astype(jnp.float32)
+                    mask = get_update_mask(prev_subgoals, curr_subgoals, prev_goals, num_goals, max_subgoals)
+                    reward_sum = update_reward_sum_matrix_simple(reward_sum, binary_reward, prev_goals, curr_subgoals)
+                    per_achivment_sum = update_reward_sum_matrix_vectorized(reward_sum_matrix=per_achivment_sum,
+                                            rewards=achievments_done - (old_achievments_done*goals_changed[:, None]),
+                                            curr_goals=prev_goals,
+                                            curr_subgoals=curr_subgoals)
+                    prev_goals = curr_goals
+                    prev_subgoals = curr_subgoals
+                    episode_count = episode_count + mask.astype(jnp.int32)
+                    old_achievments_done = achievments_done
+                    # --- 
                 
                 steps += 1
                 progress_bar.n = np.sum(done_count)
@@ -467,6 +483,12 @@ class Experiment:
 
                 prev_indx = self._update_success_metrics(prev_indx, env_state, done, info,
                                                         done_count, total_success_rate)
+                print("-------------------")
+                
+                print("sum_sr:", total_success_rate)
+                print("action:", action)
+                print("step_idx:", env_state.env_state.step_idx)
+                print("instruction_idx:", env_state.env_state.idx)
 
                 if (np.sum(done_count)+5) >= self.env.n_instructions * self.seeds_to_use:
                     break
@@ -491,7 +513,7 @@ class Experiment:
         else:
             total_score =  mean_sr[:len(self.env.scenario_handler.scenario_data.instructions_list)] 
         per_subtaks_score = reward_sum/episode_count
-        self._update_super_dataset(total_score, reward_sum, episode_count,per_achivment_sum )
+        self._update_super_dataset(total_success_rate,done_count, total_score, reward_sum, episode_count,per_achivment_sum )
     
         
     def _init_rendering(self):
@@ -560,24 +582,38 @@ class Experiment:
         return scores
 
 
-    def _update_super_dataset(self, total_score, reward_sum, episode_count,per_achivment_sum):
+    def _update_super_dataset(self, sr_sum, counts, total_score, reward_sum, episode_count,per_achivment_sum):
         self.super_dataset.super_print()
         self.super_dataset.clear_scores()
         self.super_dataset.rebuild_mapping()
         self.super_dataset.batch_update_instruction(self.env.scenario_handler.scenario_data.original_instructions,
                                                     self.env.scenario_handler.scenario_data.instructions_list,
                                                     total_score)
+        
+        instructions = self.env.scenario_handler.scenario_data.original_instructions
+        plans = self.env.scenario_handler.scenario_data.instructions_list
+        srs = total_score
+        
+        print("- - + - - +"*5)
+        for sum_sr, count_run, intsruction, plan, sr in zip(sr_sum, counts, instructions, plans, srs):
+            print(intsruction)
+            print(sum_sr)
+            print(count_run)
+            print(plan)
+            print(sr)
+        print("- - + - - +"*5)
         self.super_dataset.save_to_json(self.config["DATASET_PATH"])
         directory = os.path.dirname(self.config["DATASET_PATH"])
         
-      #  per_subtask_score = reward_sum / episode_count
-        self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.original_instructions,
-                                             self.env.scenario_handler.scenario_data.instructions_list, 
-                                             total_score,
-                                             episode_count,
-                                             reward_sum,
-                                             per_achivment_sum,
-                                             directory)
+        if self.calculate_per_step_score:
+        #  per_subtask_score = reward_sum / episode_count
+            self.super_dataset.per_subtask_table(self.env.scenario_handler.scenario_data.original_instructions,
+                                                self.env.scenario_handler.scenario_data.instructions_list, 
+                                                total_score,
+                                                episode_count,
+                                                reward_sum,
+                                                per_achivment_sum,
+                                                directory)
 
 
 
@@ -600,6 +636,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_dataset_path", type=str, default="temp_dataset/super_dataset.json")
     parser.add_argument("--num_return_sequences", type=int, default=5)
     parser.add_argument("--augment", type=int, default=0)
+    parser.add_argument("--per_step_scoring", type=int, default=0)
     parser.add_argument("--custom_command", type=str, default=None)
     
     parser.add_argument("--planer_type", type=str, default="llm")

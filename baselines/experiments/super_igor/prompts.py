@@ -78,6 +78,7 @@ class FunctionPlanExtractor():
             remove_bad_subtasks = [s for s in subtasks_clear if FunctionPlanExtractor.check_subtask(s)]
             
             if len(remove_bad_subtasks)==0:
+                raise PlanFormatError(f"Incorrect plan format: {e}")
                 remove_bad_subtasks = ["[MASK]"]
            # print("cleared subtasks: ")
            # print(remove_bad_subtasks)

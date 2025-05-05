@@ -80,6 +80,11 @@ def make_train(config, network_params):
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
                             encode_form=EncodeForm.EMBEDDING)
+    
+    print("="*20)
+    for i in env.scenario_handler.scenario_data.instructions_list:
+        print(i)
+    print("="*20)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -745,7 +750,8 @@ def run_ppo(config):
                 #     train_state = checkpoint_manager.restore(60000)
                 #     network_params = train_state['runner_state'][0]["params"]
                 # else:
-                    train_state = checkpoint_manager.restore(int(config['TOTAL_TIMESTEPS']))
+                    timesteps = 250000000 #int(config['TOTAL_TIMESTEPS'])
+                    train_state = checkpoint_manager.restore(timesteps)
                     network_params = train_state['runner_state'][0]["params"]
                     #print(train_state.keys())
           #  network_params = train_state["params"]
