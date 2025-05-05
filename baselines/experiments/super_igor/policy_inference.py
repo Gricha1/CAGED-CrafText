@@ -32,39 +32,30 @@ from orbax.checkpoint import (
 )
 
 # ========= Local Modules =========
+from craftax.craftax_env import make_craftax_env_from_name
+
 # Imports from the baselines package
-from baselines.experiments.super_igor.craftext_wrappers.deterministic_inference import DetermOptimisticResetVecEnvWrapper
-from baselines.experiments.super_igor.craftext_wrappers.old_encode_code import QwenEncodeModel, QwenModelWrapper, SuperEncoder
 from baselines.experiments.super_igor.expert import PlansExpert
-from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import (
-    CrafTextScenariosWithSuperDataset,
-    create_scenarios_with_super_dataset
-)
-from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
-from baselines.experiments.super_igor.persubtask_update import initialize_reward_tracking, update_reward_sum_matrix_simple, get_update_mask,update_reward_sum_matrix_vectorized
-from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
 from baselines.experiments.super_igor.super_dataset import SuperDataset
 from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
-#from baselines.models.actor_critic import ActorCriticConvWithBERT, ActorCriticConvWithFiLM, ActorCriticConvWithFiLMonehot
+from baselines.experiments.super_igor.persubtask_update import (
+    initialize_reward_tracking,
+    update_reward_sum_matrix_simple,
+    get_update_mask,
+    update_reward_sum_matrix_vectorized
+)
+
+from baselines.experiments.super_igor.craftext_wrappers.deterministic_inference import DetermOptimisticResetVecEnvWrapper
+from baselines.experiments.super_igor.craftext_wrappers.old_encode_code import  QwenModelWrapper
+from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
+from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIPlanning, CustomInstructionWrapper
+from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
+
+from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
+
 from baselines.models.actor_critic_with_text import create_actor_critic
 
-<<<<<<< HEAD
-from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
-
-from craftext.encoders.craftext_base_model_encoder import EncodeForm
-from baselines.experiments.super_igor.encoder import QwenEncodeModel, QwenModelWrapper
-from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset
-from baselines.experiments.deterministic_inference import DetermOptimisticResetVecEnvWrapper
-from baselines.experiments.super_igor.view import add_text_to_image, CraftaxRenderer
-from baselines.experiments.super_igor.super_dataset import SuperDataset
-=======
-# Imports from other local packages
-from craftax.craftax_env import make_craftax_env_from_name
-from craftext.craftext_encoder import EncodeForm
-from craftext.craftext_encoder import EncodeForm, DistilBertEncode
-from craftext.craftext_wrapper import InstructionWrapper
-
-from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper, CustomInstructionWrapper
 
 # ========= Seed Configuration =========
 # seed_value = 42  # Choose any fixed seed value
@@ -98,8 +89,6 @@ achievement_dict = {
     20: "MAKE_IRON_PICKAXE",
     21: "MAKE_IRON_SWORD",
 }
->>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
-
 class ResultManager:
     def __init__(self, experiment_name, craftext_settings):
         self.experiment_name = experiment_name
@@ -291,11 +280,11 @@ class Experiment:
             
             ScenariosClass = create_scenarios_with_super_dataset(self.config["DATASET_PATH"], load_preinited=False)
         
-        env = SIInstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
+        env = InstructionWrapper(env, self.args.craftext_settings, scenario_handler_class=ScenariosClass,
                                   encode_model_class=EncodeModel,
                                   encode_form=EncodeForm.EMBEDDING)
         
-        
+        env = SIPlanning(env)
         checkers = env.scenario_handler.scenario_data.arguments
         plans = env.scenario_handler.scenario_data.instructions_list
         instructions = env.scenario_handler.scenario_data.original_instructions

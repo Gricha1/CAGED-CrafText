@@ -19,17 +19,14 @@ from orbax.checkpoint import (
     CheckpointManagerOptions,
     CheckpointManager,
 )
-<<<<<<< HEAD
-from baselines.experiments.super_igor.encoder import QwenModelWrapper
+
 from craftext.encoders.craftext_base_model_encoder import EncodeForm
-from baselines.experiments.super_igor.scenarius_loader import CrafTextScenariosWithSuperDataset, create_scenarios_with_super_dataset
-=======
+from craftext.instructions.wrappers.craftext_wrapper_2 import InstructionWrapper
+
 from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
-from craftext.craftext_encoder import EncodeForm
+from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIPlanning
 from baselines.experiments.super_igor.craftext_wrappers.scenarius_loader import create_scenarios_with_super_dataset
-from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIInstructionWrapper
 from baselines.experiments.super_igor.super_dataset import SuperDataset
->>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 from baselines.logz.batch_logging import batch_log, create_log_dict
 from baselines.models.actor_critic_with_text import create_actor_critic
@@ -40,11 +37,6 @@ from baselines.wrappers import (
     OptimisticResetVecEnvWrapper,
 )
 
-<<<<<<< HEAD
-from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
-
-=======
->>>>>>> aff9db357a23aebdb869f24319526ddd082e4064
 
 class Transition(NamedTuple):
     done: jnp.ndarray
@@ -87,15 +79,12 @@ def make_train(config, network_params):
                                              step_by_step=config['STEP_BY_STEP'])
     
     ScenariosClass = create_scenarios_with_super_dataset(config['SUPER_DATASET'], update_sd=False, load_preinited=load_preinited)
-    env = SIInstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
+    env = InstructionWrapper(env, config["CRAFTEXT_SETTINGS"],
                              encode_model_class=EncodeModel,
                             scenario_handler_class=ScenariosClass,
                             encode_form=EncodeForm.EMBEDDING)
     
-    print("="*20)
-    for i in env.scenario_handler.scenario_data.instructions_list:
-        print(i)
-    print("="*20)
+    env = SIPlanning(env)
     env = LogWrapper(env)
     env = OptimisticResetVecEnvWrapper(
             env,
@@ -263,7 +252,7 @@ def make_train(config, network_params):
                 # SELECT ACTION
                 rng, _rng = jax.random.split(rng)
                 print("!!! OBS !!!!", last_obs.shape)
-                pi, value = network.apply(train_state.params, last_obs, env_state.env_state.instruction)
+                pi, value = network.apply(train_state.params, last_obs, env_state.env_state.step_embedding)
                 
         
                 action = pi.sample(seed=_rng)
@@ -341,7 +330,7 @@ def make_train(config, network_params):
                     obs=last_obs,
                     next_obs=obsv,
                     info=info,
-                    instruction=env_state.env_state.instruction# env.encoded_instruction[0]
+                    instruction=env_state.env_state.step_embedding# env.encoded_instruction[0]
                 )
                 runner_state = (
                     train_state,
@@ -370,7 +359,7 @@ def make_train(config, network_params):
                 rng,
                 update_step,
             ) = runner_state
-            _, last_val = network.apply(train_state.params, last_obs, env_state.env_state.instruction)
+            _, last_val = network.apply(train_state.params, last_obs, env_state.env_state.step_embedding)
           #  exit()
             def _calculate_gae(traj_batch, last_val):
                 def _get_advantages(gae_and_next_value, transition):

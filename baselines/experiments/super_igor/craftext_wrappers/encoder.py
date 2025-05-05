@@ -2,7 +2,10 @@ import pickle
 
 from dataclasses import dataclass
 
-from craftext.craftext_encoder import EncodeForm, DistilBertEncode
+#from craftext.craftext_encoder import EncodeForm, DistilBertEncode
+
+from craftext.encoders.craftext_distilbert_model_encoder import DistilBertEncode
+from craftext.encoders.craftext_base_model_encoder import EncodeForm
 
 from baselines.experiments.super_igor.craftext_wrappers.encoder_trainer import EncoderTrainer
 from baselines.experiments.super_igor.craftext_wrappers.planners import SDPlanner, LLMPlanner, DEFAULT_STEP

@@ -177,13 +177,13 @@ def ac_config_to_args(config_path):
 if __name__=="__main__":
     # - checkpoint
     start_from_checkpoint= True 
-    restart_checkpoint_name = "./super_experiments/SI_simplified_set_llmt_True_Michelle_Stevens_20250424_213652"
-    rl_skip = 1 if start_from_checkpoint else 0
+    restart_checkpoint_name = "./super_experiments/simple_achievments"
+    rl_skip = 0 if start_from_checkpoint else 0
     inference_skip = 1 if start_from_checkpoint else 0
     llm_skip = 0 if start_from_checkpoint else 0
     
     # ------- Experiment args
-    craftext_settings = "SI_simplified_set"
+    craftext_settings =  "simple_achivments"#"SI_simplified_set"
     start_planer_config = planer_config_to_args("./configs/qwen_3b_function.yaml", start_from_checkpoint)
     start_ac_config = ac_config_to_args("./configs/policy_base.yaml")
     llm_name =  "./pretrained_plan_llm/3_" #"Qwen/Qwen2.5-3B-Instruct" 
@@ -242,7 +242,7 @@ if __name__=="__main__":
                 start_checkpoint_path= rl_experiment_path,
                 experiment_name=experiment_name,
                 encode_form_name="EMBED_CLS_FOR_SPLITS",
-                total_timesteps=250000000,
+                total_timesteps=20000000,
                 additional_args=additional_args
             )
         else:

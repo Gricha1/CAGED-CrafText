@@ -77,9 +77,13 @@ def plans_batch_fill(plans, samples_needed, sr=None, full_sampled=False):
     Extend the list of plans by sampling from it (with replacement),
     using a distribution based on sr (if provided) or uniform otherwise.
     """
+    
+    print(plans)
     if full_sampled:
         samples_needed = samples_needed + len(plans)
     num_plans = len(plans)
+    if num_plans == 0:
+        num_plans = 1
     if sr is not None:
         sr = np.asarray(sr)
         if len(sr) != num_plans:

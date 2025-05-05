@@ -1,5 +1,5 @@
 from baselines.experiments.super_igor.super_dataset import SuperDataset
-from craftext.craftext_scenarious_no_lambda import ScenariosNoLambda
+from craftext.instructions.scenarios.handlers.craftext_scenarious_no_lambda import ScenariosNoLambda
 
 class CrafTextScenariosWithSuperDataset(ScenariosNoLambda):
     def __init__(self, encode_model, config_name=None, super_dataset_name = "None", load_preinited=False, use_plans=False, update_sd = False):

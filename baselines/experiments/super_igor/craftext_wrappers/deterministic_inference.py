@@ -9,7 +9,7 @@ from flax import linen as nn, struct
 from craftax.craftax_env import make_craftax_env_from_name
 from typing import Any, Optional
 
-from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
+#from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
 
 import numpy as np
 
@@ -175,63 +175,63 @@ class DetermOptimisticResetVecEnvWrapper(GymnaxWrapper):
         return obs, state, reward, done, info
 
 
-class MinimalExperiment:
-    def __init__(self, args):
-        self.args = args
-        self.env = self._initialize_environment()
+# class MinimalExperiment:
+#     def __init__(self, args):
+#         self.args = args
+#         self.env = self._initialize_environment()
 
-    def _initialize_environment(self):
-        env_name = "Craftax-Classic-Pixels-v1"
-        env = make_craftax_env_from_name(env_name, False)
-        env = InstructionWrapper(env, self.args.craftext_settings)
-        env = DetermOptimisticResetVecEnvWrapper(env, self.args.num_envs, self.args.ratio, n_instructions=env.n_instructions, n_seeds=5) 
-        return env
+#     def _initialize_environment(self):
+#         env_name = "Craftax-Classic-Pixels-v1"
+#         env = make_craftax_env_from_name(env_name, False)
+#         env = InstructionWrapper(env, self.args.craftext_settings)
+#         env = DetermOptimisticResetVecEnvWrapper(env, self.args.num_envs, self.args.ratio, n_instructions=env.n_instructions, n_seeds=5) 
+#         return env
 
-    def run(self):
-        rng = jax.random.PRNGKey(42)
-        n_actions = 17 # action space for Craftax-Classic
+#     def run(self):
+#         rng = jax.random.PRNGKey(42)
+#         n_actions = 17 # action space for Craftax-Classic
 
-        obs, env_state = self.env.reset(rng, self.env.default_params)
-        step_fn = jax.jit(self.env.step)
-        steps = 0
-        instr_rngs = dict()
-        while steps < 500:
-            # Random action selection
-            actions = jax.random.randint(rng, (obs.shape[0],), 0, n_actions)
+#         obs, env_state = self.env.reset(rng, self.env.default_params)
+#         step_fn = jax.jit(self.env.step)
+#         steps = 0
+#         instr_rngs = dict()
+#         while steps < 500:
+#             # Random action selection
+#             actions = jax.random.randint(rng, (obs.shape[0],), 0, n_actions)
 
-            obs, env_state, reward, done, info = step_fn(rng, env_state, actions, self.env.default_params)
+#             obs, env_state, reward, done, info = step_fn(rng, env_state, actions, self.env.default_params)
             
             
                 
-            print("INSTRUCTIONS: ", env_state.env_state.idx)
-            print("RNGS: ", env_state.env_state.rng)
-            print("EVALUATED: ", env_state.indecec_vector)
-            print("used_instructions", env_state.v1)
-            print("possible_indices", env_state.v2)
+#             print("INSTRUCTIONS: ", env_state.env_state.idx)
+#             print("RNGS: ", env_state.env_state.rng)
+#             print("EVALUATED: ", env_state.indecec_vector)
+#             print("used_instructions", env_state.v1)
+#             print("possible_indices", env_state.v2)
             
-            indicec_used = np.array(env_state.env_state.idx)
-            rngs_used = np.array(env_state.env_state.rng)
-            for i, instruction in enumerate(indicec_used):
-                if instruction not in instr_rngs:
-                    instr_rngs[instruction] = []
+#             indicec_used = np.array(env_state.env_state.idx)
+#             rngs_used = np.array(env_state.env_state.rng)
+#             for i, instruction in enumerate(indicec_used):
+#                 if instruction not in instr_rngs:
+#                     instr_rngs[instruction] = []
                     
-                instr_rngs[instruction].append(tuple(rngs_used[i].tolist()))
+#                 instr_rngs[instruction].append(tuple(rngs_used[i].tolist()))
         
-            steps += 1
+#             steps += 1
         
-        for instruction in instr_rngs:
-            print("- - -"*20)
-            print("Instruction: ", instruction)
-            print("RNGS: ", set(instr_rngs[instruction]))
-            print("- - -"*20)
+#         for instruction in instr_rngs:
+#             print("- - -"*20)
+#             print("Instruction: ", instruction)
+#             print("RNGS: ", set(instr_rngs[instruction]))
+#             print("- - -"*20)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--craftext_settings", type=str, default="simple")
-    parser.add_argument("--num_envs", type=int, default=4, help="Number of environments")
-    parser.add_argument("--ratio", type=int, default=1)
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--craftext_settings", type=str, default="simple")
+#     parser.add_argument("--num_envs", type=int, default=4, help="Number of environments")
+#     parser.add_argument("--ratio", type=int, default=1)
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    experiment = MinimalExperiment(args)
-    experiment.run()
+#     experiment = MinimalExperiment(args)
+#     experiment.run()
