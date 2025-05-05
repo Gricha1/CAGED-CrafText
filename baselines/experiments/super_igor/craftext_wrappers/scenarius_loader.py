@@ -16,11 +16,16 @@ class CrafTextScenariosWithSuperDataset(ScenariosNoLambda):
     
     def pairwise_instructions_and_checkers(self):
         instructions_list, indices_list, checkers_data_dict = super().pairwise_instructions_and_checkers()
-        
+        print(" oooo "*5)
+        print(checkers_data_dict)
+        print(" oooo "*5)
         if not self.update_sd:
             return instructions_list, indices_list, checkers_data_dict
+        
+        # Pairvise SD plan and checkerts
         instructions_list_upd, indices_list_upd, checkers_data_dict_upd = [], [], dict()
         sd_instructions = self.super_dataset.instructions.keys()
+        
         for i in range(len(instructions_list)):
             if instructions_list[i] in sd_instructions:
                 instructions_list_upd.append(instructions_list[i])
@@ -29,6 +34,11 @@ class CrafTextScenariosWithSuperDataset(ScenariosNoLambda):
                     if key not in checkers_data_dict_upd:
                         checkers_data_dict_upd[key] = []
                     checkers_data_dict_upd[key].append(checkers_data_dict[key][i])
+                    
+                    print("oooo"*5)
+                    print(checkers_data_dict_upd)
+                    print("oooo"*5)
+                    
         #instructions_list_upd - instead of list of str - list of list of str, each with the same size
         return instructions_list_upd, indices_list_upd, checkers_data_dict_upd 
 

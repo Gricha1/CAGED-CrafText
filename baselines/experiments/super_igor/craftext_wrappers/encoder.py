@@ -13,7 +13,7 @@ from baselines.experiments.super_igor.craftext_wrappers.planners import make_pla
 import random
 
 # --------------- Utils --------------- 
-def split_plans(plan, max_steps_length=16):
+def split_plans(plan, max_steps_length=35):
     #print(plan)
     steps = plan.split("\n")
    
@@ -100,8 +100,9 @@ class EncoderWithPlanning(DistilBertEncode):
 def make_encoder_with_planning(
     planer_type: str,
     planer_config: dict,
+    full_sampled: bool = True,
     embedding_source: EmbeddingSource = EmbeddingSource.bert,
-    step_by_step: bool = True
+    step_by_step: bool = True,
 ) -> type[EncoderWithPlanning]:
     """
     Factory that returns a subclass of EncoderWithPlanning
@@ -112,7 +113,7 @@ def make_encoder_with_planning(
     """
     # print(planer_config)
     # exit()
-    planer = make_planer(planer_type, planer_config)
+    planer = make_planer(planer_type, planer_config, full_sampled)
 
     class CustomEncoderWithPlanning(EncoderWithPlanning):
         def __init__(self,form_to_use,
