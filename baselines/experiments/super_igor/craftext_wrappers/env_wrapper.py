@@ -120,8 +120,18 @@ class SIInstructionWrapper(Wrapper):
         self.scenario_arguments =list_to_array(self.scenario_handler.scenario_data_jax.arguments)
         self.env = env
         self.steps = 0
-        self.end_embedding = self.scenario_handler.scenario_data_jax.embeddings_list[-1][-1]
+        self.end_embedding = self.scenario_handler.scenario_data_jax.embeddings_list[0][-1]
+        
+        print("=+="*10)
+        print("EMBEDDINGGS")
+        print(self.scenario_handler.scenario_data_jax.embeddings_list.shape)
+        print(self.scenario_handler.scenario_data_jax.embeddings_list[-1][-1][:5])
+        print(self.scenario_handler.scenario_data_jax.embeddings_list[0][-1][:5])
 
+        comp = self.scenario_handler.scenario_data_jax.embeddings_list[-1][-1] == self.scenario_handler.scenario_data_jax.embeddings_list[0][-1]  # → [ True  True False ]
+        print("emb comparing:", comp)
+
+    #  exit()
         # Determine the environment key and state structure
         self.environment_key = self.scenario_handler.environment_key
         self.StateStructure = GameData if self.environment_key == 1 else GameDataClassic
@@ -175,8 +185,11 @@ class SIInstructionWrapper(Wrapper):
         """
         Takes a step in the environment, checking if the instruction is done, updating success rate and rewards.
         """
+        
+        instructions_emb = self.scenario_handler.scenario_data_jax.embeddings_list[env_state.idx]
         step_idx = env_state.step_idx
         mask = jnp.where(action == 17, True, False)
+
         actions_plans = action
         new_step_idx =  jax.lax.cond(mask, lambda _: step_idx+1, lambda _: step_idx, operand=None)
         action = jax.lax.cond(mask, lambda _: 0, lambda _: action, operand=None)
@@ -190,7 +203,7 @@ class SIInstructionWrapper(Wrapper):
         results = conditional_achivments_vmap(game_data_vector, self.scenario_arguments)
         # Choose result releted instructions in current env
         instruction_done_on_step = results[env_state.idx]
-        plans_ends = jnp.all(env_state.full_instruction[step_idx] == self.end_embedding)# jax.vmap(check_subvector, in_axes=(0, None))(env_state.full_instruction[step_idx], self.end_embedding)
+        plans_ends = jnp.allclose(env_state.full_instruction[step_idx], self.end_embedding,  atol=1e-2, rtol=0.0) # jax.vmap(check_subvector, in_axes=(0, None))(env_state.full_instruction[step_idx], self.end_embedding)
         
         need_give_reward = instruction_done_on_step & plans_ends # Give reward only if instruction done and plan ends
         
@@ -199,12 +212,12 @@ class SIInstructionWrapper(Wrapper):
         done = plans_ends | done # End only with agent motivation or if it died
    
         new_episode_sr = env_state.success_rate + jnp.float32(need_give_reward)
-
+        new_step_idx = jax.lax.cond(plans_ends, lambda _: 0, lambda _: new_step_idx, operand=None)
         # Update state with the new success rates
         state = TextEnvState(
             env_state=state,
             timestep=state.timestep,
-            full_instruction=env_state.full_instruction,
+            full_instruction=instructions_emb,
             instruction=env_state.full_instruction[step_idx],
             step_idx = new_step_idx, 
             idx=env_state.idx,
