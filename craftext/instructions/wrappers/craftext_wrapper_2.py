@@ -74,7 +74,8 @@ class InstructionWrapper(Wrapper):
 
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
-        self.encoded_instruction = self.scenario_handler.initial_instruction
+        #initial_instruction 
+        self.encoded_instruction = self.scenario_handler.scenario_data_jax.embeddings_list[0]
         self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
         self.batched_ts = TargetState.stack(self.scenario_arguments)
 
