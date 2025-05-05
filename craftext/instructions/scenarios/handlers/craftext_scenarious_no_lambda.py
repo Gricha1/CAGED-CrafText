@@ -121,17 +121,12 @@ class ScenariosNoLambda:
 
             for key in checkers_data_f.keys():
                 checkers_data_f[key].extend(batch_results["checkers_data"][key])
-<<<<<<< HEAD:craftext/instructions/scenarios/handlers/craftext_scenarious_no_lambda.py
-        # print("instruction", instructions_f)
-        self.scenario_data = ScenarioData(
-=======
                 
         # with open("instructions_new_obj.json", 'w', encoding='utf-8') as f:
         #          json.dump(instructions_f, f, ensure_ascii=False, indent=4)
         # exit()
         if add_original_instructions:
             self.scenario_data = ScenarioDataO(
->>>>>>> aff9db357a23aebdb869f24319526ddd082e4064:craftext/craftext_scenarious_no_lambda.py
             instructions_list=instructions_f,
             scenario_checker=checkers_data_f["scenario_checker"],
             arguments=checkers_data_f["arguments"],
