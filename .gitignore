@@ -70,3 +70,6 @@ pylint-report.txt
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+dataset_generation/
+baselines/
