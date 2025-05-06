@@ -21,7 +21,7 @@ from orbax.checkpoint import (
 )
 
 from craftext.encoders.craftext_base_model_encoder import EncodeForm
-from craftext.instructions.wrappers.craftext_wrapper_2 import InstructionWrapper
+from craftext.enviroment.craftext_wrapper import InstructionWrapper
 
 from baselines.experiments.super_igor.craftext_wrappers.encoder import make_encoder_with_planning
 from baselines.experiments.super_igor.craftext_wrappers.env_wrapper import SIPlanning

@@ -17,7 +17,7 @@ from craftax.craftax.constants import (
     Action,
     Achievement,
 )
-from craftext.instructions.wrappers.craftext_wrapper_all_dataset_checker_choice import InstructionWrapperSeveralTasks as InstructionWrapper
+from craftext.enviroment.craftext_wrapper import InstructionWrapper
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
