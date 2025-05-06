@@ -1,12 +1,18 @@
 from setuptools import setup, find_packages
 
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description_content = (this_directory / "README.md").read_text()
+
 setup(
     name='CrafText',
-    version='0.1.0',
+    version='0.1.2',
     description='A text processing package with various scenarios and checkers.',
     author='ZoyaV',
     url='https://github.com/ZoyaV/CrafText',
     packages=find_packages(),
+    long_description=long_description_content,
+    long_description_content_type='text/markdown',
     install_requires=[
         "absl-py>=1.4.0",
         "anyio>=4.5.0",
