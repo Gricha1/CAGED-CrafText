@@ -62,7 +62,7 @@ class DistilBertEncode:
     
     def get_cls_embeddings(self, instructions):
         batch_embeddings = []
-        print("Encode...")
+        # print("Encode...")
         inputs = self.tokenizer(
                 instructions, 
                 return_tensors='pt', 
@@ -72,9 +72,10 @@ class DistilBertEncode:
             ).to("cuda")
         with torch.no_grad():
                 outputs = self.model(**inputs)
-        print("Finish.")
+        # print("Finish.")
         cls_embeddings = outputs.last_hidden_state[:, 0, :]  
         concatenated_embedding = cls_embeddings.cpu().numpy() 
+        # print(concatenated_embedding.shape)
         return concatenated_embedding
 
     def get_cls_embeddings_for_splits(self, instructions, n_splits):

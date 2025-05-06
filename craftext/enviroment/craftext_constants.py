@@ -22,6 +22,7 @@ class Scenarios:
     BUILD_STAR = 5
     
     TIME_CONSTRAINED_PLACEMENT = 6
+    EXPLORE = 7
     
 @struct.dataclass    
 class MediumInventoryItems:

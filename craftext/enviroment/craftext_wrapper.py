@@ -35,11 +35,13 @@ class TextEnvState:
     total_success_rate: float
     environment_key: int
     rng: int
+    instruction_done: bool
     checker_id: int
     
 
 def generic_check(game_data: Union[GameData, GameDataClassic], target_state: TargetState, idx: int) -> jnp.ndarray:
     
+
     def ca(ts: TargetState):   return checker_acvievments(game_data, ts.achievements)
     def cp(ts: TargetState):   return checker_conditional_placement(game_data, ts.conditional_placing)
     def port(ts: TargetState): return cheker_localization(game_data, ts.Localization_placing)
@@ -48,7 +50,7 @@ def generic_check(game_data: Union[GameData, GameDataClassic], target_state: Tar
     def icf(ts: TargetState):  return checker_star(game_data, ts.building_star)
     def atp(ts: TargetState):  return checker_time_placement(game_data, ts.time_placement)
 
-    fns = (ca, cp, port, ilf, isf, icf, atp)
+    fns = (ca, cp, port, ilf, isf, icf, atp, ca)
 
     return lax.switch(idx, fns, target_state)
 
@@ -71,7 +73,8 @@ class InstructionWrapper(Wrapper):
 
         # Initialize the scenario handler with the encoding model
         self.scenario_handler = scenario_handler_class(self.encode_model, config_name)
-        self.encoded_instruction = self.scenario_handler.initial_instruction
+        #initial_instruction 
+        self.encoded_instruction = self.scenario_handler.scenario_data_jax.embeddings_list[0]
         self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
         self.batched_ts = TargetState.stack(self.scenario_arguments)
 
@@ -111,6 +114,7 @@ class InstructionWrapper(Wrapper):
             success_rate=0.0,
             total_success_rate=0.0,
             rng=_rng,
+            instruction_done=False,
             checker_id=self.scenario_handler.scenario_data_jax.scenario_checker[idx]
         )
         return obs, state
@@ -124,9 +128,17 @@ class InstructionWrapper(Wrapper):
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
                     
         ts = self.batched_ts.select(env_state.idx)
+        print(ts)
         instruction_done = generic_check(game_data_vector, ts, env_state.checker_id)
-        reward /= 50
-        reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
+        
+        # If EXPLORE mode - give craftAx reward
+        reward = lax.cond(
+                    env_state.checker_id < 7,
+                    lambda r: r / 50,
+                    lambda r: r,
+                    reward
+                )
+       # reward = jax.lax.cond(instruction_done, lambda _: reward + 1, lambda _: reward, operand=None)
         done = instruction_done | done
    
         new_episode_sr = env_state.success_rate + jnp.float32(instruction_done)
@@ -141,6 +153,7 @@ class InstructionWrapper(Wrapper):
             success_rate=new_episode_sr * (1 - done),
             total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done,
             rng=env_state.rng,
+            instruction_done=instruction_done,
             checker_id=env_state.checker_id
         )
         
@@ -149,4 +162,5 @@ class InstructionWrapper(Wrapper):
         info.update({"Cheker_id": env_state.checker_id})
         self.steps += 1
         return obs, state, reward, done, info
+ 
  

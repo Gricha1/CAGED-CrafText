@@ -35,7 +35,7 @@ from wrappers import (
     BatchEnvWrapper,
 )
 
-from craftext.instruction.wrappers.craftext_wrapper import InstructionWrapper
+from craftext.enviroment.craftext_wrapper import InstructionWrapper
 
 
 class Transition(NamedTuple):

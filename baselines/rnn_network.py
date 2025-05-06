@@ -53,7 +53,7 @@ class ActorCriticTextVisualRNN(nn.Module):
         layer_size = self.layer_size if self.layer_size is not None else self.config['LAYER_SIZE']
         if layer_size is None:
             raise ValueError("LAYER_SIZE must be specified either in config or as a parameter.")
-
+        print("encoded_input", encoded_input.shape)
         obs, dones = x
 
         # Обработка наблюдений
@@ -83,7 +83,7 @@ class ActorCriticTextVisualRNN(nn.Module):
             bias_init=constant(0.0),
         )(encoded_input)
         encoded_input = nn.relu(encoded_input)
-
+        print("encoded_input", encoded_input.shape)
         # Объединение кодировок
         combined_embedding = jnp.concatenate([obs_embedding, encoded_input], axis=-1)
 
