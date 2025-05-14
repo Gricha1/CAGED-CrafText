@@ -6,11 +6,6 @@ def create_target_state(block_type:int, size:int, cross_type:int):
     target_achievements = BuildStarState(block_type=block_type, size=size, radius=10, cross_type=cross_type)
     return TargetState(building_star=target_achievements)
 
-@dataclass
-class CrossType:
-    STRAIGHT = 0
-    DIAGONAL = 1
-    COMBINED = 2
 
 easy = {
     "INSTRUCTION_PLANT_5": {
