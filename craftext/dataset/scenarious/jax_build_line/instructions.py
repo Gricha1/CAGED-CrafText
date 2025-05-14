@@ -35,98 +35,270 @@ def create_target_state(block_type:int, size:int, is_diagonal:bool):
     return TargetState(building_line=target_achievements)
 
 easy = {
-    "INSTRUCTION_CRAFTING_TABLE_3": {
-        "instruction": "Form a square of crafting tables with each side having a length of 3",
+    "INSTRUCTION_CRAFTING_TABLE_2": {
+        "instruction": "Make a line of 2 blocks using table.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "create a square shape by using work benches where the number of work benches on one side is 3",
-            "Layout 3 blocks of builder’s table in a square shape.",
-            "Make sure to arrange the building blocks in a square shape with each side having 3 of them",
-            "Kindly arrange three Crafting platforms on each side to form a square configuration.",
-            "I want you to position the construction desks in such a way that they form a square structure with each side containing three desks"
+            "Construct a row of 2 pieces with the crafting station.",
+            "Place 2 units in a straight row using the workbench.",
+            "Use the crafting table to form a row of 2 items.",
+            "Arrange a sequence of 2 blocks with the crafting platform.",
+            "Create a straight formation of 2 blocks with the crafting table."
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 2, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2, check_diagonal=False)"
     },
-    "INSTRUCTION_FURNACE_6": {
-        "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
+    "INSTRUCTION_CRAFTING_TABLE_3_DIAGONAL": {
+        "instruction": "Make a diagonal line of 3 blocks using table.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Can you confirm if a square with side-length of 6 is made up of furnace blocks?",
-            "Tell me, do we have a furnace blocks square with each side 6 blocks long?",
-            "Check for a 6 blocks sided square made entirely out of furnace blocks.",
-            "Do assess if we have a square, each side 6 blocks long, made completely from furnace blocks.",
-            "Inspect and confirm whether there is a square structure constituted of furnace blocks, six blocks long per side."
+            "Construct a slanted row of 3 items with the crafting station.",
+            "Place 3 blocks in a diagonal sequence using the workbench.",
+            "Use the crafting platform to arrange a diagonal row of 3 pieces.",
+            "Arrange a sloped line of 3 units using the crafting bench.",
+            "Create a diagonal sequence of 3 items with the crafting table."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 6, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3, is_diagonal=True),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)"
     },
-    "INSTRUCTION_FURNACE_5": {
-        "instruction": "Check if there is a square made of furnace blocks with side length of 5.",
+    "INSTRUCTION_STONE_2_DIAGONAL": {
+        "instruction": "Make a diagonal line of 2 blocks using stone.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Investigate for a square formation of 5x5 using heater blocks.",
-            "Look for a quadrant constructed with stove blocks, each side measuring 5 units.",
-            "Can you find a geometric square with a side size of 5, constructed from kiln blocks?",
-            "Make sure a form of square having dimensions 5 by 5, built using forge blocks is in position?",
-            "Inspect for any presence of a geometric configuration resembling a square with side length of 5, created using smelter blocks."
+            "Construct a slanted row of 2 stones.",
+            "Place 2 stone blocks in a diagonal sequence.",
+            "Use stones to arrange a diagonal line of 2 pieces.",
+            "Arrange a sloped row of 2 stone units.",
+            "Create a diagonal sequence of 2 stone blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 5, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.STONE, 2, is_diagonal=True),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.STONE, 2, check_diagonal=True)"
     },
-    "INSTRUCTION_CRAFTING_TABLE_7": {
-        "instruction": "Check for a distinct square made out of crafting tables with each side having a length of 7 blocks.",
+    "INSTRUCTION_FURNACE_2": {
+        "instruction": "Make a line of 2 blocks using furnace.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Look for a 7x7 crafting block square",
-            "Search for a square formation composed of workbenches, with each side consisting of 7 blocks",
-            "Confirm if there is a square of crafting tables existing, where each side is equivalent to 7 blocks",
-            "Verify the presence of a 7-blocks-wide square of crafting station",
-            "Ensure the existence of a perfect square shape made up of 7 blocks per side of crafting tables"
+            "Construct a straight row of 2 units with the furnace.",
+            "Place 2 blocks in a line using the heating station.",
+            "Use the furnace to form a sequence of 2 items.",
+            "Arrange a straight line of 2 pieces with the smelter.",
+            "Create a row of 2 blocks using the furnace."
         ],
-        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.FURNACE, 2, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.FURNACE, 2, check_diagonal=False)"
     },
-    "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
-        "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
+    "INSTRUCTION_STONE_4": {
+        "instruction": "Make a horizontal line of 4 blocks using stone.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
-            "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
-            "Determine if you have a 9-block square formation of the Frosty Wizard's Stand.",
-            "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
-            "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
+            "Construct a straight line of 4 stone blocks.",
+            "Place 4 stone units in a horizontal row.",
+            "Use stones to form a line of 4 blocks in a straight path.",
+            "Arrange 4 stones in a straight sequence.",
+            "Create a horizontal formation of 4 stone blocks."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 3, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.STONE, 4, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.STONE, 4, check_diagonal=False)"
     },
-    "INSTRUCTION_ENCHANTMENT_TABLE_ICE_size=7": {
-        "instruction": "create an enchantment table of ice shaped into a square with each side size 7.",
+    "INSTRUCTION_STONE_4": {
+        "instruction": "Make a line of stone with four blocks.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Form a square using an ice enchantment table, each side should be of length 7.",
-            "Make a square with sides of 7 units using a table enchanted with ice.",
-            "Utilize an enchanted ice table to fabricate a square having side length of seven.",
-            "Shape an ice enchantment table into a square with a side length of 7.",
-            "With the ice enchantment table, assemble a square where each side measures 7 units."
+            "Create a line using four rocks.",
+            "Construct a line that consists of four stone blocks.",
+            "Put together a straight line that contains four distinct stone blocks.",
+            "With the use of four stone blocks, form a straight line.",
+            "Assemble a linear pattern where each of four distinct spots is occupied by a stone block."
         ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 7, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.STONE, 4, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.STONE, 4, check_diagonal=False)"
     },
-    "INSTRUCTION_FURNACE_7": {
-        "instruction": "Build a square using furnaces with each side being 7 blocks long.",
+    "INSTRUCTION_FURNACE_3_DIAGONAL": {
+        "instruction": "Check if there is a diagonal line of furnace with a size of three on the map.",
         "scenario_checker": Scenarios.BUILD_LINE,
         "instruction_paraphrases": [
-            "Craft a square pattern with smelters that has 7 blocks as the dimension.",
-            "create a geometric square shape using heating devices where each side is 7 blocks long.",
-            "Erect a quadrilateral with furnaces with each of its sides being made of 7 blocks.",
-            "Form a furnace square that each edge has a length of 7 blocks.",
-            "Construct a four-sided figure using 7 furnaces on each side."
+            "Verify whether a line with a length of three tiles, composed of furnace units, is present diagonally on the game map.",
+            "Inspect the playing field to see if there is a three-tile-long furnace line in a diagonal orientation.",
+            "Can you see a line of three furnaces arranged diagonally on the map?",
+            "Please confirm whether there's a contiguous, diagonal arrangement of three furnaces on our game map.",
+            "Validate on the map if furnaces have been positioned in a line diagonally stretching to three blocks."
         ],
-        "arguments": create_target_state(BlockType.FURNACE, 7, is_diagonal=False),
-        "str_check_lambda": "is_square_formed(gd, ix)"
+        "arguments": create_target_state(BlockType.FURNACE, 3, is_diagonal=True),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.FURNACE, 3, check_diagonal=True)"
+    },
+    "INSTRUCTION_PLANT_4": {
+        "instruction": "Check if there's any line of Plants arranged in four.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Confirm if you can find a row of Plants that is four long.",
+            "Can you verify whether there's a line of Vegetation that spans four squares?",
+            "Please assess if there is a sequence of Plants that covers four blocks in a row.",
+            "I need you to determine if there exists a linear arrangement of Flora that stretches across four squares.",
+            "Can you authenticate the presence of a succession of Vegetation that extends to four units in a straight line?"
+        ],
+        "arguments": create_target_state(BlockType.PLANT, 4, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.PLANT, 4, check_diagonal=False)"
+    },
+    "INSTRUCTION_PLANT_3": {
+        "instruction": "Check for a line of plants with a length of three.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Verify if there's a row of three flora in the game.",
+            "Inspect the game map for a straight line formation of vegetation that consists of three blocks.",
+            "Ascertain if there's a series of three plant blocks in a row on the playing field.",
+            "Investigate if a linear arrangement of three flora blocks is present in the current game state.",
+            "Can you confirm the existence of a straight sequence of three vegetation units in line on the game?"
+        ],
+        "arguments": create_target_state(BlockType.PLANT, 3, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.PLANT, 3, check_diagonal=False)"
+    },
+    "INSTRUCTION_STONE_3": {
+        "instruction": "Form a line of stones of length 3.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Create a straight line using 3 pieces of rock.",
+            "Set up three stones in a straight fashion.",
+            "Irrespective of anywhere, place three rocks in a linear order.",
+            "Keep three pieces of stone in a manner that they form a straight line.",
+            "Regardless of the location, position three stones in such a way that they are perfectly aligned to create a line."
+        ],
+        "arguments": create_target_state(BlockType.STONE, 3, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.STONE, 3, check_diagonal=False)"
+    },
+    "INSTRUCTION_PLANT_2": {
+        "instruction": "Check if there is a line of Plant blocks of size 2.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Inspect for a sequence of Plant blocks with a length of 2.",
+            "Keep an eye out for a line of 2 Plant type blocks.",
+            "Can you verify if there's a row of 2 blocks of Plant type out there?",
+            "Could you take a look and see if there's a continuous line of two blocks belonging to the Plant type?",
+            "I want you to see if there is a straight, uninterrupted sequence of two blocks, with each block being categorized as Plant type."
+        ],
+        "arguments": create_target_state(BlockType.PLANT, 2, is_diagonal=False),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.PLANT, 2, check_diagonal=False)"
+    },
+    "INSTRUCTION_CRAFTING_TABLE_3_DIAGONAL": {
+        "instruction": "Create a diagonal line of crafting tables, each one block apart for a size of three.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Build a slanted line using three crafting benches, with each one separated by a block.",
+            "Establish a diagonal string of workbenches. Ensure there's one block space between them, and that you've only used three benches.",
+            "With a size of three blocks, construct a diagonal line of crafting tables.",
+            "Fashion a diagonal line using three crafting tables such that each is one block apart from the next.",
+            "Create a diagonal row with three crafting stations, keeping a one block break in-between."
+        ],
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3, is_diagonal=True),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 3, check_diagonal=True)"
+    },
+    "INSTRUCTION_CRAFTING_TABLE_2_DIAGONAL": {
+        "instruction": "Check on the game map for a diagonal line of Crafting Table blocks that are of length 2.",
+        "scenario_checker": Scenarios.BUILD_LINE,
+        "instruction_paraphrases": [
+            "Verify if there exists a two-block long Crafting Table arrangement in a diagonal line on the map.",
+            "On the game map, confirm if a Crafting Table line in a diagonal direction and which consists of 2 blocks is present.",
+            "Can you spot a Crafting Table line that stretches diagonally across two squares on our game map?",
+            "Please confirm whether there is a diagonal configuration of two Crafting Table blocks on the gaming platform.",
+            "On the gaming battleground, is there a positioning of two Crafting Tables that form a slant line?"
+        ],
+        "arguments": create_target_state(BlockType.CRAFTING_TABLE, 2, is_diagonal=True),
+        "str_check_lambda": "is_line_formed(game_data, ix, BlockType.CRAFTING_TABLE, 2, is_diagonal=True)"
     }
 }
+
+#{
+#     "INSTRUCTION_CRAFTING_TABLE_3": {
+#         "instruction": "Form a square of crafting tables with each side having a length of 3",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "create a square shape by using work benches where the number of work benches on one side is 3",
+#             "Layout 3 blocks of builder’s table in a square shape.",
+#             "Make sure to arrange the building blocks in a square shape with each side having 3 of them",
+#             "Kindly arrange three Crafting platforms on each side to form a square configuration.",
+#             "I want you to position the construction desks in such a way that they form a square structure with each side containing three desks"
+#         ],
+#         "arguments": create_target_state(BlockType.CRAFTING_TABLE, 3, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_FURNACE_6": {
+#         "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Can you confirm if a square with side-length of 6 is made up of furnace blocks?",
+#             "Tell me, do we have a furnace blocks square with each side 6 blocks long?",
+#             "Check for a 6 blocks sided square made entirely out of furnace blocks.",
+#             "Do assess if we have a square, each side 6 blocks long, made completely from furnace blocks.",
+#             "Inspect and confirm whether there is a square structure constituted of furnace blocks, six blocks long per side."
+#         ],
+#         "arguments": create_target_state(BlockType.FURNACE, 6, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_FURNACE_5": {
+#         "instruction": "Check if there is a square made of furnace blocks with side length of 5.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Investigate for a square formation of 5x5 using heater blocks.",
+#             "Look for a quadrant constructed with stove blocks, each side measuring 5 units.",
+#             "Can you find a geometric square with a side size of 5, constructed from kiln blocks?",
+#             "Make sure a form of square having dimensions 5 by 5, built using forge blocks is in position?",
+#             "Inspect for any presence of a geometric configuration resembling a square with side length of 5, created using smelter blocks."
+#         ],
+#         "arguments": create_target_state(BlockType.FURNACE, 5, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_CRAFTING_TABLE_7": {
+#         "instruction": "Check for a distinct square made out of crafting tables with each side having a length of 7 blocks.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Look for a 7x7 crafting block square",
+#             "Search for a square formation composed of workbenches, with each side consisting of 7 blocks",
+#             "Confirm if there is a square of crafting tables existing, where each side is equivalent to 7 blocks",
+#             "Verify the presence of a 7-blocks-wide square of crafting station",
+#             "Ensure the existence of a perfect square shape made up of 7 blocks per side of crafting tables"
+#         ],
+#         "arguments": create_target_state(BlockType.CRAFTING_TABLE, 7, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
+#         "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
+#             "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
+#             "Determine if you have a 9-block square formation of the Frosty Wizard's Stand.",
+#             "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
+#             "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
+#         ],
+#         "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 3, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_ENCHANTMENT_TABLE_ICE_size=7": {
+#         "instruction": "create an enchantment table of ice shaped into a square with each side size 7.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Form a square using an ice enchantment table, each side should be of length 7.",
+#             "Make a square with sides of 7 units using a table enchanted with ice.",
+#             "Utilize an enchanted ice table to fabricate a square having side length of seven.",
+#             "Shape an ice enchantment table into a square with a side length of 7.",
+#             "With the ice enchantment table, assemble a square where each side measures 7 units."
+#         ],
+#         "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, 7, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     },
+#     "INSTRUCTION_FURNACE_7": {
+#         "instruction": "Build a square using furnaces with each side being 7 blocks long.",
+#         "scenario_checker": Scenarios.BUILD_LINE,
+#         "instruction_paraphrases": [
+#             "Craft a square pattern with smelters that has 7 blocks as the dimension.",
+#             "create a geometric square shape using heating devices where each side is 7 blocks long.",
+#             "Erect a quadrilateral with furnaces with each of its sides being made of 7 blocks.",
+#             "Form a furnace square that each edge has a length of 7 blocks.",
+#             "Construct a four-sided figure using 7 furnaces on each side."
+#         ],
+#         "arguments": create_target_state(BlockType.FURNACE, 7, is_diagonal=False),
+#         "str_check_lambda": "is_square_formed(gd, ix)"
+#     }
+# }
 
 
 
