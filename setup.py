@@ -6,7 +6,7 @@ long_description_content = (this_directory / "README.md").read_text()
 
 setup(
     name='CrafText',
-    version='0.1.4',
+    version='0.1.3',
     description='A text processing package with various scenarios and checkers.',
     author='ZoyaV',
     url='https://github.com/ZoyaV/CrafText',

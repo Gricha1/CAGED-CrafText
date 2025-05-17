@@ -2,7 +2,7 @@ from craftext.dataset.scenarious.jax_build_line import instructions as build_lin
 from craftext.dataset.scenarious.jax_build_squere import instructions as build_squere_instructions
 from craftext.dataset.scenarious.jax_localization_place import instructions as localization_place_instructions
 from craftext.dataset.scenarious.jax_conditional_placing import instructions as conditional_place_instructions
-from craftext.dataset.scenarious.jax_conditional_achievements import instructions_old_all as conditional_achievements
+from craftext.dataset.scenarious.jax_conditional_achievements import instructions as conditional_achievements
 from craftext.dataset.scenarious.jax_build_star import instructions as build_star_instructions
 from craftext.dataset.scenarious.jax_time_constrained_placment import instructions as time_constrained_placment
 

@@ -7,7 +7,6 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Tuple
-
 from craftext.enviroment.scenarious.loader import ScenariosConfigLoader, load_scenarios
 from craftext.enviroment.craftext_constants import plans_path
 from craftext.enviroment.scenarious.checkers.target_state import TargetState
@@ -16,13 +15,13 @@ from craftext.enviroment.scenarious.checkers.target_state import TargetState
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Define an Enum for scenario field processing types
+# 🔹 Define an Enum for scenario field processing types
 class ScenarioFieldType(Enum):
     SINGLE_VALUE = "single_value"  # The base instruction (not copied)
     PARAPHRASE_LIST = "paraphrase_list"  # A list of paraphrases (added to the base instruction)
     REPEAT_WITH_PARAPHRASES = "repeat_with_paraphrases"  # Repeated for each instruction and its paraphrases
 
-#  Define the schema for scenario processing
+# 🔹 Define the schema for scenario processing
 SCENARIO_SCHEMA = {
     "instruction": ScenarioFieldType.SINGLE_VALUE,  
     "instruction_paraphrases": ScenarioFieldType.PARAPHRASE_LIST,  
