@@ -71,7 +71,7 @@ pylint-report.txt
 .dmypy.json
 dmypy.json
 
-.baselines/
-.dataset_generation/
+baselines/
+dataset_generation/
 
-.run*.yaml
+.*.yaml
