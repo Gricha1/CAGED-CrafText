@@ -7,9 +7,9 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Tuple
-from craftext.enviroment.scenarious.loader import ScenariosConfigLoader, load_scenarios
-from craftext.enviroment.craftext_constants import plans_path
-from craftext.enviroment.scenarious.checkers.target_state import TargetState
+from craftext.environment.scenarious.loader import ScenariosConfigLoader, load_scenarios
+from craftext.environment.craftext_constants import plans_path
+from craftext.environment.scenarious.checkers.target_state import TargetState
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

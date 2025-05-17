@@ -8,11 +8,11 @@ from flax.struct import dataclass
 from typing import Tuple
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import BuildSquareState
-from craftext.enviroment.scenarious.checkers.squeres import (
+from craftext.environment.scenarious.checkers.target_state import BuildSquareState
+from craftext.environment.scenarious.checkers.squeres import (
     check_square_2x2, 
     check_square_3x3, 
     check_square_4x4

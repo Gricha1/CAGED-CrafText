@@ -1,10 +1,10 @@
 import jax
 import jax.numpy as jnp
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import Achievements, AchievementState
+from craftext.environment.scenarious.checkers.target_state import Achievements, AchievementState
 
 def checker_acvievments(game_data: Union[GameDataClassic, GameData],  target_state: Achievements) -> jax.Array:
     

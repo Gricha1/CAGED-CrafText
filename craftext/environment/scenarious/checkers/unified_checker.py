@@ -6,9 +6,9 @@ import jax
 
 from flax.struct import dataclass
 
-from craftext.enviroment.craftext_constants import BlockType
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.scenarious.checkers.target_state import TargetState
+from craftext.environment.craftext_constants import BlockType
+from craftext.environment.states.state import GameData
+from craftext.environment.scenarious.checkers.target_state import TargetState
 
 def transform_pattern(pattern: jax.Array, block_index: int, size: int) -> jax.Array:
     #TODO:

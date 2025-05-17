@@ -3,10 +3,10 @@ import jax.lax as lax
 import jax
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import BuildStarState
+from craftext.environment.scenarious.checkers.target_state import BuildStarState
 
 from functools import partial
 

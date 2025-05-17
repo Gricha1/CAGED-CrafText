@@ -3,13 +3,13 @@ import jax
 from jax import lax
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.states.state import PlayerInventory
-from craftext.enviroment.states.state_classic import PlayerInventory as PlayerInventoryClassic
+from craftext.environment.states.state import PlayerInventory
+from craftext.environment.states.state_classic import PlayerInventory as PlayerInventoryClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import ConditionalPlacingState
+from craftext.environment.scenarious.checkers.target_state import ConditionalPlacingState
 
 def checker_conditional_placement(game_data: Union[GameDataClassic, GameData],  target_state: ConditionalPlacingState) -> jax.Array:
     

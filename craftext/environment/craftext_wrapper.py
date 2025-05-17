@@ -7,22 +7,22 @@ from flax import struct
 from gym import Wrapper
 
 
-from craftext.enviroment.encoders.craftext_base_model_encoder import EncodeForm
-from craftext.enviroment.encoders.craftext_distilbert_model_encoder import DistilBertEncode
+from craftext.environment.encoders.craftext_base_model_encoder import EncodeForm
+from craftext.environment.encoders.craftext_distilbert_model_encoder import DistilBertEncode
 
-from craftext.enviroment.scenarious.manager import ScenariosNoLambda
+from craftext.environment.scenarious.manager import ScenariosNoLambda
 
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.achivments       import checker_acvievments
-from craftext.enviroment.scenarious.checkers.time_constrained import checker_time_placement
-from craftext.enviroment.scenarious.checkers.building_star    import checker_star
-from craftext.enviroment.scenarious.checkers.building_line    import checker_line
-from craftext.enviroment.scenarious.checkers.building_square  import checker_square
-from craftext.enviroment.scenarious.checkers.conditional      import checker_conditional_placement
-from craftext.enviroment.scenarious.checkers.relevant         import cheker_localization
-from craftext.enviroment.scenarious.checkers.target_state     import TargetState
+from craftext.environment.scenarious.checkers.achivments       import checker_acvievments
+from craftext.environment.scenarious.checkers.time_constrained import checker_time_placement
+from craftext.environment.scenarious.checkers.building_star    import checker_star
+from craftext.environment.scenarious.checkers.building_line    import checker_line
+from craftext.environment.scenarious.checkers.building_square  import checker_square
+from craftext.environment.scenarious.checkers.conditional      import checker_conditional_placement
+from craftext.environment.scenarious.checkers.relevant         import cheker_localization
+from craftext.environment.scenarious.checkers.target_state     import TargetState
 from typing import Union
 
 @struct.dataclass

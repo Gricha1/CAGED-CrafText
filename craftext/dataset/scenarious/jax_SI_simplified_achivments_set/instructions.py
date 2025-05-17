@@ -2,9 +2,9 @@ from functools import partial
 
 from enum import Enum
 
-from craftext.enviroment.scenarious.checkers.achivments import conditional_achivments
-from craftext.enviroment.scenarious.checkers.target_state import Achievements, TargetState
-from craftext.enviroment.craftext_constants import Achievement, Scenarios, AchievementState
+from craftext.environment.scenarious.checkers.achivments import conditional_achivments
+from craftext.environment.scenarious.checkers.target_state import Achievements, TargetState
+from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState
 import jax
 import jax.numpy as jnp
 from jax import lax

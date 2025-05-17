@@ -2,11 +2,11 @@ import jax
 import jax.numpy as jnp
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.states.state import PlayerInventory
-from craftext.enviroment.states.state_classic import PlayerInventory as PlayerInventoryClassic
+from craftext.environment.states.state import PlayerInventory
+from craftext.environment.states.state_classic import PlayerInventory as PlayerInventoryClassic
 
 def was_item_collected_after_another(game_data: Union[GameDataClassic, GameData], first_item: str, second_item: str) -> jax.Array:
     """

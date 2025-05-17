@@ -2,11 +2,11 @@ import jax.numpy as jnp
 import jax.lax as lax
 import jax
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import TimeCosntrainedPlacmentState
-from craftext.enviroment.scenarious.checkers.utils import safe_dynamic_slice
+from craftext.environment.scenarious.checkers.target_state import TimeCosntrainedPlacmentState
+from craftext.environment.scenarious.checkers.utils import safe_dynamic_slice
 
 
 

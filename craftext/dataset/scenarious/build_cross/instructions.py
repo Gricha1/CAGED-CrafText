@@ -1,4 +1,4 @@
-from craftext.enviroment.scenarious.checkers.building_line import is_cross_formed
+from craftext.environment.scenarious.checkers.building_line import is_cross_formed
 
 medium = {
     "62": {

@@ -8,11 +8,11 @@ from jax import (
 from typing import Tuple, Callable 
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import BuildLineState
-from craftext.enviroment.scenarious.checkers.lines import check_line_2, check_line_3, check_line_4
+from craftext.environment.scenarious.checkers.target_state import BuildLineState
+from craftext.environment.scenarious.checkers.lines import check_line_2, check_line_3, check_line_4
 
 from flax.struct import dataclass
 

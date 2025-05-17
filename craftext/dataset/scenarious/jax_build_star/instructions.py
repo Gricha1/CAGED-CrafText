@@ -1,6 +1,6 @@
 from flax.struct import dataclass
-from craftext.enviroment.scenarious.checkers.target_state import TargetState, BuildStarState
-from craftext.enviroment.craftext_constants import Scenarios, BlockType, CrossType
+from craftext.environment.scenarious.checkers.target_state import TargetState, BuildStarState
+from craftext.environment.craftext_constants import Scenarios, BlockType, CrossType
 
 def create_target_state(block_type:int, size:int, cross_type:int):
     target_achievements = BuildStarState(block_type=block_type, size=size, radius=10, cross_type=cross_type)

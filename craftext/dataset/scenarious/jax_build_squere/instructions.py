@@ -1,5 +1,5 @@
-from craftext.enviroment.scenarious.checkers.target_state import TargetState, BuildSquareState
-from craftext.enviroment.craftext_constants import Scenarios, BlockType
+from craftext.environment.scenarious.checkers.target_state import TargetState, BuildSquareState
+from craftext.environment.craftext_constants import Scenarios, BlockType
 
 def create_target_state(block_type:int, size:int):
     target_achievements = BuildSquareState(block_type=block_type, size=size, radius=10)

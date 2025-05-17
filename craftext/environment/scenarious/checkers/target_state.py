@@ -1,6 +1,6 @@
 from flax import struct
 import jax.numpy as jnp
-from craftext.enviroment.craftext_constants import Achievement, AchievementState, BlockType, TimeState
+from craftext.environment.craftext_constants import Achievement, AchievementState, BlockType, TimeState
 import jax 
 
 @struct.dataclass

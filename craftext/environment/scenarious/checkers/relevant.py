@@ -5,10 +5,10 @@ from jax import (
 )
 
 from typing import Union
-from craftext.enviroment.states.state import GameData
-from craftext.enviroment.states.state_classic import GameDataClassic
+from craftext.environment.states.state import GameData
+from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.enviroment.scenarious.checkers.target_state import LocalizaPlacingState
+from craftext.environment.scenarious.checkers.target_state import LocalizaPlacingState
 from functools import partial
 
 

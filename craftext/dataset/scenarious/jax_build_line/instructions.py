@@ -1,7 +1,7 @@
-from craftext.enviroment.craftext_constants import BlockType
-from craftext.enviroment.scenarious.checkers.target_state import BuildLineState as AchievmentClass
-from craftext.enviroment.scenarious.checkers.target_state import TargetState
-from craftext.enviroment.craftext_constants import Scenarios
+from craftext.environment.craftext_constants import BlockType
+from craftext.environment.scenarious.checkers.target_state import BuildLineState as AchievmentClass
+from craftext.environment.scenarious.checkers.target_state import TargetState
+from craftext.environment.craftext_constants import Scenarios
 # one = {
 #     'line_one_1': {
 #         'instruction': "Make a line of 2 blocks using table.",

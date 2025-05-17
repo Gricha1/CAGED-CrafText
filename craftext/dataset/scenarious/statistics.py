@@ -1,7 +1,7 @@
 import os
 import importlib.util
 import sys
-from craftext.enviroment.scenarious.checkers.relevant import place_object_relevant_to
+from craftext.environment.scenarious.checkers.relevant import place_object_relevant_to
 
 def count_dict_elements(module, dict_names):
     """

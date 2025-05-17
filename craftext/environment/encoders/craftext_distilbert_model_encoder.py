@@ -2,7 +2,7 @@
 from transformers import AutoModel, AutoTokenizer
 import torch
 import numpy as np
-from craftext.enviroment.encoders.craftext_base_model_encoder import EncodeForm
+from craftext.environment.encoders.craftext_base_model_encoder import EncodeForm
 
 class DistilBertEncode:
     def __init__(self, form_to_use=EncodeForm.EMBED_CONCAT_ALL, n_splits=1):

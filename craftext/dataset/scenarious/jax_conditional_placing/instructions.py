@@ -1,5 +1,5 @@
-from craftext.enviroment.scenarious.checkers.target_state import TargetState, ConditionalPlacingState
-from craftext.enviroment.craftext_constants import InventoryItems, BlockType, MediumInventoryItems, Scenarios
+from craftext.environment.scenarious.checkers.target_state import TargetState, ConditionalPlacingState
+from craftext.environment.craftext_constants import InventoryItems, BlockType, MediumInventoryItems, Scenarios
 # one = {
 #     'simple_conditional_placing_001': {
 #         'instruction': "Place a furnace on the ground after collecting 3 pieces of wood",

@@ -1,5 +1,5 @@
-from craftext.enviroment.scenarious.checkers.target_state import Achievements, TargetState
-from craftext.enviroment.craftext_constants import Achievement, Scenarios, AchievementState
+from craftext.environment.scenarious.checkers.target_state import Achievements, TargetState
+from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState
 
 def create_target_state(required=[], forbidden=[]):
     base_vector = [AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]

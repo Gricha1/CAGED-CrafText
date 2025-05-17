@@ -1,7 +1,7 @@
-from craftext.enviroment.craftext_constants import BlockType
-from craftext.enviroment.scenarious.checkers.target_state import BuildLineState as AchievmentClass
-from craftext.enviroment.scenarious.checkers.target_state import TargetState
-from craftext.enviroment.craftext_constants import Scenarios
+from craftext.environment.craftext_constants import BlockType
+from craftext.environment.scenarious.checkers.target_state import BuildLineState as AchievmentClass
+from craftext.environment.scenarious.checkers.target_state import TargetState
+from craftext.environment.craftext_constants import Scenarios
 
 def create_target_state(block_type:int, size:int, is_diagonal:bool):
     target_achievements = AchievmentClass(block_type=block_type, size=size, is_diagonal=is_diagonal, radius=10)
