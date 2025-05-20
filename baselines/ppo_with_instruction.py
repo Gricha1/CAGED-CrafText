@@ -24,9 +24,9 @@ from orbax.checkpoint import (
 from logz.batch_logging import batch_log, create_log_dict
 from models.actor_critic import (
     ActorCritic,
-    ActorCriticConv,
-    ActorCriticConvWithBERT,
-    ActorCriticConvWithIdxEmbedding
+    ActorCriticConv)
+from models.actor_critic_with_text import (
+    ActorCriticConvWithBERT
 )
 from models.icm import ICMEncoder, ICMForward, ICMInverse
 from wrappers import (
@@ -36,7 +36,6 @@ from wrappers import (
 )
 
 from craftext.environment.craftext_wrapper import InstructionWrapper
-
 
 class Transition(NamedTuple):
     done: jnp.ndarray

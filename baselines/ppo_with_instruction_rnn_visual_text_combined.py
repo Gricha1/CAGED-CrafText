@@ -121,11 +121,16 @@ def make_train(config, network_params):
         )
 
         
-        encoded_input_expanded = jnp.expand_dims(env.encoded_instruction, axis=1)
-        print("encoded_input_expanded.shape", encoded_input_expanded.shape)
-        encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config["NUM_ENVS"], 1))
-        print("encoded_input_tiled.shape", encoded_input_tiled.shape)
-        print(config["NUM_ENVS"])
+        # encoded_input_expanded = jnp.expand_dims(env.encoded_instruction, axis=1)
+        # print("encoded_input_expanded.shape", encoded_input_expanded.shape)
+        # encoded_input_tiled = jnp.tile(encoded_input_expanded, (1,  config["NUM_ENVS"], 1))
+        # print("encoded_input_tiled.shape", encoded_input_tiled.shape)
+        # print(config["NUM_ENVS"])
+        encoded = env.encoded_instruction           # (768,)
+        encoded = jnp.expand_dims(encoded, axis=0)  # (1, 768)
+        encoded = jnp.expand_dims(encoded, axis=1)  # (1, 1, 768)
+        encoded_input_tiled = jnp.tile(encoded,
+                                (1, config["NUM_ENVS"], 1))
         network_params_alt = network.init(_rng, init_hstate, init_x, encoded_input_tiled)
         if config["ANNEAL_LR"]:
             tx = optax.chain(

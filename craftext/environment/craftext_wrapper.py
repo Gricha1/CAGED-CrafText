@@ -14,7 +14,7 @@ from craftext.environment.scenarious.manager import ScenariosNoLambda
 
 from craftext.environment.states.state import GameData
 from craftext.environment.states.state_classic import GameDataClassic
-
+from craftext.environment.craftext_constants import Scenarios 
 from craftext.environment.scenarious.checkers.achivments       import checker_acvievments
 from craftext.environment.scenarious.checkers.time_constrained import checker_time_placement
 from craftext.environment.scenarious.checkers.building_star    import checker_star
@@ -77,6 +77,7 @@ class InstructionWrapper(Wrapper):
         self.encoded_instruction = self.scenario_handler.scenario_data_jax.embeddings_list[0]
         self.scenario_arguments = self.scenario_handler.scenario_data_jax.arguments
         self.batched_ts = TargetState.stack(self.scenario_arguments)
+        # print(self.batched_ts)
 
         self.env = env
         self.steps = 0
@@ -133,7 +134,7 @@ class InstructionWrapper(Wrapper):
         
         # If EXPLORE mode - give craftAx reward
         reward = lax.cond(
-                    env_state.checker_id < 7,
+                    env_state.checker_id != Scenarios.EXPLORE,
                     lambda r: r / 50,
                     lambda r: r,
                     reward
