@@ -74,7 +74,7 @@ class TargetState:
     unified_pattern_state: UnifiedPatternState = struct.field(default_factory=UnifiedPatternState)
 
     @classmethod
-    def stack(cls, lst: list['TargetState']) -> 'TargetState':
+    def stack(cls, lst: 'TargetState') -> 'TargetState':
         return jax.tree_util.tree_map(lambda *xs: jnp.stack(xs), *lst)
 
     def select(self, idx: jnp.ndarray) -> 'TargetState':
