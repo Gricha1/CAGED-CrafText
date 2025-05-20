@@ -90,18 +90,31 @@ def make_train(config, network_params):
         # INIT NETWORK
         if "Symbolic" in config["ENV_NAME"]:
             network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
+            encoded_input_tiled = env.encoded_instruction           # (768,)
         elif "Text" in config["ENV_NAME"]:
+            encoded = env.encoded_instruction           # (768,)  # (1, 768)
+            encoded = jnp.expand_dims(encoded, axis=0)  # 1, 768)
+            encoded_input_tiled = jnp.tile(encoded,
+                                    (config["NUM_ENVS"], 1))
+            
             network = ActorCriticConvWithBERT(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
         else:
+            encoded_input_tiled = env.encoded_instruction
             network = ActorCriticConv(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
 
         rng, _rng = jax.random.split(rng)
-        init_x = jnp.zeros((1, *env.observation_space(env_params).shape))
-        network_params_alt = network.init(_rng, init_x, env.encoded_instruction)
+        init_x = jnp.zeros(
+                (config["NUM_ENVS"], *env.observation_space(env_params).shape)
+            )
+
+        print(init_x.shape)
+        
+        network_params_alt = network.init(_rng, init_x, encoded_input_tiled)
+        
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
