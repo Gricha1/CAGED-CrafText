@@ -1,8 +1,9 @@
 
-from craftext.environment.scenarious.checkers.target_state import Achievements, TargetState
-from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState
+from craftext.environment.scenarious.checkers.target_state import Achievements
+from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState, BlockType
+from craftext.environment.scenarious.checkers.target_state_cmdp import StepOnBlock, CMDPTargetState
 
-def create_target_state(required=[], forbidden=[]):
+def create_target_state(required=[], forbidden=[], block_type:int=0):
     base_vector = [AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]
     for i in range(len(base_vector)):
         if i in required:
@@ -10,12 +11,13 @@ def create_target_state(required=[], forbidden=[]):
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
-    return TargetState(achievements=target_achievements)
+    step_on_block = StepOnBlock(block_type=block_type)
+    return CMDPTargetState(achievements=target_achievements, step_on_block=step_on_block)
 
 easy = {
     "PLACE_FURNACE_MAKE_IRON_SWORD_NO_MAKE_IRON_PICKAXE": {
         "instruction": "Place a furnace and craft an iron sword but do not make an iron pickaxe.",
-        "textual_constraint": "Test 1",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Set up a furnace and forge an iron blade, avoiding pickaxe crafting.",
             "Place a furnace and create an iron sword, refraining from making a pickaxe.",
@@ -26,13 +28,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.PLACE_FURNACE, Achievement.MAKE_IRON_SWORD],
-            forbidden=[Achievement.MAKE_IRON_PICKAXE]
+            forbidden=[Achievement.MAKE_IRON_PICKAXE], block_type=BlockType.PLANT
         )
     },
 
     "DEFEAT_ZOMBIE_NO_DEFEAT_SKELETON": {
         "instruction": "Defeat a zombie but do not kill a skeleton.",
-        "textual_constraint": "Test 2",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Take down a zombie and avoid fighting skeletons.",
             "Eliminate a zombie while sparing the skeletons.",
@@ -43,13 +45,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.DEFEAT_ZOMBIE],
-            forbidden=[Achievement.DEFEAT_SKELETON]
+            forbidden=[Achievement.DEFEAT_SKELETON], block_type=BlockType.PLANT
         )
     },
 
     "MAKE_STONE_PICKAXE_COLLECT_COAL": {
         "instruction": "Craft a stone pickaxe and collect coal.",
-        "textual_constraint": "Test 3",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Forge a stone pickaxe and mine coal.",
             "Build a pickaxe from stone and harvest coal.",
@@ -60,13 +62,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_PICKAXE, Achievement.COLLECT_COAL],
-            forbidden=[]
+            forbidden=[], block_type=BlockType.PLANT
         )
     },
 
     "MAKE_STONE_PICKAXE_NO_MAKE_IRON_SWORD": {
         "instruction": "Please make a stone pickaxe and avoid making an iron sword.",
-        "textual_constraint": "Test 4",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Kindly forge a pickaxe using stone materials and do not create an iron-blade sword.",
             "Could you create a stone tool for mining? But refrain from constructing a sword from iron.",
@@ -77,13 +79,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_PICKAXE],
-            forbidden=[Achievement.MAKE_IRON_SWORD]
+            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.PLANT
         )
     },
 
     "EAT_PLANT_NO_EAT_COW": {
         "instruction": "Eat a plant, but make sure you haven’t eaten a cow.",
-        "textual_constraint": "Test 5",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Consume a plant, without having ingested a cow.",
             "Partake in the eating of greenery, but avoid consumption of any bovine creatures.",
@@ -94,13 +96,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.EAT_PLANT],
-            forbidden=[Achievement.EAT_COW]
+            forbidden=[Achievement.EAT_COW], block_type=BlockType.PLANT
         )
     },
 
     "PLACE_PLANT_NO_MAKE_STONE_SWORD": {
         "instruction": "Make sure you place a small tree, but don't craft a stone sword.",
-        "textual_constraint": "Test 6",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "I need you to plant a treeling, but avoid creating a stone blade.",
             "It's crucial for you to put down a sapling, but abstain from making a stone saber.",
@@ -111,13 +113,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.PLACE_PLANT],
-            forbidden=[Achievement.MAKE_STONE_SWORD]
+            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.PLANT
         )
     },
 
     "WAKE_UP_DEFEAT_ZOMBIE_COLLECT_DRINK": {
         "instruction": "You must wake up. Then, you need to defeat a zombie and lastly, fetch a drink for yourself.",
-        "textual_constraint": "Test 7",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Get up from your sleep first. Post that, you must confront and win over a zombie. Lastly, make sure to obtain a drink.",
             "Rise from your rest first. Following this, it's important to tackle and overcome a zombie. In the end, secure a drink for your own self.",
@@ -128,13 +130,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.WAKE_UP, Achievement.DEFEAT_ZOMBIE, Achievement.COLLECT_DRINK],
-            forbidden=[]
+            forbidden=[], block_type=BlockType.PLANT
         )
     },
 
     "NO_MAKE_IRON_SWORD_MAKE_STONE_SWORD_COLLECT_SAPLING": {
         "instruction": "Don't create an Iron Sword. You need to, however, craft a Stone Sword and gather a Sapling.",
-        "textual_constraint": "Test 8",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Make sure you aren't crafting an Iron Sword. However, you need to both collect a Sapling and manufacture a Stone Sword.",
             "You must not create an Iron Sword. Still, gather a Sapling and fashion a Stone Sword.",
@@ -145,13 +147,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_SWORD, Achievement.COLLECT_SAPLING],
-            forbidden=[Achievement.MAKE_IRON_SWORD]
+            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.PLANT
         )
     },
 
     "COLLECT_DIAMOND_COLLECT_IRON_EAT_COW": {
         "instruction": "It's essential that you collect some diamonds, gather up some iron, and feed yourself with some cow meat.",
-        "textual_constraint": "Test 9",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Acquire valuable diamonds, collect an amount of iron, and make sure to eat some cow.",
             "You need to mine for both diamonds and iron, and don't forget to fill your hunger bar with beef.",
@@ -162,13 +164,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_DIAMOND, Achievement.COLLECT_IRON, Achievement.EAT_COW],
-            forbidden=[]
+            forbidden=[], block_type=BlockType.PLANT
         )
     },
 
     "MAKE_WOOD_PICKAXE_DEFEAT_SKELETON_ANY_ORDER": {
         "instruction": "Make a wooden axe and defeat a skeleton, but in no specific order.",
-        "textual_constraint": "Test 10",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Your target is to craft a wooden pickaxe and defeat a skeleton. You can complete these tasks in any sequence.",
             "Please, take on the skeleton after or before crafting a wooden pickaxe.",
@@ -179,13 +181,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_WOOD_PICKAXE, Achievement.DEFEAT_SKELETON],
-            forbidden=[]
+            forbidden=[], block_type=BlockType.PLANT
         )
     },
 
     "COLLECT_DRINK_NO_MAKE_STONE_SWORD": {
         "instruction": "Collect a drink yet do not construct a stone sword.",
-        "textual_constraint": "Test 11",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Grab any type of beverages, but avoid making a rock sword.",
             "Obtain any kind of drinkable liquid, while abstaining from stone blade production.",
@@ -196,13 +198,13 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_DRINK],
-            forbidden=[Achievement.MAKE_STONE_SWORD]
+            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.PLANT
         )
     },
 
     "COLLECT_IRON_NO_PLACE_PLANT": {
         "instruction": "Get your hands on some iron ore but make sure not to plant anything.",
-        "textual_constraint": "Test 12",
+        "textual_constraint": "You must not step into the grass more than 5 times.",
         "instruction_paraphrases": [
             "Procure an iron mineral, and refrain from engaging in any horticultural activities.",
             "Your task is to accumulate the iron substance, and remember, you must abstain from executing any planting or cultivation.",
@@ -213,7 +215,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_IRON],
-            forbidden=[Achievement.PLACE_PLANT]
+            forbidden=[Achievement.PLACE_PLANT], block_type=BlockType.PLANT
         )
     }
 }

@@ -25,8 +25,8 @@ from logz.batch_logging import batch_log, create_log_dict
 from models.actor_critic import (
     ActorCritic,
     ActorCriticConv)
-from models.actor_critic_with_text import (
-    ActorCriticConvWithBERT
+from models.actor_critic_with_text_constraints import (
+    ActorCriticConvWithBERTCMDP
 )
 from models.icm import ICMEncoder, ICMForward, ICMInverse
 from wrappers import (
@@ -50,6 +50,7 @@ class Transition(NamedTuple):
     next_obs: jnp.ndarray
     info: jnp.ndarray
     instruction: jnp.ndarray
+    textual_constraint: jnp.ndarray
 
 
 def make_train(config, network_params):
@@ -90,6 +91,7 @@ def make_train(config, network_params):
     def train(rng):
         # INIT NETWORK
         if "Symbolic" in config["ENV_NAME"]:
+            assert 1 == 0, "didnt implemented for CMDP"
             network = ActorCritic(env.action_space(env_params).n, config["LAYER_SIZE"])
             encoded_input_tiled = env.encoded_instruction           # (768,)
         elif "Text" in config["ENV_NAME"]:
@@ -97,11 +99,15 @@ def make_train(config, network_params):
             encoded = jnp.expand_dims(encoded, axis=0)  # 1, 768)
             encoded_input_tiled = jnp.tile(encoded,
                                     (config["NUM_ENVS"], 1))
-            
-            network = ActorCriticConvWithBERT(
+            encoded_constraint = env.encoded_textual_constraint           # (768,)  # (1, 768)
+            encoded_constraint = jnp.expand_dims(encoded_constraint, axis=0)  # 1, 768)
+            encoded_constraint_tiled = jnp.tile(encoded_constraint,
+                                    (config["NUM_ENVS"], 1))
+            network = ActorCriticConvWithBERTCMDP(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
         else:
+            assert 1 == 0, "didnt implemented for CMDP"
             encoded_input_tiled = env.encoded_instruction
             network = ActorCriticConv(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
@@ -114,7 +120,7 @@ def make_train(config, network_params):
 
         print(init_x.shape)
         
-        network_params_alt = network.init(_rng, init_x, encoded_input_tiled)
+        network_params_alt = network.init(_rng, init_x, encoded_input_tiled, encoded_constraint_tiled)
         
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -189,6 +195,7 @@ def make_train(config, network_params):
         }
 
         if config["TRAIN_ICM"]:
+            assert 1 == 0, "didnt implemented for CMDP"
             obs_shape = env.observation_space(env_params).shape
             assert len(obs_shape) == 1, "Only configured for 1D observations"
             obs_shape = obs_shape[0]
@@ -290,7 +297,9 @@ def make_train(config, network_params):
                 # SELECT ACTION
                 rng, _rng = jax.random.split(rng)
                 print("!!! OBS !!!!", last_obs.shape)
-                pi, value = network.apply(train_state.params, last_obs, env_state.env_state.instruction)
+                pi, value = network.apply(train_state.params, last_obs, 
+                                          env_state.env_state.instruction,
+                                          env_state.env_state.textual_constraint)
                 
         
                 action = pi.sample(seed=_rng)
@@ -371,7 +380,8 @@ def make_train(config, network_params):
                     obs=last_obs,
                     next_obs=obsv,
                     info=info,
-                    instruction=env_state.env_state.instruction# env.encoded_instruction[0]
+                    instruction=env_state.env_state.instruction, # env.encoded_instruction[0]
+                    textual_constraint=env_state.env_state.textual_constraint
                 )
                 runner_state = (
                     train_state,
@@ -400,7 +410,9 @@ def make_train(config, network_params):
                 rng,
                 update_step,
             ) = runner_state
-            _, last_val = network.apply(train_state.params, last_obs, env_state.env_state.instruction)
+            _, last_val = network.apply(train_state.params, last_obs, 
+                                        env_state.env_state.instruction, 
+                                        env_state.env_state.textual_constraint)
           #  exit()
             def _calculate_gae(traj_batch, last_val):
                 def _get_advantages(gae_and_next_value, transition):
@@ -437,7 +449,9 @@ def make_train(config, network_params):
                     # Policy/value network
                     def _loss_fn(params, traj_batch, gae, targets):
                         # RERUN NETWORK
-                        pi, value = network.apply(params, traj_batch.obs, traj_batch.instruction)
+                        pi, value = network.apply(params, traj_batch.obs, 
+                                                  traj_batch.instruction,
+                                                  traj_batch.textual_constraint)
                         log_prob = pi.log_prob(traj_batch.action)
 
                         # CALCULATE VALUE LOSS
@@ -504,6 +518,7 @@ def make_train(config, network_params):
                 print( config["MINIBATCH_SIZE"], config["NUM_MINIBATCHES"])
 
                 print(traj_batch.instruction.shape)
+                print(traj_batch.textual_constraint.shape)
                 batch = jax.tree_map(
                     lambda x: x.reshape((batch_size,) + x.shape[2:]), batch
                 )
@@ -823,6 +838,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
     )  # Allow scientific notation
+    parser.add_argument("--train_ppo", default=False, action="store_true")
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
     parser.add_argument("--update_epochs", type=int, default=4)
