@@ -35,6 +35,8 @@ class TextEnvStateCMDP:
     textual_constraint: Optional[jax.Array]
     idx: int
     success_rate: float
+    episode_cost: float
+    cost: float
     total_success_rate: float
     environment_key: int
     rng: int
@@ -62,6 +64,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
             idx=state.idx,
             environment_key=state.environment_key,
             success_rate=state.success_rate,
+            episode_cost=0.,
+            cost=0.,
             total_success_rate=state.total_success_rate,
             rng=state.rng,
             instruction_done=state.checker_id,
@@ -72,13 +76,12 @@ class CMDPInstructionWrapper(InstructionWrapper):
     def step(self, _rng, env_state, action, env_params):
         obs, state, reward, done, info = super().step(_rng, env_state, action, env_params)
 
+        # set cost
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state.env_state, action)
         ts = self.batched_ts.select(env_state.idx)
-        info["cost"] = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
-        if "episode_cost" not in info:
-            info["episode_cost"] = info["cost"]
-        else:
-            info["episode_cost"] += info["cost"]
+        cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
+        #self.episode_cost += info["cost"]
+        #info["episode_cost"] = self.episode_cost
 
         state = TextEnvStateCMDP(
             env_state=state.env_state,
@@ -88,6 +91,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
             idx=state.idx,
             environment_key=state.environment_key,
             success_rate=state.success_rate,
+            episode_cost=env_state.episode_cost + cost,
+            cost=cost,
             total_success_rate=state.total_success_rate,
             rng=state.rng,
             instruction_done=state.checker_id,

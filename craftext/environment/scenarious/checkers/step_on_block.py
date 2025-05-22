@@ -14,6 +14,6 @@ def checker_step_on_block(game_data: Union[GameDataClassic, GameData],  target_s
 def is_on_block(gd: Union[GameDataClassic, GameData], block_type):
     x, y = gd.states[0].variables.player_position
     game_map = gd.states[0].map.game_map
-    return game_map[x][y] == block_type
+    return jnp.array_equal(game_map[x][y], block_type)
 
 

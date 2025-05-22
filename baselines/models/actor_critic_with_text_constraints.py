@@ -220,7 +220,9 @@ class ActorCriticConvWithBERTCMDP(nn.Module):
         textual_constraints_embeding = encoded_constraint
 
         # Combine image and text embeddings
-        combined_embedding = jnp.concatenate([image_embedding, text_embedding], axis=-1)
+        combined_embedding = jnp.concatenate([image_embedding, 
+                                              text_embedding, 
+                                              textual_constraints_embeding], axis=-1)
 
         # Actor network
         actor_mean = nn.Dense(
@@ -239,16 +241,24 @@ class ActorCriticConvWithBERTCMDP(nn.Module):
 
         pi = distrax.Categorical(logits=actor_mean)
 
-        # Critic network
-        critic = nn.Dense(
+        # Reward Critic network
+        reward_critic = nn.Dense(
             self.layer_width, kernel_init=orthogonal(2), bias_init=constant(0.0)
         )(combined_embedding)
-        critic = nn.relu(critic)
-        critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
-            critic
+        reward_critic = nn.relu(reward_critic)
+        reward_critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
+            reward_critic
+        )
+        # Cost Critic network
+        cost_critic = nn.Dense(
+            self.layer_width, kernel_init=orthogonal(2), bias_init=constant(0.0)
+        )(combined_embedding)
+        cost_critic = nn.relu(cost_critic)
+        cost_critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
+            cost_critic
         )
         print("Done")
-        return pi, jnp.squeeze(critic, axis=-1)
+        return pi, jnp.squeeze(reward_critic, axis=-1), jnp.squeeze(cost_critic, axis=-1)
 
 
 # Constructor

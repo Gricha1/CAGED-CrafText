@@ -41,12 +41,10 @@ class Transition(NamedTuple):
     done: jnp.ndarray
     action: jnp.ndarray
     value: jnp.ndarray
-    cost_value: jnp.ndarray
     reward_e: jnp.ndarray
     reward_i: jnp.ndarray
     reward: jnp.ndarray
     cost: jnp.ndarray # CMDP
-    episode_cost: jnp.ndarray # CMDP
     log_prob: jnp.ndarray
     obs: jnp.ndarray
     next_obs: jnp.ndarray
@@ -147,15 +145,7 @@ def make_train(config, network_params):
                 params=network_params,
                 tx=tx,
             )
-        
-        # Set up optimizers for policy and value function
-        lambda_init = jnp.array(1.0)  # Начальное значение lambda
-        lambda_optimizer = optax.adam(learning_rate=3e-4)  # Оптимизатор для lambda
-        lambda_state = TrainState.create(
-            apply_fn=lambda x: x,  # Просто возвращаем параметр
-            params=lambda_init,
-            tx=lambda_optimizer,
-        )
+
         
 
         # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
@@ -297,7 +287,6 @@ def make_train(config, network_params):
             def _env_step(runner_state, unused):
                 (
                     train_state,
-                    lambda_state,
                     env_state,
                     last_obs,
                     ex_state,
@@ -308,7 +297,7 @@ def make_train(config, network_params):
                 # SELECT ACTION
                 rng, _rng = jax.random.split(rng)
                 print("!!! OBS !!!!", last_obs.shape)
-                pi, value, cost_value = network.apply(train_state.params, last_obs, 
+                pi, value = network.apply(train_state.params, last_obs, 
                                           env_state.env_state.instruction,
                                           env_state.env_state.textual_constraint)
                 
@@ -321,9 +310,7 @@ def make_train(config, network_params):
                     _rng, env_state, action, env_params
                 )
 
-                cost = env_state.env_state.cost
-                episode_cost = env_state.env_state.episode_cost
-                #cost = info["cost"] # CMDP
+                cost = info["cost"] # CMDP
                 
                # print(reward_e)
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -385,12 +372,10 @@ def make_train(config, network_params):
                     done=done,
                     action=action,
                     value=value,
-                    cost_value=cost_value, # CMDP
                     reward=reward,
                     reward_i=reward_i,
                     reward_e=reward_e,
                     cost=cost, # CMDP
-                    episode_cost=episode_cost,
                     log_prob=log_prob,
                     obs=last_obs,
                     next_obs=obsv,
@@ -400,7 +385,6 @@ def make_train(config, network_params):
                 )
                 runner_state = (
                     train_state,
-                    lambda_state,
                     env_state,
                     obsv,
                     ex_state,
@@ -417,29 +401,20 @@ def make_train(config, network_params):
             # print(traj_batch)
             # exit()
 
-            # GET EPISODE COST
-            #episode_metrics = jax.tree_map(
-            #    lambda x: (x * traj_batch.info["returned_episode"]).sum()
-            #    / traj_batch.info["returned_episode"].sum(),
-            #    traj_batch.cost,
-            #)
-            mean_episode_cost = (traj_batch.episode_cost * traj_batch.info["returned_episode"]).sum() / traj_batch.info["returned_episode"].sum()
-
             # CALCULATE ADVANTAGE
             (
                 train_state,
-                lambda_state,
                 env_state,
                 last_obs,
                 ex_state,
                 rng,
                 update_step,
             ) = runner_state
-            _, last_val, cost_last_val = network.apply(train_state.params, last_obs, 
+            _, last_val = network.apply(train_state.params, last_obs, 
                                         env_state.env_state.instruction, 
                                         env_state.env_state.textual_constraint)
           #  exit()
-            def _calculate_gae_reward(traj_batch, last_val):
+            def _calculate_gae(traj_batch, last_val):
                 def _get_advantages(gae_and_next_value, transition):
                     gae, next_value = gae_and_next_value
                     done, value, reward = (
@@ -464,57 +439,22 @@ def make_train(config, network_params):
 
                 return advantages, advantages + traj_batch.value
 
-            def _calculate_gae_cost(traj_batch, cost_last_val):
-                def _get_cost_advantages(gae_and_cost_next_value, transition):
-                    cost_gae, next_cost_value = gae_and_cost_next_value
-                    done, cost_value, cost = (
-                        transition.done,
-                        transition.cost_value,
-                        transition.cost,
-                    )
-                    cost_delta = cost + config["GAMMA"] * next_cost_value * (1 - done) - cost_value
-                    cost_gae = (
-                        cost_delta
-                        + config["GAMMA"] * config["GAE_LAMBDA"] * (1 - done) * cost_gae
-                    )
-                    return (cost_gae, cost_value), cost_gae
-
-                _, cost_advantages = jax.lax.scan(
-                        _get_cost_advantages,
-                         (jnp.zeros_like(cost_last_val), cost_last_val),
-                        traj_batch,
-                        reverse=True,
-                        unroll=16,
-                    )
-
-                return cost_advantages, cost_advantages + traj_batch.cost_value
-
-            advantages, targets = _calculate_gae_reward(traj_batch, last_val)
-            cost_advantages, cost_targets = _calculate_gae_cost(traj_batch, cost_last_val)
+            advantages, targets = _calculate_gae(traj_batch, last_val)
 
             # UPDATE NETWORK
             def _update_epoch(update_state, unused):
-                def _update_minbatch(train_lambda_state, batch_info):
-                    train_state, lambda_state = train_lambda_state
-                    traj_batch, advantages, targets, cost_advantages, cost_targets = batch_info
-
-                    # UPDATE LAMBDA
-                    def lambda_loss(current_lambda):
-                        cost_violation = mean_episode_cost - config["COST_THRESHOLD"]
-                        return -current_lambda * cost_violation
-                    
-                    lambda_grad = jax.grad(lambda_loss)(jax.nn.softplus(lambda_state.params))
-                    lambda_state = lambda_state.apply_gradients(grads=lambda_grad)
+                def _update_minbatch(train_state, batch_info):
+                    traj_batch, advantages, targets = batch_info
 
                     # Policy/value network
-                    def _loss_fn(params, traj_batch, gae, targets, cost_gae, cost_targets):
+                    def _loss_fn(params, traj_batch, gae, targets):
                         # RERUN NETWORK
-                        pi, value, cost_value = network.apply(params, traj_batch.obs, 
+                        pi, value = network.apply(params, traj_batch.obs, 
                                                   traj_batch.instruction,
                                                   traj_batch.textual_constraint)
                         log_prob = pi.log_prob(traj_batch.action)
 
-                        # CALCULATE REWARD VALUE LOSS
+                        # CALCULATE VALUE LOSS
                         value_pred_clipped = traj_batch.value + (
                             value - traj_batch.value
                         ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
@@ -529,22 +469,7 @@ def make_train(config, network_params):
                             0.5 * jnp.maximum(value_losses, value_losses_clipped).mean()
                         )
 
-                        # CALCULATE COST VALUE LOSS
-                        cost_value_pred_clipped = traj_batch.cost_value + (
-                            cost_value - traj_batch.cost_value
-                        ).clip(-config["CLIP_EPS"], config["CLIP_EPS"])
-
-                        ### ERROR WITH MEAN
-                        print(cost_value.shape)
-                        print(cost_targets.shape)
-                        
-                        cost_value_losses = jnp.square(cost_value - cost_targets)
-                        cost_value_losses_clipped = jnp.square(cost_value_pred_clipped - cost_targets)
-                        cost_value_loss = (
-                            0.5 * jnp.maximum(cost_value_losses, cost_value_losses_clipped).mean()
-                        )
-
-                        # CALCULATE REWARD ACTOR LOSS
+                        # CALCULATE ACTOR LOSS
                         ratio = jnp.exp(log_prob - traj_batch.log_prob)
                         gae = (gae - gae.mean()) / (gae.std() + 1e-8)
                         loss_actor1 = ratio * gae
@@ -557,51 +482,30 @@ def make_train(config, network_params):
                             * gae
                         )
                         loss_actor = -jnp.minimum(loss_actor1, loss_actor2)
-                        # CALCULATE COST ACTOR LOSS
-                        ratio = jnp.exp(log_prob - traj_batch.log_prob)
-                        cost_gae = (cost_gae - cost_gae.mean()) / (cost_gae.std() + 1e-8)
-                        cost_loss_actor1 = ratio * cost_gae
-                        cost_loss_actor2 = (
-                            jnp.clip(
-                                ratio,
-                                1.0 - config["CLIP_EPS"],
-                                1.0 + config["CLIP_EPS"],
-                            )
-                            * cost_gae
-                        )
-
-                        current_lambda = jax.nn.softplus(lambda_state.params)
-                        loss_actor = -jnp.minimum(loss_actor1, loss_actor2)
-                        cost_loss_actor = jnp.minimum(cost_loss_actor1, cost_loss_actor2)
                         loss_actor = loss_actor.mean()
-                        loss_actor += current_lambda * cost_loss_actor.mean()
                         entropy = pi.entropy().mean()
 
                         total_loss = (
                             loss_actor
                             + config["VF_COEF"] * value_loss
-                            + config["VF_COEF"] * cost_value_loss
                             - config["ENT_COEF"] * entropy
                         )
-                        return total_loss, (value_loss, cost_value_loss, loss_actor, entropy)
+                        return total_loss, (value_loss, loss_actor, entropy)
 
                     grad_fn = jax.value_and_grad(_loss_fn, has_aux=True)
                     total_loss, grads = grad_fn(
-                        train_state.params, traj_batch, advantages, targets, cost_advantages, cost_targets
+                        train_state.params, traj_batch, advantages, targets
                     )
                     train_state = train_state.apply_gradients(grads=grads)
 
                     losses = (total_loss, 0)
-                    return (train_state, lambda_state), losses
+                    return train_state, losses
 
                 (
                     train_state,
-                    lambda_state,
                     traj_batch,
                     advantages,
                     targets,
-                    cost_advantages,
-                    cost_targets,
                     rng,
                 ) = update_state
                 rng, _rng = jax.random.split(rng)
@@ -610,7 +514,7 @@ def make_train(config, network_params):
                     batch_size == config["NUM_STEPS"] * config["NUM_ENVS"]
                 ), "batch size must be equal to number of steps * number of envs"
                 permutation = jax.random.permutation(_rng, batch_size)
-                batch = (traj_batch, advantages, targets, cost_advantages, cost_targets)
+                batch = (traj_batch, advantages, targets)
                 print( config["MINIBATCH_SIZE"], config["NUM_MINIBATCHES"])
 
                 print(traj_batch.instruction.shape)
@@ -627,31 +531,23 @@ def make_train(config, network_params):
                     ),
                     shuffled_batch,
                 )
-                train_lambda_state, losses = jax.lax.scan(
-                    _update_minbatch, (train_state, lambda_state), minibatches
+                train_state, losses = jax.lax.scan(
+                    _update_minbatch, train_state, minibatches
                 )
-                train_state, lambda_state = train_lambda_state
-
                 update_state = (
                     train_state,
-                    lambda_state,
                     traj_batch,
                     advantages,
                     targets,
-                    cost_advantages,
-                    cost_targets,
                     rng,
                 )
                 return update_state, losses
 
             update_state = (
                 train_state,
-                lambda_state,
                 traj_batch,
                 advantages,
                 targets,
-                cost_advantages,
-                cost_targets,
                 rng,
             )
             update_state, loss_info = jax.lax.scan(
@@ -794,9 +690,8 @@ def make_train(config, network_params):
                 ex_state = ex_update_state[0]
                 rng = ex_update_state[-1]
 
-            metric["episode_cost"] = mean_episode_cost
+            metric["episode_cost"] = traj_batch.info["episode_cost"][-1].sum()
             metric["global_steps"] = traj_batch.info["steps"][-1].sum()
-            #print("global_steps:", traj_batch.info["steps"][-1].shape)
 
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
@@ -813,7 +708,6 @@ def make_train(config, network_params):
 
             runner_state = (
                 train_state,
-                lambda_state,
                 env_state,
                 last_obs,
                 ex_state,
@@ -825,7 +719,6 @@ def make_train(config, network_params):
         rng, _rng = jax.random.split(rng)
         runner_state = (
             train_state,
-            lambda_state,
             env_state,
             obsv,
             ex_state,
@@ -948,10 +841,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
     )  # Allow scientific notation
+    parser.add_argument("--train_ppo", default=False, action="store_true")
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
     parser.add_argument("--update_epochs", type=int, default=4)
-    parser.add_argument("--cost_threshold", type=float, default=5.0)
     parser.add_argument("--num_minibatches", type=int, default=8)
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)

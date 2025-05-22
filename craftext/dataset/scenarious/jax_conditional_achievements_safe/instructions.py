@@ -28,7 +28,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.PLACE_FURNACE, Achievement.MAKE_IRON_SWORD],
-            forbidden=[Achievement.MAKE_IRON_PICKAXE], block_type=BlockType.PLANT
+            forbidden=[Achievement.MAKE_IRON_PICKAXE], block_type=BlockType.GRASS
         )
     },
 
@@ -45,7 +45,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.DEFEAT_ZOMBIE],
-            forbidden=[Achievement.DEFEAT_SKELETON], block_type=BlockType.PLANT
+            forbidden=[Achievement.DEFEAT_SKELETON], block_type=BlockType.GRASS
         )
     },
 
@@ -62,7 +62,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_PICKAXE, Achievement.COLLECT_COAL],
-            forbidden=[], block_type=BlockType.PLANT
+            forbidden=[], block_type=BlockType.GRASS
         )
     },
 
@@ -79,7 +79,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_PICKAXE],
-            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.PLANT
+            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.GRASS
         )
     },
 
@@ -96,7 +96,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.EAT_PLANT],
-            forbidden=[Achievement.EAT_COW], block_type=BlockType.PLANT
+            forbidden=[Achievement.EAT_COW], block_type=BlockType.GRASS
         )
     },
 
@@ -113,7 +113,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.PLACE_PLANT],
-            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.PLANT
+            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.GRASS
         )
     },
 
@@ -130,7 +130,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.WAKE_UP, Achievement.DEFEAT_ZOMBIE, Achievement.COLLECT_DRINK],
-            forbidden=[], block_type=BlockType.PLANT
+            forbidden=[], block_type=BlockType.GRASS
         )
     },
 
@@ -147,7 +147,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_STONE_SWORD, Achievement.COLLECT_SAPLING],
-            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.PLANT
+            forbidden=[Achievement.MAKE_IRON_SWORD], block_type=BlockType.GRASS
         )
     },
 
@@ -164,7 +164,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_DIAMOND, Achievement.COLLECT_IRON, Achievement.EAT_COW],
-            forbidden=[], block_type=BlockType.PLANT
+            forbidden=[], block_type=BlockType.GRASS
         )
     },
 
@@ -181,7 +181,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.MAKE_WOOD_PICKAXE, Achievement.DEFEAT_SKELETON],
-            forbidden=[], block_type=BlockType.PLANT
+            forbidden=[], block_type=BlockType.GRASS
         )
     },
 
@@ -198,7 +198,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_DRINK],
-            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.PLANT
+            forbidden=[Achievement.MAKE_STONE_SWORD], block_type=BlockType.GRASS
         )
     },
 
@@ -215,7 +215,7 @@ easy = {
         "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
         "arguments": create_target_state(
             required=[Achievement.COLLECT_IRON],
-            forbidden=[Achievement.PLACE_PLANT], block_type=BlockType.PLANT
+            forbidden=[Achievement.PLACE_PLANT], block_type=BlockType.GRASS
         )
     }
 }
