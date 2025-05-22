@@ -21,7 +21,7 @@ from orbax.checkpoint import (
 )
 
 
-from logz.batch_logging import batch_log, create_log_dict
+from logz.batch_logging_cmdp import batch_log, create_log_dict
 from models.actor_critic import (
     ActorCritic,
     ActorCriticConv)
@@ -285,8 +285,6 @@ def make_train(config, network_params):
                     / config["E3B_LAMBDA"]
                 )
 
-
-        
         rng, _rng = jax.random.split(rng)
         obsv, env_state = env.reset(_rng, env_params)
 
@@ -303,6 +301,7 @@ def make_train(config, network_params):
                     ex_state,
                     rng,
                     update_step,
+                    global_steps,
                 ) = runner_state
 
                 # SELECT ACTION
@@ -321,6 +320,7 @@ def make_train(config, network_params):
                     _rng, env_state, action, env_params
                 )
 
+                global_steps += config["NUM_ENVS"]
                 cost = env_state.env_state.cost
                 episode_cost = env_state.env_state.episode_cost
                 #cost = info["cost"] # CMDP
@@ -406,12 +406,14 @@ def make_train(config, network_params):
                     ex_state,
                     rng,
                     update_step,
+                    global_steps,
                 )
                 return runner_state, transition
 
             runner_state, traj_batch = jax.lax.scan(
                 _env_step, runner_state, None, config["NUM_STEPS"]
             )
+
            # exit()
             # print(len(traj_batch))
             # print(traj_batch)
@@ -434,6 +436,7 @@ def make_train(config, network_params):
                 ex_state,
                 rng,
                 update_step,
+                global_steps,
             ) = runner_state
             _, last_val, cost_last_val = network.apply(train_state.params, last_obs, 
                                         env_state.env_state.instruction, 
@@ -795,8 +798,7 @@ def make_train(config, network_params):
                 rng = ex_update_state[-1]
 
             metric["episode_cost"] = mean_episode_cost
-            metric["global_steps"] = traj_batch.info["steps"][-1].sum()
-            #print("global_steps:", traj_batch.info["steps"][-1].shape)
+            metric["global_steps"] = global_steps         
 
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
@@ -819,6 +821,7 @@ def make_train(config, network_params):
                 ex_state,
                 rng,
                 update_step + 1,
+                global_steps,
             )
             return runner_state, metric
 
@@ -830,6 +833,7 @@ def make_train(config, network_params):
             obsv,
             ex_state,
             _rng,
+            0,
             0,
         )
         runner_state, metric = jax.lax.scan(
