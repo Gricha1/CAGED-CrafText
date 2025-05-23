@@ -575,9 +575,11 @@ def make_train(config, network_params):
 
                         current_lambda = jax.nn.softplus(lambda_state.params)
                         loss_actor = -jnp.minimum(loss_actor1, loss_actor2)
-                        cost_loss_actor = jnp.minimum(cost_loss_actor1, cost_loss_actor2)
+                        #cost_loss_actor = jnp.minimum(cost_loss_actor1, cost_loss_actor2)
+                        cost_loss_actor = cost_loss_actor1
                         loss_actor = loss_actor.mean()
                         loss_actor += current_lambda * cost_loss_actor.mean()
+                        loss_actor = loss_actor / (1 + current_lambda)
                         entropy = pi.entropy().mean()
 
                         total_loss = (
