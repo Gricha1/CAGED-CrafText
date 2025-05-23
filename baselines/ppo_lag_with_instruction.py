@@ -29,7 +29,7 @@ from models.actor_critic_with_text_constraints import (
     ActorCriticConvWithBERTCMDP
 )
 from models.icm import ICMEncoder, ICMForward, ICMInverse
-from wrappers import (
+from wrappers_cmdp import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
     BatchEnvWrapper,
@@ -149,7 +149,7 @@ def make_train(config, network_params):
             )
         
         # Set up optimizers for policy and value function
-        lambda_init = jnp.array(1.0)  # Начальное значение lambda
+        lambda_init = jnp.array(config["INIT_LAMBDA"])  # Начальное значение lambda
         lambda_optimizer = optax.adam(learning_rate=3e-4)  # Оптимизатор для lambda
         lambda_state = TrainState.create(
             apply_fn=lambda x: x,  # Просто возвращаем параметр
@@ -321,8 +321,8 @@ def make_train(config, network_params):
                 )
 
                 global_steps += config["NUM_ENVS"]
-                cost = env_state.env_state.cost
-                episode_cost = env_state.env_state.episode_cost
+                cost = info["cost"]
+                episode_cost = info["episode_cost"]
                 #cost = info["cost"] # CMDP
                 
                # print(reward_e)
@@ -955,7 +955,6 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
     parser.add_argument("--update_epochs", type=int, default=4)
-    parser.add_argument("--cost_threshold", type=float, default=5.0)
     parser.add_argument("--num_minibatches", type=int, default=8)
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--gae_lambda", type=float, default=0.8)
@@ -967,6 +966,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--anneal_lr", default=True
     )
+
+    # ppo lag
+    parser.add_argument("--cost_threshold", type=float, default=5.0)
+    parser.add_argument("--init_lambda", type=float, default=1.0)
+
     parser.add_argument("--debug", default=True)
     parser.add_argument("--jit", default=True)
     parser.add_argument("--seed", type=int)

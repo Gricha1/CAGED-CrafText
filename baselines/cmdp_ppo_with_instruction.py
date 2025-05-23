@@ -21,15 +21,15 @@ from orbax.checkpoint import (
 )
 
 
-from logz.batch_logging import batch_log, create_log_dict
+from logz.batch_logging_cmdp import batch_log, create_log_dict
 from models.actor_critic import (
     ActorCritic,
     ActorCriticConv)
-from models.actor_critic_with_text_constraints import (
-    ActorCriticConvWithBERTCMDP
+from models.actor_critic_with_text import (
+    ActorCriticConvWithBERT
 )
 from models.icm import ICMEncoder, ICMForward, ICMInverse
-from wrappers import (
+from wrappers_cmdp import (
     LogWrapper,
     OptimisticResetVecEnvWrapper,
     BatchEnvWrapper,
@@ -45,6 +45,7 @@ class Transition(NamedTuple):
     reward_i: jnp.ndarray
     reward: jnp.ndarray
     cost: jnp.ndarray # CMDP
+    episode_cost: jnp.ndarray
     log_prob: jnp.ndarray
     obs: jnp.ndarray
     next_obs: jnp.ndarray
@@ -99,11 +100,7 @@ def make_train(config, network_params):
             encoded = jnp.expand_dims(encoded, axis=0)  # 1, 768)
             encoded_input_tiled = jnp.tile(encoded,
                                     (config["NUM_ENVS"], 1))
-            encoded_constraint = env.encoded_textual_constraint           # (768,)  # (1, 768)
-            encoded_constraint = jnp.expand_dims(encoded_constraint, axis=0)  # 1, 768)
-            encoded_constraint_tiled = jnp.tile(encoded_constraint,
-                                    (config["NUM_ENVS"], 1))
-            network = ActorCriticConvWithBERTCMDP(
+            network = ActorCriticConvWithBERT(
                 env.action_space(env_params).n, config["LAYER_SIZE"]
             )
         else:
@@ -120,7 +117,7 @@ def make_train(config, network_params):
 
         print(init_x.shape)
         
-        network_params_alt = network.init(_rng, init_x, encoded_input_tiled, encoded_constraint_tiled)
+        network_params_alt = network.init(_rng, init_x, encoded_input_tiled)
         
         if config["ANNEAL_LR"]:
             tx = optax.chain(
@@ -292,14 +289,14 @@ def make_train(config, network_params):
                     ex_state,
                     rng,
                     update_step,
+                    global_steps,
                 ) = runner_state
 
                 # SELECT ACTION
                 rng, _rng = jax.random.split(rng)
                 print("!!! OBS !!!!", last_obs.shape)
                 pi, value = network.apply(train_state.params, last_obs, 
-                                          env_state.env_state.instruction,
-                                          env_state.env_state.textual_constraint)
+                                          env_state.env_state.instruction)
                 
         
                 action = pi.sample(seed=_rng)
@@ -310,7 +307,9 @@ def make_train(config, network_params):
                     _rng, env_state, action, env_params
                 )
 
+                global_steps += config["NUM_ENVS"]
                 cost = info["cost"] # CMDP
+                episode_cost = info["episode_cost"]
                 
                # print(reward_e)
                 reward_i = jnp.zeros(config["NUM_ENVS"])
@@ -376,6 +375,7 @@ def make_train(config, network_params):
                     reward_i=reward_i,
                     reward_e=reward_e,
                     cost=cost, # CMDP
+                    episode_cost=episode_cost,
                     log_prob=log_prob,
                     obs=last_obs,
                     next_obs=obsv,
@@ -390,6 +390,7 @@ def make_train(config, network_params):
                     ex_state,
                     rng,
                     update_step,
+                    global_steps,
                 )
                 return runner_state, transition
 
@@ -400,6 +401,7 @@ def make_train(config, network_params):
             # print(len(traj_batch))
             # print(traj_batch)
             # exit()
+            mean_episode_cost = (traj_batch.episode_cost * traj_batch.info["returned_episode"]).sum() / traj_batch.info["returned_episode"].sum()
 
             # CALCULATE ADVANTAGE
             (
@@ -409,10 +411,10 @@ def make_train(config, network_params):
                 ex_state,
                 rng,
                 update_step,
+                global_steps,
             ) = runner_state
             _, last_val = network.apply(train_state.params, last_obs, 
-                                        env_state.env_state.instruction, 
-                                        env_state.env_state.textual_constraint)
+                                        env_state.env_state.instruction)
           #  exit()
             def _calculate_gae(traj_batch, last_val):
                 def _get_advantages(gae_and_next_value, transition):
@@ -450,8 +452,7 @@ def make_train(config, network_params):
                     def _loss_fn(params, traj_batch, gae, targets):
                         # RERUN NETWORK
                         pi, value = network.apply(params, traj_batch.obs, 
-                                                  traj_batch.instruction,
-                                                  traj_batch.textual_constraint)
+                                                  traj_batch.instruction)
                         log_prob = pi.log_prob(traj_batch.action)
 
                         # CALCULATE VALUE LOSS
@@ -690,8 +691,10 @@ def make_train(config, network_params):
                 ex_state = ex_update_state[0]
                 rng = ex_update_state[-1]
 
-            metric["episode_cost"] = traj_batch.info["episode_cost"][-1].sum()
-            metric["global_steps"] = traj_batch.info["steps"][-1].sum()
+            #metric["episode_cost"] = traj_batch.info["episode_cost"][-1].sum()
+            #metric["global_steps"] = traj_batch.info["steps"][-1].sum()
+            metric["episode_cost"] = mean_episode_cost
+            metric["global_steps"] = global_steps         
 
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
@@ -713,6 +716,7 @@ def make_train(config, network_params):
                 ex_state,
                 rng,
                 update_step + 1,
+                global_steps,
             )
             return runner_state, metric
 
@@ -723,6 +727,7 @@ def make_train(config, network_params):
             obsv,
             ex_state,
             _rng,
+            0,
             0,
         )
         runner_state, metric = jax.lax.scan(
