@@ -13,6 +13,7 @@ def create_log_dict(info, config):
         "episode_return": info["returned_episode_returns"],
         "episode_length": info["returned_episode_lengths"],
          "SR": info["SR"],
+         'global_steps': info['global_steps']
     }   
 
     sum_achievements = 0

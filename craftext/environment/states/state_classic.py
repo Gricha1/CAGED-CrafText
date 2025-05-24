@@ -129,7 +129,7 @@ class PlayerState:
 
 @struct.dataclass
 class GameDataClassic:
-    states: list
+    states: List[PlayerState]
 
     @classmethod
     def from_state(cls, previos_state, current_state, action):

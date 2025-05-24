@@ -139,47 +139,6 @@ def make_train(config, network_params):
                 tx=tx,
             )
 
-        
-
-        # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
-        # if config.get("PATH_TO_CHECKPOINT"):
-        #     print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
-        #     # Prepare checkpoint manager
-        #     orbax_checkpointer = PyTreeCheckpointer()
-        #     checkpoint_manager = CheckpointManager(
-        #         config["PATH_TO_CHECKPOINT"],
-        #         orbax_checkpointer,
-        #         CheckpointManagerOptions(max_to_keep=1, create=False),
-        #     )
-        #     # Restore parameters from checkpoint
-        #     # train_state = TrainState.create(
-        #     #     apply_fn=network.apply,
-        #     #     params=network_params,
-        #     #     tx=tx,  # Optimizer will be set later
-        #     # )
-        #    # train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
-        #     with jax.disable_jit():
-        #         train_state_dict = checkpoint_manager.restore(int(config["TOTAL_TIMESTEPS"]))
-        #     network_params = train_state['params']  #train_state.params
-        #     print("Weights successfully loaded from checkpoint.")
-        # else:
-        #     print("No checkpoint specified, using default initialization.")
-
-        # Set up the optimizer
-        # if config["ANNEAL_LR"]:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(learning_rate=linear_schedule, eps=1e-5),
-        #     )
-        # else:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(config["LR"], eps=1e-5),
-            # )
-        # MAKE TRAIN STATE
-        
-
-        # Exploration state
         ex_state = {
             "icm_encoder": None,
             "icm_forward": None,
@@ -275,7 +234,6 @@ def make_train(config, network_params):
         # TRAIN LOOP
         def _update_step(runner_state, unused):
             # COLLECT TRAJECTORIES
-            print("HII")
             def _env_step(runner_state, unused):
                 (
                     train_state,
@@ -670,7 +628,9 @@ def make_train(config, network_params):
 
                 ex_state = ex_update_state[0]
                 rng = ex_update_state[-1]
-
+                
+            # metric['global_steps'] = traj_batch.info['']
+            metric['global_steps'] = update_state.traj_batch.info['steps'][0].sum()
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
 
@@ -706,7 +666,7 @@ def make_train(config, network_params):
         runner_state, metric = jax.lax.scan(
             _update_step, runner_state, None, config["NUM_UPDATES"]
         )
-        return {"runner_state": runner_state}  # , "info": metric}
+        return {"runner_state": runner_state} #, "info": metric}
 
     return train
 

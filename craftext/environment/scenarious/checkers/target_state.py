@@ -45,7 +45,7 @@ class LocalizaPlacingState:
 @struct.dataclass
 class Achievements:
     
-    achievement_mask: list = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
+    achievement_mask: tuple = struct.field(default_factory=lambda: tuple([AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]))
 
 @struct.dataclass
 class TimeCosntrainedPlacmentState:
