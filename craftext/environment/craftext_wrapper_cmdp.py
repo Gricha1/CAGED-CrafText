@@ -26,6 +26,7 @@ from craftext.environment.scenarious.checkers.step_on_block    import checker_st
 from typing import Union
 
 from craftext.environment.craftext_wrapper import InstructionWrapper
+from craftext.environment.scenarious.checkers.budget_build_collect import checker_budget_build_collect
 
 @struct.dataclass
 class TextEnvStateCMDP:
@@ -79,7 +80,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
         # set cost
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state.env_state, action)
         ts = self.batched_ts.select(env_state.idx)
-        cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
+        #cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
+        cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         #self.episode_cost += info["cost"]
         #info["episode_cost"] = self.episode_cost
 

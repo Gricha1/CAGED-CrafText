@@ -22,7 +22,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.STONE, size=4),
         "str_check_lambda": "is_square_formed(gd, ix)",
-        "textual_constraint": f"You can only carry {16} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can collect no more than {16} stone blocks.", 
     },
     "INSTRUCTION_CRAFTING_TABLE_2": {
         "instruction": "Form a square using crafting tables of side length 2.",
@@ -36,7 +36,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=2 ),
         "str_check_lambda": "is_square_formed(gd, ix)))",
-        "textual_constraint": f"You can only carry {4} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can create no more than {4} crafting tables.", 
     },
     "INSTRUCTION_CRAFTING_TABLE_4": {
         "instruction": "Construct a square using crafting tables, with each side of the square being 4 blocks long",
@@ -50,7 +50,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=4 ),
         "str_check_lambda": "is_square_formed(gd, ix)",
-        "textual_constraint": f"You can only carry {16} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can create no more than {16} crafting tables.", 
     },
     "INSTRUCTION_PLANT_4": {
         "instruction": "Check for a square of plants with a side size of 4.",
@@ -64,7 +64,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.PLANT, size=4 ),
         "str_check_lambda": "is_square_formed(gd, ix)))",
-        "textual_constraint": f"You can only carry {16} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can collect no more than {16} plants.", 
     },
     "INSTRUCTION_STONE_3": {
         "instruction": "Form a square with sides of 3 blocks using stones",
@@ -83,7 +83,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.STONE, size=3 ),
         "str_check_lambda": "is_square_formed(gd, ix)",
-        "textual_constraint": f"You can only carry {9} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can collect no more than {9} stone blocks.", 
     },
     "INSTRUCTION_CRAFTING_TABLE_3": {
         "instruction": "Form a square of crafting tables with each side having a length of 3",
@@ -97,7 +97,7 @@ easy = {
         ],
         "arguments": create_target_state(BlockType.CRAFTING_TABLE, size=3 ),
         "str_check_lambda": "is_square_formed(gd, ix)))",
-        "textual_constraint": f"You can only carry {9} blocks in your inventory to complete the construction.", 
+        "textual_constraint": f"You can create no more than {9} crafting tables.", 
     },
     # "INSTRUCTION_FURNACE_6": {
     #     "instruction": "Verify if there is a square formed of furnace blocks with a side size of 6.",
@@ -141,20 +141,20 @@ easy = {
     #     "str_check_lambda": "is_square_formed(gd, ix)))",
     #     "textual_constraint": f"You can only carry {49} blocks in your inventory to complete the construction.", 
     # },
-    "INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
-        "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
-        "scenario_checker": Scenarios.BUILD_SQUARE,
-        "instruction_paraphrases": [
-            "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
-            "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
-            "Determine if you have a 9-block square formation of the Frosty Wizard's Stand.",
-            "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
-            "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
-        ],
-        "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=3 ),
-        "str_check_lambda": "is_square_formed(gd, ix)))",
-        "textual_constraint": f"You can only carry {9} blocks in your inventory to complete the construction.", 
-    },
+    #"INSTRUCTION_ENCHANTMENT_TABLE_ICE_3": {
+    #    "instruction": "Check for a square formation of Enchantment Table Ice with a side of size 3.",
+    #    "scenario_checker": Scenarios.BUILD_SQUARE,
+    #    "instruction_paraphrases": [
+    #        "Can you see if there's a square configuration of Ice Enchantment Table each side measuring 3 blocks?",
+    #        "Verify if there's a 3x3 square arrangement of the Ice Magic Desk.",
+    #        "Determine if you have a 9-block square formation of the Frosty Wizard's Stand.",
+    #        "Could you look for a square pattern of Ice Sorcerer's Bench? Each side should have 3 blocks.",
+    #        "Confirm if there exists a square structure of three units on each side of the Cryo Spell Table."
+    #    ],
+    #    "arguments": create_target_state(BlockType.ENCHANTMENT_TABLE_ICE, size=3 ),
+    #    "str_check_lambda": "is_square_formed(gd, ix)))",
+    #    "textual_constraint": f"You can create no more than {9} ice tables.", 
+    #},
     # "INSTRUCTION_ENCHANTMENT_TABLE_ICE_7": {
     #     "instruction": "Create an enchantment table of ice shaped into a square with each side size 7.",
     #     "scenario_checker": Scenarios.BUILD_SQUARE,
