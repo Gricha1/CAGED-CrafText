@@ -3,6 +3,8 @@ import os
 import sys
 import time
 
+import logging
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -59,6 +61,7 @@ def make_train(config, network_params):
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
+    assert config["NUM_UPDATES"] >= config["SAVE_FREQ"]
     config["MINIBATCH_SIZE"] = (
         config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
     )
@@ -75,12 +78,31 @@ def make_train(config, network_params):
             num_envs=config["NUM_ENVS"],
             reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
         )
-   
-        
-    
-    
-    # else:
-   # env = BatchEnvWrapper(env, num_envs=config["NUM_ENVS"])
+
+    def create_unique_checkpoint_dir(base_dir=f"checkpoints/{args.algo_name}", prefix="exp_"):
+        os.makedirs(base_dir, exist_ok=True)
+        existing = [d for d in os.listdir(base_dir) if d.startswith(prefix) and os.path.isdir(os.path.join(base_dir, d))]
+        indices = []
+        for d in existing:
+            try:
+                idx = int(d[len(prefix):])
+                indices.append(idx)
+            except ValueError:
+                pass
+        next_idx = max(indices) + 1 if indices else 0
+        new_dir = os.path.join(base_dir, f"{prefix}{next_idx}")
+        os.makedirs(new_dir)
+        return new_dir
+
+    checkpoint_dir = create_unique_checkpoint_dir()
+    config["PATH_TO_CHECKPOINT"] = checkpoint_dir
+    orbax_checkpointer = PyTreeCheckpointer()
+    checkpoint_manager = CheckpointManager(
+        checkpoint_dir,
+        orbax_checkpointer,
+        CheckpointManagerOptions(max_to_keep=2),
+    )
+    wandb.config.update({"PATH_TO_CHECKPOINT": checkpoint_dir}, allow_val_change=True)
 
     def linear_schedule(count):
         frac = (
@@ -204,87 +226,6 @@ def make_train(config, network_params):
             "e3b_matrix": None,
         }
 
-        if config["TRAIN_ICM"]:
-            assert 1 == 0, "didnt implemented for CMDP"
-            obs_shape = env.observation_space(env_params).shape
-            assert len(obs_shape) == 1, "Only configured for 1D observations"
-            obs_shape = obs_shape[0]
-
-            # Encoder
-            icm_encoder_network = ICMEncoder(
-                num_layers=3,
-                output_dim=config["ICM_LATENT_SIZE"],
-                layer_size=config["ICM_LAYER_SIZE"],
-            )
-            rng, _rng = jax.random.split(rng)
-            icm_encoder_network_params = icm_encoder_network.init(
-                _rng, jnp.zeros((1, obs_shape))
-            )
-            tx = optax.chain(
-                optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(config["ICM_LR"], eps=1e-5),
-            )
-            ex_state["icm_encoder"] = TrainState.create(
-                apply_fn=icm_encoder_network.apply,
-                params=icm_encoder_network_params,
-                tx=tx,
-            )
-
-            # Forward
-            icm_forward_network = ICMForward(
-                num_layers=3,
-                output_dim=config["ICM_LATENT_SIZE"],
-                layer_size=config["ICM_LAYER_SIZE"],
-                num_actions=env.num_actions,
-            )
-            rng, _rng = jax.random.split(rng)
-            icm_forward_network_params = icm_forward_network.init(
-                _rng, jnp.zeros((1, config["ICM_LATENT_SIZE"])), jnp.zeros((1,))
-            )
-            tx = optax.chain(
-                optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(config["ICM_LR"], eps=1e-5),
-            )
-            ex_state["icm_forward"] = TrainState.create(
-                apply_fn=icm_forward_network.apply,
-                params=icm_forward_network_params,
-                tx=tx,
-            )
-
-            # Inverse
-            icm_inverse_network = ICMInverse(
-                num_layers=3,
-                output_dim=env.num_actions,
-                layer_size=config["ICM_LAYER_SIZE"],
-            )
-            rng, _rng = jax.random.split(rng)
-            icm_inverse_network_params = icm_inverse_network.init(
-                _rng,
-                jnp.zeros((1, config["ICM_LATENT_SIZE"])),
-                jnp.zeros((1, config["ICM_LATENT_SIZE"])),
-            )
-            tx = optax.chain(
-                optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(config["ICM_LR"], eps=1e-5),
-            )
-            ex_state["icm_inverse"] = TrainState.create(
-                apply_fn=icm_inverse_network.apply,
-                params=icm_inverse_network_params,
-                tx=tx,
-            )
-
-            if config["USE_E3B"]:
-                ex_state["e3b_matrix"] = (
-                    jnp.repeat(
-                        jnp.expand_dims(
-                            jnp.identity(config["ICM_LATENT_SIZE"]), axis=0
-                        ),
-                        config["NUM_ENVS"],
-                        axis=0,
-                    )
-                    / config["E3B_LAMBDA"]
-                )
-
         rng, _rng = jax.random.split(rng)
         obsv, env_state = env.reset(_rng, env_params)
 
@@ -327,55 +268,6 @@ def make_train(config, network_params):
                 
                # print(reward_e)
                 reward_i = jnp.zeros(config["NUM_ENVS"])
-
-                if config["TRAIN_ICM"]:
-                    latent_obs = ex_state["icm_encoder"].apply_fn(
-                        ex_state["icm_encoder"].params, last_obs
-                    )
-                    latent_next_obs = ex_state["icm_encoder"].apply_fn(
-                        ex_state["icm_encoder"].params, obsv
-                    )
-
-                    latent_next_obs_pred = ex_state["icm_forward"].apply_fn(
-                        ex_state["icm_forward"].params, latent_obs, action
-                    )
-                    error = (latent_next_obs - latent_next_obs_pred) * (
-                        1 - done[:, None]
-                    )
-                    mse = jnp.square(error).mean(axis=-1)
-
-                    reward_i = mse * config["ICM_REWARD_COEFF"]
-
-                    if config["USE_E3B"]:
-                        # Embedding is (NUM_ENVS, 128)
-                        # e3b_matrix is (NUM_ENVS, 128, 128)
-                        us = jax.vmap(jnp.matmul)(ex_state["e3b_matrix"], latent_obs)
-                        bs = jax.vmap(jnp.dot)(latent_obs, us)
-
-                        def update_c(c, b, u):
-                            return c - (1.0 / (1 + b)) * jnp.outer(u, u)
-
-                        updated_cs = jax.vmap(update_c)(ex_state["e3b_matrix"], bs, us)
-                        new_cs = (
-                            jnp.repeat(
-                                jnp.expand_dims(
-                                    jnp.identity(config["ICM_LATENT_SIZE"]), axis=0
-                                ),
-                                config["NUM_ENVS"],
-                                axis=0,
-                            )
-                            / config["E3B_LAMBDA"]
-                        )
-                        ex_state["e3b_matrix"] = jnp.where(
-                            done[:, None, None], new_cs, updated_cs
-                        )
-
-                        e3b_bonus = jnp.where(
-                            done, jnp.zeros((config["NUM_ENVS"],)), bs
-                        )
-
-                        reward_i = e3b_bonus * config["E3B_REWARD_COEFF"]
-
                 reward = reward_e + reward_i
               
                # instruction = jnp.repeat(env.encoded_instruction, done.shape[0], axis=0)
@@ -783,22 +675,6 @@ def make_train(config, network_params):
                 update_state = (ex_state, traj_batch, rng)
                 return update_state, losses
 
-            if config["TRAIN_ICM"]:
-                ex_update_state = (ex_state, traj_batch, rng)
-                ex_update_state, ex_loss = jax.lax.scan(
-                    _update_ex_epoch,
-                    ex_update_state,
-                    None,
-                    config["EXPLORATION_UPDATE_EPOCHS"],
-                )
-                metric["icm_inverse_loss"] = ex_loss[0].mean()
-                metric["icm_forward_loss"] = ex_loss[1].mean()
-                metric["reward_i"] = traj_batch.reward_i.mean()
-                metric["reward_e"] = traj_batch.reward_e.mean()
-
-                ex_state = ex_update_state[0]
-                rng = ex_update_state[-1]
-
             metric["episode_cost"] = mean_episode_cost
             metric["global_steps"] = global_steps         
 
@@ -825,6 +701,7 @@ def make_train(config, network_params):
                 update_step + 1,
                 global_steps,
             )
+
             return runner_state, metric
 
         rng, _rng = jax.random.split(rng)
@@ -838,8 +715,39 @@ def make_train(config, network_params):
             0,
             0,
         )
+        
+        def _maybe_save(runner_state):
+            train_state, lambda_state, env_state, last_obs, ex_state, rng, update_step, global_steps = runner_state
+            
+            def _save_callback(train_state, global_steps):
+                current_step = jax.device_get(global_steps)
+                print(f"Saving weights at step {current_step}")
+                save_args = orbax_utils.save_args_from_target(train_state)
+                checkpoint_manager.save(
+                    current_step,
+                    {"train_state": train_state},
+                    save_kwargs={"save_args": {"train_state": save_args}},
+                )
+            
+            should_save = update_step % config["SAVE_FREQ"] == 0
+            jax.lax.cond(
+                should_save,
+                lambda: jax.debug.callback(_save_callback, train_state, global_steps) or (),
+                lambda: ()
+            )
+                
+            return runner_state
+
+        def _scan_update(runner_state, unused):
+            runner_state, metric = _update_step(runner_state, unused)
+            
+            # Добавляем шаг сохранения
+            runner_state = _maybe_save(runner_state)
+            
+            return runner_state, metric
+        
         runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
+            _scan_update, runner_state, None, config["NUM_UPDATES"]
         )
         return {"runner_state": runner_state}  # , "info": metric}
 
@@ -944,6 +852,7 @@ def run_ppo(config):
 if __name__ == "__main__":
     #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
+    parser.add_argument("--algo_name", type=str, default="PPO_LAG")
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument(
@@ -954,6 +863,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
     )  # Allow scientific notation
+    parser.add_argument("--save_freq", type=int, default=10) # при env_num=512, сохраняет при 512000, x2, x3, ...
+
+    # PPO
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
     parser.add_argument("--update_epochs", type=int, default=4)
@@ -969,10 +881,11 @@ if __name__ == "__main__":
         "--anneal_lr", default=True
     )
 
-    # ppo lag
+    # PPO LAG
     parser.add_argument("--cost_threshold", type=float, default=5.0)
     parser.add_argument("--init_lambda", type=float, default=1.0)
 
+    # debug
     parser.add_argument("--debug", default=True)
     parser.add_argument("--jit", default=True)
     parser.add_argument("--seed", type=int)
@@ -1005,6 +918,10 @@ if __name__ == "__main__":
     parser.add_argument("--e3b_lambda", type=float, default=0.1)
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
+
+    # Отключить логи уровня INFO и ниже для orbax
+    logging.getLogger("orbax").setLevel(logging.WARNING)
+
     if rest_args:
         raise ValueError(f"Unknown args {rest_args}")
 
