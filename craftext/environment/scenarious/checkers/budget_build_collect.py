@@ -4,6 +4,7 @@ from jax import (
     numpy as jnp,
     lax
 )
+from jax import tree_util
 
 from typing import Union
 from craftext.environment.states.state import GameData
@@ -17,45 +18,19 @@ def checker_budget_build_collect(game_data: Union[GameDataClassic, GameData],  t
     block_type = target_state.block_type
     return new_item(game_data, block_type)
 
-def new_item(game_data: Union[GameDataClassic, GameData], block_type: BlockType):
+def new_item(game_data: Union[GameDataClassic, GameData], block_type: int):
     block_type  = block_type
 
     def get_item(index, inventory):
-        return lax.switch(index,
-            [
-                lambda: inventory.wood,
-                lambda: inventory.stone,
-                lambda: inventory.coal,
-                lambda: inventory.iron,
-                lambda: inventory.diamond,
-                lambda: inventory.sapling,
-                lambda: inventory.wood_pickaxe,
-                lambda: inventory.stone_pickaxe,
-                lambda: inventory.iron_pickaxe,
-                lambda: inventory.wood_sword,
-                lambda: inventory.stone_sword,
-                lambda: inventory.iron_sword,
-                
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.pickaxe, lambda: inventory.wood_pickaxe]), 
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.sword, lambda: inventory.stone_pickaxe]),
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.bow,   lambda: inventory.iron_pickaxe]), 
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.arrows, lambda: inventory.wood_sword]),
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.armour, lambda: inventory.stone_sword]),
-                # lambda: lax.switch(inventory.inventory, [lambda: inventory.torches, lambda: inventory.iron_sword]),
-            
-                # lambda: inventory.ruby,
-                # lambda: inventory.sapphire,
-                
-                # lambda: inventory.diamond, #lambda: inventory.potions
-                # lambda: inventory.diamond, #lambda: inventory.books
-            ]
-        )
+        leaves, _ = tree_util.tree_flatten(inventory)
+        leaves = jnp.stack(leaves)
+        return leaves[index]
     
     
     
     
     curr = get_item(block_type, game_data.states[0].inventory)
     prev = get_item(block_type, game_data.states[1].inventory)
-    return curr - prev > 0
+    return (curr - prev) > 0
 
 
