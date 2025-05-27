@@ -11,4 +11,4 @@ class HungryLevelState:
 @struct.dataclass
 class CMDPTargetState(TargetState):
     # step_on_block: StepOnBlock =  struct.field(default_factory=StepOnBlock)
-    hp_level_state: HungryLevelState = struct.field(default_factory=HungryLevelState)
+    hungry_level_state: HungryLevelState = struct.field(default_factory=HungryLevelState)

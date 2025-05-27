@@ -85,9 +85,9 @@ class CMDPInstructionWrapper(InstructionWrapper):
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state.env_state, action)
         ts = self.batched_ts.select(env_state.idx)
         #cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
-        cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
+        # cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         # cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
-        # cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
+        cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
         # cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
         # cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state).astype(float)
             

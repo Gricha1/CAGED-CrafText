@@ -14,7 +14,7 @@ def create_target_state(required=[], forbidden=[], level:int=0):
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
     # step_on_block = StepOnBlock(block_type=block_type)
     level = EnergyLevelState(level=level)
-    return CMDPTargetState(achievements=target_achievements, drink_level_state=EnergyLevelState)
+    return CMDPTargetState(achievements=target_achievements, energy_level_state=level)
 
 
 min_energy_level = 5

@@ -14,7 +14,7 @@ def create_target_state(required=[], forbidden=[], level:int=0):
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
     # step_on_block = StepOnBlock(block_type=block_type)
     level = HungryLevelState(level=level)
-    return CMDPTargetState(achievements=target_achievements, drink_level_state=HungryLevelState)
+    return CMDPTargetState(achievements=target_achievements, hungry_level_state=level)
 
 min_satiety_level = 5
 

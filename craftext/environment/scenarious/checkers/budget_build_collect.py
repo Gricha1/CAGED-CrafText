@@ -10,12 +10,12 @@ from typing import Union
 from craftext.environment.states.state import GameData
 from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.environment.scenarious.checkers.target_state_cmdp_budget_energy_level import BuildBudgetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_budget_energy_level import EnergyLevelState
 from craftext.environment.craftext_constants import BlockType
 
-def checker_budget_build_collect(game_data: Union[GameDataClassic, GameData],  target_state: BuildBudgetState) -> jax.Array:
+def checker_budget_build_collect(game_data: Union[GameDataClassic, GameData],  target_state: EnergyLevelState) -> jax.Array:
     # raise NotImplementedError("checker_budget_build_collect is not implemented yet")
-    block_type = target_state.block_type
+    block_type = target_state.level
     return new_item(game_data, block_type)
 
 def new_item(game_data: Union[GameDataClassic, GameData], block_type: int):
