@@ -19,7 +19,7 @@ def checker_budget_drink_level(game_data: Union[GameDataClassic, GameData],  tar
     return level_status(game_data, level)
 
 def level_status(game_data: Union[GameDataClassic, GameData], level: int):
-    current_level = game_data.states[0].variables.player_drink
+    current_level = game_data.states[0].variables.player_thirst
 
     # def get_item(index, inventory):
     #     leaves, _ = tree_util.tree_flatten(inventory)

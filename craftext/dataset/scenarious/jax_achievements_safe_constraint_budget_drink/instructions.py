@@ -17,6 +17,7 @@ def create_target_state(required=[], forbidden=[], level:int=0):
     level = DrinkLevelState(level=level)
     return CMDPTargetState(achievements=target_achievements, drink_level_state=DrinkLevelState)
 
+min_thirst_level = 5
 
 easy = { 
   
@@ -29,7 +30,8 @@ easy = {
           "Enjoy a dish prepared with beef.",
           "Ingest cow meat for nourishment."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
@@ -46,7 +48,8 @@ easy = {
           "Find and collect a young tree sprout.",
           "Gather a tree offspring ready for planting."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
@@ -62,7 +65,8 @@ easy = {
           "Gather a liquid item suitable for drinking.",
           "Procure a refreshing drink from nearby."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
@@ -78,7 +82,8 @@ easy = {
           "Carve and build a wooden mining tool.",
           "Forge a lightweight pickaxe from wood."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
@@ -94,7 +99,8 @@ easy = {
           "Create a weapon crafted from timber.",
           "Build a wooden blade for self-defense."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
@@ -110,7 +116,8 @@ easy = {
           "Install a plant in a sunny location.",
           "Place a flower or shrub in a chosen spot."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
@@ -126,7 +133,8 @@ easy = {
           "Take down a zombie using any weapon.",
           "Overcome a night-stalking undead being."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
@@ -142,7 +150,8 @@ easy = {
           "Retrieve stone fragments from nearby boulders.",
           "Extract useful stone for crafting purposes."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
@@ -158,7 +167,8 @@ easy = {
           "Arrange a block of stone in the area.",
           "Place a stone slab in the desired spot."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
@@ -174,7 +184,8 @@ easy = {
           "Chew on a herbaceous snack for energy.",
           "Devour a plant to satisfy your hunger."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
@@ -190,7 +201,8 @@ easy = {
           "Overpower a bone-clad enemy in battle.",
           "Take down a skeletal creature in the area."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
@@ -206,7 +218,8 @@ easy = {
           "Carve a reliable pickaxe from stone.",
           "Assemble a heavy-duty stone pickaxe."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
@@ -222,7 +235,8 @@ easy = {
           "Drop a furnace for crafting needs.",
           "Put a furnace on the ground to use."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
@@ -238,7 +252,8 @@ easy = {
           "Extract coal from a nearby deposit.",
           "Gather some coal for crafting."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
@@ -254,7 +269,8 @@ easy = {
           "Retrieve iron ore for crafting tools.",
           "Harvest metallic resources for use."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
@@ -271,7 +287,8 @@ easy = {
           "Assemble an iron pickaxe for digging.",
           "Build a reliable pickaxe forged from iron."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
@@ -287,7 +304,8 @@ easy = {
           "Construct a sharp sword forged from iron.",
           "Fashion an iron sword for combat."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
@@ -306,7 +324,8 @@ medium = {
           "Find and collect a valuable diamond.",
           "Extract a rare diamond from a hidden vein."
       ],
-      "textual_constraint": f"You can collect no more than {16} stone blocks.", 
+"textual_constraint": f"You must maintain your thirst level at or above {min_thirst_level}.",
+
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DIAMOND],
