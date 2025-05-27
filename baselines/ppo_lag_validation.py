@@ -1,3 +1,4 @@
+import wandb
 import argparse
 import os
 import sys
@@ -17,7 +18,7 @@ from craftax.craftax.constants import (
     Action,
     Achievement,
 )
-from craftext.environment.craftext_wrapper import InstructionWrapper
+from craftext.environment.craftext_wrapper_cmdp import CMDPInstructionWrapper
 from flax.training.train_state import TrainState
 from orbax.checkpoint import (
     PyTreeCheckpointer,
@@ -114,6 +115,24 @@ class CraftaxRenderer:
 
 
 def main(args):
+    
+    wandb.init(project="craftext_ppo_validation", name="validation_ppo", mode="online")  # или mode="disabled" для оффлайн
+
+
+    # folder for animation
+    os.makedirs("animation", exist_ok=True)
+
+    checkpoint_path = args.path  # Пример: checkpoints/PPO_LAG/exp_1/6000/default
+
+    # Восстанавливаем веса
+    checkpointer = PyTreeCheckpointer()
+    restored = checkpointer.restore(checkpoint_path)
+
+    train_state: TrainState = restored["train_state"]
+
+    #print("train_state:", train_state.keys())
+
+    """
     with open(os.path.join(args.path, "config.yaml")) as f:
         raw_config = yaml.load(f, Loader=yaml.Loader)
 
@@ -121,7 +140,8 @@ def main(args):
         for key, value in raw_config.items():
             if isinstance(value, dict) and "value" in value:
                 config[key] = value["value"]
-
+    
+    config = {}
     config["NUM_ENVS"] = 1
 
     orbax_checkpointer = PyTreeCheckpointer()
@@ -142,29 +162,50 @@ def main(args):
             network = ActorCriticConvWithBERT(actions_count, config["LAYER_SIZE"])
     else:
             network = ActorCritic(actions_count, config["LAYER_SIZE"])
-                                    
+    """
+    config = {}
+    config["NUM_ENVS"] = 1
+    config["ENV_NAME"] = args.env_name
 
-    env = InstructionWrapper(env, args.craftext_settings)
+    is_pixels = "Pixels" in config["ENV_NAME"]
+    actions_count = 17 if "Classic" in config["ENV_NAME"] else 43
+
+    
+    #if is_pixels:
+        #network = ActorCriticConvWithBERT(actions_count, 512)
+    #else:
+    #    network = ActorCritic(actions_count, 512)
+
+    #env = make_craftax_env_from_name(config["ENV_NAME"],  False)
+    env_name = config["ENV_NAME"].replace("-Text", "")
+    env = make_craftax_env_from_name(env_name, False)
+    env = CMDPInstructionWrapper(env, args.craftext_settings)
     env_params = env.default_params
 
-    init_x = jnp.zeros((config["NUM_ENVS"], *env.observation_space(env_params).shape))
+    #print("env:", type(env))
+    network = ActorCriticConvWithBERTCMDP(
+            env.action_space(env_params).n, 512)
 
     rng = jax.random.PRNGKey(np.random.randint(2**31))
     rng, _rng, __rng = jax.random.split(rng, 3)
 
-    network_params = network.init(_rng, init_x, env.encoded_instruction)
+    init_x = jnp.zeros((config["NUM_ENVS"], *env.observation_space(env_params).shape))
 
-    tx = optax.chain(
-        optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        optax.adam(config["LR"], eps=1e-5),
-    )
-    train_state = TrainState.create(
-        apply_fn=network.apply,
-        params=network_params,
-        tx=tx,
-    )
+    encoded_instruction = jnp.expand_dims(env.encoded_instruction, axis=0) 
+    encoded_constraint = jnp.expand_dims(env.encoded_textual_constraint, axis=0) 
+    network_params = network.init(_rng, init_x, encoded_instruction, encoded_constraint)
 
-    train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
+    #tx = optax.chain(
+    #    optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
+    #    optax.adam(config["LR"], eps=1e-5),
+    #)
+    #train_state = TrainState.create(
+    #    apply_fn=network.apply,
+    #    params=network_params,
+    #    tx=tx,
+    #)
+
+    #train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
     
    # network.apply(train_state['params'],init_x, env.encoded_instruction)
 
@@ -173,12 +214,25 @@ def main(args):
 
     renderer = CraftaxRenderer(env, env_params, pixel_render_size=1)
     steps = 0
-    step_fn = jax.jit(env.step)
+    step_fn = jax.jit(env.step, static_argnums=3)
     observations = []
     while not done and steps < 500:
         obs = jnp.expand_dims(obs, axis=0)
-        instruction = env.scenario_data.instructions_list[env_state.idx.item()]
-        pi, value = network.apply(train_state['params'], obs, env_state.instruction.reshape(1, -1))
+        #instruction = env.scenario_data.instructions_list[env_state.idx.item()]
+        instruction = env.scenario_handler.scenario_data.instructions_list[env_state.idx]
+        textual_constraint = env.scenario_handler.scenario_data.texutal_constraints_list[env_state.idx]
+        #instruction = env.scenario_handler.scenario_data_jax.embeddings_list[env_state.idx]
+        pi, value, cost_value = network.apply(train_state['params'], obs, 
+                                  env_state.instruction.reshape(1, -1),
+                                  env_state.textual_constraint.reshape(1, -1))
+        #print(network.apply(train_state['params'], obs, 
+        #                          env_state.instruction.reshape(1, -1),
+        #                          env_state.textual_constraint.reshape(1, -1)))
+        #assert 1 == 0
+        #pi, value = network.apply(train_state['params'], obs, env_state.instruction.reshape(1, -1))
+        #pi, value, cost_value = train_state.apply_fn(train_state.params, obs, 
+        #                                 env_state.instruction.reshape(1, -1), 
+        #                                 env_state.textual_constraint.reshape(1, -1))
         action = pi.sample(seed=_rng)[0]
         
         action = jax.device_put(action, device=jax.devices('gpu')[0])
@@ -198,9 +252,13 @@ def main(args):
     ix = random.randint(0,200)
     with imageio.get_writer(f'animation/{ix}_{gif_name}.gif', mode='I', duration=0.1) as writer:
         for i, image in enumerate(observations):
-            text = f"Step {i}, Instruction {env.scenario_data.instructions_list[env_state.idx.item()]}"
+            text = f"Step {i}, Instruction: {instruction} \n Constrain: {textual_constraint}"
             image_with_text = add_text_to_image(image, text)
             writer.append_data(image_with_text.astype(np.uint8))
+
+    wandb.log({
+        "animation": wandb.Video(f"animation/{ix}_{gif_name}.gif", fps=10, format="gif")
+    })
 
 
 def print_new_achievements(achievements_cls, old_achievements, new_achievements):
@@ -214,6 +272,7 @@ if __name__ == "__main__":
     parser.add_argument("--path", type=str)
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--craftext_settings", type=str, default=None)
+    parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if rest_args:

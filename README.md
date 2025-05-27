@@ -54,7 +54,7 @@ CrafText is an extension of the Craftex environment (<https://github.com/Michael
    ```
 
    ```bash
-   python ppo_lag_with_instruction.py --craftext_settings build_squere_simple_safe_budget --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=512
+   python ppo_lag_validation.py --craftext_settings build_squere_simple_safe_budget --env_name="Craftax-Classic-Pixels-v1-Text" --path checkpoints/PPO_LAG/exp_1/6000/default
    ```
 
 ## Run the PPO Baseline
