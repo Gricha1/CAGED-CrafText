@@ -10,7 +10,7 @@ from typing import Union
 from craftext.environment.states.state import GameData
 from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.environment.scenarious.checkers.target_state_cmdp_build_budget_collect import BuildBudgetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_budget_energy_level import BuildBudgetState
 from craftext.environment.craftext_constants import BlockType
 
 def checker_budget_build_collect(game_data: Union[GameDataClassic, GameData],  target_state: BuildBudgetState) -> jax.Array:

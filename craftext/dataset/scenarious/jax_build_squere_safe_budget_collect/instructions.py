@@ -1,5 +1,5 @@
 from craftext.environment.scenarious.checkers.target_state import BuildSquareState
-from craftext.environment.scenarious.checkers.target_state_cmdp_build_budget_collect import BuildBudgetState, CMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_budget_energy_level import BuildBudgetState, CMDPTargetState
 from craftext.environment.craftext_constants import Scenarios, BlockType
 
 def create_target_state(block_type:int, size:int):
