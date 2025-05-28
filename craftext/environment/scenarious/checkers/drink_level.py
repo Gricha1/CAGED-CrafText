@@ -31,6 +31,6 @@ def level_status(game_data: Union[GameDataClassic, GameData], level: int):
     
     # curr = get_item(block_type, game_data.states[0].inventory)
     # prev = get_item(block_type, game_data.states[1].inventory)
-    return current_level >= level
+    return current_level < level
 
 

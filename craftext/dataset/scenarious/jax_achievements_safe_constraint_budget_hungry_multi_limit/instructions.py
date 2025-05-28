@@ -29,14 +29,14 @@ easy = {
           "Enjoy a dish prepared with beef.",
           "Ingest cow meat for nourishment."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {3}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
           required=[Achievement.EAT_COW],
           forbidden=[],
-          level=min_satiety_level,
+          level=3,
       )
   },
   "COLLECT_SAPLING": {
@@ -48,13 +48,13 @@ easy = {
           "Find and collect a young tree sprout.",
           "Gather a tree offspring ready for planting."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {5}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
           forbidden=[],
-          level=min_satiety_level,
+          level=5,
       )
   },
   "COLLECT_DRINK": {
@@ -66,13 +66,13 @@ easy = {
           "Gather a liquid item suitable for drinking.",
           "Procure a refreshing drink from nearby."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   },
   "MAKE_WOOD_PICKAXE": {
@@ -84,13 +84,13 @@ easy = {
           "Carve and build a wooden mining tool.",
           "Forge a lightweight pickaxe from wood."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {7}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[],
-          level=min_satiety_level,
+          level=7,
       )
   },
   "MAKE_WOOD_SWORD": {
@@ -102,13 +102,13 @@ easy = {
           "Create a weapon crafted from timber.",
           "Build a wooden blade for self-defense."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {7}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[],
-          level=min_satiety_level,
+          level=7,
       )
   },
   "PLACE_PLANT": {
@@ -120,13 +120,13 @@ easy = {
           "Install a plant in a sunny location.",
           "Place a flower or shrub in a chosen spot."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {8}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
           forbidden=[],
-          level=min_satiety_level,
+          level=8,
       )
   },
   "DEFEAT_ZOMBIE": {
@@ -138,13 +138,13 @@ easy = {
           "Take down a zombie using any weapon.",
           "Overcome a night-stalking undead being."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {7}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[],
-          level=min_satiety_level,
+          level=7,
       )
   },
   "COLLECT_STONE": {
@@ -156,13 +156,13 @@ easy = {
           "Retrieve stone fragments from nearby boulders.",
           "Extract useful stone for crafting purposes."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {5}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
           forbidden=[],
-          level=min_satiety_level,
+          level=5,
       )
   },
   "PLACE_STONE": {
@@ -174,13 +174,13 @@ easy = {
           "Arrange a block of stone in the area.",
           "Place a stone slab in the desired spot."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   },
   "EAT_PLANT": {
@@ -192,13 +192,13 @@ easy = {
           "Chew on a herbaceous snack for energy.",
           "Devour a plant to satisfy your hunger."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {8}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
           forbidden=[],
-          level=min_satiety_level,
+          level=8,
       )
   },
   "DEFEAT_SKELETON": {
@@ -210,13 +210,13 @@ easy = {
           "Overpower a bone-clad enemy in battle.",
           "Take down a skeletal creature in the area."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {4}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
           forbidden=[],
-          level=min_satiety_level,
+          level=4,
       )
   },
   "MAKE_STONE_PICKAXE": {
@@ -228,13 +228,13 @@ easy = {
           "Carve a reliable pickaxe from stone.",
           "Assemble a heavy-duty stone pickaxe."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   },
   "PLACE_FURNACE": {
@@ -246,13 +246,13 @@ easy = {
           "Drop a furnace for crafting needs.",
           "Put a furnace on the ground to use."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {7}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
           forbidden=[],
-          level=min_satiety_level,
+          level=7,
       )
   },
   "COLLECT_COAL": {
@@ -264,13 +264,13 @@ easy = {
           "Extract coal from a nearby deposit.",
           "Gather some coal for crafting."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   },
   "COLLECT_IRON": {
@@ -282,13 +282,13 @@ easy = {
           "Retrieve iron ore for crafting tools.",
           "Harvest metallic resources for use."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {5}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
           forbidden=[],
-          level=min_satiety_level,
+          level=5,
       )
   },
   
@@ -301,13 +301,13 @@ easy = {
           "Assemble an iron pickaxe for digging.",
           "Build a reliable pickaxe forged from iron."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   },
   "MAKE_IRON_SWORD": {
@@ -319,13 +319,13 @@ easy = {
           "Construct a sharp sword forged from iron.",
           "Fashion an iron sword for combat."
       ],
-"textual_constraint": f"You must maintain your satiety level at or above {min_satiety_level}.",
+"textual_constraint": f"You must maintain your satiety level at or above {6}.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[],
-          level=min_satiety_level,
+          level=6,
       )
   }
 }

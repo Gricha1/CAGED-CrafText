@@ -836,6 +836,7 @@ def run_ppo(config):
 if __name__ == "__main__":
     #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
+    parser.add_argument("--algo_name", type=str, default="PPO")
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument(
