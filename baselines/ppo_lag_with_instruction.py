@@ -171,10 +171,10 @@ def make_train(config, network_params):
             )
         
         # Set up optimizers for policy and value function
-        lambda_init = jnp.array(config["INIT_LAMBDA"])  # Начальное значение lambda
+        lambda_init = {'lambda': jnp.array(config["INIT_LAMBDA"], dtype=jnp.float32)}  # Начальное значение lambda
         lambda_optimizer = optax.adam(learning_rate=3e-4)  # Оптимизатор для lambda
         lambda_state = TrainState.create(
-            apply_fn=lambda x: x,  # Просто возвращаем параметр
+            apply_fn=lambda x: x['lambda'],  # Просто возвращаем параметр
             params=lambda_init,
             tx=lambda_optimizer,
         )
@@ -349,8 +349,8 @@ def make_train(config, network_params):
                         cost_violation = mean_episode_cost - config["COST_THRESHOLD"]
                         return -current_lambda * cost_violation
                     
-                    lambda_grad = jax.grad(lambda_loss)(lambda_state.params)
-                    lambda_state = lambda_state.apply_gradients(grads=lambda_grad)
+                    lambda_grad = jax.grad(lambda_loss)(lambda_state.params['lambda'])
+                    lambda_state = lambda_state.apply_gradients(grads={'lambda': lambda_grad})
 
                     # Policy/value network
                     def _loss_fn(params, traj_batch, gae, targets, cost_gae, cost_targets):
@@ -416,7 +416,7 @@ def make_train(config, network_params):
                             * cost_gae
                         )
 
-                        current_lambda = jax.nn.softplus(lambda_state.params)
+                        current_lambda = jax.nn.softplus(lambda_state.params['lambda'])
                         loss_actor = -jnp.minimum(loss_actor1, loss_actor2)
                         #cost_loss_actor = jnp.minimum(cost_loss_actor1, cost_loss_actor2)
                         cost_loss_actor = cost_loss_actor1
@@ -518,7 +518,7 @@ def make_train(config, network_params):
 
             metric["episode_cost"] = mean_episode_cost
             metric["global_steps"] = global_steps
-            metric["lambda"] = lambda_state.params
+            metric["lambda"] = lambda_state.params['lambda']
 
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
