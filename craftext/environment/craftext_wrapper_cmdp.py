@@ -55,6 +55,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
         super().__init__(env, config_name=config_name, scenario_handler_class=scenario_handler_class,
                   encode_model_class=encode_model_class, encode_form=encode_form)
 
+        self.config_name = config_name
         self.encoded_textual_constraint = self.scenario_handler.scenario_data_jax.constraints_embeddings_list[0]
 
     def reset(self, _rng, env_params, instruction_idx=-1):
@@ -86,10 +87,21 @@ class CMDPInstructionWrapper(InstructionWrapper):
         ts = self.batched_ts.select(env_state.idx)
         #cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
         # cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
-        # cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
-        cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
-        # cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
-        # cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state).astype(float)
+        if self.config_name == "simple_achivments_safe":
+            cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
+        elif self.config_name == "build_squere_simple_safe_budget":
+            cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
+        elif self.config_name == "achievements_safe_budget_drink":
+            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
+        elif self.config_name == "achievements_safe_budget_energy":
+            cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state).astype(float)
+        elif self.config_name == "achievements_safe_budget_hp":
+            cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
+        elif self.config_name == "achievements_safe_budget_hungry" or \
+             self.config_name == "achievements_safe_budget_hungry_multi_limit":
+            cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
+        else:
+            assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
         
         

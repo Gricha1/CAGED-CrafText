@@ -41,7 +41,11 @@ crafter_settings in
    achievements_safe_budget_hungry_multi_limit, # simple achievements tasks + constraints on hungry level(different levels)
    achievements_safe_budget_hungry, # simple achievements tasks + constraints on hungry level(constant)
    build_squere_simple_safe_budget, # build tasks + constraints on resourse count
-   simple_achivments_safe # achievements and conditions tasks + constraints walk on grass
+   simple_achivments_safe # achievements and conditions tasks + constraints walk on grass,
+   achievements_safe_budget_drink,
+   achievements_safe_budget_hp,
+   achievements_safe_budget_energy,
+
 ]
    ```bash
    cd baselines
