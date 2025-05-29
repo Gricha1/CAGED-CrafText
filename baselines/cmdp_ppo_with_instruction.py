@@ -58,6 +58,7 @@ def make_train(config, network_params):
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
+    assert config["NUM_UPDATES"] >= config["SAVE_FREQ"]
     config["MINIBATCH_SIZE"] = (
         config["NUM_ENVS"] * config["NUM_STEPS"] // config["NUM_MINIBATCHES"]
     )
@@ -74,12 +75,34 @@ def make_train(config, network_params):
             num_envs=config["NUM_ENVS"],
             reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
         )
+    
+
+
+    def create_unique_checkpoint_dir(base_dir=f"checkpoints/{args.algo_name}", prefix="exp_"):
+        os.makedirs(base_dir, exist_ok=True)
+        existing = [d for d in os.listdir(base_dir) if d.startswith(prefix) and os.path.isdir(os.path.join(base_dir, d))]
+        indices = []
+        for d in existing:
+            try:
+                idx = int(d[len(prefix):])
+                indices.append(idx)
+            except ValueError:
+                pass
+        next_idx = max(indices) + 1 if indices else 0
+        new_dir = os.path.join(base_dir, f"{prefix}{next_idx}")
+        os.makedirs(new_dir)
+        return new_dir
+
+    checkpoint_dir = create_unique_checkpoint_dir()
+    config["PATH_TO_CHECKPOINT"] = checkpoint_dir
+    orbax_checkpointer = PyTreeCheckpointer()
+    checkpoint_manager = CheckpointManager(
+        checkpoint_dir,
+        orbax_checkpointer,
+        CheckpointManagerOptions(max_to_keep=2),
+    )
+    wandb.config.update({"PATH_TO_CHECKPOINT": checkpoint_dir}, allow_val_change=True)
    
-        
-    
-    
-    # else:
-   # env = BatchEnvWrapper(env, num_envs=config["NUM_ENVS"])
 
     def linear_schedule(count):
         frac = (
@@ -143,45 +166,6 @@ def make_train(config, network_params):
                 tx=tx,
             )
 
-        
-
-        # LOAD CHECKPOINTS WEIGHTHS FROM PREVIOS EPISODES
-        # if config.get("PATH_TO_CHECKPOINT"):
-        #     print(f"Loading weights from checkpoint: {config['PATH_TO_CHECKPOINT']}")
-        #     # Prepare checkpoint manager
-        #     orbax_checkpointer = PyTreeCheckpointer()
-        #     checkpoint_manager = CheckpointManager(
-        #         config["PATH_TO_CHECKPOINT"],
-        #         orbax_checkpointer,
-        #         CheckpointManagerOptions(max_to_keep=1, create=False),
-        #     )
-        #     # Restore parameters from checkpoint
-        #     # train_state = TrainState.create(
-        #     #     apply_fn=network.apply,
-        #     #     params=network_params,
-        #     #     tx=tx,  # Optimizer will be set later
-        #     # )
-        #    # train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
-        #     with jax.disable_jit():
-        #         train_state_dict = checkpoint_manager.restore(int(config["TOTAL_TIMESTEPS"]))
-        #     network_params = train_state['params']  #train_state.params
-        #     print("Weights successfully loaded from checkpoint.")
-        # else:
-        #     print("No checkpoint specified, using default initialization.")
-
-        # Set up the optimizer
-        # if config["ANNEAL_LR"]:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(learning_rate=linear_schedule, eps=1e-5),
-        #     )
-        # else:
-        #     tx = optax.chain(
-        #         optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-        #         optax.adam(config["LR"], eps=1e-5),
-            # )
-        # MAKE TRAIN STATE
-        
 
         # Exploration state
         ex_state = {
@@ -730,9 +714,46 @@ def make_train(config, network_params):
             0,
             0,
         )
+
+        def _maybe_save(runner_state):
+            train_state, env_state, last_obs, ex_state, rng, update_step, global_steps = runner_state
+            
+            def _save_callback(train_state, global_steps):
+                current_step = jax.device_get(global_steps)
+                print(f"Saving weights at step {current_step}")
+                save_args = orbax_utils.save_args_from_target(train_state)
+                checkpoint_manager.save(
+                    current_step,
+                    {"train_state": train_state},
+                    save_kwargs={"save_args": {"train_state": save_args}},
+                )
+            
+            should_save = update_step % config["SAVE_FREQ"] == 0
+            jax.lax.cond(
+                should_save,
+                lambda: jax.debug.callback(_save_callback, train_state, global_steps) or (),
+                lambda: ()
+            )
+                
+            return runner_state
+
+        def _scan_update(runner_state, unused):
+            runner_state, metric = _update_step(runner_state, unused)
+            
+            # Добавляем шаг сохранения
+            runner_state = _maybe_save(runner_state)
+            
+            return runner_state, metric
+        
         runner_state, metric = jax.lax.scan(
-            _update_step, runner_state, None, config["NUM_UPDATES"]
+            _scan_update, runner_state, None, config["NUM_UPDATES"]
         )
+
+
+
+        #runner_state, metric = jax.lax.scan(
+        #    _update_step, runner_state, None, config["NUM_UPDATES"]
+        #)
         return {"runner_state": runner_state}  # , "info": metric}
 
     return train
@@ -741,7 +762,6 @@ def make_train(config, network_params):
 def run_ppo(config):
     # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
-    base_checkpoint_path = os.path.abspath("./wandb/run-20241119_124727-pa1tyfiy/files/checkpoint_restart_1")
     config["PATH_TO_CHECKPOINT"] = 'None'# base_checkpoint_path  # Initialize with no checkpoint
     base_timestamps = config['TOTAL_TIMESTEPS']
     # Initialize WandB if enabled
@@ -847,6 +867,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--total_timesteps", type=lambda x: int(float(x)), default=1250000000 
     )  # Allow scientific notation
+    parser.add_argument("--save_freq", type=int, default=10) # при env_num=512, сохраняет при 512000, x2, x3, ...
     parser.add_argument("--train_ppo", default=False, action="store_true")
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--num_steps", type=int, default=100)
