@@ -845,7 +845,7 @@ if __name__ == "__main__":
         default=256,#1024,
     )
     parser.add_argument(
-        "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
+        "--total_timesteps", type=lambda x: int(float(x)), default=1250000000 
     )  # Allow scientific notation
     parser.add_argument("--train_ppo", default=False, action="store_true")
     parser.add_argument("--lr", type=float, default=2e-4)

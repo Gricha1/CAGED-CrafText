@@ -861,7 +861,7 @@ if __name__ == "__main__":
         default=256,#1024,
     )
     parser.add_argument(
-        "--total_timesteps", type=lambda x: int(float(x)), default=250000000 
+        "--total_timesteps", type=lambda x: int(float(x)), default=1250000000 
     )  # Allow scientific notation
     parser.add_argument("--save_freq", type=int, default=10) # при env_num=512, сохраняет при 512000, x2, x3, ...
 
