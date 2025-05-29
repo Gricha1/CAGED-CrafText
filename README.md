@@ -36,16 +36,19 @@ CrafText is an extension of the Craftex environment (<https://github.com/Michael
    ```
 
 ## Run the PPO Lagrangian in CMDP
+crafter_settings in 
+[
+   achievements_safe_budget_hungry_multi_limit, # simple achievements tasks + constraints on hungry level(different levels)
+   achievements_safe_budget_hungry, # simple achievements tasks + constraints on hungry level(constant)
+   build_squere_simple_safe_budget, # build tasks + constraints on resourse count
+   simple_achivments_safe # achievements and conditions tasks + constraints walk on grass
+]
    ```bash
    cd baselines
    ```
 
    ```bash
-   python ppo_lag_with_instruction.py --craftext_settings simple_achivments_safe --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=512
-   ```
-   
-   ```bash
-   python ppo_lag_with_instruction.py --craftext_settings build_squere_simple_safe_budget --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=512
+   python ppo_lag_with_instruction.py --craftext_settings {setting} --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=512
    ```
 
 ## Validate the PPO Lagrangian in CMDP
@@ -54,7 +57,7 @@ CrafText is an extension of the Craftex environment (<https://github.com/Michael
    ```
 
    ```bash
-   python ppo_lag_validation.py --craftext_settings build_squere_simple_safe_budget --env_name="Craftax-Classic-Pixels-v1-Text" --path checkpoints/PPO_LAG/exp_1/6000/default
+   python ppo_lag_validation.py --craftext_settings {setting} --env_name="Craftax-Classic-Pixels-v1-Text" --path checkpoints/PPO_LAG/exp_1
    ```
 
 ## Run the PPO Baseline

@@ -2,6 +2,7 @@ import wandb
 import argparse
 import os
 import sys
+import textwrap
 from PIL import Image, ImageDraw, ImageFont
 import jax
 import jax.numpy as jnp
@@ -9,6 +10,9 @@ import numpy as np
 import optax
 import yaml
 import pygame
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import seaborn as sns
 from craftax.craftax.renderer import render_craftax_pixels as render
 from craftax.craftax_classic.renderer import render_craftax_pixels as render_classic
 from craftax.craftax.constants import (
@@ -43,6 +47,14 @@ try:
     font = ImageFont.truetype("arial.ttf", 30)
 except IOError:
     font = ImageFont.load_default()
+
+# Установим стиль
+sns.set(style="whitegrid")
+colors = {
+    'reward': '#A3D2CA',       # мягкий бирюзовый
+    'cost': '#F6BD60',         # теплый желто-оранжевый
+    'success_rate': '#84A59D'  # спокойный серо-зеленый
+}
 
 
 def add_text_to_image(image, text):
@@ -118,11 +130,46 @@ def main(args):
     
     wandb.init(project="craftext_ppo_validation", name="validation_ppo", mode="online")  # или mode="disabled" для оффлайн
 
-
     # folder for animation
-    os.makedirs("animation", exist_ok=True)
+    animation_dir = "animation"
+    os.makedirs(animation_dir, exist_ok=True)
+    for filename in os.listdir(animation_dir):
+        file_path = os.path.join(animation_dir, filename)
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.remove(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
 
-    checkpoint_path = args.path  # Пример: checkpoints/PPO_LAG/exp_1/6000/default
+    def find_latest_checkpoint(base_path):
+        # Получаем список всех подпапок в базовом пути
+        try:
+            subfolders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
+        except FileNotFoundError:
+            raise ValueError(f"Папка {base_path} не существует")
+        
+        # Фильтруем только числовые папки
+        numeric_folders = []
+        for folder in subfolders:
+            try:
+                num = int(folder)
+                numeric_folders.append(num)
+            except ValueError:
+                continue
+        
+        if not numeric_folders:
+            raise ValueError(f"В папке {base_path} нет подпапок с числовыми именами")
+        
+        # Находим максимальное число
+        latest_num = max(numeric_folders)
+        
+        # Формируем полный путь
+        full_path = os.path.join(base_path, str(latest_num), "default")
+        
+        return full_path
+
+    #checkpoint_path = args.path  # Пример: checkpoints/PPO_LAG/exp_1
+    checkpoint_path = find_latest_checkpoint(args.path)
+    print(f"download weights path: {checkpoint_path}")
 
     # Восстанавливаем веса
     checkpointer = PyTreeCheckpointer()
@@ -130,39 +177,6 @@ def main(args):
 
     train_state: TrainState = restored["train_state"]
 
-    #print("train_state:", train_state.keys())
-
-    """
-    with open(os.path.join(args.path, "config.yaml")) as f:
-        raw_config = yaml.load(f, Loader=yaml.Loader)
-
-        config = {}
-        for key, value in raw_config.items():
-            if isinstance(value, dict) and "value" in value:
-                config[key] = value["value"]
-    
-    config = {}
-    config["NUM_ENVS"] = 1
-
-    orbax_checkpointer = PyTreeCheckpointer()
-    options = CheckpointManagerOptions(max_to_keep=1, create=True)
-    checkpoint_manager = CheckpointManager(
-        os.path.abspath(os.path.join(args.path, "policies")), orbax_checkpointer, options
-    )
-
-    is_classic = False
-    config_name = config["ENV_NAME"]
-
-    add_text_emb = "-Tdext" in config_name
-    config["ENV_NAME"] = config_name.replace("-Text", "")
-    
-    env = make_craftax_env_from_name(config["ENV_NAME"],  False)
-    actions_count = 17 if "Classic" in config["ENV_NAME"] else 43
-    if "Pixels" in config["ENV_NAME"]:
-            network = ActorCriticConvWithBERT(actions_count, config["LAYER_SIZE"])
-    else:
-            network = ActorCritic(actions_count, config["LAYER_SIZE"])
-    """
     config = {}
     config["NUM_ENVS"] = 1
     config["ENV_NAME"] = args.env_name
@@ -170,19 +184,11 @@ def main(args):
     is_pixels = "Pixels" in config["ENV_NAME"]
     actions_count = 17 if "Classic" in config["ENV_NAME"] else 43
 
-    
-    #if is_pixels:
-        #network = ActorCriticConvWithBERT(actions_count, 512)
-    #else:
-    #    network = ActorCritic(actions_count, 512)
-
-    #env = make_craftax_env_from_name(config["ENV_NAME"],  False)
     env_name = config["ENV_NAME"].replace("-Text", "")
     env = make_craftax_env_from_name(env_name, False)
     env = CMDPInstructionWrapper(env, args.craftext_settings)
     env_params = env.default_params
 
-    #print("env:", type(env))
     network = ActorCriticConvWithBERTCMDP(
             env.action_space(env_params).n, 512)
 
@@ -195,69 +201,135 @@ def main(args):
     encoded_constraint = jnp.expand_dims(env.encoded_textual_constraint, axis=0) 
     network_params = network.init(_rng, init_x, encoded_instruction, encoded_constraint)
 
-    #tx = optax.chain(
-    #    optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-    #    optax.adam(config["LR"], eps=1e-5),
-    #)
-    #train_state = TrainState.create(
-    #    apply_fn=network.apply,
-    #    params=network_params,
-    #    tx=tx,
-    #)
+    num_tasks = len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list)
+    tasks_ids = list(range(0, num_tasks))
+    #tasks_ids = list(range(0, 2))
+    print("tasks num:", len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list))
+    task_metrics = []
 
-    #train_state = checkpoint_manager.restore(config["TOTAL_TIMESTEPS"])
-    
-   # network.apply(train_state['params'],init_x, env.encoded_instruction)
+    for task_id in tasks_ids:
+        print()
+        print("Validation task id:", task_id, " of", num_tasks - 1)
+        obs, env_state = env.reset(_rng, env_params, instruction_idx=task_id)
+        done = False
 
-    obs, env_state = env.reset(_rng, env_params)
-    done = False
+        renderer = CraftaxRenderer(env, env_params, pixel_render_size=1)
+        steps = 0
+        step_fn = jax.jit(env.step, static_argnums=3)
+        observations = []
+        return_reward = 0
+        return_cost = 0
+        while not done and steps < 500:
+            obs = jnp.expand_dims(obs, axis=0)
+            instruction = env.scenario_handler.scenario_data.instructions_list[env_state.idx]
+            textual_constraint = env.scenario_handler.scenario_data.texutal_constraints_list[env_state.idx]
+            pi, value, cost_value = network.apply(train_state['params'], obs, 
+                                    env_state.instruction.reshape(1, -1),
+                                    env_state.textual_constraint.reshape(1, -1))
+            action = pi.sample(seed=_rng)[0]
+            
+            action = jax.device_put(action, device=jax.devices('gpu')[0])
 
-    renderer = CraftaxRenderer(env, env_params, pixel_render_size=1)
-    steps = 0
-    step_fn = jax.jit(env.step, static_argnums=3)
-    observations = []
-    while not done and steps < 500:
-        obs = jnp.expand_dims(obs, axis=0)
-        #instruction = env.scenario_data.instructions_list[env_state.idx.item()]
-        instruction = env.scenario_handler.scenario_data.instructions_list[env_state.idx]
-        textual_constraint = env.scenario_handler.scenario_data.texutal_constraints_list[env_state.idx]
-        #instruction = env.scenario_handler.scenario_data_jax.embeddings_list[env_state.idx]
-        pi, value, cost_value = network.apply(train_state['params'], obs, 
-                                  env_state.instruction.reshape(1, -1),
-                                  env_state.textual_constraint.reshape(1, -1))
-        #print(network.apply(train_state['params'], obs, 
-        #                          env_state.instruction.reshape(1, -1),
-        #                          env_state.textual_constraint.reshape(1, -1)))
-        #assert 1 == 0
-        #pi, value = network.apply(train_state['params'], obs, env_state.instruction.reshape(1, -1))
-        #pi, value, cost_value = train_state.apply_fn(train_state.params, obs, 
-        #                                 env_state.instruction.reshape(1, -1), 
-        #                                 env_state.textual_constraint.reshape(1, -1))
-        action = pi.sample(seed=_rng)[0]
-        
-        action = jax.device_put(action, device=jax.devices('gpu')[0])
+            if action is not None:
+                rng, _rng = jax.random.split(rng)
+                obs, env_state, reward, done, info = step_fn(
+                    _rng, env_state, action, env_params
+                )
+                steps += 1
+                
+                return_reward += reward
+                return_cost += env_state.cost
 
-        if action is not None:
-            rng, _rng = jax.random.split(rng)
-            obs, env_state, reward, done, info = step_fn(
-                _rng, env_state, action, env_params
-            )
-            steps += 1
+            image = renderer.render_to_image(env_state.env_state)
+            observations.append(image)
 
-        image = renderer.render_to_image(env_state.env_state)
-        observations.append(image)
+        # get metrics
+        total_success_rate = env_state.total_success_rate
+        task_metrics.append({
+            "task_id": task_id,
+            "instruction": instruction,
+            "constraint": textual_constraint,
+            "reward": float(return_reward),
+            "cost": float(return_cost),
+            "success_rate": float(total_success_rate)
+        })
 
-    gif_name = instruction.replace(" ", "_")
-    import random
-    ix = random.randint(0,200)
-    with imageio.get_writer(f'animation/{ix}_{gif_name}.gif', mode='I', duration=0.1) as writer:
-        for i, image in enumerate(observations):
-            text = f"Step {i}, Instruction: {instruction} \n Constrain: {textual_constraint}"
-            image_with_text = add_text_to_image(image, text)
-            writer.append_data(image_with_text.astype(np.uint8))
+        # get gif
+        gif_name = instruction.replace(" ", "_")
+        import random
+        ix = random.randint(0,200)
+        with imageio.get_writer(f'animation/{ix}_{gif_name}_{task_id}.gif', mode='I', duration=0.1) as writer:
+            for i, image in enumerate(observations):
+                text = f"Step {i}, Instruction: {instruction} \n Constrain: {textual_constraint}"
+                image_with_text = add_text_to_image(image, text)
+                writer.append_data(image_with_text.astype(np.uint8))
+
+        wandb.log({
+            "animation": wandb.Video(f"animation/{ix}_{gif_name}_{task_id}.gif", fps=10, format="gif")
+        })
+
+
+    # Texts
+    fig, ax = plt.subplots(figsize=(12, len(task_metrics)*1.2))
+    ax.axis('off')
+
+    text_lines = []
+    for i in range(len(task_metrics)):
+        instr_wrapped = "\n".join(textwrap.wrap(task_metrics[i]['instruction'], width=70))
+        constraint_wrapped = "\n".join(textwrap.wrap(task_metrics[i]['constraint'], width=70))
+        text_lines.append(
+            f"Task {task_metrics[i]['task_id']}:\nInstruction: {instr_wrapped}\nConstraint: {constraint_wrapped}\n"
+        )
+
+    full_text = "\n\n".join(text_lines)
+    ax.text(0, 1, full_text, fontsize=9, verticalalignment='top', family='monospace')
+
+    text_path = "task_descriptions.png"
+    plt.tight_layout()
+    plt.savefig(text_path, dpi=150)
+    plt.close()
 
     wandb.log({
-        "animation": wandb.Video(f"animation/{ix}_{gif_name}.gif", fps=10, format="gif")
+        "task_descriptions": wandb.Image(text_path)
+    })
+
+    # Bars
+    x = list(range(len(task_metrics)))
+    rewards = [item['reward'] for item in task_metrics]
+    costs = [item['cost'] for item in task_metrics]
+    success_rates = [item['success_rate'] for item in task_metrics]
+
+    # Barplot
+    fig, ax1 = plt.subplots(figsize=(max(12, len(x) * 0.7), 6))
+    bar_width = 0.25
+
+    # Отрисовка баров
+    ax1.bar([i - bar_width for i in x], rewards, width=bar_width, label='Reward', color=colors['reward'])
+    ax1.bar(x, costs, width=bar_width, label='Cost', color=colors['cost'])
+    ax1.bar([i + bar_width for i in x], success_rates, width=bar_width, label='Success Rate', color=colors['success_rate'])
+
+    # Подписи над столбцами
+    for i in range(len(x)):
+        ax1.text(i - bar_width, rewards[i] + 0.05, f"{rewards[i]:.1f}", ha='center', fontsize=8)
+        ax1.text(i, costs[i] + 0.05, f"{costs[i]:.1f}", ha='center', fontsize=8)
+        ax1.text(i + bar_width, success_rates[i] + 0.05, f"{success_rates[i]:.1f}", ha='center', fontsize=8)
+
+    # Настройка осей
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([str(item['task_id']) for item in task_metrics], rotation=0)
+    ax1.set_ylabel("Value")
+    ax1.set_xlabel("Task ID")
+    ax1.set_title("Task Metrics Overview")
+    ax1.legend()
+    plt.tight_layout()
+
+    # Сохраняем
+    plot_path = "task_metrics_barplot.png"
+    plt.savefig(plot_path, dpi=200)
+    plt.close()
+
+    wandb.log({
+        "task_metrics_barplot": wandb.Image(plot_path)
     })
 
 
