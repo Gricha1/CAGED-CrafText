@@ -15,6 +15,7 @@ def create_log_dict(info, config):
         "SR": info["SR"],
         "episode_cost": info["episode_cost"],
         "global_steps": info["global_steps"],
+        "lambda": info["lambda"],
     }   
 
     sum_achievements = 0

@@ -306,17 +306,6 @@ def make_train(config, network_params):
                 _env_step, runner_state, None, config["NUM_STEPS"]
             )
 
-           # exit()
-            # print(len(traj_batch))
-            # print(traj_batch)
-            # exit()
-
-            # GET EPISODE COST
-            #episode_metrics = jax.tree_map(
-            #    lambda x: (x * traj_batch.info["returned_episode"]).sum()
-            #    / traj_batch.info["returned_episode"].sum(),
-            #    traj_batch.cost,
-            #)
             mean_episode_cost = (traj_batch.episode_cost * traj_batch.info["returned_episode"]).sum() / traj_batch.info["returned_episode"].sum()
 
             # CALCULATE ADVANTAGE
@@ -398,7 +387,7 @@ def make_train(config, network_params):
                         cost_violation = mean_episode_cost - config["COST_THRESHOLD"]
                         return -current_lambda * cost_violation
                     
-                    lambda_grad = jax.grad(lambda_loss)(jax.nn.softplus(lambda_state.params))
+                    lambda_grad = jax.grad(lambda_loss)(lambda_state.params)
                     lambda_state = lambda_state.apply_gradients(grads=lambda_grad)
 
                     # Policy/value network
@@ -556,6 +545,7 @@ def make_train(config, network_params):
             )
 
             train_state = update_state[0]
+            lambda_state = update_state[1]
             metric = jax.tree_map(
                 lambda x: (x * traj_batch.info["returned_episode"]).sum()
                 / traj_batch.info["returned_episode"].sum(),
@@ -564,119 +554,9 @@ def make_train(config, network_params):
 
             rng = update_state[-1]
 
-            # UPDATE EXPLORATION STATE
-            def _update_ex_epoch(update_state, unused):
-                def _update_ex_minbatch(ex_state, traj_batch):
-                    def _inverse_loss_fn(
-                        icm_encoder_params, icm_inverse_params, traj_batch
-                    ):
-                        latent_obs = ex_state["icm_encoder"].apply_fn(
-                            icm_encoder_params, traj_batch.obs
-                        )
-                        latent_next_obs = ex_state["icm_encoder"].apply_fn(
-                            icm_encoder_params, traj_batch.next_obs
-                        )
-
-                        action_pred_logits = ex_state["icm_inverse"].apply_fn(
-                            icm_inverse_params, latent_obs, latent_next_obs
-                        )
-                        true_action = jax.nn.one_hot(
-                            traj_batch.action, num_classes=action_pred_logits.shape[-1]
-                        )
-
-                        bce = -jnp.mean(
-                            jnp.sum(
-                                action_pred_logits
-                                * true_action
-                                * (1 - traj_batch.done[:, None]),
-                                axis=1,
-                            )
-                        )
-
-                        return bce * config["ICM_INVERSE_LOSS_COEF"]
-
-                    inverse_grad_fn = jax.value_and_grad(
-                        _inverse_loss_fn,
-                        has_aux=False,
-                        argnums=(
-                            0,
-                            1,
-                        ),
-                    )
-                    inverse_loss, grads = inverse_grad_fn(
-                        ex_state["icm_encoder"].params,
-                        ex_state["icm_inverse"].params,
-                        traj_batch,
-                    )
-                    icm_encoder_grad, icm_inverse_grad = grads
-                    ex_state["icm_encoder"] = ex_state["icm_encoder"].apply_gradients(
-                        grads=icm_encoder_grad
-                    )
-                    ex_state["icm_inverse"] = ex_state["icm_inverse"].apply_gradients(
-                        grads=icm_inverse_grad
-                    )
-
-                    def _forward_loss_fn(icm_forward_params, traj_batch):
-                        latent_obs = ex_state["icm_encoder"].apply_fn(
-                            ex_state["icm_encoder"].params, traj_batch.obs
-                        )
-                        latent_next_obs = ex_state["icm_encoder"].apply_fn(
-                            ex_state["icm_encoder"].params, traj_batch.next_obs
-                        )
-
-                        latent_next_obs_pred = ex_state["icm_forward"].apply_fn(
-                            icm_forward_params, latent_obs, traj_batch.action
-                        )
-
-                        error = (latent_next_obs - latent_next_obs_pred) * (
-                            1 - traj_batch.done[:, None]
-                        )
-                        return (
-                            jnp.square(error).mean() * config["ICM_FORWARD_LOSS_COEF"]
-                        )
-
-                    forward_grad_fn = jax.value_and_grad(
-                        _forward_loss_fn, has_aux=False
-                    )
-                    forward_loss, icm_forward_grad = forward_grad_fn(
-                        ex_state["icm_forward"].params, traj_batch
-                    )
-                    ex_state["icm_forward"] = ex_state["icm_forward"].apply_gradients(
-                        grads=icm_forward_grad
-                    )
-
-                    losses = (inverse_loss, forward_loss)
-                    return ex_state, losses
-
-                (ex_state, traj_batch, rng) = update_state
-                rng, _rng = jax.random.split(rng)
-                batch_size = config["MINIBATCH_SIZE"] * config["NUM_MINIBATCHES"]
-                assert (
-                    batch_size == config["NUM_STEPS"] * config["NUM_ENVS"]
-                ), "batch size must be equal to number of steps * number of envs"
-                permutation = jax.random.permutation(_rng, batch_size)
-
-                exit()
-                batch = jax.tree.map(
-                    lambda x: x.reshape((batch_size,) + x.shape[2:]), traj_batch
-                )
-                shuffled_batch = jax.tree.map(
-                    lambda x: jnp.take(x, permutation, axis=0), batch
-                )
-                minibatches = jax.tree.map(
-                    lambda x: jnp.reshape(
-                        x, [config["NUM_MINIBATCHES"], -1] + list(x.shape[1:])
-                    ),
-                    shuffled_batch,
-                )
-                ex_state, losses = jax.lax.scan(
-                    _update_ex_minbatch, ex_state, minibatches
-                )
-                update_state = (ex_state, traj_batch, rng)
-                return update_state, losses
-
             metric["episode_cost"] = mean_episode_cost
-            metric["global_steps"] = global_steps         
+            metric["global_steps"] = global_steps
+            metric["lambda"] = lambda_state.params
 
             # wandb logging
             if config["DEBUG"] and config["USE_WANDB"]:
