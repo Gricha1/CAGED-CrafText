@@ -27,6 +27,7 @@ from typing import Union
 
 from craftext.environment.craftext_wrapper import InstructionWrapper
 from craftext.environment.scenarious.checkers.budget_build_collect import checker_budget_build_collect
+from craftext.environment.scenarious.checkers.dont_move import checker_moveing_at_night_level
 from craftext.environment.scenarious.checkers.drink_level import checker_budget_drink_level
 from craftext.environment.scenarious.checkers.hp_level import checker_budget_hp_level
 from craftext.environment.scenarious.checkers.hungry_level import checker_budget_hungry_level
@@ -85,10 +86,11 @@ class CMDPInstructionWrapper(InstructionWrapper):
         # set cost
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state.env_state, action)
         ts = self.batched_ts.select(env_state.idx)
-        #cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
-        # cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
+
         if self.config_name == "simple_achivments_safe":
             cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
+        elif self.config_name == "achievements_safe_budget_dont_move_night":
+            cost = checker_moveing_at_night_level(game_data_vector, ts.level).astype(float)
         elif self.config_name == "build_squere_simple_safe_budget":
             cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         elif self.config_name == "achievements_safe_budget_drink":
@@ -103,11 +105,6 @@ class CMDPInstructionWrapper(InstructionWrapper):
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
-        
-        
-        
-        #self.episode_cost += info["cost"]
-        #info["episode_cost"] = self.episode_cost
 
         state = TextEnvStateCMDP(
             env_state=state.env_state,

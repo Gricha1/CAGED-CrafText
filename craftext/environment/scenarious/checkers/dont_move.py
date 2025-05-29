@@ -20,7 +20,7 @@ from typing import Union
 # class Action(ActionExtend, ActionClassic):
 #     pass
 
-def checker_budget_drink_level(game_data: Union[GameDataClassic, GameData],  target_state: LightLevelState) -> jax.Array:
+def checker_moveing_at_night_level(game_data: Union[GameDataClassic, GameData],  target_state: LightLevelState) -> jax.Array:
     # raise NotImplementedError("checker_budget_build_collect is not implemented yet")
     light_level = target_state.level
     return is_moveing_at_night(game_data, light_level)

@@ -20,6 +20,8 @@ echo "start dockergpu device: $device"
 echo "start docker name: ggorbov.craftext_$docker_container_idx"
 echo "start docker image: $image_name"
 
+cd ..
+
 # Prepare mount arguments
 mount_args=""
 for item in *; do
@@ -30,8 +32,8 @@ for item in *; do
     mount_args="$mount_args -v $abs_path:/usr/home/workspace/$item"
 done
 
-cd ..
+
 docker run -it --rm --name ggorbov.craftext_$docker_container_idx \
            --gpus "device=$device" --runtime=nvidia -e NVIDIA_DRIVER_CAPABILITIES=compute,utility \
-           $mount_args 
-           \ $image_name "bash"
+           $mount_args \
+           $image_name "bash"
