@@ -45,6 +45,7 @@ crafter_settings in
    achievements_safe_budget_drink,
    achievements_safe_budget_hp,
    achievements_safe_budget_energy,
+   achievements_safe_budget_dont_move_night,
 
 ]
    ```bash
