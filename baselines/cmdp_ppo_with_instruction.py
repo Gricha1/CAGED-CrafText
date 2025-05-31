@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 import time
-
+import pathlib
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -91,7 +91,7 @@ def make_train(config, network_params):
         next_idx = max(indices) + 1 if indices else 0
         new_dir = os.path.join(base_dir, f"{prefix}{next_idx}")
         os.makedirs(new_dir)
-        return new_dir
+        return pathlib.Path(new_dir).absolute()
 
     checkpoint_dir = create_unique_checkpoint_dir()
     config["PATH_TO_CHECKPOINT"] = checkpoint_dir
@@ -865,7 +865,7 @@ if __name__ == "__main__":
         default=256,#1024,
     )
     parser.add_argument(
-        "--total_timesteps", type=lambda x: int(float(x)), default=1250000000 
+        "--total_timesteps", type=lambda x: int(float(x)), default=1_250_000_000
     )  # Allow scientific notation
     parser.add_argument("--save_freq", type=int, default=10) # при env_num=512, сохраняет при 512000, x2, x3, ...
     parser.add_argument("--train_ppo", default=False, action="store_true")
