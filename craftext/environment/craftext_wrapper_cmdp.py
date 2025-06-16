@@ -100,7 +100,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
         elif self.config_name == "achievements_safe_budget_hp":
             cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
         elif self.config_name == "achievements_safe_budget_hungry" or \
-             self.config_name == "achievements_safe_budget_hungry_multi_limit":
+             self.config_name == "achievements_safe_budget_hungry_multi_limit" or \
+             self.config_name == "cmdp_hard_achievements_budget_hungry":
             cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"

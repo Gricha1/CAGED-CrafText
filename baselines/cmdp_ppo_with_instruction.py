@@ -145,7 +145,7 @@ def make_train(config, network_params):
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(learning_rate=linear_schedule, eps=1e-5),
+                #optax.adam(learning_rate=linear_schedule, eps=1e-5),
             )
         else:
             tx = optax.chain(
