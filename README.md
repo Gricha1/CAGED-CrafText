@@ -62,7 +62,7 @@ crafter_settings in
    ```
 
    ```bash
-   python ppo_lag_validation.py --craftext_settings {setting} --env_name="Craftax-Classic-Pixels-v1-Text" --path checkpoints/PPO_LAG/exp_1
+   python ppo_lag_validation.py --craftext_settings {setting} --env_name="Craftax-Classic-Pixels-v1-Text" --path /usr/home/workspace/baselines/checkpoints/PPO_LAG/exp_1
    ```
 
 ## Run the PPO Baseline

@@ -8,6 +8,11 @@ RUN python -m pip install --upgrade pip==24.0
 ADD requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
 
-#RUN pip install "jax[cuda11_cudnn82]==0.4.7" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+RUN pip install seaborn
+
+RUN echo "cd /usr/home/workspace/ && pip install -e ." >> ~/.bashrc
+
+RUN echo "pip install orbax-checkpoint==0.5.7" >> ~/.bashrc
+RUN echo "pip install optax==0.1.9" >> ~/.bashrc
 
 WORKDIR /usr/home/workspace

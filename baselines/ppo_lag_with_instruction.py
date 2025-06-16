@@ -79,7 +79,7 @@ def make_train(config, network_params):
             reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
         )
 
-    def create_unique_checkpoint_dir(base_dir=f"checkpoints/{args.algo_name}", prefix="exp_"):
+    def create_unique_checkpoint_dir(base_dir=f"/usr/home/workspace/baselines/checkpoints/{args.algo_name}", prefix="exp_"):
         os.makedirs(base_dir, exist_ok=True)
         existing = [d for d in os.listdir(base_dir) if d.startswith(prefix) and os.path.isdir(os.path.join(base_dir, d))]
         indices = []
@@ -599,7 +599,6 @@ def make_train(config, network_params):
 def run_ppo(config):
     # Convert config keys to uppercase for consistency
     config = {k.upper(): v for k, v in config.__dict__.items()}
-    base_checkpoint_path = os.path.abspath("./wandb/run-20241119_124727-pa1tyfiy/files/checkpoint_restart_1")
     config["PATH_TO_CHECKPOINT"] = 'None'# base_checkpoint_path  # Initialize with no checkpoint
     base_timestamps = config['TOTAL_TIMESTEPS']
     # Initialize WandB if enabled
@@ -618,7 +617,7 @@ def run_ppo(config):
     rng = jax.random.PRNGKey(config["SEED"])
 
     # Define the number of restarts
-    num_restarts = 5  # Hyperparameter for the number of restarts
+    num_restarts = 1  # Hyperparameter for the number of restarts
     for restart in range(num_restarts):
         print(f"Starting training iteration {restart + 1}/{num_restarts}")
 
@@ -737,7 +736,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_policy", action="store_true")
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)
-    parser.add_argument("--wandb_project", type=str)
+    parser.add_argument("--wandb_project", type=str, default="cmdp_craftext")
     parser.add_argument("--wandb_entity", type=str)
     parser.add_argument(
         "--use_optimistic_resets", default=True
