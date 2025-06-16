@@ -723,7 +723,7 @@ def make_train(config, network_params):
                 print(f"Saving weights at step {current_step}")
                 save_args = orbax_utils.save_args_from_target(train_state)
                 checkpoint_manager.save(
-                    current_step,
+                    int(current_step),
                     {"train_state": train_state},
                     save_kwargs={"save_args": {"train_state": save_args}},
                 )
@@ -892,7 +892,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_policy", action="store_true")
     parser.add_argument("--num_repeats", type=int, default=1)
     parser.add_argument("--layer_size", type=int, default=512)
-    parser.add_argument("--wandb_project", type=str)
+    parser.add_argument("--wandb_project", type=str, default="cmdp_craftext")
     parser.add_argument("--wandb_entity", type=str)
     parser.add_argument(
         "--use_optimistic_resets", default=True

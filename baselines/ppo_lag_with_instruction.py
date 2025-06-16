@@ -149,7 +149,7 @@ def make_train(config, network_params):
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                optax.adam(learning_rate=linear_schedule, eps=1e-5),
+                #optax.adam(learning_rate=linear_schedule, eps=1e-5),
             )
         else:
             tx = optax.chain(
@@ -566,7 +566,7 @@ def make_train(config, network_params):
                 print(f"Saving weights at step {current_step}")
                 save_args = orbax_utils.save_args_from_target(train_state)
                 checkpoint_manager.save(
-                    current_step,
+                    int(current_step),
                     {"train_state": train_state},
                     save_kwargs={"save_args": {"train_state": save_args}},
                 )
