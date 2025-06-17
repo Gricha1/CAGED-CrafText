@@ -79,7 +79,7 @@ def make_train(config, network_params):
             reset_ratio=min(config["OPTIMISTIC_RESET_RATIO"], config["NUM_ENVS"]),
         )
 
-    def create_unique_checkpoint_dir(base_dir=f"/usr/home/workspace/baselines/checkpoints/{args.algo_name}", prefix="exp_"):
+    def create_unique_checkpoint_dir(base_dir=f"{args.dir_path}/baselines/checkpoints/{args.algo_name}", prefix="exp_"):
         os.makedirs(base_dir, exist_ok=True)
         existing = [d for d in os.listdir(base_dir) if d.startswith(prefix) and os.path.isdir(os.path.join(base_dir, d))]
         indices = []
@@ -693,6 +693,7 @@ def run_ppo(config):
 if __name__ == "__main__":
     #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
+    parser.add_argument("--dir_path", type=str, default="/usr/home/workspace")
     parser.add_argument("--algo_name", type=str, default="PPO_LAG")
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
     parser.add_argument("--craftext_settings", type=str, default=None)
