@@ -149,7 +149,7 @@ def make_train(config, network_params):
         if config["ANNEAL_LR"]:
             tx = optax.chain(
                 optax.clip_by_global_norm(config["MAX_GRAD_NORM"]),
-                #optax.adam(learning_rate=linear_schedule, eps=1e-5),
+                optax.adam(learning_rate=linear_schedule, eps=1e-5) if not config["NO_LR_SCHEDULING"] else optax.adam(learning_rate=config["LR"], eps=1e-5),
             )
         else:
             tx = optax.chain(
@@ -708,6 +708,7 @@ if __name__ == "__main__":
 
     # PPO
     parser.add_argument("--lr", type=float, default=2e-4)
+    parser.add_argument("--no_lr_scheduling", action="store_true", default=False)
     parser.add_argument("--num_steps", type=int, default=100)
     parser.add_argument("--update_epochs", type=int, default=4)
     parser.add_argument("--num_minibatches", type=int, default=8)
