@@ -30,12 +30,10 @@ def is_sleep_at_night(game_data: Union[GameDataClassic, GameData], night, day):
     is_dark_enough = light_level < threshold
     
 
-
-
-    # Проверяем условия:
+    # day
     threshold = day
     is_light_ebove = light_level > threshold
 
-    return jnp.logical_not(jnp.logical_and(is_dark_enough, is_sleep)) | (jnp.logical_and(is_light_ebove, is_sleep))
+    return jnp.logical_and(is_dark_enough, jnp.logical_not(is_sleep)) | (jnp.logical_and(is_light_ebove, is_sleep))
     
 
