@@ -28,6 +28,7 @@ from typing import Union
 from craftext.environment.craftext_wrapper import InstructionWrapper
 from craftext.environment.scenarious.checkers.budget_build_collect import checker_budget_build_collect
 from craftext.environment.scenarious.checkers.dont_move import checker_moveing_at_night_level
+from craftext.environment.scenarious.checkers.sleep_at_night import checker_sleep_at_night
 from craftext.environment.scenarious.checkers.drink_level import checker_budget_drink_level
 from craftext.environment.scenarious.checkers.hp_level import checker_budget_hp_level
 from craftext.environment.scenarious.checkers.hungry_level import checker_budget_hungry_level
@@ -90,7 +91,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
         if self.config_name == "simple_achivments_safe":
             cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
         elif self.config_name == "achievements_safe_budget_dont_move_night":
-            cost = checker_moveing_at_night_level(game_data_vector, ts.level).astype(float)
+            cost = checker_moveing_at_night_level(game_data_vector, ts.night_constraint_level).astype(float)
         elif self.config_name == "build_squere_simple_safe_budget":
             cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         elif self.config_name == "achievements_safe_budget_drink":
@@ -103,6 +104,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
              self.config_name == "achievements_safe_budget_hungry_multi_limit" or \
              self.config_name == "cmdp_hard_achievements_budget_hungry":
             cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
+        elif self.config_name == "achievements_safe_budget_sleep_at_night":
+            cost = checker_sleep_at_night(game_data_vector, ts.night_constraint_level, ts.day_constraint_level).astype(float)
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
