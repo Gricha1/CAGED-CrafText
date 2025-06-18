@@ -2,10 +2,10 @@
 from craftext.environment.scenarious.checkers.target_state import Achievements
 from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState, BlockType
 # from craftext.environment.scenarious.checkers.target_state_cmdp import StepOnBlock, CMDPTargetState
-from craftext.environment.scenarious.checkers.target_state_light_level import CMDPTargetState, LightLevelState
+from craftext.environment.scenarious.checkers.target_state_cmdp_night_light import CMDPTargetState, LightLevelState
 
 
-def create_target_state(required=[], forbidden=[], level:int=0):
+def create_target_state(required=[], forbidden=[], night: float = 0):
     base_vector = [AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]
     for i in range(len(base_vector)):
         if i in required:
@@ -14,10 +14,10 @@ def create_target_state(required=[], forbidden=[], level:int=0):
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
     # step_on_block = StepOnBlock(block_type=block_type)
-    level = LightLevelState(level=level)
-    return CMDPTargetState(achievements=target_achievements, level=level)
+    night_level_state = LightLevelState(level=night)
+    return CMDPTargetState(achievements=target_achievements, night_constraint_level=night_level_state)
 
-min_light_level = 5
+min_light_level = .2
 
 easy = { 
   
@@ -36,7 +36,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.EAT_COW],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "COLLECT_SAPLING": {
@@ -53,7 +53,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "COLLECT_DRINK": {
@@ -70,7 +70,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "MAKE_WOOD_PICKAXE": {
@@ -87,7 +87,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "MAKE_WOOD_SWORD": {
@@ -104,7 +104,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "PLACE_PLANT": {
@@ -121,7 +121,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "DEFEAT_ZOMBIE": {
@@ -138,7 +138,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "COLLECT_STONE": {
@@ -155,7 +155,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "PLACE_STONE": {
@@ -172,7 +172,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "EAT_PLANT": {
@@ -189,7 +189,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "DEFEAT_SKELETON": {
@@ -206,7 +206,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "MAKE_STONE_PICKAXE": {
@@ -223,7 +223,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "PLACE_FURNACE": {
@@ -240,7 +240,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "COLLECT_COAL": {
@@ -257,7 +257,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "COLLECT_IRON": {
@@ -274,7 +274,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   
@@ -292,7 +292,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
   "MAKE_IRON_SWORD": {
@@ -309,7 +309,7 @@ easy = {
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   }
 }
@@ -329,7 +329,7 @@ medium = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DIAMOND],
           forbidden=[],
-          level=min_light_level
+          night=min_light_level
       )
   },
 }

@@ -10,8 +10,7 @@ from typing import Union
 from craftext.environment.states.state import GameData
 from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.environment.scenarious.checkers.target_state_light_level import LightLevelState
-from craftext.environment.craftext_constants import BlockType
+from craftext.environment.scenarious.checkers.target_state_cmdp_night_light import LightLevelState
 
 from craftax.craftax.constants import Action as ActionExtend
 from craftax.craftax_classic.constants import Action as ActionClassic
@@ -25,12 +24,12 @@ def checker_moveing_at_night_level(game_data: Union[GameDataClassic, GameData], 
     light_level = target_state.level
     return is_moveing_at_night(game_data, light_level)
 
-def is_moveing_at_night(game_data: Union[GameDataClassic, GameData], light_level):
+def is_moveing_at_night(game_data: Union[GameDataClassic, GameData], night):
     action = game_data.states[0].action               # jax.Array с целочисленным кодом действия
     light_level = game_data.states[0].variables.light_level  # jax.Array с уровнем освещённости
 
     # Порог из целевого состояния:
-    threshold = light_level                     # число или jax.Array
+    threshold = night                     # число или jax.Array
 
     # Допустимые коды действий:
     allowed = jnp.array([
@@ -38,7 +37,6 @@ def is_moveing_at_night(game_data: Union[GameDataClassic, GameData], light_level
         ActionClassic.DOWN.value,
         ActionClassic.LEFT.value,
         ActionClassic.RIGHT.value,
-        ActionClassic.DO.value
     ], dtype=int)
 
     # Проверяем условия:
