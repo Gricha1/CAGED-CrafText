@@ -19,6 +19,7 @@ class PlayerVariables:
     light_level: float
     state_rng: jax.Array
     timestep: int
+    light_level: jax.Array 
     
 @struct.dataclass
 class PlayerAchievements:

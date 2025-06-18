@@ -13,7 +13,7 @@ class PlayerVariables:
     # player_drink: int 
     # player_energy: int 
     # player_mana: int
-    # is_sleeping: bool 
+    is_sleeping: bool 
     # is_resting: bool 
     # player_recover: float 
     # player_hunger: float 
