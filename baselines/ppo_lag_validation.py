@@ -41,6 +41,12 @@ from models.actor_critic_with_text import (
 import imageio
 from craftax.craftax_env import make_craftax_env_from_name
 
+import re
+
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import textwrap
+
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 try:
@@ -202,6 +208,7 @@ def main(args):
     network_params = network.init(_rng, init_x, encoded_instruction, encoded_constraint)
 
     num_tasks = len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list)
+    #num_tasks = 3
     tasks_ids = list(range(0, num_tasks))
     #tasks_ids = list(range(0, 2))
     print("tasks num:", len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list))
@@ -268,75 +275,200 @@ def main(args):
             "animation": wandb.Video(f"animation/{ix}_{gif_name}_{task_id}.gif", fps=10, format="gif")
         })
 
+    # Эмодзи-мап (оставляем как было)
+    emoji_map = {
+        "cow": "🐄", "beef": "🥩", "meat": "🥩", "plant": "🌱", "sapling": "🌿",
+        "zombie": "🧟", "skeleton": "💀", "stone": "🪨", "furnace": "🔥",
+        "coal": "🧱", "iron": "⛓️", "diamond": "💎", "sword": "🗡️",
+        "pickaxe": "⛏️", "drink": "🥤", "satiety": "🍽️", "hunger": "😋", "wooden": "🪵"
+    }
 
-    # Texts
-    fig, ax = plt.subplots(figsize=(12, len(task_metrics)*1.2))
-    ax.axis('off')
+    # Новые функции для компактного отображения
+    def simplify_text(text):
+        """Сокращает текст инструкций и ограничений до минимальной формы"""
+        replacements = [
+            (r"(?i)eat (a|an|the) (\w+)", r"Eat \2"),
+            (r"(?i)you must maintain (?:your )?(\w+) level (?:at or )?above (\d+)", r"\1 >= \2"),
+            (r"(?i)you must maintain (?:your )?(\w+) level", r"\1"),
+            (r"(?i)level must remain (?:at or )?above (\d+)", r">= \1"),
+            (r"(?i)(?:collect|gather) (?:a|an|\d+) (\w+)", r"Get \1"),
+            (r"(?i)craft (?:a|an) (?:wooden|iron|golden) (\w+)", r"Make \1"),
+            (r"(?i)do not let (\w+) fall below (\d+)", r"\1 >= \2"),
+            (r"(?i)keep (\w+) above (\d+)", r"\1 >= \2")
+        ]
+        for pattern, repl in replacements:  # Убрали .items() для списка
+            text = re.sub(pattern, repl, text)
+    
+        # Дополнительная обработка для стандартизации
+        text = text.replace("get", "Get").replace("make", "Make")
+        return text.strip()
 
-    text_lines = []
-    for i in range(len(task_metrics)):
-        instr_wrapped = "\n".join(textwrap.wrap(task_metrics[i]['instruction'], width=70))
-        constraint_wrapped = "\n".join(textwrap.wrap(task_metrics[i]['constraint'], width=70))
-        text_lines.append(
-            f"Task {task_metrics[i]['task_id']}:\nInstruction: {instr_wrapped}\nConstraint: {constraint_wrapped}\n"
-        )
+    def emojify_compact(text):
+        """Заменяет ключевые слова на эмодзи"""
+        for word, emoji in emoji_map.items():
+            text = re.sub(rf"\b{word}\b", emoji, text, flags=re.IGNORECASE)
+        return text
 
-    full_text = "\n\n".join(text_lines)
-    ax.text(0, 1, full_text, fontsize=9, verticalalignment='top', family='monospace')
+    # ===== НАЧАЛО НОВОГО КОДА ВИЗУАЛИЗАЦИИ =====
+    # Подготовка данных
+    tasks = [f"Task {i+1}" for i in range(len(task_metrics))]
+    costs = [item['cost'] for item in task_metrics]
+    success_rates = [item['success_rate'] for item in task_metrics]
 
-    text_path = "task_descriptions.png"
-    plt.tight_layout()
-    plt.savefig(text_path, dpi=150)
-    plt.close()
+    # Создаем фигуру
+    fig = go.Figure()
+
+    # Добавляем основной bar для cost с цветом по success rate
+    fig.add_trace(go.Bar(
+        x=tasks,
+        y=costs,
+        name='Cost',
+        marker=dict(
+            color=success_rates,
+            colorscale='Viridis',
+            cmin=0,
+            cmax=1,
+            colorbar=dict(title='Success Rate'),
+            line=dict(width=1, color='DarkSlateGrey')
+        ),
+        text=[f"Cost: {c:.1f}<br>Success: {s:.2f}" for c, s in zip(costs, success_rates)],
+        textposition='auto',
+        width=0.6
+    ))
+
+    # Добавляем горизонтальную линию на y=5
+    fig.add_hline(
+        y=5,
+        line=dict(color="red", width=2, dash="dash"),
+        annotation_text="Target=5", 
+        annotation_position="top right"
+    )
+
+    # Настройка layout
+    fig.update_layout(
+        title="Task Metrics: Cost (colored by Success Rate)",
+        xaxis_title="Tasks",
+        yaxis_title="Cost Value",
+        height=600,
+        width=max(800, len(tasks) * 120),
+        font=dict(size=12),
+        margin=dict(b=150, l=50, r=50, t=80)
+    )
+
+    # Обновляем подписи с эмодзи
+    fig.update_xaxes(
+        tickvals=tasks,
+        ticktext=[f"{emojify_compact(simplify_text(item['instruction']))}, {emojify_compact(simplify_text(item['constraint']))}" 
+                 for item in task_metrics],
+        tickangle=-45
+    )
+
+    # Сохраняем и логируем
+    plot_path = "task_metrics_cost_heatmap.html"
+    fig.write_html(plot_path)
+    fig.write_image("task_metrics_cost_heatmap.png")
 
     wandb.log({
-        "task_descriptions": wandb.Image(text_path)
+        "task_metrics_plot": wandb.Image("task_metrics_cost_heatmap.png"),
+        "interactive_metrics": wandb.Html(open(plot_path))
     })
 
-    # Bars
+    """
+    # Подготовка данных
     x = list(range(len(task_metrics)))
     rewards = [item['reward'] for item in task_metrics]
     costs = [item['cost'] for item in task_metrics]
     success_rates = [item['success_rate'] for item in task_metrics]
 
-    # Barplot
-    fig, ax1 = plt.subplots(figsize=(max(12, len(x) * 0.7), 6))
-    bar_width = 0.25
+    # Создаем компактные подписи в одну строку через запятую
+    labels = []
+    for item in task_metrics:
+        short_instr = simplify_text(item['instruction'])
+        short_const = simplify_text(item['constraint'])
+        emoji_instr = emojify_compact(short_instr)
+        emoji_const = emojify_compact(short_const)
+        
+        # Форматируем с увеличенными эмодзи и текстом
+        labels.append(
+            f"<span style='font-size:14px'>{emoji_instr}, <b>{emoji_const}</b></span>"
+        )
 
-    # Отрисовка баров
-    ax1.bar([i - bar_width for i in x], rewards, width=bar_width, label='Reward', color=colors['reward'])
-    ax1.bar(x, costs, width=bar_width, label='Cost', color=colors['cost'])
-    ax1.bar([i + bar_width for i in x], success_rates, width=bar_width, label='Success Rate', color=colors['success_rate'])
+    # Создаем фигуру
+    fig = go.Figure()
 
-    # Подписи над столбцами
-    for i in range(len(x)):
-        ax1.text(i - bar_width, rewards[i] + 0.05, f"{rewards[i]:.1f}", ha='center', fontsize=8)
-        ax1.text(i, costs[i] + 0.05, f"{costs[i]:.1f}", ha='center', fontsize=8)
-        ax1.text(i + bar_width, success_rates[i] + 0.05, f"{success_rates[i]:.1f}", ha='center', fontsize=8)
+    # Добавляем столбцы для каждой метрики (оставляем без изменений)
+    fig.add_trace(go.Bar(
+        x=x,
+        y=rewards,
+        name='Reward',
+        marker_color=colors['reward'],
+        offset=-0.25,
+        text=[f"{r:.1f}" for r in rewards],
+        textposition='auto'
+    ))
 
-    # Настройка осей
-    ax1.set_xticks(x)
-    ax1.set_xticklabels([str(item['task_id']) for item in task_metrics], rotation=0)
-    ax1.set_ylabel("Value")
-    ax1.set_xlabel("Task ID")
-    ax1.set_title("Task Metrics Overview")
-    ax1.legend()
-    plt.tight_layout()
+    fig.add_trace(go.Bar(
+        x=x,
+        y=costs,
+        name='Cost',
+        marker_color=colors['cost'],
+        text=[f"{c:.1f}" for c in costs],
+        textposition='auto'
+    ))
 
-    # Сохраняем
-    plot_path = "task_metrics_barplot.png"
-    plt.savefig(plot_path, dpi=200)
-    plt.close()
+    fig.add_trace(go.Bar(
+        x=x,
+        y=success_rates,
+        name='Success Rate',
+        marker_color=colors['success_rate'],
+        offset=0.25,
+        text=[f"{s:.1f}" for s in success_rates],
+        textposition='auto'
+    ))
+
+    # Обновляем layout с компактными подписями
+    fig.update_layout(
+        xaxis=dict(
+            tickmode='array',
+            tickvals=x,
+            ticktext=labels,
+            tickangle=-30,  # Оптимальный угол для читаемости
+            title="Task Info",
+            tickfont=dict(size=12)  # Увеличиваем основной шрифт
+        ),
+        yaxis=dict(title="Value"),
+        barmode='group',
+        bargap=0.15,
+        bargroupgap=0.1,
+        height=700,  # Увеличили высоту
+        width=max(900, len(x) * 120),  # Увеличили ширину
+        font=dict(
+            family="Noto Color Emoji, Segoe UI Emoji, Apple Color Emoji, Arial",
+            size=12
+        ),
+        margin=dict(b=150, l=50, r=50, t=80),  # Увеличили отступы
+        uniformtext_minsize=12,  # Минимальный размер текста
+        uniformtext_mode='hide'  # Автоматически скрывать слишком длинный текст
+    )
+
+    # Дополнительные улучшения для столбцов
+    fig.update_traces(
+        textfont_size=12,  # Размер текста на столбцах
+        textposition='outside',
+        marker_line_width=0.5,
+        marker_line_color='white'
+    )
+
+    # Сохраняем и логируем (оставляем без изменений)
+    plot_path = "task_metrics_barplot_plotly.html"
+    fig.write_html(plot_path)
+    fig.write_image("task_metrics_barplot_plotly.png")
 
     wandb.log({
-        "task_metrics_barplot": wandb.Image(plot_path)
+        "task_metrics_barplot": wandb.Image("task_metrics_barplot_plotly.png"),
+        "interactive_plot": wandb.Html(open(plot_path))
     })
-
-
-def print_new_achievements(achievements_cls, old_achievements, new_achievements):
-    for i in range(len(old_achievements)):
-        if old_achievements[i] == 0 and new_achievements[i] == 1:
-            print(f"{achievements_cls(i).name} ({new_achievements.sum()}/{22})")
+    """
 
 
 if __name__ == "__main__":
