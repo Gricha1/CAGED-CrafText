@@ -19,7 +19,7 @@ def checker_budget_hungry_level(game_data: Union[GameDataClassic, GameData],  ta
     return level_status(game_data, level)
 
 def level_status(game_data: Union[GameDataClassic, GameData], level: int):
-    current_level = game_data.states[0].variables.player_hunger
+    current_level = game_data.states[0].variables.player_food
 
     # def get_item(index, inventory):
     #     leaves, _ = tree_util.tree_flatten(inventory)
