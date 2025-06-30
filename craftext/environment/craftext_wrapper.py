@@ -129,7 +129,7 @@ class InstructionWrapper(Wrapper):
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state, action)
                     
         ts = self.batched_ts.select(env_state.idx)
-        print(ts)
+        #print(ts)
         instruction_done = generic_check(game_data_vector, ts, env_state.checker_id)
         
         # If EXPLORE mode - give craftAx reward
