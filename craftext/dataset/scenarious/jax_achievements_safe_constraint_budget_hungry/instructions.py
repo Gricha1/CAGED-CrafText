@@ -16,7 +16,7 @@ def create_target_state(required=[], forbidden=[], level:int=0):
     level = HungryLevelState(level=level)
     return CMDPTargetState(achievements=target_achievements, hungry_level_state=level)
 
-min_satiety_level = 5
+min_satiety_level = 8
 
 easy = { 
   
