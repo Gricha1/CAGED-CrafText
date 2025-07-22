@@ -96,6 +96,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
             cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         elif self.config_name == "achievements_safe_budget_drink":
             cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
+        elif self.config_name == "achievements_easy_safe_budget_drink":
+            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
         elif self.config_name == "achievements_safe_budget_energy":
             cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state).astype(float)
         elif self.config_name == "achievements_safe_budget_hp":
