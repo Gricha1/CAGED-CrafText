@@ -2,7 +2,7 @@ import time
 
 import jax.numpy as jnp
 import numpy as np
-import wandb
+#import wandb
 
 batch_logs = {}
 log_times = []
@@ -40,7 +40,7 @@ def create_log_dict(info, config):
     return to_log
 
 
-def batch_log(update_step, log, config):
+def batch_log(update_step, log, config, experiment=None):
     update_step = int(update_step)
     if update_step not in batch_logs:
         batch_logs[update_step] = []
@@ -86,4 +86,5 @@ def batch_log(update_step, log, config):
                 sps = steps_between_updates / dt
                 agg_logs["sps"] = sps
 
-        wandb.log(agg_logs)
+        #wandb.log(agg_logs)
+        experiment.log_metrics(agg_logs)

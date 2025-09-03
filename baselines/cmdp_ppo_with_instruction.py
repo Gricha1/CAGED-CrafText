@@ -9,7 +9,8 @@ import numpy as np
 import optax
 from craftax.craftax_env import make_craftax_env_from_name
 
-import wandb
+#import wandb
+import comet_ml
 from typing import NamedTuple
 
 from flax.training import orbax_utils
@@ -54,7 +55,7 @@ class Transition(NamedTuple):
     textual_constraint: jnp.ndarray
 
 
-def make_train(config, network_params):
+def make_train(config, network_params, experiment=None):
     config["NUM_UPDATES"] = (
         config["TOTAL_TIMESTEPS"] // config["NUM_STEPS"] // config["NUM_ENVS"]
     )
@@ -101,7 +102,8 @@ def make_train(config, network_params):
         orbax_checkpointer,
         CheckpointManagerOptions(max_to_keep=2),
     )
-    wandb.config.update({"PATH_TO_CHECKPOINT": checkpoint_dir}, allow_val_change=True)
+    #wandb.config.update({"PATH_TO_CHECKPOINT": checkpoint_dir}, allow_val_change=True)
+    experiment.log_parameter("PATH_TO_CHECKPOINT", checkpoint_dir)
    
 
     def linear_schedule(count):
@@ -685,7 +687,7 @@ def make_train(config, network_params):
 
                 def callback(metric, update_step):
                     to_log = create_log_dict(metric, config)
-                    batch_log(update_step, to_log, config)
+                    batch_log(update_step, to_log, config, experiment)
 
                 jax.debug.callback(
                     callback,
@@ -765,16 +767,20 @@ def run_ppo(config):
     config["PATH_TO_CHECKPOINT"] = 'None'# base_checkpoint_path  # Initialize with no checkpoint
     base_timestamps = config['TOTAL_TIMESTEPS']
     # Initialize WandB if enabled
-    if config["USE_WANDB"]:
-        wandb.init(
-            project=config["WANDB_PROJECT"],
-            entity=config["WANDB_ENTITY"],
-            config=config,
-            name=config["ENV_NAME"]
-            + "-"
-            + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
-            + "M",
-        )
+    #if config["USE_WANDB"]:
+    #    wandb.init(
+    #        project=config["WANDB_PROJECT"],
+    #        entity=config["WANDB_ENTITY"],
+    #        config=config,
+    #        name=config["ENV_NAME"]
+    #        + "-"
+    #        + str(int(config["TOTAL_TIMESTEPS"] // 1e6))
+    #        + "M",
+    #    )
+    if config["USE_COMET"]:
+        comet_ml.login()
+        experiment = comet_ml.start(project_name="ppo_lag_craftext")
+        experiment.log_parameters(config)
 
     # Initialize random keys
     rng = jax.random.PRNGKey(config["SEED"])
@@ -813,7 +819,7 @@ def run_ppo(config):
         rng, current_rng = jax.random.split(rng)
 
         # Prepare the training function
-        train_jit = jax.jit(make_train(config, network_params))
+        train_jit = jax.jit(make_train(config, network_params, experiment))
 
         # Run the training
         t0 = time.time()
@@ -889,6 +895,9 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int)
     parser.add_argument(
         "--use_wandb", default=True
+    )
+    parser.add_argument(
+        "--use_comet", default=True
     )
     parser.add_argument("--save_policy", action="store_true")
     parser.add_argument("--num_repeats", type=int, default=1)
