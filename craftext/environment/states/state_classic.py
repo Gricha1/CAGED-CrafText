@@ -2,6 +2,7 @@ from typing import List, Tuple, Optional, Union
 import jax.numpy as jnp
 from flax import struct
 import jax
+from craftax.craftax_classic.envs.craftax_state import Mobs
 
 @struct.dataclass
 class PlayerVariables:
@@ -66,6 +67,8 @@ class PlayerState:
     inventory: PlayerInventory
     map: GameMap
     action: int
+    zombies: Mobs
+    skeletons: Mobs
 
     @classmethod
     def from_state(cls, state, action):
@@ -119,13 +122,17 @@ class PlayerState:
         game_map = GameMap(
             game_map=jnp.array(state.map) if hasattr(state, 'map') else None
         )
+        zombies = state.zombies
+        skeletons = state.skeletons
 
         return cls(
             variables=variables,
             achievements=achievements,
             inventory=inventory,
             map=game_map,
-            action=action
+            action=action,
+            zombies=zombies,
+            skeletons=skeletons
         )
 
 @struct.dataclass

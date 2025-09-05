@@ -115,12 +115,14 @@ pip install -e . --no-deps
 # setup wandb
 export WANDB_MODE="online"  # или "offline" если не хотите логировать
 export WANDB_API_KEY=""  # Ваш API ключ
+export COMET_API_KEY="3OfuYHwcRgIwG7DzgzJ190igY"
 
 #python test_python.py
 # run experiment
 pip show gymnax
 pip show jax
 pip show jaxlib
+pip install comet_ml
 
 echo "*********************"
 conda info --envs | grep '*'
@@ -129,7 +131,7 @@ echo "*********************"
 nvidia-smi
 cd baselines
 echo "start training"
-python ppo_lag_with_instruction.py --craftext_settings achievements_safe_budget_hungry --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=1024 \
+python cmdp_ppo_with_instruction.py --craftext_settings achievements_safe_sequential_defeat_monster --env_name="Craftax-Classic-Pixels-v1-Text" --num_envs=512 \
        --dir_path /home/ggorbov/craftext/CrafText
 #nvidia-smi
 #python docker/test_python.py
