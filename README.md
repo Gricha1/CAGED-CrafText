@@ -38,6 +38,7 @@ crafter_settings in
    achievements_safe_budget_energy,
    achievements_safe_budget_dont_move_night,
    cmdp_hard_achievements_budget_hungry,
+   achievements_safe_sequential_defeat_monster,
 
 ]
 

@@ -13,6 +13,7 @@ import pygame
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
+import comet_ml
 from craftax.craftax.renderer import render_craftax_pixels as render
 from craftax.craftax_classic.renderer import render_craftax_pixels as render_classic
 from craftax.craftax.constants import (
@@ -134,7 +135,12 @@ class CraftaxRenderer:
 
 def main(args):
     
-    wandb.init(project="craftext_ppo_validation", name="validation_ppo", mode="online")  # или mode="disabled" для оффлайн
+    if config["USE_COMET"]:
+        comet_ml.login()
+        experiment = comet_ml.start(project_name="ppo_lag_craftext")
+        experiment.log_parameters(config)
+    if config["USE_WANDB"]:
+        wandb.init(project="craftext_ppo_validation", name="validation_ppo", mode="online")  # или mode="disabled" для оффлайн
 
     # folder for animation
     animation_dir = "animation"
@@ -208,7 +214,7 @@ def main(args):
     network_params = network.init(_rng, init_x, encoded_instruction, encoded_constraint)
 
     num_tasks = len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list)
-    #num_tasks = 3
+    #num_tasks = 2
     tasks_ids = list(range(0, num_tasks))
     #tasks_ids = list(range(0, 2))
     print("tasks num:", len(env.scenario_handler.scenario_data_jax.constraints_embeddings_list))
@@ -270,10 +276,10 @@ def main(args):
                 text = f"Step {i}, Instruction: {instruction} \n Constrain: {textual_constraint}"
                 image_with_text = add_text_to_image(image, text)
                 writer.append_data(image_with_text.astype(np.uint8))
-
-        wandb.log({
-            "animation": wandb.Video(f"animation/{ix}_{gif_name}_{task_id}.gif", fps=10, format="gif")
-        })
+        if config["USE_WANDB"]:
+            wandb.log({
+                "animation": wandb.Video(f"animation/{ix}_{gif_name}_{task_id}.gif", fps=10, format="gif")
+            })
 
     # Эмодзи-мап (оставляем как было)
     emoji_map = {
@@ -368,107 +374,11 @@ def main(args):
     fig.write_html(plot_path)
     fig.write_image("task_metrics_cost_heatmap.png")
 
-    wandb.log({
-        "task_metrics_plot": wandb.Image("task_metrics_cost_heatmap.png"),
-        "interactive_metrics": wandb.Html(open(plot_path))
-    })
-
-    """
-    # Подготовка данных
-    x = list(range(len(task_metrics)))
-    rewards = [item['reward'] for item in task_metrics]
-    costs = [item['cost'] for item in task_metrics]
-    success_rates = [item['success_rate'] for item in task_metrics]
-
-    # Создаем компактные подписи в одну строку через запятую
-    labels = []
-    for item in task_metrics:
-        short_instr = simplify_text(item['instruction'])
-        short_const = simplify_text(item['constraint'])
-        emoji_instr = emojify_compact(short_instr)
-        emoji_const = emojify_compact(short_const)
-        
-        # Форматируем с увеличенными эмодзи и текстом
-        labels.append(
-            f"<span style='font-size:14px'>{emoji_instr}, <b>{emoji_const}</b></span>"
-        )
-
-    # Создаем фигуру
-    fig = go.Figure()
-
-    # Добавляем столбцы для каждой метрики (оставляем без изменений)
-    fig.add_trace(go.Bar(
-        x=x,
-        y=rewards,
-        name='Reward',
-        marker_color=colors['reward'],
-        offset=-0.25,
-        text=[f"{r:.1f}" for r in rewards],
-        textposition='auto'
-    ))
-
-    fig.add_trace(go.Bar(
-        x=x,
-        y=costs,
-        name='Cost',
-        marker_color=colors['cost'],
-        text=[f"{c:.1f}" for c in costs],
-        textposition='auto'
-    ))
-
-    fig.add_trace(go.Bar(
-        x=x,
-        y=success_rates,
-        name='Success Rate',
-        marker_color=colors['success_rate'],
-        offset=0.25,
-        text=[f"{s:.1f}" for s in success_rates],
-        textposition='auto'
-    ))
-
-    # Обновляем layout с компактными подписями
-    fig.update_layout(
-        xaxis=dict(
-            tickmode='array',
-            tickvals=x,
-            ticktext=labels,
-            tickangle=-30,  # Оптимальный угол для читаемости
-            title="Task Info",
-            tickfont=dict(size=12)  # Увеличиваем основной шрифт
-        ),
-        yaxis=dict(title="Value"),
-        barmode='group',
-        bargap=0.15,
-        bargroupgap=0.1,
-        height=700,  # Увеличили высоту
-        width=max(900, len(x) * 120),  # Увеличили ширину
-        font=dict(
-            family="Noto Color Emoji, Segoe UI Emoji, Apple Color Emoji, Arial",
-            size=12
-        ),
-        margin=dict(b=150, l=50, r=50, t=80),  # Увеличили отступы
-        uniformtext_minsize=12,  # Минимальный размер текста
-        uniformtext_mode='hide'  # Автоматически скрывать слишком длинный текст
-    )
-
-    # Дополнительные улучшения для столбцов
-    fig.update_traces(
-        textfont_size=12,  # Размер текста на столбцах
-        textposition='outside',
-        marker_line_width=0.5,
-        marker_line_color='white'
-    )
-
-    # Сохраняем и логируем (оставляем без изменений)
-    plot_path = "task_metrics_barplot_plotly.html"
-    fig.write_html(plot_path)
-    fig.write_image("task_metrics_barplot_plotly.png")
-
-    wandb.log({
-        "task_metrics_barplot": wandb.Image("task_metrics_barplot_plotly.png"),
-        "interactive_plot": wandb.Html(open(plot_path))
-    })
-    """
+    if config["USE_WANDB"]:
+        wandb.log({
+            "task_metrics_plot": wandb.Image("task_metrics_cost_heatmap.png"),
+            "interactive_metrics": wandb.Html(open(plot_path))
+        })
 
 
 if __name__ == "__main__":
@@ -477,6 +387,12 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
+    parser.add_argument(
+        "--use_wandb", default=False
+    )
+    parser.add_argument(
+        "--use_comet", default=True
+    )
 
     args, rest_args = parser.parse_known_args(sys.argv[1:])
     if rest_args:
