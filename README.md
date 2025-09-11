@@ -39,7 +39,8 @@ crafter_settings in
    achievements_safe_budget_dont_move_night,
    cmdp_hard_achievements_budget_hungry,
    achievements_safe_sequential_defeat_monster,
-
+   achievements_safe_sequential_dont_sleep_near_monsters,
+   achievements_safe_sequential_away_monsters_when_hp
 ]
 
 ### Run the PPO in CMDP

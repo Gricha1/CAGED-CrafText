@@ -30,6 +30,8 @@ from craftext.environment.scenarious.checkers.budget_build_collect import checke
 from craftext.environment.scenarious.checkers.dont_move import checker_moveing_at_night_level
 from craftext.environment.scenarious.checkers.sleep_at_night import checker_sleep_at_night
 from craftext.environment.scenarious.checkers.monster_is_attacked_without_sword import checker_monster_is_attacked_without_sword
+from craftext.environment.scenarious.checkers.away_from_monsters_when_hp_low import checker_away_from_monsters_when_hp_low
+from craftext.environment.scenarious.checkers.dont_sleep_near_monsters import checker_dont_sleep_near_monsters
 from craftext.environment.scenarious.checkers.drink_level import checker_budget_drink_level
 from craftext.environment.scenarious.checkers.hp_level import checker_budget_hp_level
 from craftext.environment.scenarious.checkers.hungry_level import checker_budget_hungry_level
@@ -112,8 +114,11 @@ class CMDPInstructionWrapper(InstructionWrapper):
             cost = checker_sleep_at_night(game_data_vector, ts.night_constraint_level, ts.day_constraint_level).astype(float)
         # sequential
         elif self.config_name == "achievements_safe_sequential_defeat_monster":
-            #assert 1 == 0
             cost = checker_monster_is_attacked_without_sword(game_data_vector).astype(float)
+        elif self.config_name == "achievements_safe_sequential_dont_sleep_near_monsters":
+            cost = checker_dont_sleep_near_monsters(game_data_vector).astype(float)
+        elif self.config_name == "achievements_safe_sequential_away_monsters_when_hp":
+            cost = checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
