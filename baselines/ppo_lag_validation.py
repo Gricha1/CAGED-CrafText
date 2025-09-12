@@ -64,8 +64,45 @@ colors = {
 }
 
 
+def add_text_to_image(image, text, right_text=None):
+    """Add text to an image - left side and right side."""
+    # Обработка основного текста (слева)
+    text_to_list = text.split()
+    left_text = ""
+    for i in range(0, len(text_to_list), 6):
+        left_text += " ".join(text_to_list[i:i+6])
+        left_text += "\n"
+    
+    # Создаем основное изображение
+    img_pil = Image.fromarray(image.astype(np.uint8))
+    
+    # Определяем размеры для правого текста
+    right_text_width = 200  # Ширина области для правого текста
+    new_width = img_pil.width + right_text_width
+    
+    # Создаем новое изображение с областью для текста справа
+    img_with_text = Image.new('RGB', (new_width, img_pil.height), color=(255, 255, 255))
+    img_with_text.paste(img_pil, (0, 0))
+    
+    draw = ImageDraw.Draw(img_with_text)
+    
+    # Добавляем основной текст слева
+    draw.text((10, 5), left_text, font=font, fill=(0, 0, 0))
+    
+    # Добавляем информацию о награде и стоимости справа
+    if right_text:
+        # Разделяем правый текст на строки
+        right_lines = right_text.split('\n')
+        y_position = 5
+        for line in right_lines:
+            draw.text((img_pil.width + 10, y_position), line, font=font, fill=(0, 0, 0))
+            y_position += 15  # Межстрочный интервал
+    
+    return np.array(img_with_text)
+
+"""
 def add_text_to_image(image, text):
-    """Add text to an image."""
+    #Add text to an image.
     text_to_list = text.split()
     text = ""
     for i in range(0, len(text_to_list), 6):
@@ -80,7 +117,7 @@ def add_text_to_image(image, text):
     draw.text((10, 5), text, font=font, fill=(0, 0, 0))
 
     return np.array(img_with_text)
-
+"""
 
 from PIL import Image
 
@@ -135,11 +172,11 @@ class CraftaxRenderer:
 
 def main(args):
     
-    if config["USE_COMET"]:
+    if args.use_comet:
         comet_ml.login()
         experiment = comet_ml.start(project_name="ppo_lag_craftext")
-        experiment.log_parameters(config)
-    if config["USE_WANDB"]:
+        experiment.log_parameters(args)
+    if args.use_wandb:
         wandb.init(project="craftext_ppo_validation", name="validation_ppo", mode="online")  # или mode="disabled" для оффлайн
 
     # folder for animation
@@ -232,6 +269,8 @@ def main(args):
         observations = []
         return_reward = 0
         return_cost = 0
+        returns_reward = []
+        returns_cost = []
         while not done and steps < 500:
             obs = jnp.expand_dims(obs, axis=0)
             instruction = env.scenario_handler.scenario_data.instructions_list[env_state.idx]
@@ -252,6 +291,8 @@ def main(args):
                 
                 return_reward += reward
                 return_cost += env_state.cost
+            returns_reward.append(return_reward)
+            returns_cost.append(return_cost)
 
             image = renderer.render_to_image(env_state.env_state)
             observations.append(image)
@@ -274,12 +315,15 @@ def main(args):
         with imageio.get_writer(f'animation/{ix}_{gif_name}_{task_id}.gif', mode='I', duration=0.1) as writer:
             for i, image in enumerate(observations):
                 text = f"Step {i}, Instruction: {instruction} \n Constrain: {textual_constraint}"
-                image_with_text = add_text_to_image(image, text)
+                right_text = f"rewards {returns_reward[i]:.2f}, costs {returns_cost[i]:.2f}"
+                image_with_text = add_text_to_image(image, text, right_text=right_text)
                 writer.append_data(image_with_text.astype(np.uint8))
-        if config["USE_WANDB"]:
+        if args.use_wandb:
             wandb.log({
                 "animation": wandb.Video(f"animation/{ix}_{gif_name}_{task_id}.gif", fps=10, format="gif")
             })
+        if args.use_comet:
+            experiment.log_image(f"animation/{ix}_{gif_name}_{task_id}.gif", name=f"animation_{ix}_{gif_name}_{task_id}")
 
     # Эмодзи-мап (оставляем как было)
     emoji_map = {
@@ -374,7 +418,7 @@ def main(args):
     fig.write_html(plot_path)
     fig.write_image("task_metrics_cost_heatmap.png")
 
-    if config["USE_WANDB"]:
+    if args.use_wandb:
         wandb.log({
             "task_metrics_plot": wandb.Image("task_metrics_cost_heatmap.png"),
             "interactive_metrics": wandb.Html(open(plot_path))
