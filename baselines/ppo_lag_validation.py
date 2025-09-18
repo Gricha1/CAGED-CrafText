@@ -394,29 +394,30 @@ def main(args):
         width=0.6
     ))
 
+    cost_threshold = 0.1
     # Добавляем горизонтальную линию на y=5
     fig.add_hline(
-        y=5,
+        y=cost_threshold,
         line=dict(color="red", width=2, dash="dash"),
-        annotation_text="Target=5", 
+        annotation_text=f"Target={cost_threshold}", 
         annotation_position="top right"
     )
 
     # Настройка layout
     fig.update_layout(
-        title="Task Metrics: Cost (colored by Success Rate)",
+        title="Constraint: " + task_metrics[0]["constraint"],
         xaxis_title="Tasks",
         yaxis_title="Cost Value",
         height=600,
         width=max(800, len(tasks) * 120),
-        font=dict(size=12),
+        font=dict(size=8),
         margin=dict(b=150, l=50, r=50, t=80)
     )
 
     # Обновляем подписи с эмодзи
     fig.update_xaxes(
         tickvals=tasks,
-        ticktext=[f"{emojify_compact(simplify_text(item['instruction']))}, {emojify_compact(simplify_text(item['constraint']))}" 
+        ticktext=[f"{emojify_compact(simplify_text(item['instruction']))}" 
                  for item in task_metrics],
         tickangle=-45
     )
