@@ -330,13 +330,21 @@ def main(args):
         "cow": "🐄", "beef": "🥩", "meat": "🥩", "plant": "🌱", "sapling": "🌿",
         "zombie": "🧟", "skeleton": "💀", "stone": "🪨", "furnace": "🔥",
         "coal": "🧱", "iron": "⛓️", "diamond": "💎", "sword": "🗡️",
-        "pickaxe": "⛏️", "drink": "🥤", "satiety": "🍽️", "hunger": "😋", "wooden": "🪵"
+        "pickaxe": "⛏️", "drink": "🥤", "satiety": "🍽️", "hunger": "😋", 
+        "wooden": "🪵", "health": "❤️", "monster": "👹", "distance": "↔️"
     }
 
     # Новые функции для компактного отображения
     def simplify_text(text):
         """Сокращает текст инструкций и ограничений до минимальной формы"""
         replacements = [
+            
+            (r"(?i)when your (\w+) level is (less than|greater than|below|above) (\d+), (.*)", r"If \1 \2 \3: \4"),
+            (r"(?i)less than", "<"),
+            (r"(?i)greater than", ">"),
+            (r"(?i)below", "<"),
+            (r"(?i)above", ">"),
+            
             (r"(?i)eat (a|an|the) (\w+)", r"Eat \2"),
             (r"(?i)you must maintain (?:your )?(\w+) level (?:at or )?above (\d+)", r"\1 >= \2"),
             (r"(?i)you must maintain (?:your )?(\w+) level", r"\1"),
@@ -423,7 +431,11 @@ def main(args):
             "task_metrics_plot": wandb.Image("task_metrics_cost_heatmap.png"),
             "interactive_metrics": wandb.Html(open(plot_path))
         })
-
+    if args.use_comet:
+        # Логируем изображение с тепловой картой
+        experiment.log_image("task_metrics_cost_heatmap.png", name="task_metrics_plot") 
+        # Логируем HTML-файл с интерактивными метриками
+        experiment.log_asset(plot_path, file_name="interactive_metrics.html")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
