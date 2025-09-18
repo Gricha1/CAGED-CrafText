@@ -29,15 +29,14 @@ CrafText is an extension of the Craftex environment (<https://github.com/Michael
 ## CMDP craftext training
 crafter_settings in 
 [
-   achievements_safe_budget_hungry_multi_limit, # simple achievements tasks + constraints on hungry level(different levels)
-   achievements_safe_budget_hungry, # simple achievements tasks + constraints on hungry level(constant)
-   build_squere_simple_safe_budget, # build tasks + constraints on resourse count
+   achievements_safe_budget_hungry_multi_limit,
+   build_squere_simple_safe_budget,
    simple_achivments_safe # achievements and conditions tasks + constraints walk on grass,
+   achievements_safe_budget_hungry,
    achievements_safe_budget_drink,
    achievements_safe_budget_hp,
    achievements_safe_budget_energy,
    achievements_safe_budget_dont_move_night,
-   cmdp_hard_achievements_budget_hungry,
    achievements_safe_sequential_defeat_monster,
    achievements_safe_sequential_dont_sleep_near_monsters,
    achievements_safe_sequential_away_monsters_when_hp
