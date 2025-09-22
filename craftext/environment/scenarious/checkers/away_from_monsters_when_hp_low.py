@@ -13,7 +13,7 @@ def checker_away_from_monsters_when_hp_low(game_data: Union[GameDataClassic, Gam
     # raise NotImplementedError("checker_budget_build_collect is not implemented yet")
     level = target_state.level
     hp_lower_than_bound = level_status(game_data, level)
-    distance = 4
+    distance = 2
     monsters_are_nearby = is_mob_near_than_n(game_data, distance=distance)
     
     return jnp.logical_and(hp_lower_than_bound, monsters_are_nearby)
