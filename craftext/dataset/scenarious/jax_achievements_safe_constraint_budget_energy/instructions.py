@@ -35,7 +35,8 @@ easy = {
 
       "arguments": create_target_state(
           required=[Achievement.EAT_COW],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "COLLECT_SAPLING": {
@@ -51,7 +52,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "COLLECT_DRINK": {
@@ -67,7 +69,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "MAKE_WOOD_PICKAXE": {
@@ -83,7 +86,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "MAKE_WOOD_SWORD": {
@@ -99,7 +103,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "PLACE_PLANT": {
@@ -115,7 +120,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "DEFEAT_ZOMBIE": {
@@ -131,7 +137,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "COLLECT_STONE": {
@@ -147,7 +154,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "PLACE_STONE": {
@@ -163,7 +171,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "EAT_PLANT": {
@@ -179,7 +188,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "DEFEAT_SKELETON": {
@@ -195,7 +205,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "MAKE_STONE_PICKAXE": {
@@ -211,7 +222,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "PLACE_FURNACE": {
@@ -227,7 +239,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "COLLECT_COAL": {
@@ -243,7 +256,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "COLLECT_IRON": {
@@ -259,7 +273,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   
@@ -276,7 +291,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
   "MAKE_IRON_SWORD": {
@@ -292,7 +308,8 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   }
 }
@@ -311,7 +328,8 @@ medium = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DIAMOND],
-          forbidden=[]
+          forbidden=[],
+          level=min_energy_level
       )
   },
 }
