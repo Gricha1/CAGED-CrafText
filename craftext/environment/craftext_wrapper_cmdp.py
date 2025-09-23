@@ -119,6 +119,17 @@ class CMDPInstructionWrapper(InstructionWrapper):
             cost = checker_dont_sleep_near_monsters(game_data_vector).astype(float)
         elif self.config_name == "achievements_safe_sequential_away_monsters_when_hp":
             cost = checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
+        elif self.config_name == "achievements_safe_sequential_all":
+            task_type = ts.hp_level_state.level
+            if task_type == -1:
+                # You cannot sleep when monsters are nearby
+                cost = checker_dont_sleep_near_monsters(game_data_vector).astype(float)
+            elif task_type == -2:
+                # You must not attack any monster w/o sword
+                cost = checker_monster_is_attacked_without_sword(game_data_vector).astype(float)
+            else:
+                cost = checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
+                
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
