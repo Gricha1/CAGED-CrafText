@@ -255,10 +255,30 @@ class ScenariosNoLambdaCMDP:
         Processes a single scenario based on the SCENARIO_SCHEMA.
         """
         instructions = [scenario.get("instruction", "Unknown instruction")]
-        textual_constraints = [scenario.get("textual_constraint", "Unknown textual constraint")]
+        
+        if "textual_constraint" in scenario:
+            textual_constraints = [scenario.get("textual_constraint", "Unknown textual constraint")]
+        else:
+            textual_constraints = []
+        if "textual_constraints" in scenario:
+            textual_constraints.extend(scenario.get("textual_constraints", None))
+
         if self.use_paraphrases:
             instructions += scenario.get("instruction_paraphrases", [])
-            assert 1 == 0, "dont use paraphrases for cmdp"
+        
+        # instructions with constraints
+        paired_instructions = []
+        paired_textual_constraints = []
+        
+        for instruction in instructions:
+            for constraint in textual_constraints:
+                paired_instructions.append(instruction)
+                paired_textual_constraints.append(constraint)
+        
+        # Заменяем исходные списки на попарные комбинации
+        instructions = paired_instructions
+        textual_constraints = paired_textual_constraints
+            
 
         indices = [scenario_id] * len(instructions)
         checkers_data = {key: [] for key in SCENARIO_SCHEMA.keys() if key != "instruction_paraphrases" and key != "instruction"}
