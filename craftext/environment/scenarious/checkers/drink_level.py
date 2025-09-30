@@ -13,9 +13,8 @@ from craftext.environment.states.state_classic import GameDataClassic
 from craftext.environment.scenarious.checkers.target_state_cmdp_budget_drink_level import DrinkLevelState
 from craftext.environment.craftext_constants import BlockType
 
-def checker_budget_drink_level(game_data: Union[GameDataClassic, GameData],  target_state: DrinkLevelState) -> jax.Array:
+def checker_budget_drink_level(game_data: Union[GameDataClassic, GameData],  level) -> jax.Array:
     # raise NotImplementedError("checker_budget_build_collect is not implemented yet")
-    level = target_state.level
     return level_status(game_data, level)
 
 def level_status(game_data: Union[GameDataClassic, GameData], level: int):

@@ -257,7 +257,7 @@ class ActorCriticConvWithBERTCMDP(nn.Module):
         cost_critic = nn.Dense(1, kernel_init=orthogonal(1.0), bias_init=constant(0.0))(
             cost_critic
         )
-        print("Done")
+        #print("Done")
         return pi, jnp.squeeze(reward_critic, axis=-1), jnp.squeeze(cost_critic, axis=-1)
 
 

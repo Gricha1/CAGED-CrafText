@@ -34,6 +34,7 @@ SCENARIO_SCHEMA = {
 class ScenarioData:
     instructions_list: list
     texutal_constraints_list: list
+    cost_types_list: list
     scenario_checker: int
     arguments: TargetState
     str_check_lambda_list: list
@@ -45,6 +46,8 @@ class ScenarioData:
 @dataclass
 class ScenarioDataO:
     instructions_list: list
+    texutal_constraints_list: list
+    cost_types_list: list
     scenario_checker: list
     arguments: list
     str_check_lambda_list: list
@@ -57,6 +60,7 @@ class ScenarioDataO:
 class ScenarioDataJAX:
     embeddings_list: jax.Array
     constraints_embeddings_list: jax.Array
+    cost_types: jax.Array
     scenario_checker: int
     arguments: List[TargetState]
 
@@ -104,7 +108,7 @@ class ScenariosNoLambdaCMDP:
         """
         Prepares and encodes scenarios while considering paraphrases.
         """
-        instructions_list, textual_constraints_list, indices_list, checkers_data_dict = \
+        instructions_list, textual_constraints_list, indices_list, checkers_data_dict, cost_types_list = \
                                                         self.pairwise_instructions_and_checkers()
 
         checkers_data_f = {key: [] for key in checkers_data_dict.keys()}
@@ -139,6 +143,7 @@ class ScenariosNoLambdaCMDP:
             self.scenario_data = ScenarioDataO(
             instructions_list=instructions_f,
             texutal_constraints_list=textual_constraint_f,
+            cost_types_list=cost_types_list,
             scenario_checker=checkers_data_f["scenario_checker"],
             arguments=checkers_data_f["arguments"],
             str_check_lambda_list=checkers_data_f["str_check_lambda"],
@@ -152,6 +157,7 @@ class ScenariosNoLambdaCMDP:
             self.scenario_data = ScenarioData(
             instructions_list=instructions_f,
             texutal_constraints_list=textual_constraint_f,
+            cost_types_list=cost_types_list,
             scenario_checker=checkers_data_f["scenario_checker"],
             arguments=checkers_data_f["arguments"],
             str_check_lambda_list=checkers_data_f["str_check_lambda"],
@@ -229,17 +235,18 @@ class ScenariosNoLambdaCMDP:
         indices_list - indices of instrictions
         
         """
-        instructions_list, textual_constraints_list, indices_list = [], [], []
+        instructions_list, textual_constraints_list, indices_list, cost_types_list = [], [], [], []
         checkers_data_dict = {key: [] for key in SCENARIO_SCHEMA.keys() if key != "instruction_paraphrases" and key != "instruction"}
         # print(f'all_scenario: {self.all_scenario}')
         # Run throw all goal dicts
         for idx, (key, scenario) in tqdm(enumerate(self.all_scenario.items())):
-            instructions, textual_constraints, indices, checkers_data = \
+            instructions, textual_constraints, indices, checkers_data, cost_types = \
                                             self._pairwise_goal_parafrases_and_checkers(scenario, idx)
 
             instructions_list.extend(instructions)
             textual_constraints_list.extend(textual_constraints)
             indices_list.extend(indices)
+            cost_types_list.extend(cost_types)
 
             for field in checkers_data_dict.keys():
                 checkers_data_dict[field].extend(checkers_data[field])
@@ -247,7 +254,7 @@ class ScenariosNoLambdaCMDP:
         # Change instructions to plans if necessary
         if self.use_plans:
             instructions_list = self._load_action_plans(instructions_list)
-        return instructions_list, textual_constraints_list, indices_list, checkers_data_dict
+        return instructions_list, textual_constraints_list, indices_list, checkers_data_dict, cost_types_list
     
 
     def _pairwise_goal_parafrases_and_checkers(self, scenario, scenario_id):
@@ -262,6 +269,11 @@ class ScenariosNoLambdaCMDP:
             textual_constraints = []
         if "textual_constraints" in scenario:
             textual_constraints.extend(scenario.get("textual_constraints", None))
+            cost_types = []
+            cost_types.extend(scenario.get("cost_types", None))
+            assert len(cost_types) == len(textual_constraints)
+        else:
+            cost_types = [None]
 
         if self.use_paraphrases:
             instructions += scenario.get("instruction_paraphrases", [])
@@ -269,11 +281,13 @@ class ScenariosNoLambdaCMDP:
         # instructions with constraints
         paired_instructions = []
         paired_textual_constraints = []
+        paired_cost_types = []
         
         for instruction in instructions:
-            for constraint in textual_constraints:
+            for cost_type, constraint in zip(cost_types, textual_constraints):
                 paired_instructions.append(instruction)
                 paired_textual_constraints.append(constraint)
+                paired_cost_types.append(cost_type)
         
         # Заменяем исходные списки на попарные комбинации
         instructions = paired_instructions
@@ -286,7 +300,7 @@ class ScenariosNoLambdaCMDP:
         for key, field_type in SCENARIO_SCHEMA.items():
             if field_type == ScenarioFieldType.REPEAT_WITH_PARAPHRASES:
                 checkers_data[key] = [scenario.get(key, None)] * len(instructions)
-        return instructions, textual_constraints, indices, checkers_data
+        return instructions, textual_constraints, indices, checkers_data, cost_types
 
     def _load_action_plans(self, instructions_list):
         """
@@ -309,6 +323,7 @@ class ScenariosNoLambdaCMDP:
         embeddings_jax = jnp.array(self.scenario_data.embeddings_list) if self.scenario_data.embeddings_list is not None else None
         constraints_embeddings_jax = jnp.array(self.scenario_data.constraints_embeddings_list) if self.scenario_data.constraints_embeddings_list is not None else None
         scenario_checker_jax = self._prepare_jax_checkers(self.scenario_data.scenario_checker)
+        cost_types_jax = jnp.array([i for i in range(len(self.scenario_data.cost_types_list))])
         # print("scen fata",self.scenario_data)
         print(f"Final number of instructions: {len(self.scenario_data.embeddings_list)}")
         logger.info(f"Final number of instructions: {len(self.scenario_data.embeddings_list)}")
@@ -316,6 +331,7 @@ class ScenariosNoLambdaCMDP:
         return ScenarioDataJAX(
             embeddings_list=embeddings_jax,
             constraints_embeddings_list=constraints_embeddings_jax,
+            cost_types=cost_types_jax,
             scenario_checker=scenario_checker_jax,
             arguments=self.scenario_data.arguments
             

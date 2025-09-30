@@ -43,6 +43,7 @@ class TextEnvStateCMDP:
     timestep: int
     instruction: Optional[jax.Array]
     textual_constraint: Optional[jax.Array]
+    cost_type: int
     idx: int
     success_rate: float
     episode_cost: float
@@ -67,11 +68,13 @@ class CMDPInstructionWrapper(InstructionWrapper):
         obs, state = super().reset(_rng, env_params, instruction_idx=instruction_idx)
 
         textual_constraint_emb = self.scenario_handler.scenario_data_jax.constraints_embeddings_list[state.idx]
+        cost_type = self.scenario_handler.scenario_data_jax.cost_types[state.idx]
         state = TextEnvStateCMDP(
             env_state=state.env_state,
             timestep=state.timestep,
             instruction=state.instruction,
             textual_constraint=textual_constraint_emb,
+            cost_type=cost_type,
             idx=state.idx,
             environment_key=state.environment_key,
             success_rate=state.success_rate,
@@ -120,19 +123,38 @@ class CMDPInstructionWrapper(InstructionWrapper):
         elif self.config_name == "achievements_safe_sequential_away_monsters_when_hp":
             cost = checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
         elif self.config_name == "achievements_safe_sequential_all":
-            task_type = ts.hp_level_state.level
-            # Создаем индекс для switch
-            index = jnp.where(task_type == -1, 0, jnp.where(task_type == -2, 1, 2))
-            
+            #    env_state.cost_type
+            #    "sequential_dont_sleep_near_monsters": 0,
+            #    "sequential_defeat_monster": 1, 
+            #    "sequential_away_monsters_when_hp": 2
             cost = jax.lax.switch(
-                index,
+                env_state.cost_type,
                 [
-                    # case 0: task_type == -1 You cannot sleep when monsters are nearby
+                    # case 0: sequential_dont_sleep_near_monsters
                     lambda: checker_dont_sleep_near_monsters(game_data_vector).astype(float),
-                    # case 1: task_type == -2 You must not attack any monster w/o sword
+                    # case 1: sequential_defeat_monster  
                     lambda: checker_monster_is_attacked_without_sword(game_data_vector).astype(float),
-                    # case 2: otherwise
+                    # case 2: sequential_away_monsters_when_hp
                     lambda: checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
+                ]
+            )
+        elif self.config_name == "achievements_safe_budget_all":
+            #    env_state.cost_type
+            #    "budget_hp": 0,
+            #    "budget_drink": 1, 
+            #    "budget_energy": 2
+            #    "budget_hungry": 3
+            cost = jax.lax.switch(
+                env_state.cost_type,
+                [
+                    # case 0: budget_hp
+                    lambda: checker_budget_hp_level(game_data_vector, ts.hp_level_state.level).astype(float),
+                    # case 1: budget_drink  
+                    lambda: checker_budget_drink_level(game_data_vector, ts.hp_level_state.level).astype(float),
+                    # case 2: budget_energy
+                    lambda: checker_budget_energy_level(game_data_vector, ts.hp_level_state.level).astype(float),
+                    # case 3: budget_hungry
+                    lambda: checker_budget_hungry_level(game_data_vector, ts.hp_level_state.level).astype(float)
                 ]
             )
                 
@@ -145,6 +167,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
             timestep=state.timestep,
             instruction=state.instruction,
             textual_constraint=env_state.textual_constraint,
+            cost_type=env_state.cost_type,
             idx=state.idx,
             environment_key=state.environment_key,
             success_rate=state.success_rate,

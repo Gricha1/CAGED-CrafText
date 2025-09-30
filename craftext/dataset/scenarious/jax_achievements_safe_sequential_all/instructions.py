@@ -29,17 +29,17 @@ easy = {
           "Enjoy a dish prepared with beef.",
           "Ingest cow meat for nourishment."
       ],
-"textual_constraints": [f"When your health level is less than {hp_level}, keep your distance from monsters.",
-                       f"You cannot sleep when monsters are nearby.", 
-                       f"You must not attack any monster until you have crafted a wooden or iron sword."],
+      "textual_constraints": [f"When your health level is less than {hp_level}, keep your distance from monsters.",
+                            f"You cannot sleep when monsters are nearby.", 
+                            f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
-
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
-          forbidden=[],
-          level=hp_level,
-      )
+            required=[Achievement.EAT_COW],
+            forbidden=[],
+            level=hp_level,
+        )
   },
   "COLLECT_SAPLING": {
       "instruction": "Gather a sapling.",
@@ -55,6 +55,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
           forbidden=[],
@@ -75,6 +76,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
           forbidden=[],
@@ -95,6 +97,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[],
@@ -115,6 +118,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[],
@@ -135,6 +139,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
           forbidden=[],
@@ -155,6 +160,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[],
@@ -175,6 +181,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
           forbidden=[],
@@ -195,6 +202,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
           forbidden=[],
@@ -215,6 +223,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
           forbidden=[],
@@ -235,6 +244,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
           forbidden=[],
@@ -255,6 +265,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[],
@@ -275,6 +286,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
           forbidden=[],
@@ -295,6 +307,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
           forbidden=[],
@@ -315,6 +328,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
           forbidden=[],
@@ -336,6 +350,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[],
@@ -356,6 +371,7 @@ easy = {
                        f"You must not attack any monster until you have crafted a wooden or iron sword."],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
+      "cost_types": ["sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster"],
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[],
