@@ -37,7 +37,8 @@ class TextEnvState:
     rng: int
     instruction_done: bool
     checker_id: int
-    
+    target_state: TargetState   
+
 
 def generic_check(game_data: Union[GameData, GameDataClassic], target_state: TargetState, idx: int) -> jnp.ndarray:
     
@@ -116,7 +117,8 @@ class InstructionWrapper(Wrapper):
             total_success_rate=0.0,
             rng=_rng,
             instruction_done=False,
-            checker_id=self.scenario_handler.scenario_data_jax.scenario_checker[idx]
+            checker_id=self.scenario_handler.scenario_data_jax.scenario_checker[idx],
+            target_state=self.batched_ts.select(idx)
         )
         return obs, state
 
@@ -155,7 +157,8 @@ class InstructionWrapper(Wrapper):
             total_success_rate=env_state.total_success_rate * (1 - done) + new_episode_sr * done,
             rng=env_state.rng,
             instruction_done=instruction_done,
-            checker_id=env_state.checker_id
+            checker_id=env_state.checker_id,
+            target_state=env_state.target_state
         )
         
         # Update step information in info dictionary

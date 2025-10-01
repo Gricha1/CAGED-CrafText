@@ -25,7 +25,7 @@ from craftext.environment.scenarious.checkers.relevant         import cheker_loc
 from craftext.environment.scenarious.checkers.step_on_block    import checker_step_on_block
 from typing import Union
 
-from craftext.environment.craftext_wrapper import InstructionWrapper
+from craftext.environment.craftext_wrapper import InstructionWrapper, TextEnvState
 from craftext.environment.scenarious.checkers.budget_build_collect import checker_budget_build_collect
 from craftext.environment.scenarious.checkers.dont_move import checker_moveing_at_night_level
 from craftext.environment.scenarious.checkers.sleep_at_night import checker_sleep_at_night
@@ -37,23 +37,25 @@ from craftext.environment.scenarious.checkers.hp_level import checker_budget_hp_
 from craftext.environment.scenarious.checkers.hungry_level import checker_budget_hungry_level
 from craftext.environment.scenarious.checkers.energy_level import checker_budget_energy_level
 
+from craftext.environment.scenarious.checkers.avoid_mob_distance import checker_relactional_avoid_mob_distance
+# from craftext.environment.scenarious.checkers.see_in_field_of_view import checker_what_in_field_of_view
+from craftext.environment.scenarious.checkers.budget_by_action import checker_budget_by_action
+from craftext.environment.scenarious.checkers.last_visible_target import checker_last_visible_target
+
+from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState as MATHCMDPTargetState
+
 @struct.dataclass
-class TextEnvStateCMDP:
-    env_state: Any
-    timestep: int
-    instruction: Optional[jax.Array]
+class TextEnvStateCMDP(TextEnvState):
     textual_constraint: Optional[jax.Array]
     cost_type: int
     idx: int
     success_rate: float
     episode_cost: float
     cost: float
-    total_success_rate: float
-    environment_key: int
-    rng: int
-    instruction_done: bool
-    checker_id: int
+    target_state: CMDPTargetState
     
+
 
 class CMDPInstructionWrapper(InstructionWrapper):
     def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambdaCMDP,
@@ -83,7 +85,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
             total_success_rate=state.total_success_rate,
             rng=state.rng,
             instruction_done=state.checker_id,
-            checker_id=state.checker_id
+            checker_id=state.checker_id,
+            target_state=state.target_state
         )
         return obs, state
 
@@ -92,7 +95,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
 
         # set cost
         game_data_vector = self.StateStructure.from_state(env_state.env_state, state.env_state, action)
-        ts = self.batched_ts.select(env_state.idx)
+        ts = env_state.target_state
 
         if self.config_name == "simple_achivments_safe":
             cost = checker_step_on_block(game_data_vector, ts.step_on_block).astype(float)
@@ -138,6 +141,16 @@ class CMDPInstructionWrapper(InstructionWrapper):
                     lambda: checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
                 ]
             )
+        elif self.config_name in ("achievements_safe_math_wood_budget", "achievements_safe_math_food_budget"):
+            new_target_state, cost = checker_budget_by_action(game_data_vector, ts.budget_by_action)
+            ts = MATHCMDPTargetState(achievements=ts.achievements, budget_by_action=new_target_state)
+            cost = cost.astype(float)
+        elif self.config_name == "achievements_easy_relational_avoid_enemy_by_radius":
+            cost = checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float)    
+        elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location"):
+            new_target_state, cost = checker_last_visible_target(game_data_vector, ts.target_of_interest)
+            ts = CMDPTargetState(achievements=ts.achievements, target_of_interest=new_target_state)
+            cost = cost.astype(float)
         elif self.config_name == "achievements_safe_budget_all":
             #    env_state.cost_type
             #    "budget_hp": 0,
@@ -157,7 +170,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
                     lambda: checker_budget_hungry_level(game_data_vector, ts.hp_level_state.level).astype(float)
                 ]
             )
-                
+   
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
@@ -176,7 +189,8 @@ class CMDPInstructionWrapper(InstructionWrapper):
             total_success_rate=state.total_success_rate,
             rng=state.rng,
             instruction_done=state.checker_id,
-            checker_id=state.checker_id
+            checker_id=state.checker_id,
+            target_state=ts
         )
 
         return obs, state, reward, done, info

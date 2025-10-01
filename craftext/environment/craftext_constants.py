@@ -2,6 +2,8 @@ from enum import Enum
 import os
 from flax import struct
 
+
+
 base_path = os.getenv("CRAFTEXT_SCENARIO_PATH", "../dataset/scenarious")
 plans_path = os.path.join(base_path, "extra_files", "easy_gpt4_action_plans.json")
 
@@ -192,3 +194,12 @@ class CrossType:
     STRAIGHT = 0
     DIAGONAL = 1
     COMBINED = 2
+    
+    
+    
+@struct.dataclass
+class MobType:
+    ZOMBIE = 0
+    SKELETON = 1
+    ALL = 2
+    

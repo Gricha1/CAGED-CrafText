@@ -12,3 +12,13 @@ class HPLevelState:
 class CMDPTargetState(TargetState):
     # step_on_block: StepOnBlock =  struct.field(default_factory=StepOnBlock)
     hp_level_state: HPLevelState = struct.field(default_factory=HPLevelState)
+    
+    
+    
+
+
+@struct.dataclass
+class CMDPTargetState(TargetState):
+    # step_on_block: StepOnBlock =  struct.field(default_factory=StepOnBlock)
+    combination_of_states: HPLevelState = struct.field(default_factory=HPLevelState)
+    
