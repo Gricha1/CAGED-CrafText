@@ -18,7 +18,7 @@ def create_target_state(required=[], forbidden=[], action_list: list = [Action.D
     for action, minus in zip(action_list, minuses):
         actions.at[action.value].set(minus)
         
-    budget_by_action = BudgetByAction(budget=0, delimiter_actions=actions, target_action=1)
+    budget_by_action = BudgetByAction(budget=20, delimiter_actions=actions, target_action=1)
     return CMDPTargetState(achievements=target_achievements, budget_by_action=budget_by_action)
 
 mobs = ["zombie", "skeleton"]
