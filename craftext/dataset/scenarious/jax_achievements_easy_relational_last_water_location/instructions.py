@@ -4,7 +4,7 @@ from craftext.environment.craftext_constants import Achievement, Scenarios, Achi
 from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState, TargetOfInterest, TypeOfInterest 
 from jax import numpy as jnp
 
-def create_target_state(required=[], forbidden=[], type_of_interest: TypeOfInterest=TypeOfInterest.WATER, far_from_agent: int=10):
+def create_target_state(required=[], forbidden=[], type_of_interest: int=TypeOfInterest.WATER, far_from_agent: int=10):
     base_vector = [AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]
     for i in range(len(base_vector)):
         if i in required:
@@ -12,7 +12,7 @@ def create_target_state(required=[], forbidden=[], type_of_interest: TypeOfInter
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
-    target_of_interest = TargetOfInterest(object_of_interest=type_of_interest.value, far_from_agent=10, last_visible_target_position=jnp.array([-999, -999]))
+    target_of_interest = TargetOfInterest(object_of_interest=type_of_interest, far_from_agent=10, last_visible_target_position=jnp.array([-999, -999]))
     return CMDPTargetState(achievements=target_achievements, target_of_interest=target_of_interest)
 
 
