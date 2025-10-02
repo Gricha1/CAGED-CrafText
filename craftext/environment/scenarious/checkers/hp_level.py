@@ -13,9 +13,9 @@ from craftext.environment.states.state_classic import GameDataClassic
 from craftext.environment.scenarious.checkers.target_state_cmdp_budget_hp_level import HPLevelState
 from craftext.environment.craftext_constants import BlockType
 
-def checker_budget_hp_level(game_data: Union[GameDataClassic, GameData],  level) -> jax.Array:
+def checker_budget_hp_level(game_data: Union[GameDataClassic, GameData],  level: HPLevelState) -> jax.Array:
     # raise NotImplementedError("checker_budget_build_collect is not implemented yet")
-    return level_status(game_data, level)
+    return level_status(game_data, level.level)
 
 def level_status(game_data: Union[GameDataClassic, GameData], level: int):
     current_level = game_data.states[0].variables.player_health
