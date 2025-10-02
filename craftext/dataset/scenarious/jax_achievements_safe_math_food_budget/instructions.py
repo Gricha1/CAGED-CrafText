@@ -1,7 +1,7 @@
 
 from craftext.environment.scenarious.checkers.target_state import Achievements
 from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState, BlockType
-from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState, BudgetByAction 
+from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState, BudgetByAction, TargetAction
 from craftax.craftax_classic.constants import Action
 from jax import numpy as jnp
 
@@ -18,7 +18,7 @@ def create_target_state(required=[], forbidden=[], action_list: list = [Action.D
     for action, minus in zip(action_list, minuses):
         actions.at[action.value].set(minus)
         
-    budget_by_action = BudgetByAction(budget=20, delimiter_actions=actions, target_action=1)
+    budget_by_action = BudgetByAction(budget=20, delimiter_actions=actions, target_action=TargetAction.FOOD)
     return CMDPTargetState(achievements=target_achievements, budget_by_action=budget_by_action)
 
 mobs = ["zombie", "skeleton"]

@@ -5,8 +5,8 @@ from jax import numpy as jnp
 
 @struct.dataclass
 class TargetAction:
-    FOOD = 1
-    WATER = 0
+    FOOD = 0
+    WOOD = 1
 
 @struct.dataclass
 class BudgetByAction:
