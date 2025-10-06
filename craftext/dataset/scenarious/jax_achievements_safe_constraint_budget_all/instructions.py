@@ -1,11 +1,10 @@
 
 from craftext.environment.scenarious.checkers.target_state import Achievements
 from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState, BlockType
-from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState, TargetOfInterest, TypeOfInterest 
-from jax import numpy as jnp
+from craftext.environment.scenarious.checkers.target_state_cmdp_budget_hp_level import CMDPTargetState, HPLevelState
 
 
-def create_target_state(required=[], forbidden=[], type_of_interest: int= TypeOfInterest.FOOD, far_from_agent: int=10):
+def create_target_state(required=[], forbidden=[], level:int=0):
     base_vector = [AchievementState.NOT_MATTER for i in range(Achievement.MAKE_IRON_SWORD + 1)]
     for i in range(len(base_vector)):
         if i in required:
@@ -13,9 +12,14 @@ def create_target_state(required=[], forbidden=[], type_of_interest: int= TypeOf
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
-    target_of_interest = TargetOfInterest(object_of_interest=type_of_interest, far_from_agent=far_from_agent, last_visible_target_position=jnp.array([-999, -999]))
-    return CMDPTargetState(achievements=target_achievements, target_of_interest=target_of_interest)
+    # step_on_block = StepOnBlock(block_type=block_type)
+    level = HPLevelState(level=level)
+    return CMDPTargetState(achievements=target_achievements, hp_level_state=level)
 
+min_hp_level = 5
+min_thirst_level = 5
+min_energy_level = 5
+min_satiety_level = 5
 
 easy = { 
   
@@ -28,15 +32,17 @@ easy = {
           "Enjoy a dish prepared with beef.",
           "Ingest cow meat for nourishment."
       ],
-"textual_constraint": f"A cow must be visible.",
-
-
-      "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
-
-      "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
-          forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+  "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                        f"You must maintain your thirst level at or above {min_thirst_level}.",
+                        f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
+    "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,    
+    "arguments": create_target_state(
+        required=[Achievement.EAT_COW],
+        forbidden=[],
+        level=min_hp_level,
+    )
   },
   "COLLECT_SAPLING": {
       "instruction": "Gather a sapling.",
@@ -47,14 +53,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Find and collect a young tree sprout.",
           "Gather a tree offspring ready for planting."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                            f"You must maintain your satiety level at or above {min_satiety_level}."],
+    "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "COLLECT_DRINK": {
       "instruction": "Collect a drink.",
@@ -65,14 +75,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Gather a liquid item suitable for drinking.",
           "Procure a refreshing drink from nearby."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                        f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "MAKE_WOOD_PICKAXE": {
       "instruction": "Craft a wooden pickaxe.",
@@ -83,14 +97,17 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Carve and build a wooden mining tool.",
           "Forge a lightweight pickaxe from wood."
       ],
-"textual_constraint": f"A cow must be visible.",
-
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                        f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[],
-        type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "MAKE_WOOD_SWORD": {
       "instruction": "Craft a wooden sword.",
@@ -101,14 +118,17 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Create a weapon crafted from timber.",
           "Build a wooden blade for self-defense."
       ],
-"textual_constraint": f"A cow must be visible.",
-
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                        f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "PLACE_PLANT": {
       "instruction": "Place a plant.",
@@ -119,14 +139,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Install a plant in a sunny location.",
           "Place a flower or shrub in a chosen spot."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "DEFEAT_ZOMBIE": {
       "instruction": "Defeat a zombie.",
@@ -137,14 +161,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Take down a zombie using any weapon.",
           "Overcome a night-stalking undead being."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "COLLECT_STONE": {
       "instruction": "Collect stone.",
@@ -155,14 +183,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Retrieve stone fragments from nearby boulders.",
           "Extract useful stone for crafting purposes."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "PLACE_STONE": {
       "instruction": "Place a stone block.",
@@ -173,14 +205,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Arrange a block of stone in the area.",
           "Place a stone slab in the desired spot."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "EAT_PLANT": {
       "instruction": "Eat a plant.",
@@ -191,14 +227,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Chew on a herbaceous snack for energy.",
           "Devour a plant to satisfy your hunger."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "DEFEAT_SKELETON": {
       "instruction": "Defeat a skeleton.",
@@ -209,14 +249,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Overpower a bone-clad enemy in battle.",
           "Take down a skeletal creature in the area."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "MAKE_STONE_PICKAXE": {
       "instruction": "Craft a stone pickaxe.",
@@ -227,14 +271,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Carve a reliable pickaxe from stone.",
           "Assemble a heavy-duty stone pickaxe."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "PLACE_FURNACE": {
       "instruction": "Place a furnace.",
@@ -245,14 +293,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Drop a furnace for crafting needs.",
           "Put a furnace on the ground to use."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "COLLECT_COAL": {
       "instruction": "Collect coal.",
@@ -263,14 +315,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Extract coal from a nearby deposit.",
           "Gather some coal for crafting."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "COLLECT_IRON": {
       "instruction": "Collect iron.",
@@ -281,14 +337,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Retrieve iron ore for crafting tools.",
           "Harvest metallic resources for use."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   
   "MAKE_IRON_PICKAXE": {
@@ -300,14 +360,18 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Assemble an iron pickaxe for digging.",
           "Build a reliable pickaxe forged from iron."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                        f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[],
-type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   },
   "MAKE_IRON_SWORD": {
       "instruction": "Craft an iron sword.",
@@ -318,16 +382,19 @@ type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
           "Construct a sharp sword forged from iron.",
           "Fashion an iron sword for combat."
       ],
-"textual_constraint": f"A cow must be visible.",
-
+    "textual_constraints": [f"You must maintain your HP level at or above {min_hp_level}.", 
+                            f"You must maintain your thirst level at or above {min_thirst_level}.",
+                            f"You must maintain your energy level at or above {min_energy_level}.",
+                        f"You must maintain your satiety level at or above {min_satiety_level}."],
+   "cost_types": ["budget_hp", "budget_drink", "budget_energy", "budget_hungry"],
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[],
-        type_of_interest=TypeOfInterest.FOOD, far_from_agent=10      )
+          level=min_hp_level,
+      )
   }
 }
 
-medium = {
-}
+medium = {}

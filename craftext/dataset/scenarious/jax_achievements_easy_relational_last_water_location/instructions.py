@@ -12,7 +12,7 @@ def create_target_state(required=[], forbidden=[], type_of_interest: int=TypeOfI
         elif i in forbidden:
             base_vector[i] = AchievementState.AVOID_TO_ACHIEVE
     target_achievements = Achievements(achievement_mask=tuple(base_vector))
-    target_of_interest = TargetOfInterest(object_of_interest=type_of_interest, far_from_agent=10, last_visible_target_position=jnp.array([-999, -999]))
+    target_of_interest = TargetOfInterest(object_of_interest=type_of_interest, far_from_agent=far_from_agent, last_visible_target_position=jnp.array([-999, -999]))
     return CMDPTargetState(achievements=target_achievements, target_of_interest=target_of_interest)
 
 
@@ -53,7 +53,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=10     )
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "COLLECT_DRINK": {
       "instruction": "Collect a drink.",
@@ -71,7 +71,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "MAKE_WOOD_PICKAXE": {
       "instruction": "Craft a wooden pickaxe.",
@@ -89,7 +89,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[],
-        type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+        type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "MAKE_WOOD_SWORD": {
       "instruction": "Craft a wooden sword.",
@@ -107,7 +107,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "PLACE_PLANT": {
       "instruction": "Place a plant.",
@@ -125,7 +125,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "DEFEAT_ZOMBIE": {
       "instruction": "Defeat a zombie.",
@@ -143,7 +143,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "COLLECT_STONE": {
       "instruction": "Collect stone.",
@@ -161,7 +161,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "PLACE_STONE": {
       "instruction": "Place a stone block.",
@@ -179,7 +179,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "EAT_PLANT": {
       "instruction": "Eat a plant.",
@@ -197,7 +197,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "DEFEAT_SKELETON": {
       "instruction": "Defeat a skeleton.",
@@ -215,7 +215,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "MAKE_STONE_PICKAXE": {
       "instruction": "Craft a stone pickaxe.",
@@ -233,7 +233,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "PLACE_FURNACE": {
       "instruction": "Place a furnace.",
@@ -251,7 +251,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "COLLECT_COAL": {
       "instruction": "Collect coal.",
@@ -269,7 +269,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "COLLECT_IRON": {
       "instruction": "Collect iron.",
@@ -287,7 +287,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   
   "MAKE_IRON_PICKAXE": {
@@ -306,7 +306,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
   "MAKE_IRON_SWORD": {
       "instruction": "Craft an iron sword.",
@@ -324,7 +324,7 @@ type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[],
-        type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+        type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   }
 }
 
@@ -345,6 +345,6 @@ medium = {
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DIAMOND],
           forbidden=[],
-type_of_interest=TypeOfInterest.WATER, far_from_agent=5      )
+type_of_interest=TypeOfInterest.WATER, far_from_agent=10      )
   },
 }

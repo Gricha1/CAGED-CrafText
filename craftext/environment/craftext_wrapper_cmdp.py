@@ -105,17 +105,17 @@ class CMDPInstructionWrapper(InstructionWrapper):
         elif self.config_name == "build_squere_simple_safe_budget":
             cost = checker_budget_build_collect(game_data_vector, ts.build_budget_state).astype(float)
         elif self.config_name == "achievements_safe_budget_drink":
-            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
+            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state.level).astype(float)
         elif self.config_name == "achievements_easy_safe_budget_drink":
-            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state).astype(float)
+            cost = checker_budget_drink_level(game_data_vector, ts.drink_level_state.level).astype(float)
         elif self.config_name == "achievements_safe_budget_energy":
-            cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state).astype(float)
+            cost = checker_budget_energy_level(game_data_vector, ts.energy_level_state.level).astype(float)
         elif self.config_name == "achievements_safe_budget_hp":
-            cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state).astype(float)
+            cost = checker_budget_hp_level(game_data_vector, ts.hp_level_state.level).astype(float)
         elif self.config_name == "achievements_safe_budget_hungry" or \
              self.config_name == "achievements_safe_budget_hungry_multi_limit" or \
              self.config_name == "cmdp_hard_achievements_budget_hungry":
-            cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state).astype(float)
+            cost = checker_budget_hungry_level(game_data_vector, ts.hungry_level_state.level).astype(float)
         elif self.config_name == "achievements_safe_budget_sleep_at_night":
             cost = checker_sleep_at_night(game_data_vector, ts.night_constraint_level, ts.day_constraint_level).astype(float)
         # sequential
@@ -141,13 +141,13 @@ class CMDPInstructionWrapper(InstructionWrapper):
                     lambda: checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
                 ]
             )
-        elif self.config_name in ("achievements_safe_math_wood_budget", "achievements_safe_math_food_budget"):
+        elif self.config_name in ("achievements_safe_math_wood_budget", "achievements_safe_math_food_budget", "achievements_safe_math_all"):
             new_target_state, cost = checker_budget_by_action(game_data_vector, ts.budget_by_action)
             ts = MATHCMDPTargetState(achievements=ts.achievements, budget_by_action=new_target_state)
             cost = cost.astype(float)
         elif self.config_name == "achievements_easy_relational_avoid_enemy_by_radius":
             cost = checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float)    
-        elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location"):
+        elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location", "achievements_easy_relational_all"):
             new_target_state, cost = checker_last_visible_target(game_data_vector, ts.target_of_interest)
             ts = CMDPTargetState(achievements=ts.achievements, target_of_interest=new_target_state)
             cost = cost.astype(float)
