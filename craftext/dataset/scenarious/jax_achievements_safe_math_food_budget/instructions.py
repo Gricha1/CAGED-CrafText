@@ -34,7 +34,7 @@ easy = {
           "Enjoy a dish prepared with beef.",
           "Ingest cow meat for nourishment."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
@@ -53,7 +53,7 @@ action_list=[Action.DO], minuses=[10]
           "Find and collect a young tree sprout.",
           "Gather a tree offspring ready for planting."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -71,7 +71,7 @@ action_list=[Action.DO], minuses=[10]
           "Gather a liquid item suitable for drinking.",
           "Procure a refreshing drink from nearby."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -89,7 +89,7 @@ action_list=[Action.DO], minuses=[10]
           "Carve and build a wooden mining tool.",
           "Forge a lightweight pickaxe from wood."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -107,7 +107,7 @@ action_list=[Action.DO], minuses=[10]
           "Create a weapon crafted from timber.",
           "Build a wooden blade for self-defense."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -125,7 +125,7 @@ action_list=[Action.DO], minuses=[10]
           "Install a plant in a sunny location.",
           "Place a flower or shrub in a chosen spot."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -143,7 +143,7 @@ action_list=[Action.DO], minuses=[10]
           "Take down a zombie using any weapon.",
           "Overcome a night-stalking undead being."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -161,7 +161,7 @@ action_list=[Action.DO], minuses=[10]
           "Retrieve stone fragments from nearby boulders.",
           "Extract useful stone for crafting purposes."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -179,7 +179,7 @@ action_list=[Action.DO], minuses=[10]
           "Arrange a block of stone in the area.",
           "Place a stone slab in the desired spot."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -197,7 +197,7 @@ action_list=[Action.DO], minuses=[10]
           "Chew on a herbaceous snack for energy.",
           "Devour a plant to satisfy your hunger."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -215,7 +215,7 @@ action_list=[Action.DO], minuses=[10]
           "Overpower a bone-clad enemy in battle.",
           "Take down a skeletal creature in the area."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -233,7 +233,7 @@ action_list=[Action.DO], minuses=[10]
           "Carve a reliable pickaxe from stone.",
           "Assemble a heavy-duty stone pickaxe."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -251,7 +251,7 @@ action_list=[Action.DO], minuses=[10]
           "Drop a furnace for crafting needs.",
           "Put a furnace on the ground to use."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -269,7 +269,7 @@ action_list=[Action.DO], minuses=[10]
           "Extract coal from a nearby deposit.",
           "Gather some coal for crafting."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -287,7 +287,7 @@ action_list=[Action.DO], minuses=[10]
           "Retrieve iron ore for crafting tools.",
           "Harvest metallic resources for use."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -306,7 +306,7 @@ action_list=[Action.DO], minuses=[10]
           "Assemble an iron pickaxe for digging.",
           "Build a reliable pickaxe forged from iron."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -324,7 +324,7 @@ action_list=[Action.DO], minuses=[10]
           "Construct a sharp sword forged from iron.",
           "Fashion an iron sword for combat."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
@@ -345,7 +345,7 @@ medium = {
           "Find and collect a valuable diamond.",
           "Extract a rare diamond from a hidden vein."
       ],
-"textual_constraint": "You have a budget of 50 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
+"textual_constraint": "You have a budget of 20 units. Killing each cow costs 10 units. Do not exceed the budget limit.",
 
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
