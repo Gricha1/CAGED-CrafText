@@ -348,7 +348,7 @@ def make_train(config, network_params, experiment=None):
 
                         reward_i = e3b_bonus * config["E3B_REWARD_COEFF"]
 
-                reward = reward_e + reward_i + config["COST_KOEF"] * cost
+                reward = reward_e + reward_i - config["COST_KOEF"] * cost
               
                # instruction = jnp.repeat(env.encoded_instruction, done.shape[0], axis=0)
                # print(instruction.shape)
@@ -863,7 +863,7 @@ if __name__ == "__main__":
     #--env_name "Craftax-Pixels-v1-Text"
     parser = argparse.ArgumentParser()
     parser.add_argument("--dir_path", type=str, default="/usr/home/workspace")
-    parser.add_argument("--algo_name", type=str, default="PPO")
+    parser.add_argument("--algo_name", type=str, default="PPO_COST")
     parser.add_argument("--env_name", type=str, default="Craftax-Pixels-v1-Text")
     parser.add_argument("--craftext_settings", type=str, default=None)
     parser.add_argument(
