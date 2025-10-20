@@ -44,6 +44,7 @@ from craftext.environment.scenarious.checkers.last_visible_target import checker
 
 from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState as RelationalAllCMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_math_all import CMDPTargetState as MathAllCMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState as MATHCMDPTargetState
 
 @struct.dataclass
@@ -141,10 +142,27 @@ class CMDPInstructionWrapper(InstructionWrapper):
                     lambda: checker_away_from_monsters_when_hp_low(game_data_vector, ts.hp_level_state).astype(float)
                 ]
             )
-        elif self.config_name in ("achievements_safe_math_wood_budget", "achievements_safe_math_food_budget", "achievements_safe_math_all"):
+        elif self.config_name in ("achievements_safe_math_wood_budget", "achievements_safe_math_food_budget"):
             new_target_state, cost = checker_budget_by_action(game_data_vector, ts.budget_by_action)
             ts = MATHCMDPTargetState(achievements=ts.achievements, budget_by_action=new_target_state)
             cost = cost.astype(float)
+        elif self.config_name == "achievements_safe_math_all":
+             #    env_state.cost_type
+            #    "math_food_budget": 0,
+            #    "math_wood_budget": 1, 
+            new_target_state_food, cost_food = checker_budget_by_action(game_data_vector, ts.budget_food_by_action)
+            new_target_state_wood, cost_wood = checker_budget_by_action(game_data_vector, ts.budget_wood_by_action)
+            ts = MathAllCMDPTargetState(achievements=ts.achievements, budget_food_by_action=new_target_state_food, 
+                                                                   budget_wood_by_action=new_target_state_wood)
+            cost = jax.lax.switch(
+                env_state.cost_type,
+                [
+                    # case 0: math_food_budget
+                    lambda: cost_food.astype(float),   
+                    # case 1: math_wood_budget  
+                    lambda: cost_wood.astype(float),
+                ]
+            )
         elif self.config_name == "achievements_easy_relational_avoid_enemy_by_radius":
             cost = checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float)    
         elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location"):

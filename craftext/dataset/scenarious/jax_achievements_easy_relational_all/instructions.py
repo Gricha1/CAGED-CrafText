@@ -66,7 +66,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.COLLECT_SAPLING],
           forbidden=[])
   },
   "COLLECT_DRINK": {
@@ -87,7 +87,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.COLLECT_DRINK],
           forbidden=[])
   },
   "MAKE_WOOD_PICKAXE": {
@@ -108,7 +108,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.MAKE_WOOD_PICKAXE],
           forbidden=[])
   },
   "MAKE_WOOD_SWORD": {
@@ -129,7 +129,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.MAKE_WOOD_SWORD],
           forbidden=[])
   },
   "PLACE_PLANT": {
@@ -150,7 +150,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.PLACE_PLANT],
           forbidden=[])
   },
   "DEFEAT_ZOMBIE": {
@@ -171,7 +171,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.DEFEAT_ZOMBIE],
           forbidden=[])
   },
   "COLLECT_STONE": {
@@ -192,7 +192,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.COLLECT_STONE],
           forbidden=[])
   },
   "PLACE_STONE": {
@@ -213,7 +213,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.PLACE_STONE],
           forbidden=[])
   },
   "EAT_PLANT": {
@@ -234,7 +234,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.EAT_PLANT],
           forbidden=[])
   },
   "DEFEAT_SKELETON": {
@@ -255,7 +255,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.DEFEAT_SKELETON],
           forbidden=[])
   },
   "MAKE_STONE_PICKAXE": {
@@ -276,7 +276,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.MAKE_STONE_PICKAXE],
           forbidden=[])
   },
   "PLACE_FURNACE": {
@@ -297,7 +297,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.PLACE_FURNACE],
           forbidden=[])
   },
   "COLLECT_COAL": {
@@ -318,7 +318,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.COLLECT_COAL],
           forbidden=[])
   },
   "COLLECT_IRON": {
@@ -339,7 +339,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.COLLECT_IRON],
           forbidden=[])
   },
   
@@ -361,7 +361,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.MAKE_IRON_PICKAXE],
           forbidden=[])
   },
   "MAKE_IRON_SWORD": {
@@ -382,7 +382,7 @@ easy = {
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
 
       "arguments": create_target_state(
-          required=[Achievement.EAT_COW],
+          required=[Achievement.MAKE_IRON_SWORD],
           forbidden=[])
   },
 }
