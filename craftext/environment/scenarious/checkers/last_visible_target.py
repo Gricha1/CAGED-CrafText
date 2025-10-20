@@ -7,7 +7,7 @@ from typing import Tuple
 
 from craftext.environment.states.state_classic import GameDataClassic
 
-from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import TargetOfInterest, TypeOfInterest 
+from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import TargetOfInterest
 
 
 def checker_last_visible_target(game_data: GameDataClassic,  target_state: TargetOfInterest) -> Tuple[TargetOfInterest, jax.Array]:

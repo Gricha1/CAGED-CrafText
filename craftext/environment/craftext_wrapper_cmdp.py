@@ -42,8 +42,8 @@ from craftext.environment.scenarious.checkers.avoid_mob_distance import checker_
 from craftext.environment.scenarious.checkers.budget_by_action import checker_budget_by_action
 from craftext.environment.scenarious.checkers.last_visible_target import checker_last_visible_target
 
-#from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
-from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState as RelationalAllCMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState as MATHCMDPTargetState
 
 @struct.dataclass
@@ -158,7 +158,7 @@ class CMDPInstructionWrapper(InstructionWrapper):
             #    "relational_avoid_enemy_by_radius": 2
             new_target_state_food, cost_food = checker_last_visible_target(game_data_vector, ts.target_of_interest_food)
             new_target_state_water, cost_water = checker_last_visible_target(game_data_vector, ts.target_of_interest_water)
-            ts = CMDPTargetState(achievements=ts.achievements, avoid_mob_distance=ts.avoid_mob_distance, 
+            ts = RelationalAllCMDPTargetState(achievements=ts.achievements, avoid_mob_distance=ts.avoid_mob_distance, 
                                     target_of_interest_water=new_target_state_water, target_of_interest_food=new_target_state_food)
             cost = jax.lax.switch(
                 env_state.cost_type,

@@ -7,7 +7,6 @@ from craftext.environment.scenarious.manager_cmdp import ScenariosNoLambdaCMDP a
 from craftext.environment.craftext_wrapper_cmdp import CMDPInstructionWrapper, TextEnvStateCMDP
 from craftext.environment.encoders.craftext_distilbert_model_encoder import DistilBertEncode
 from craftext.environment.encoders.craftext_base_model_encoder import EncodeForm
-from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import TargetState
 from craftax.craftax_classic.renderer import render_craftax_pixels as render_classic
 from craftax.craftax_classic.constants import (
     OBS_DIM,

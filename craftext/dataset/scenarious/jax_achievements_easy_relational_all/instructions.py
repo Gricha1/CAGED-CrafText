@@ -1,8 +1,10 @@
 
 from craftext.environment.scenarious.checkers.target_state import Achievements
 from craftext.environment.craftext_constants import Achievement, Scenarios, AchievementState, BlockType
-#from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState, TargetOfInterest, TypeOfInterest 
-from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState, AvoidMobDistance, MobType, TargetOfInterest, TypeOfInterest 
+from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import TargetOfInterest, TypeOfInterest
+from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_avoid_mob import AvoidMobDistance
+from craftext.environment.craftext_constants import MobType
+from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState
 from jax import numpy as jnp
 
 def create_target_state(required=[], forbidden=[], distance: int = 2, far_from_agent=10):
