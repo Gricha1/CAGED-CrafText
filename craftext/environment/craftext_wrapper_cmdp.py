@@ -46,6 +46,7 @@ from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_poin
 from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState as RelationalAllCMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_math_all import CMDPTargetState as MathAllCMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState as MATHCMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_caged import CMDPTargetState as CagedCMDPTargetState
 
 @struct.dataclass
 class TextEnvStateCMDP(TextEnvState):
@@ -208,7 +209,62 @@ class CMDPInstructionWrapper(InstructionWrapper):
                     lambda: checker_budget_hungry_level(game_data_vector, ts.hp_level_state.level).astype(float)
                 ]
             )
-   
+        elif self.config_name == "achievements_safe_caged":
+             #    env_state.cost_type
+            #    "budget_hp": 0, 
+            #    "budget_drink": 1, 
+            #    "budget_energy": 2, 
+            #    "budget_hungry": 3, 
+            #    "sequential_away_monsters_when_hp": 4, 
+            #    "sequential_dont_sleep_near_monsters": 5, 
+            #    "sequential_defeat_monster": 6
+            #    "relational_last_food_location": 7, 
+            #    "relational_last_water_location": 8,
+            #    "relational_avoid_enemy_by_radius": 9,
+            #    "math_food_budget": 10, 
+            #    "math_wood_budget": 11
+            new_target_state_math_food, cost_math_food = checker_budget_by_action(game_data_vector, ts.budget_food_by_action)
+            new_target_state_math_wood, cost_math_wood = checker_budget_by_action(game_data_vector, ts.budget_wood_by_action)
+            new_target_state_relational_food, cost_relational_food = checker_last_visible_target(game_data_vector, ts.target_of_interest_food)
+            new_target_state_relational_water, cost_relational_water = checker_last_visible_target(game_data_vector, ts.target_of_interest_water)
+            
+            ts = CagedCMDPTargetState(achievements=ts.achievements,
+                                      budget_food_by_action=new_target_state_math_food, 
+                                      budget_wood_by_action=new_target_state_math_wood,
+                                      avoid_mob_distance=ts.avoid_mob_distance,
+                                      target_of_interest_water=new_target_state_relational_water,
+                                      target_of_interest_food=new_target_state_relational_food,
+                                      level_hp_budget=ts.level_hp_budget, 
+                                      level_away_monsters=ts.level_away_monsters)
+            cost = jax.lax.switch(
+                env_state.cost_type,
+                [   # case 0: budget_hp
+                    lambda: checker_budget_hp_level(game_data_vector, ts.level_hp_budget.level).astype(float),
+                    # case 1: budget_drink  
+                    lambda: checker_budget_drink_level(game_data_vector, ts.level_hp_budget.level).astype(float),
+                    # case 2: budget_energy
+                    lambda: checker_budget_energy_level(game_data_vector, ts.level_hp_budget.level).astype(float),
+                    # case 3: budget_hungry
+                    lambda: checker_budget_hungry_level(game_data_vector, ts.level_hp_budget.level).astype(float),
+                    # case 4: sequential_dont_sleep_near_monsters
+                    lambda: checker_dont_sleep_near_monsters(game_data_vector).astype(float),
+                    # case 5: sequential_defeat_monster  
+                    lambda: checker_monster_is_attacked_without_sword(game_data_vector).astype(float),
+                    # case 6: sequential_away_monsters_when_hp
+                    lambda: checker_away_from_monsters_when_hp_low(game_data_vector, ts.level_away_monsters).astype(float),
+                     # case 7: relational_last_food_location
+                    lambda: cost_relational_food.astype(float),   
+                    # case 8: relational_last_water_location  
+                    lambda: cost_relational_water.astype(float),
+                    # case 9: relational_avoid_enemy_by_radius
+                    lambda: checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float),
+                    # case 10: math_food_budget
+                    lambda: cost_math_food.astype(float),   
+                    # case 11: math_wood_budget  
+                    lambda: cost_math_wood.astype(float),
+                    
+                ]
+            )
         else:
             assert 1 == 0, f"unknow config name: {self.config_name}, need assign cost function for this config"
             
