@@ -42,7 +42,8 @@ from craftext.environment.scenarious.checkers.avoid_mob_distance import checker_
 from craftext.environment.scenarious.checkers.budget_by_action import checker_budget_by_action
 from craftext.environment.scenarious.checkers.last_visible_target import checker_last_visible_target
 
-from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
+#from craftext.environment.scenarious.checkers.target_state_cmdp_relactional_point_of_intereset import CMDPTargetState
+from craftext.environment.scenarious.checkers.target_state_cmdp_relational_all import CMDPTargetState
 from craftext.environment.scenarious.checkers.target_state_cmdp_math_budget_by_action import CMDPTargetState as MATHCMDPTargetState
 
 @struct.dataclass
@@ -55,7 +56,6 @@ class TextEnvStateCMDP(TextEnvState):
     cost: float
     target_state: CMDPTargetState
     
-
 
 class CMDPInstructionWrapper(InstructionWrapper):
     def __init__(self, env, config_name=None, scenario_handler_class=ScenariosNoLambdaCMDP,
@@ -147,10 +147,30 @@ class CMDPInstructionWrapper(InstructionWrapper):
             cost = cost.astype(float)
         elif self.config_name == "achievements_easy_relational_avoid_enemy_by_radius":
             cost = checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float)    
-        elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location", "achievements_easy_relational_all"):
+        elif self.config_name in ("achievements_easy_relational_last_food_location", "achievements_easy_relational_last_water_location"):
             new_target_state, cost = checker_last_visible_target(game_data_vector, ts.target_of_interest)
             ts = CMDPTargetState(achievements=ts.achievements, target_of_interest=new_target_state)
             cost = cost.astype(float)
+        elif self.config_name == "achievements_easy_relational_all":
+            #    env_state.cost_type
+            #    "relational_last_food_location": 0,
+            #    "relational_last_water_location": 1, 
+            #    "relational_avoid_enemy_by_radius": 2
+            new_target_state_food, cost_food = checker_last_visible_target(game_data_vector, ts.target_of_interest_food)
+            new_target_state_water, cost_water = checker_last_visible_target(game_data_vector, ts.target_of_interest_water)
+            ts = CMDPTargetState(achievements=ts.achievements, avoid_mob_distance=ts.avoid_mob_distance, 
+                                    target_of_interest_water=new_target_state_water, target_of_interest_food=new_target_state_food)
+            cost = jax.lax.switch(
+                env_state.cost_type,
+                [
+                    # case 0: relational_last_food_location
+                    lambda: cost_food.astype(float),   
+                    # case 1: relational_last_water_location  
+                    lambda: cost_water.astype(float),
+                    # case 2: relational_avoid_enemy_by_radius
+                    lambda: checker_relactional_avoid_mob_distance(game_data_vector, ts.avoid_mob_distance).astype(float),
+                ]
+            )
         elif self.config_name == "achievements_safe_budget_all":
             #    env_state.cost_type
             #    "budget_hp": 0,
