@@ -29,6 +29,7 @@ class ScenariosConfig:
     base_environment: str
     use_parafrases: str
     test: str
+    use_constraints_parafrases: str
     
 
 class ScenariosConfigLoader:
@@ -63,13 +64,14 @@ class ScenariosConfigLoader:
         
         with open(config_path, 'r') as file:
             config_data = yaml.safe_load(file)
-            
+
         return ScenariosConfig(
             dataset_key      =config_data.get("dataset_key"),
             subset_key       =config_data.get("subset_key"),
             base_environment =config_data.get("base_environment"),
             use_parafrases   =config_data.get("use_parafrases", False),
-            test             =config_data.get("test", False)
+            test             =config_data.get("test", False),
+            use_constraints_parafrases  = config_data.get("use_constraints_parafrases", False)
         )
 
 

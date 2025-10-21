@@ -71,7 +71,8 @@ class ScenariosNoLambdaCMDP:
         """
         self.encode_model = encode_model
         self.config = ScenariosConfigLoader().load_config(config_name)
-        self.use_paraphrases = self.config.use_parafrases
+        self.use_paraphrases = self.config.use_parafrases    
+        self.use_constraints_parafrases = self.config.use_constraints_parafrases
         self.environment_key = 0 if "Classic" in self.config.base_environment else 1
         self.n_instructions = 0
         self.use_plans = use_plans
@@ -263,17 +264,41 @@ class ScenariosNoLambdaCMDP:
         """
         instructions = [scenario.get("instruction", "Unknown instruction")]
         
-        if "textual_constraint" in scenario:
-            textual_constraints = [scenario.get("textual_constraint", "Unknown textual constraint")]
-        else:
+        if self.use_constraints_parafrases:
+            assert "textual_constraints" in scenario
+            assert "cost_types" in scenario
+            textual_constraints = scenario.get("textual_constraints", None)
+            textual_constraints_perephrases = scenario.get("textual_constraints_perephrases", None)
+            list_cost_types = scenario.get("cost_types", None)
+            # check if correct
+            for text_const, pair in zip(textual_constraints, textual_constraints_perephrases):
+                assert text_const == pair[0], f"{text_const} VS {pair[0]}"
+            
             textual_constraints = []
-        if "textual_constraints" in scenario:
-            textual_constraints.extend(scenario.get("textual_constraints", None))
             cost_types = []
-            cost_types.extend(scenario.get("cost_types", None))
-            assert len(cost_types) == len(textual_constraints)
+            for cost_type, pair in zip(list_cost_types, textual_constraints_perephrases):
+                textual_constraint, paraphrases = pair[0], pair[1]
+                textual_constraints.append(textual_constraint)
+                cost_types.append(cost_type)
+                for paraphrase in paraphrases:
+                    textual_constraints.append(paraphrase)
+                    cost_types.append(cost_type)
+            assert len(cost_types) == len(textual_constraints), f"{len(cost_types)} VS {len(textual_constraints)}"
+            
         else:
-            cost_types = [None]
+            assert ("textual_constraint" in scenario) or ("textual_constraints" in scenario)
+            if "textual_constraint" in scenario:
+                textual_constraints = [scenario.get("textual_constraint", "Unknown textual constraint")]
+            else:
+                textual_constraints = []
+            if "textual_constraints" in scenario:
+                assert not "textual_constraint" in scenario
+                textual_constraints.extend(scenario.get("textual_constraints", None))
+                cost_types = []
+                cost_types.extend(scenario.get("cost_types", None))
+                assert len(cost_types) == len(textual_constraints)
+            else:
+                cost_types = [None]
 
         if self.use_paraphrases:
             instructions += scenario.get("instruction_paraphrases", [])
@@ -289,7 +314,6 @@ class ScenariosNoLambdaCMDP:
                 paired_textual_constraints.append(constraint)
                 paired_cost_types.append(cost_type)
         
-        # Заменяем исходные списки на попарные комбинации
         instructions = paired_instructions
         textual_constraints = paired_textual_constraints
             

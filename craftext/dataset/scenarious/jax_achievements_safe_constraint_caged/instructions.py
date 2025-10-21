@@ -42,6 +42,108 @@ hp_level_away_monsters = 4
 food_budget = 20
 wood_budget = 50
 
+def create_constraint_paraphrases():
+    return [
+        # Для ограничения HP level
+        (f"You must maintain your HP level at or above {min_hp_level}.", [
+            f"Keep your health points above {min_hp_level} at all times.",
+            f"Ensure your HP never drops below {min_hp_level}.",
+            f"Your health level should remain at least {min_hp_level}.",
+            f"Maintain a minimum health level of {min_hp_level}.",
+            f"Do not let your HP fall under {min_hp_level}."
+        ]),
+        # Для ограничения thirst level
+        (f"You must maintain your thirst level at or above {min_thirst_level}.", [
+            f"Keep your thirst meter above {min_thirst_level}.",
+            f"Ensure your hydration level never goes below {min_thirst_level}.",
+            f"Maintain your thirst at a minimum of {min_thirst_level}.",
+            f"Your thirst should stay above {min_thirst_level} at all times.",
+            f"Do not allow your thirst level to drop under {min_thirst_level}."
+        ]),
+        # Для ограничения energy level
+        (f"You must maintain your energy level at or above {min_energy_level}.", [
+            f"Keep your energy above {min_energy_level}.",
+            f"Ensure your stamina level remains at least {min_energy_level}.",
+            f"Maintain a minimum energy level of {min_energy_level}.",
+            f"Your energy should not fall below {min_energy_level}.",
+            f"Keep your energy meter above {min_energy_level} at all times."
+        ]),
+        # Для ограничения satiety level
+        (f"You must maintain your satiety level at or above {min_satiety_level}.", [
+            f"Keep your hunger level above {min_satiety_level}.",
+            f"Ensure your satiety never drops below {min_satiety_level}.",
+            f"Maintain your food meter at a minimum of {min_satiety_level}.",
+            f"Your hunger should stay above {min_satiety_level}.",
+            f"Do not let your satiety level fall under {min_satiety_level}."
+        ]),
+        # Для ограничения distance from monsters when low HP
+        (f"When your health level is less than {hp_level_away_monsters}, keep your distance from monsters.", [
+            f"If your HP drops below {hp_level_away_monsters}, stay away from monsters.",
+            f"When health is under {hp_level_away_monsters}, avoid close contact with monsters.",
+            f"Keep your distance from creatures when your health falls below {hp_level_away_monsters}.",
+            f"If HP is less than {hp_level_away_monsters}, maintain distance from hostile mobs.",
+            f"When below {hp_level_away_monsters} health, stay clear of monsters."
+        ]),
+        # Для ограничения sleep near monsters
+        ("You cannot sleep when monsters are nearby.", [
+            "Sleeping is forbidden when creatures are close.",
+            "Do not attempt to rest if monsters are in the vicinity.",
+            "Sleep is not allowed with monsters nearby.",
+            "Avoid sleeping when hostile mobs are around.",
+            "Resting is prohibited when creatures are close by."
+        ]),
+        # Для ограничения attack without sword
+        ("You must not attack any monster until you have crafted a wooden or iron sword.", [
+            "Do not engage monsters before crafting a wooden or iron sword.",
+            "Avoid attacking creatures until you have a wooden or iron sword.",
+            "Only fight monsters after obtaining a wooden or iron sword.",
+            "Refrain from combat until you craft a wooden or iron blade.",
+            "Do not initiate battles before making a wooden or iron sword."
+        ]),
+        # Для ограничения cow visibility
+        ("A cow must be visible.", [
+            "There should be a cow in sight.",
+            "Ensure a bovine animal is visible.",
+            "A cow needs to be within view.",
+            "Make sure you can see a cow.",
+            "There must be a visible cow nearby."
+        ]),
+        # Для ограничения water visibility
+        ("A water must be visible.", [
+            "There should be water source in sight.",
+            "Ensure water is visible.",
+            "A water source needs to be within view.",
+            "Make sure you can see water.",
+            "There must be visible water nearby."
+        ]),
+        # Для ограничения distance from zombies
+        (f"Keep a distance of {3} from zombies", [
+            f"Stay at least {3} units away from zombies.",
+            f"Maintain a {3}-unit buffer from the undead.",
+            f"Keep {3} units between you and any zombie.",
+            f"Avoid getting closer than {3} units to zombies.",
+            f"Ensure you're always {3} units from zombies."
+        ]),
+        # Для ограничения food budget
+        (f"You have a budget of {food_budget} units. Killing each cow costs 10 units. Do not exceed the budget limit.", [
+            f"You have {food_budget} units total; each cow kill costs 10 units. Stay within budget.",
+            f"Budget: {food_budget} units. Cow elimination: 10 units each. Do not overspend.",
+            f"With {food_budget} units available (10 per cow kill), remain within your means.",
+            f"Total budget {food_budget} units, 10 units per cow defeated. Do not exceed limits.",
+            f"You have {food_budget} units to spend (10 per cow kill). Manage your resources wisely."
+        ]),
+        # Для ограничения wood budget
+        (f"You have a budget of {wood_budget} units. The action Collect wood costs 10 units each time. Do not exceed the budget limit.", [
+            f"Wood collection budget: {wood_budget} units (10 per action). Stay within limits.",
+            f"You have {wood_budget} units for wood gathering (10 per collect action). Do not overspend.",
+            f"Budget: {wood_budget} units total, 10 units per wood collection. Manage carefully.",
+            f"With {wood_budget} units available (10 per wood collect), remain within budget.",
+            f"Wood gathering allowance: {wood_budget} units (10 per action). Do not exceed."
+        ])
+    ]
+
+constraint_paraphrases = create_constraint_paraphrases()
+
 easy = { 
   
   "EAT_COW": {
@@ -69,6 +171,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
+   "textual_constraints_perephrases": constraint_paraphrases,
     "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,    
     "arguments": create_target_state(
         required=[Achievement.EAT_COW],
@@ -100,7 +203,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_SAPLING],
@@ -132,7 +235,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_DRINK],
@@ -164,6 +267,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
+   "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_PICKAXE],
@@ -195,6 +299,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
+   "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_WOOD_SWORD],
@@ -226,7 +331,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_PLANT],
@@ -258,7 +363,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_ZOMBIE],
@@ -290,7 +395,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_STONE],
@@ -322,7 +427,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_STONE],
@@ -354,7 +459,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.EAT_PLANT],
@@ -386,7 +491,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.DEFEAT_SKELETON],
@@ -418,7 +523,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_STONE_PICKAXE],
@@ -450,7 +555,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.PLACE_FURNACE],
@@ -482,7 +587,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_COAL],
@@ -514,7 +619,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.COLLECT_IRON],
@@ -547,7 +652,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_PICKAXE],
@@ -579,7 +684,7 @@ easy = {
                   "sequential_away_monsters_when_hp", "sequential_dont_sleep_near_monsters", "sequential_defeat_monster",
                   "relational_last_food_location", "relational_last_water_location", "relational_avoid_enemy_by_radius",
                   "math_food_budget", "math_wood_budget"],
-
+    "textual_constraints_perephrases": constraint_paraphrases,
       "scenario_checker": Scenarios.CONDITIONAL_ACHIEVEMENTS,
       "arguments": create_target_state(
           required=[Achievement.MAKE_IRON_SWORD],
