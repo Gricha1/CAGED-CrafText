@@ -12,7 +12,11 @@ class DistilBertEncode:
         self.form_to_use = form_to_use
         model_name = "distilbert-base-uncased"
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=".")
-        self.model = AutoModel.from_pretrained(model_name, cache_dir=".").cuda()
+        # Проверяем доступность CUDA перед использованием
+        if torch.cuda.is_available():
+            self.model = AutoModel.from_pretrained(model_name, cache_dir=".").cuda()
+        else:
+            self.model = AutoModel.from_pretrained(model_name, cache_dir=".")
         self.n_splits=n_splits
         if self.n_splits>1:
             exit()
@@ -63,13 +67,22 @@ class DistilBertEncode:
     def get_cls_embeddings(self, instructions):
         batch_embeddings = []
         # print("Encode...")
-        inputs = self.tokenizer(
+        if torch.cuda.is_available():
+            inputs = self.tokenizer(
                 instructions, 
                 return_tensors='pt', 
                 truncation=True, 
                 padding=True, 
                 max_length=50
             ).to("cuda")
+        else:
+            inputs = self.tokenizer(
+                instructions, 
+                return_tensors='pt', 
+                truncation=True, 
+                padding=True, 
+                max_length=50
+            )
         with torch.no_grad():
                 outputs = self.model(**inputs)
         # print("Finish.")
